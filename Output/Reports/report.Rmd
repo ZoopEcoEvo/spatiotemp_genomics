@@ -81,4 +81,59 @@ theme_matt_facets = function(base_size = 18,
       plot.margin = margin(0.25, 0.25, 0.25, 0.25,"cm")
     )
 }
+
+site_cols = c("Esker Point" = "olivedrab3")
 ```
+
+## Site Characteristics 
+```{r season-temps}
+full_data %>% 
+  select(site, season, doy, collection_temp, collection_salinity) %>%  
+  distinct() %>% 
+ggplot(aes(x = doy, y = collection_temp, colour = site)) + 
+  geom_point(size = 3) + 
+  geom_line(linewidth = 1) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "Temperature (°C)",
+       x = "Day of the Year") +
+  theme_matt() + 
+  theme(legend.position = "right")
+```
+
+## Critical Thermal Limits 
+```{r}
+ggplot(full_data, aes(x = season, y = ctmax, colour = site)) + 
+  geom_point() + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "CTmax (°C)",
+       x = "Season") +
+  theme_matt() + 
+  theme(legend.position = "right")
+```
+
+## Body Size
+```{r}
+ggplot(full_data, aes(x = season, y = size, colour = site)) + 
+  geom_point() + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "CTmax (°C)",
+       x = "Season") +
+  theme_matt() + 
+  theme(legend.position = "right")
+```
+
+## Trait Correlations 
+```{r}
+full_data %>%  
+  filter(ctmax > 31) %>% 
+ggplot(aes(x = size, y = ctmax, colour = site)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = F) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "CTmax (°C)",
+       x = "Prosome Length (mm)") +
+  theme_matt() + 
+  theme(legend.position = "right")
+```
+
+

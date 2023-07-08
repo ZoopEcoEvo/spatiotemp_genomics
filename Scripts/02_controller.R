@@ -19,6 +19,9 @@ if(process_data == T){
 ### Read in the PROCESSED data ###
 ##################################
 
+full_data = read.csv(file = "Output/Output_data/full_data.csv") %>%  
+  mutate(doy = lubridate::yday(collection_date))
+
 if(make_report == T){
   render(input = "Output/Reports/report.Rmd", #Input the path to your .Rmd file here
          #output_file = "report", #Name your file here if you want it to have a different name; leave off the .html, .md, etc. - it will add the correct one automatically
