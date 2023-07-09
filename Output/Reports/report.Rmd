@@ -82,7 +82,8 @@ theme_matt_facets = function(base_size = 18,
     )
 }
 
-site_cols = c("Esker Point" = "olivedrab3")
+site_cols = c("Esker Point" = "olivedrab3",
+              "Tyler Cove" = "lightcoral")
 ```
 
 ## Site Characteristics 
