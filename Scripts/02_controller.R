@@ -4,7 +4,7 @@ library(tidyverse)
 
 #Determine which scripts should be run
 process_all_data = F #Runs data analysis 
-make_report = F #Runs project summary
+make_report = T #Runs project summary
 knit_manuscript = F #Compiles manuscript draft
 
 ############################
@@ -16,9 +16,14 @@ source(file = "Scripts/01_data_processing.R")
 ##################################
 ### Read in the PROCESSED data ###
 ##################################
+site_data = read.csv(file = "Raw_data/site_data.csv")
 
 full_data = read.csv(file = "Output/Output_data/full_data.csv") %>%  
   mutate(doy = lubridate::yday(collection_date))
+
+temp_record = read.csv(file = "Output/Output_data/temp_record.csv")
+
+ramp_record = read.csv(file = "Output/Output_data/ramp_record.csv")
 
 if(make_report == T){
   render(input = "Output/Reports/report.Rmd", #Input the path to your .Rmd file here
