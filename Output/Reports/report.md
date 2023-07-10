@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-07-09
+2023-07-10
 
 - [Site Characteristics](#site-characteristics)
 - [Critical Thermal Limits](#critical-thermal-limits)
@@ -73,7 +73,7 @@ Shown below are the measured CTmax values.
 ``` r
 ggplot(full_data, aes(x = season, y = ctmax, colour = site)) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
-                                             dodge.width = 0.25)) + 
+                                             dodge.width = 0.7)) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "CTmax (°C)",
        x = "Season") +
@@ -93,9 +93,9 @@ below.
 ``` r
 ggplot(full_data, aes(x = season, y = size, colour = site)) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
-                                             dodge.width = 0.25)) + 
+                                             dodge.width = 0.7)) + 
   scale_colour_manual(values = site_cols) + 
-  labs(y = "CTmax (°C)",
+  labs(y = "Prosome Length (mm)",
        x = "Season") +
   theme_matt() + 
   theme(legend.position = "right")
@@ -111,7 +111,7 @@ Individual regression lines for each site are shown along with a
 
 ``` r
 full_data %>%  
-  filter(ctmax > 31) %>% 
+  filter(!(ind_id %in% c("Ganey's_Wharf_early_1_3", "Esker_Point_early_2_3"))) %>% 
 ggplot(aes(x = size, y = ctmax, colour = site)) + 
   geom_smooth(data = filter(full_data, ctmax > 31), 
               aes(x = size, y = ctmax),

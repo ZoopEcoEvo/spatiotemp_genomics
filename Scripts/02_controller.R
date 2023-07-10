@@ -16,11 +16,15 @@ source(file = "Scripts/01_data_processing.R")
 ##################################
 ### Read in the PROCESSED data ###
 ##################################
-site_data = read.csv(file = "Raw_data/site_data.csv")
+site_data = read.csv(file = "Raw_data/site_data.csv") %>% 
+  mutate(site = fct_reorder(site, lat))
 
 full_data = read.csv(file = "Output/Output_data/full_data.csv") %>%  
-  mutate(doy = lubridate::yday(collection_date))
-
+  mutate(doy = lubridate::yday(collection_date),
+         ind_id = str_replace_all(paste(site, season, replicate, tube, sep = "_"), pattern = " ", replacement = "_")) %>% 
+  inner_join(site_data, by = c("site")) %>% 
+  mutate(site = fct_reorder(site, lat))
+  
 temp_record = read.csv(file = "Output/Output_data/temp_record.csv")
 
 ramp_record = read.csv(file = "Output/Output_data/ramp_record.csv")

@@ -84,6 +84,7 @@ theme_matt_facets = function(base_size = 18,
 
 site_cols = c("Key Largo" = "coral", 
               "Tyler Cove" = "goldenrod1",
+              "Ganey's Wharf" = "darkgoldenrod3", 
               "Esker Point" = "darkseagreen",
               "Damariscot" = "deepskyblue3", 
               "Shediac" = "dodgerblue4")
@@ -137,7 +138,7 @@ Shown below are the measured CTmax values.
 ```{r seasonal-ct-max}
 ggplot(full_data, aes(x = season, y = ctmax, colour = site)) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
-                                             dodge.width = 0.25)) + 
+                                             dodge.width = 0.7)) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "CTmax (°C)",
        x = "Season") +
@@ -151,9 +152,9 @@ Following the CTmax assay, individuals were photographed for body size measureme
 ```{r seasonal-body-size}
 ggplot(full_data, aes(x = season, y = size, colour = site)) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
-                                             dodge.width = 0.25)) + 
+                                             dodge.width = 0.7)) + 
   scale_colour_manual(values = site_cols) + 
-  labs(y = "CTmax (°C)",
+  labs(y = "Prosome Length (mm)",
        x = "Season") +
   theme_matt() + 
   theme(legend.position = "right")
@@ -164,7 +165,7 @@ Shown below is the relationship between prosome length and CTmax. Individual reg
 
 ```{r ctmax-vs-size}
 full_data %>%  
-  filter(ctmax > 31) %>% 
+  filter(!(ind_id %in% c("Ganey's_Wharf_early_1_3", "Esker_Point_early_2_3"))) %>% 
 ggplot(aes(x = size, y = ctmax, colour = site)) + 
   geom_smooth(data = filter(full_data, ctmax > 31), 
               aes(x = size, y = ctmax),
