@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-07-10
+2023-07-11
 
 - [Site Characteristics](#site-characteristics)
 - [Critical Thermal Limits](#critical-thermal-limits)
@@ -53,6 +53,26 @@ ggpubr::ggarrange(site_map, site_temp_plot, common.legend = T, legend = "bottom"
 
 <img src="../Figures/markdown/site-chars-1.png" style="display: block; margin: auto;" />
 
+Exact locations for the sites are provided here. The two sites in
+Maryland are differentiated by their salinity: Tyler’s Cove has a
+relatively high salinity (15 psu) compared to Ganey’s Wharf (2 psu).
+
+``` r
+site_data %>%  
+  arrange(lat) %>%  
+  select("Site" = site, "Region" = region, "Lat" = lat, "Long" = long) %>% 
+knitr::kable(align = "c")
+```
+
+|     Site      |    Region     |   Lat    |   Long    |
+|:-------------:|:-------------:|:--------:|:---------:|
+|   Key Largo   |    Florida    | 25.28391 | -80.33014 |
+|  Tyler Cove   |   Maryland    | 38.35083 | -76.22902 |
+| Ganey’s Wharf |   Maryland    | 38.80555 | -75.90906 |
+|  Esker Point  |  Connecticut  | 41.32081 | -72.00166 |
+|  Damariscot   |     Maine     | 43.93408 | -69.57971 |
+|    Shediac    | New Brunswick | 46.27407 | -64.55618 |
+
 ## Critical Thermal Limits
 
 Critical thermal maxima (CTmax) was measured using a custom setup. The
@@ -73,7 +93,7 @@ Shown below are the measured CTmax values.
 ``` r
 ggplot(full_data, aes(x = season, y = ctmax, colour = site)) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
-                                             dodge.width = 0.7)) + 
+                                             dodge.width = 0.5)) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "CTmax (°C)",
        x = "Season") +
@@ -93,7 +113,7 @@ below.
 ``` r
 ggplot(full_data, aes(x = season, y = size, colour = site)) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
-                                             dodge.width = 0.7)) + 
+                                             dodge.width = 0.5)) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "Prosome Length (mm)",
        x = "Season") +
@@ -105,9 +125,48 @@ ggplot(full_data, aes(x = season, y = size, colour = site)) +
 
 ## Trait Correlations
 
-Shown below is the relationship between prosome length and CTmax.
-Individual regression lines for each site are shown along with a
-‘universal’ regression in grey.
+We expect that collections from warmer waters should yield copepods with
+higher thermal limits and smaller body sizes.
+
+``` r
+ctmax_temp_plot = ggplot(full_data, aes(x = collection_temp, y = ctmax)) + 
+  geom_smooth(method = "lm", se = T,
+              linewidth = 2, 
+              colour = "grey") + 
+    geom_point(aes(colour = site), 
+             size = 2, alpha = 0.7) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "CTmax (°C)",
+       x = "Collection Temp. (°C)") +
+  theme_matt() + 
+  theme(legend.position = "right")
+
+size_temp_plot = ggplot(full_data, aes(x = collection_temp, y = size)) + 
+  geom_smooth(method = "lm", se = T,
+              linewidth = 2, 
+              colour = "grey") + 
+    geom_point(aes(colour = site), 
+             size = 2, alpha = 0.7) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "Prosome Length (mm)",
+       x = "Collection Temp. (°C)") +
+  theme_matt() + 
+  theme(legend.position = "right")
+
+ggpubr::ggarrange(ctmax_temp_plot, size_temp_plot, common.legend = T, legend = "bottom")
+```
+
+<img src="../Figures/markdown/temp-cors-1.png" style="display: block; margin: auto;" />
+
+Of particular interest is the relationship between prosome length and
+CTmax. In many cases, larger body sizes are associated with cold
+adaptation/acclimation. We may therefore see this pattern emerge across
+populations or seasons. If populations contain a mix of cold- and
+warm-adapted genotypes, however, we might also see this relationship
+emerge **within** individual collections. Shown below is the
+relationship between prosome length and CTmax for the individuals
+measured thus far. Individual regression lines for each site are shown
+along with a ‘universal’ regression in grey.
 
 ``` r
 full_data %>%  
