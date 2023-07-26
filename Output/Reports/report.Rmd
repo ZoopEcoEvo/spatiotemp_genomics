@@ -86,7 +86,7 @@ site_cols = c("Key Largo" = "coral",
               "Tyler Cove" = "goldenrod1",
               "Ganey's Wharf" = "darkgoldenrod3", 
               "Esker Point" = "darkseagreen",
-              "Damariscot" = "deepskyblue3", 
+              "Sawyer Park" = "deepskyblue3", 
               "Shediac" = "dodgerblue4")
 ```
 

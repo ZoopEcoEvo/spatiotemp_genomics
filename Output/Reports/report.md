@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-07-11
+2023-07-26
 
 - [Site Characteristics](#site-characteristics)
 - [Critical Thermal Limits](#critical-thermal-limits)
@@ -70,7 +70,7 @@ knitr::kable(align = "c")
 |  Tyler Cove   |   Maryland    | 38.35083 | -76.22902 |
 | Ganey’s Wharf |   Maryland    | 38.80555 | -75.90906 |
 |  Esker Point  |  Connecticut  | 41.32081 | -72.00166 |
-|  Damariscot   |     Maine     | 43.93408 | -69.57971 |
+|  Sawyer Park  |     Maine     | 43.90698 | -69.87179 |
 |    Shediac    | New Brunswick | 46.27407 | -64.55618 |
 
 ## Critical Thermal Limits
