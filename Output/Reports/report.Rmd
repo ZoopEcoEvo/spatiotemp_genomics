@@ -14,6 +14,7 @@ output:
 ---
 
 ```{r setup, include=T, message = F, warning = F, echo = F}
+
 knitr::opts_chunk$set(
   echo = knitr::is_html_output(),
   fig.align = "center",
@@ -82,12 +83,15 @@ theme_matt_facets = function(base_size = 18,
     )
 }
 
-site_cols = c("Key Largo" = "coral", 
+site_cols = c("Key Largo" = "indianred4", 
+              "Manatee River" = "coral3", 
+              "St. Petersburg" = "coral",
               "Tyler Cove" = "goldenrod1",
               "Ganey's Wharf" = "darkgoldenrod3", 
-              "Esker Point" = "darkseagreen",
-              "Sawyer Park" = "deepskyblue3", 
-              "Shediac" = "dodgerblue4")
+              "Esker Point" = "darkseagreen3",
+              "Sawyer Park" = "palegreen4", 
+              "St. Thomas de Kent Wharf" = "deepskyblue3",
+              "Miramichi" = "dodgerblue4")
 ```
 
 ## Site Characteristics 
@@ -106,8 +110,8 @@ site_map = map_data("world") %>%
   coord_map(xlim = c(-85,-60),
             ylim = c(25, 48)) + 
   geom_point(data = coords,
-              mapping = aes(x = long, y = lat, colour = site),
-              size = 3) +
+             mapping = aes(x = long, y = lat, colour = site),
+             size = 3) +
   scale_colour_manual(values = site_cols) + 
   labs(x = "Longitude", 
        y = "Latitude") + 
@@ -116,7 +120,7 @@ site_map = map_data("world") %>%
 site_temp_plot = full_data %>% 
   select(site, season, doy, collection_temp, collection_salinity) %>%  
   distinct() %>% 
-ggplot(aes(x = doy, y = collection_temp, colour = site)) + 
+  ggplot(aes(x = doy, y = collection_temp, colour = site)) + 
   geom_point(size = 6) + 
   geom_line(linewidth = 1) + 
   scale_colour_manual(values = site_cols) + 
@@ -134,7 +138,7 @@ Exact locations for the sites are provided here. The two sites in Maryland are d
 site_data %>%  
   arrange(lat) %>%  
   select("Site" = site, "Region" = region, "Lat" = lat, "Long" = long) %>% 
-knitr::kable(align = "c")
+  knitr::kable(align = "c")
 ```
 
 
@@ -179,7 +183,7 @@ ctmax_temp_plot = ggplot(full_data, aes(x = collection_temp, y = ctmax)) +
   geom_smooth(method = "lm", se = T,
               linewidth = 2, 
               colour = "grey") + 
-    geom_point(aes(colour = site), 
+  geom_point(aes(colour = site), 
              size = 2, alpha = 0.7) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "CTmax (°C)",
@@ -191,7 +195,7 @@ size_temp_plot = ggplot(full_data, aes(x = collection_temp, y = size)) +
   geom_smooth(method = "lm", se = T,
               linewidth = 2, 
               colour = "grey") + 
-    geom_point(aes(colour = site), 
+  geom_point(aes(colour = site), 
              size = 2, alpha = 0.7) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "Prosome Length (mm)",
@@ -205,19 +209,21 @@ ggpubr::ggarrange(ctmax_temp_plot, size_temp_plot, common.legend = T, legend = "
 
 Of particular interest is the relationship between prosome length and CTmax. In many cases, larger body sizes are associated with cold adaptation/acclimation. We may therefore see this pattern emerge across populations or seasons. If populations contain a mix of cold- and warm-adapted genotypes, however, we might also see this relationship emerge **within** individual collections. Shown below is the relationship between prosome length and CTmax for the individuals measured thus far. Individual regression lines for each site are shown along with a 'universal' regression in grey. 
 
-```{r ctmax-vs-size}
+```{r ctmax-vs-size, fig.width=8, fig.height=4}
 full_data %>%  
-  filter(!(ind_id %in% c("Ganey's_Wharf_early_1_3", "Esker_Point_early_2_3"))) %>% 
-ggplot(aes(x = size, y = ctmax, colour = site)) + 
-  geom_smooth(data = filter(full_data, ctmax > 31), 
-              aes(x = size, y = ctmax),
-              method = "lm", 
-              colour = "grey60", 
-              se = F,
-              linewidth = 2) + 
-  geom_point(size = 2, alpha = 0.7) + 
+  filter(ctmax > 31) %>% 
+  ggplot(aes(x = size, y = ctmax)) + 
+  # geom_smooth(data = filter(full_data, ctmax > 31), 
+  #             aes(x = size, y = ctmax),
+  #             method = "lm", 
+  #             colour = "grey60", 
+  #             se = F,
+  #             linewidth = 2) + 
   geom_smooth(method = "lm", se = F,
-              linewidth = 2) + 
+              linewidth = 2,
+              colour = "grey70") + 
+  geom_point(aes(colour = site),
+             size = 2, alpha = 0.7) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "CTmax (°C)",
        x = "Prosome Length (mm)") +

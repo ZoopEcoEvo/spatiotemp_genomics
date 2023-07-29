@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-07-26
+2023-07-29
 
 - [Site Characteristics](#site-characteristics)
 - [Critical Thermal Limits](#critical-thermal-limits)
@@ -29,8 +29,8 @@ site_map = map_data("world") %>%
   coord_map(xlim = c(-85,-60),
             ylim = c(25, 48)) + 
   geom_point(data = coords,
-              mapping = aes(x = long, y = lat, colour = site),
-              size = 3) +
+             mapping = aes(x = long, y = lat, colour = site),
+             size = 3) +
   scale_colour_manual(values = site_cols) + 
   labs(x = "Longitude", 
        y = "Latitude") + 
@@ -39,7 +39,7 @@ site_map = map_data("world") %>%
 site_temp_plot = full_data %>% 
   select(site, season, doy, collection_temp, collection_salinity) %>%  
   distinct() %>% 
-ggplot(aes(x = doy, y = collection_temp, colour = site)) + 
+  ggplot(aes(x = doy, y = collection_temp, colour = site)) + 
   geom_point(size = 6) + 
   geom_line(linewidth = 1) + 
   scale_colour_manual(values = site_cols) + 
@@ -61,17 +61,20 @@ relatively high salinity (15 psu) compared to Ganey’s Wharf (2 psu).
 site_data %>%  
   arrange(lat) %>%  
   select("Site" = site, "Region" = region, "Lat" = lat, "Long" = long) %>% 
-knitr::kable(align = "c")
+  knitr::kable(align = "c")
 ```
 
-|     Site      |    Region     |   Lat    |   Long    |
-|:-------------:|:-------------:|:--------:|:---------:|
-|   Key Largo   |    Florida    | 25.28391 | -80.33014 |
-|  Tyler Cove   |   Maryland    | 38.35083 | -76.22902 |
-| Ganey’s Wharf |   Maryland    | 38.80555 | -75.90906 |
-|  Esker Point  |  Connecticut  | 41.32081 | -72.00166 |
-|  Sawyer Park  |     Maine     | 43.90698 | -69.87179 |
-|    Shediac    | New Brunswick | 46.27407 | -64.55618 |
+|           Site           |    Region     |   Lat    |   Long    |
+|:------------------------:|:-------------:|:--------:|:---------:|
+|        Key Largo         |    Florida    | 25.28391 | -80.33014 |
+|      Manatee River       |    Florida    | 27.50561 | -82.57277 |
+|      St. Petersburg      |    Florida    | 27.70367 | -82.63969 |
+|        Tyler Cove        |   Maryland    | 38.35083 | -76.22902 |
+|      Ganey’s Wharf       |   Maryland    | 38.80555 | -75.90906 |
+|       Esker Point        |  Connecticut  | 41.32081 | -72.00166 |
+|       Sawyer Park        |     Maine     | 43.90698 | -69.87179 |
+| St. Thomas de Kent Wharf | New Brunswick | 46.44761 | -64.63692 |
+|        Miramichi         | New Brunswick | 47.02940 | -65.47312 |
 
 ## Critical Thermal Limits
 
@@ -133,7 +136,7 @@ ctmax_temp_plot = ggplot(full_data, aes(x = collection_temp, y = ctmax)) +
   geom_smooth(method = "lm", se = T,
               linewidth = 2, 
               colour = "grey") + 
-    geom_point(aes(colour = site), 
+  geom_point(aes(colour = site), 
              size = 2, alpha = 0.7) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "CTmax (°C)",
@@ -145,7 +148,7 @@ size_temp_plot = ggplot(full_data, aes(x = collection_temp, y = size)) +
   geom_smooth(method = "lm", se = T,
               linewidth = 2, 
               colour = "grey") + 
-    geom_point(aes(colour = site), 
+  geom_point(aes(colour = site), 
              size = 2, alpha = 0.7) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "Prosome Length (mm)",
@@ -170,17 +173,19 @@ along with a ‘universal’ regression in grey.
 
 ``` r
 full_data %>%  
-  filter(!(ind_id %in% c("Ganey's_Wharf_early_1_3", "Esker_Point_early_2_3"))) %>% 
-ggplot(aes(x = size, y = ctmax, colour = site)) + 
-  geom_smooth(data = filter(full_data, ctmax > 31), 
-              aes(x = size, y = ctmax),
-              method = "lm", 
-              colour = "grey60", 
-              se = F,
-              linewidth = 2) + 
-  geom_point(size = 2, alpha = 0.7) + 
+  filter(ctmax > 31) %>% 
+  ggplot(aes(x = size, y = ctmax)) + 
+  # geom_smooth(data = filter(full_data, ctmax > 31), 
+  #             aes(x = size, y = ctmax),
+  #             method = "lm", 
+  #             colour = "grey60", 
+  #             se = F,
+  #             linewidth = 2) + 
   geom_smooth(method = "lm", se = F,
-              linewidth = 2) + 
+              linewidth = 2,
+              colour = "grey70") + 
+  geom_point(aes(colour = site),
+             size = 2, alpha = 0.7) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "CTmax (°C)",
        x = "Prosome Length (mm)") +
