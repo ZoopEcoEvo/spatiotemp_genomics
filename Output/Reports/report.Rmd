@@ -147,7 +147,7 @@ Critical thermal maxima (CTmax) was measured using a custom setup. The method us
 
 Individuals were rested for one hour after collection before the assay. During the assay, copepods were held in 0.2 um filtered seawater, adjusted to match the salinity at the time of collection with bottled spring water. During the assay, several 'control' individuals were maintained in this adjusted salinity solution, but did not experience the temperature ramp, to ensure that there was no background mortality. 
 
-Shown below are the measured CTmax values. 
+Shown below are the measured CTmax values. Note: CTmax values for the early season Key Largo copepods were collected at the end of February 2023 as part of a separate project. Body size values were not measured during this project, nor were copepods individually preserved after the experiments. These early season CTmax values are included as a point of comparison.  
 
 ```{r seasonal-ct-max}
 ggplot(full_data, aes(x = season, y = ctmax, colour = site)) + 

@@ -91,7 +91,12 @@ spring water. During the assay, several ‘control’ individuals were
 maintained in this adjusted salinity solution, but did not experience
 the temperature ramp, to ensure that there was no background mortality.
 
-Shown below are the measured CTmax values.
+Shown below are the measured CTmax values. Note: CTmax values for the
+early season Key Largo copepods were collected at the end of February
+2023 as part of a separate project. Body size values were not measured
+during this project, nor were copepods individually preserved after the
+experiments. These early season CTmax values are included as a point of
+comparison.
 
 ``` r
 ggplot(full_data, aes(x = season, y = ctmax, colour = site)) + 

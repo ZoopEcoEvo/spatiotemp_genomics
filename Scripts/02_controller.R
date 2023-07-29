@@ -19,7 +19,14 @@ source(file = "Scripts/01_data_processing.R")
 site_data = read.csv(file = "Raw_data/site_data.csv") %>% 
   mutate(site = fct_reorder(site, lat))
 
+kl_winter = read.csv(file = "Raw_data/outside_sources/key_largo_winter.csv") %>% 
+  filter(bopyrid == "no") %>% 
+  mutate(warming_tol = ctmax - collection_temp,
+         collection_date = as.character(as.Date(collection_date, "%m/%d/%y")),
+         exp_date = as.character(as.Date(exp_date, "%m/%d/%y")))
+
 full_data = read.csv(file = "Output/Output_data/full_data.csv") %>%  
+  bind_rows(kl_winter) %>% 
   mutate(doy = lubridate::yday(collection_date),
          ind_id = str_replace_all(paste(site, season, replicate, tube, sep = "_"), pattern = " ", replacement = "_")) %>% 
   inner_join(site_data, by = c("site")) %>% 
