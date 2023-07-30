@@ -30,7 +30,7 @@ theme_matt = function(base_size = 18,
   mid_text <-  monochromeR::generate_palette(dark_text, "go_lighter", n_colours = 5)[2]
   light_text <-  monochromeR::generate_palette(dark_text, "go_lighter", n_colours = 5)[3]
   
-  ggpubr::theme_pubr(base_family="sans") %+replace% 
+  theme_pubr(base_family="sans") %+replace% 
     theme(
       panel.background  = element_rect(fill="transparent", colour=NA), 
       plot.background = element_rect(fill="transparent", colour=NA), 
@@ -90,8 +90,8 @@ site_cols = c("Key Largo" = "indianred4",
               "Ganey's Wharf" = "darkgoldenrod3", 
               "Esker Point" = "darkseagreen3",
               "Sawyer Park" = "palegreen4", 
-              "St. Thomas de Kent Wharf" = "deepskyblue3",
-              "Miramichi" = "dodgerblue4")
+              "St. Thomas de Kent Wharf" = "steelblue2",
+              "Ritchie Wharf" = "steelblue4")
 ```
 
 ## Site Characteristics 
@@ -129,7 +129,7 @@ site_temp_plot = full_data %>%
   theme_matt() + 
   theme(legend.position = "right")
 
-ggpubr::ggarrange(site_map, site_temp_plot, common.legend = T, legend = "bottom")
+ggarrange(site_map, site_temp_plot, common.legend = T, legend = "bottom")
 ```
 
 Exact locations for the sites are provided here. The two sites in Maryland are differentiated by their salinity: Tyler's Cove has a relatively high salinity (15 psu) compared to Ganey's Wharf (2 psu).  
@@ -150,9 +150,18 @@ Individuals were rested for one hour after collection before the assay. During t
 Shown below are the measured CTmax values. Note: CTmax values for the early season Key Largo copepods were collected at the end of February 2023 as part of a separate project. Body size values were not measured during this project, nor were copepods individually preserved after the experiments. These early season CTmax values are included as a point of comparison.  
 
 ```{r seasonal-ct-max}
+mean_ctmax = full_data %>% 
+  group_by(site, season) %>% 
+  summarize(mean_ctmax = mean(ctmax))
+
 ggplot(full_data, aes(x = season, y = ctmax, colour = site)) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
-                                             dodge.width = 0.5)) + 
+                                             dodge.width = 0.4),
+             alpha = 0.3) + 
+  geom_point(data = mean_ctmax, 
+             aes(y = mean_ctmax),
+             position = position_dodge(width = 0.4),
+             size = 4) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "CTmax (°C)",
        x = "Season") +
@@ -164,9 +173,18 @@ ggplot(full_data, aes(x = season, y = ctmax, colour = site)) +
 Following the CTmax assay, individuals were photographed for body size measurements. Prosome lengths were measured from these photographs using a scale micrometer and the software ImageJ. These measurements are shown below. 
 
 ```{r seasonal-body-size}
+mean_size = full_data %>% 
+  group_by(site, season) %>% 
+  summarize(mean_size = mean(size))
+
 ggplot(full_data, aes(x = season, y = size, colour = site)) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
-                                             dodge.width = 0.5)) + 
+                                             dodge.width = 0.4),
+             alpha = 0.3) + 
+  geom_point(data = mean_size, 
+             aes(y = mean_size),
+             position = position_dodge(width = 0.4),
+             size = 4) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "Prosome Length (mm)",
        x = "Season") +
@@ -203,15 +221,14 @@ size_temp_plot = ggplot(full_data, aes(x = collection_temp, y = size)) +
   theme_matt() + 
   theme(legend.position = "right")
 
-ggpubr::ggarrange(ctmax_temp_plot, size_temp_plot, common.legend = T, legend = "bottom")
+ggarrange(ctmax_temp_plot, size_temp_plot, common.legend = T, legend = "bottom")
 ```
 
 
-Of particular interest is the relationship between prosome length and CTmax. In many cases, larger body sizes are associated with cold adaptation/acclimation. We may therefore see this pattern emerge across populations or seasons. If populations contain a mix of cold- and warm-adapted genotypes, however, we might also see this relationship emerge **within** individual collections. Shown below is the relationship between prosome length and CTmax for the individuals measured thus far. Individual regression lines for each site are shown along with a 'universal' regression in grey. 
+Of particular interest is the relationship between prosome length and CTmax. In many cases, larger body sizes are associated with cold adaptation/acclimation. We may therefore see this pattern emerge across populations or seasons. If populations contain a mix of cold- and warm-adapted genotypes, however, we might also see this relationship emerge **within** individual collections. Shown below is the relationship between prosome length and CTmax for the individuals measured thus far. Individual regression lines for each site are also included. Note that raw CTmax and body size values are shown, rather than metrics like residuals from a statistical model correcting for variation in collection temperature.  
 
 ```{r ctmax-vs-size, fig.width=8, fig.height=4}
-full_data %>%  
-  filter(ctmax > 31) %>% 
+universal_size = full_data %>% 
   ggplot(aes(x = size, y = ctmax)) + 
   # geom_smooth(data = filter(full_data, ctmax > 31), 
   #             aes(x = size, y = ctmax),
@@ -229,7 +246,59 @@ full_data %>%
        x = "Prosome Length (mm)") +
   theme_matt() + 
   theme(legend.position = "right")
+
+pop_size = full_data %>% 
+  ggplot(aes(x = size, y = ctmax, colour = site)) + 
+  facet_wrap(site~.) + 
+  # geom_smooth(data = filter(full_data, ctmax > 31), 
+  #             aes(x = size, y = ctmax),
+  #             method = "lm", 
+  #             colour = "grey60", 
+  #             se = F,
+  #             linewidth = 2) + 
+  geom_point(size = 1.3, alpha = 0.3) + 
+  geom_smooth(method = "lm", se = F,
+              linewidth = 2) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "CTmax (°C)",
+       x = "Prosome Length (mm)") +
+  theme_matt(base_size = 12) + 
+  theme(legend.position = "right")
+
+ggarrange(universal_size, pop_size, common.legend = T, legend = "bottom")
 ```
+
+## Trait Variability 
+Shown below is the trait variation (ranges) for each site. Ranges are calculated for each season separately. 
+```{r}
+trait_ranges = full_data %>% 
+  group_by(site, season, collection_temp, collection_salinity, doy, lat) %>% 
+  summarise(mean_ctmax = mean(ctmax),
+            ctmax_range = max(ctmax) - min(ctmax),
+            mean_size = mean(size),
+            size_range = max(size) - min(size)) %>% 
+  mutate(prop_ctmax_range = ctmax_range / mean_ctmax,
+         prop_size_range = size_range / mean_size)
+
+ctmax_range_lat = ggplot(trait_ranges, aes(x = collection_temp, y = ctmax_range, colour = site)) + 
+  geom_point(size = 3) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "CTmax Range (°C)",
+       x = "Collection Temp. (°C)") +
+  theme_matt() + 
+  theme(legend.position = "right")
+
+size_range_lat = ggplot(trait_ranges, aes(x = collection_temp, y = size_range, colour = site)) + 
+  geom_point(size = 3) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "Size Range (mm)",
+       x = "Collection Temp. (°C)") +
+  theme_matt() + 
+  theme(legend.position = "right")
+
+ggarrange(ctmax_range_lat, size_range_lat, common.legend = T, legend = "bottom")
+```
+
 
 ## Next Steps     
 

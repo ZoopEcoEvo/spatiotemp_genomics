@@ -6,6 +6,7 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
 - [Critical Thermal Limits](#critical-thermal-limits)
 - [Body Size](#body-size)
 - [Trait Correlations](#trait-correlations)
+- [Trait Variability](#trait-variability)
 - [Next Steps](#next-steps)
 - [Misc. Details](#misc-details)
 
@@ -48,7 +49,7 @@ site_temp_plot = full_data %>%
   theme_matt() + 
   theme(legend.position = "right")
 
-ggpubr::ggarrange(site_map, site_temp_plot, common.legend = T, legend = "bottom")
+ggarrange(site_map, site_temp_plot, common.legend = T, legend = "bottom")
 ```
 
 <img src="../Figures/markdown/site-chars-1.png" style="display: block; margin: auto;" />
@@ -74,7 +75,7 @@ site_data %>%
 |       Esker Point        |  Connecticut  | 41.32081 | -72.00166 |
 |       Sawyer Park        |     Maine     | 43.90698 | -69.87179 |
 | St. Thomas de Kent Wharf | New Brunswick | 46.44761 | -64.63692 |
-|        Miramichi         | New Brunswick | 47.02940 | -65.47312 |
+|      Ritchie Wharf       | New Brunswick | 47.00481 | -65.56291 |
 
 ## Critical Thermal Limits
 
@@ -99,9 +100,18 @@ experiments. These early season CTmax values are included as a point of
 comparison.
 
 ``` r
+mean_ctmax = full_data %>% 
+  group_by(site, season) %>% 
+  summarize(mean_ctmax = mean(ctmax))
+
 ggplot(full_data, aes(x = season, y = ctmax, colour = site)) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
-                                             dodge.width = 0.5)) + 
+                                             dodge.width = 0.4),
+             alpha = 0.3) + 
+  geom_point(data = mean_ctmax, 
+             aes(y = mean_ctmax),
+             position = position_dodge(width = 0.4),
+             size = 4) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "CTmax (°C)",
        x = "Season") +
@@ -119,9 +129,18 @@ a scale micrometer and the software ImageJ. These measurements are shown
 below.
 
 ``` r
+mean_size = full_data %>% 
+  group_by(site, season) %>% 
+  summarize(mean_size = mean(size))
+
 ggplot(full_data, aes(x = season, y = size, colour = site)) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
-                                             dodge.width = 0.5)) + 
+                                             dodge.width = 0.4),
+             alpha = 0.3) + 
+  geom_point(data = mean_size, 
+             aes(y = mean_size),
+             position = position_dodge(width = 0.4),
+             size = 4) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "Prosome Length (mm)",
        x = "Season") +
@@ -161,7 +180,7 @@ size_temp_plot = ggplot(full_data, aes(x = collection_temp, y = size)) +
   theme_matt() + 
   theme(legend.position = "right")
 
-ggpubr::ggarrange(ctmax_temp_plot, size_temp_plot, common.legend = T, legend = "bottom")
+ggarrange(ctmax_temp_plot, size_temp_plot, common.legend = T, legend = "bottom")
 ```
 
 <img src="../Figures/markdown/temp-cors-1.png" style="display: block; margin: auto;" />
@@ -173,12 +192,13 @@ populations or seasons. If populations contain a mix of cold- and
 warm-adapted genotypes, however, we might also see this relationship
 emerge **within** individual collections. Shown below is the
 relationship between prosome length and CTmax for the individuals
-measured thus far. Individual regression lines for each site are shown
-along with a ‘universal’ regression in grey.
+measured thus far. Individual regression lines for each site are also
+included. Note that raw CTmax and body size values are shown, rather
+than metrics like residuals from a statistical model correcting for
+variation in collection temperature.
 
 ``` r
-full_data %>%  
-  filter(ctmax > 31) %>% 
+universal_size = full_data %>% 
   ggplot(aes(x = size, y = ctmax)) + 
   # geom_smooth(data = filter(full_data, ctmax > 31), 
   #             aes(x = size, y = ctmax),
@@ -196,9 +216,65 @@ full_data %>%
        x = "Prosome Length (mm)") +
   theme_matt() + 
   theme(legend.position = "right")
+
+pop_size = full_data %>% 
+  ggplot(aes(x = size, y = ctmax, colour = site)) + 
+  facet_wrap(site~.) + 
+  # geom_smooth(data = filter(full_data, ctmax > 31), 
+  #             aes(x = size, y = ctmax),
+  #             method = "lm", 
+  #             colour = "grey60", 
+  #             se = F,
+  #             linewidth = 2) + 
+  geom_point(size = 1.3, alpha = 0.3) + 
+  geom_smooth(method = "lm", se = F,
+              linewidth = 2) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "CTmax (°C)",
+       x = "Prosome Length (mm)") +
+  theme_matt(base_size = 12) + 
+  theme(legend.position = "right")
+
+ggarrange(universal_size, pop_size, common.legend = T, legend = "bottom")
 ```
 
 <img src="../Figures/markdown/ctmax-vs-size-1.png" style="display: block; margin: auto;" />
+
+## Trait Variability
+
+Shown below is the trait variation (ranges) for each site. Ranges are
+calculated for each season separately.
+
+``` r
+trait_ranges = full_data %>% 
+  group_by(site, season, collection_temp, collection_salinity, doy, lat) %>% 
+  summarise(mean_ctmax = mean(ctmax),
+            ctmax_range = max(ctmax) - min(ctmax),
+            mean_size = mean(size),
+            size_range = max(size) - min(size)) %>% 
+  mutate(prop_ctmax_range = ctmax_range / mean_ctmax,
+         prop_size_range = size_range / mean_size)
+
+ctmax_range_lat = ggplot(trait_ranges, aes(x = collection_temp, y = ctmax_range, colour = site)) + 
+  geom_point(size = 3) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "CTmax Range (°C)",
+       x = "Collection Temp. (°C)") +
+  theme_matt() + 
+  theme(legend.position = "right")
+
+size_range_lat = ggplot(trait_ranges, aes(x = collection_temp, y = size_range, colour = site)) + 
+  geom_point(size = 3) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "Size Range (mm)",
+       x = "Collection Temp. (°C)") +
+  theme_matt() + 
+  theme(legend.position = "right")
+
+ggarrange(ctmax_range_lat, size_range_lat, common.legend = T, legend = "bottom")
+```
+
+<img src="../Figures/markdown/unnamed-chunk-1-1.png" style="display: block; margin: auto;" />
 
 ## Next Steps
 

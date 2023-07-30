@@ -1,6 +1,7 @@
 # Load in required packages
 library(rmarkdown)
 library(tidyverse)
+library(ggpubr)
 
 #Determine which scripts should be run
 process_all_data = F #Runs data analysis 
@@ -30,7 +31,8 @@ full_data = read.csv(file = "Output/Output_data/full_data.csv") %>%
   mutate(doy = lubridate::yday(collection_date),
          ind_id = str_replace_all(paste(site, season, replicate, tube, sep = "_"), pattern = " ", replacement = "_")) %>% 
   inner_join(site_data, by = c("site")) %>% 
-  mutate(site = fct_reorder(site, lat))
+  mutate(site = fct_reorder(site, lat)) %>%  
+  filter(ctmax > 31)
   
 temp_record = read.csv(file = "Output/Output_data/temp_record.csv")
 
