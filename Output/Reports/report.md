@@ -1,10 +1,11 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-07-29
+2023-07-31
 
 - [Site Characteristics](#site-characteristics)
 - [Critical Thermal Limits](#critical-thermal-limits)
 - [Body Size](#body-size)
+  - [Salinity Pair Comparisons](#salinity-pair-comparisons)
 - [Trait Correlations](#trait-correlations)
 - [Trait Variability](#trait-variability)
 - [Next Steps](#next-steps)
@@ -76,6 +77,73 @@ site_data %>%
 |       Sawyer Park        |     Maine     | 43.90698 | -69.87179 |
 | St. Thomas de Kent Wharf | New Brunswick | 46.44761 | -64.63692 |
 |      Ritchie Wharf       | New Brunswick | 47.00481 | -65.56291 |
+
+Nested within each of the three regions (South, Central, and Northern
+regions) are pairs of low and high salinity sites:
+
+- Manatee River (low salinity) and St. Petersburg (high salinity)
+
+- Ganey’s Wharf (low salinity) and Tyler Cove (high salinity)
+
+- Ritchie Wharf (low salinity) and St. Thomas de Kent Wharf (high
+  salinity)
+
+ 
+
+There are fairly well-established divergences between high salinity and
+low salinity populations of *Acartia tonsa*. These sets of
+geographically proximate but isolated populations provide independent
+comparisons of the effects of seasonality.
+
+``` r
+### To Do - replace raw CTmax with residuals from CTmax ~ Collection Temp.
+
+season_cols = c("early" = "grey75", 
+                "peak" = "grey50", 
+                "late" = "grey25")
+
+sal_regions = data.frame(region = rep(c("South", "Central", "North"), each = 2), 
+                       site = c("Manatee River", "St. Petersburg", 
+                                "Ganey's Wharf", "Tyler Cove", 
+                                "Ritchie Wharf", "St. Thomas de Kent Wharf"),
+                       salinity = c("low", "high"))
+
+sal_comps = full_data %>% 
+  filter(site %in% sal_regions$site) %>% 
+  inner_join(sal_regions, by = c("site")) %>% 
+  select( region = region.y, site, salinity, season, doy, collection_temp, collection_salinity,
+         size, ctmax, warming_tol) %>% 
+  mutate(salinity = fct_relevel(salinity, "low", "high"))#,
+         #region = fct_relevel(region, "South", "Central", "North")) #Add this line back in after data from Florida sites
+
+sal_comp_temps = sal_comps %>%  
+  select(salinity, season, region, collection_temp, collection_salinity) %>% 
+  distinct() %>% 
+ggplot(aes(x = salinity, y = collection_temp, colour = season, group = season)) + 
+  facet_wrap(region~.) + 
+  geom_point(size = 4) + 
+  geom_line(size = 1.5) + 
+  scale_colour_manual(values = season_cols) + 
+  labs(y = "Collection Temp. (°C)",
+       x = "") + 
+  theme_matt_facets(base_size = 14)
+
+sal_comp_sal = sal_comps %>%  
+  select(salinity, season, region, collection_temp, collection_salinity) %>% 
+  distinct() %>% 
+ggplot(aes(x = salinity, y = collection_salinity, colour = season, group = season)) + 
+  facet_wrap(region~.) + 
+  geom_point(size = 4) + 
+  geom_line(size = 1.5) + 
+  scale_colour_manual(values = season_cols) + 
+  labs(y = "Collection Salinity (psu)",
+       x = "Salinity") + 
+  theme_matt_facets(base_size = 14)
+
+ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "right")
+```
+
+<img src="../Figures/markdown/season-sal-comps-1.png" style="display: block; margin: auto;" />
 
 ## Critical Thermal Limits
 
@@ -149,6 +217,32 @@ ggplot(full_data, aes(x = season, y = size, colour = site)) +
 ```
 
 <img src="../Figures/markdown/seasonal-body-size-1.png" style="display: block; margin: auto;" />
+
+### Salinity Pair Comparisons
+
+``` r
+sal_comp_ctmax = ggplot(sal_comps, aes(x = salinity, y = ctmax, colour = season, group = season)) + 
+  facet_wrap(region~.) + 
+  geom_point(size = 2) + 
+  #geom_line(size = 1.5) + 
+  scale_colour_manual(values = season_cols) + 
+  labs(y = "CTmax (°C)",
+       x = "") + 
+  theme_matt_facets(base_size = 14)
+
+sal_comp_size = ggplot(sal_comps, aes(x = salinity, y = size, colour = season, group = season)) + 
+  facet_wrap(region~.) + 
+  geom_point(size = 2) + 
+  #geom_line(size = 1.5) + 
+  scale_colour_manual(values = season_cols) + 
+  labs(y = "Prosome Length (mm)",
+       x = "") + 
+  theme_matt_facets(base_size = 14)
+
+ggarrange(sal_comp_ctmax, sal_comp_size, nrow = 2, common.legend = T, legend = "right")
+```
+
+<img src="../Figures/markdown/unnamed-chunk-1-1.png" style="display: block; margin: auto;" />
 
 ## Trait Correlations
 
@@ -228,7 +322,7 @@ pop_size = full_data %>%
   #             linewidth = 2) + 
   geom_point(size = 1.3, alpha = 0.3) + 
   geom_smooth(method = "lm", se = F,
-              linewidth = 2) + 
+              linewidth = 1) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "CTmax (°C)",
        x = "Prosome Length (mm)") +
@@ -274,7 +368,7 @@ size_range_lat = ggplot(trait_ranges, aes(x = collection_temp, y = size_range, c
 ggarrange(ctmax_range_lat, size_range_lat, common.legend = T, legend = "bottom")
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-1-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-2-1.png" style="display: block; margin: auto;" />
 
 ## Next Steps
 
