@@ -313,7 +313,7 @@ ggarrange(ctmax_temp_plot, size_temp_plot, common.legend = T, legend = "bottom")
 
 Of particular interest is the relationship between prosome length and CTmax. In many cases, larger body sizes are associated with cold adaptation/acclimation. We may therefore see this pattern emerge across populations or seasons. If populations contain a mix of cold- and warm-adapted genotypes, however, we might also see this relationship emerge **within** individual collections. Shown below is the relationship between prosome length and CTmax for the individuals measured thus far. Individual regression lines for each site are also included. Note that raw CTmax and body size values are shown, rather than metrics like residuals from a statistical model correcting for variation in collection temperature.
 
-```{r ctmax-vs-size, fig.width=8, fig.height=4}
+```{r ctmax-vs-size, fig.width=6, fig.height=10}
 universal_size = full_data %>% 
   ggplot(aes(x = size, y = ctmax)) + 
   # geom_smooth(data = filter(full_data, ctmax > 31), 
@@ -329,9 +329,10 @@ universal_size = full_data %>%
              size = 2, alpha = 0.7) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "CTmax (°C)",
-       x = "Prosome Length (mm)") +
-  theme_matt() + 
-  theme(legend.position = "right")
+       x = "") +
+  theme_matt(base_size = 14) + 
+  theme(legend.position = "right",
+        axis.title.x = element_blank())
 
 pop_size = full_data %>% 
   ggplot(aes(x = size, y = ctmax, colour = site)) + 
@@ -346,12 +347,13 @@ pop_size = full_data %>%
   geom_smooth(method = "lm", se = F,
               linewidth = 1) + 
   scale_colour_manual(values = site_cols) + 
+  scale_x_continuous(breaks = c(0.6, 0.8, 1)) + 
   labs(y = "CTmax (°C)",
        x = "Prosome Length (mm)") +
-  theme_matt(base_size = 12) + 
+  theme_matt(base_size = 14) + 
   theme(legend.position = "right")
 
-ggarrange(universal_size, pop_size, common.legend = T, legend = "bottom")
+ggarrange(universal_size, pop_size, common.legend = T, legend = "none", nrow = 2)
 ```
 
 ## Trait Variability
@@ -363,8 +365,10 @@ trait_ranges = full_data %>%
   group_by(site, season, collection_temp, collection_salinity, doy, lat) %>% 
   summarise(mean_ctmax = mean(ctmax),
             ctmax_range = max(ctmax) - min(ctmax),
+            ctmax_var = var(ctmax),
             mean_size = mean(size),
-            size_range = max(size) - min(size)) %>% 
+            size_range = max(size) - min(size),
+            size_var = var(size)) %>% 
   mutate(prop_ctmax_range = ctmax_range / mean_ctmax,
          prop_size_range = size_range / mean_size)
 
@@ -385,6 +389,36 @@ size_range_lat = ggplot(trait_ranges, aes(x = collection_temp, y = size_range, c
   theme(legend.position = "right")
 
 ggarrange(ctmax_range_lat, size_range_lat, common.legend = T, legend = "bottom")
+```
+
+Changes in trait variance may be indicative of phenotypic selection. If selection (as opposed to acclimation) are driving seasonal changes, we may expect to see a reduction in variance in the peak samples relative to the early season samples. Note that early season collection temperatures this year were higher than expected, driven by fairly strong heatwaves in the North Atlantic.    
+
+```{r season-var}
+ggplot(trait_ranges, aes(x = season, y = ctmax_var, colour = site)) + 
+  geom_point(size = 3) + 
+  geom_line(size = 1.5) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "CTmax Variance",
+       x = "Season") +
+  theme_matt() + 
+  theme(legend.position = "right")
+```
+
+```{r var-change-temp-change, include = F}
+var_change_data = trait_ranges %>%  
+  group_by(site) %>% 
+  arrange(doy) %>%  
+  mutate(temp_change = collection_temp - lag(collection_temp),
+         var_change = ctmax_var - lag(ctmax_var)) %>%  
+  select(site, season, doy, lat, temp_change, var_change)
+
+ggplot(var_change_data, aes(x = temp_change, y = var_change, colour = site)) +
+  geom_point() + 
+  scale_colour_manual(values = site_cols) + 
+  labs(x = "Temperature Change (°C)",
+       y = "Change in CTmax Variance") + 
+  theme_matt() + 
+  theme(legend.position = "right")
 ```
 
 ## Next Steps

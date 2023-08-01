@@ -242,7 +242,7 @@ sal_comp_size = ggplot(sal_comps, aes(x = salinity, y = size, colour = season, g
 ggarrange(sal_comp_ctmax, sal_comp_size, nrow = 2, common.legend = T, legend = "right")
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-1-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/sal-pair-traits-1.png" style="display: block; margin: auto;" />
 
 ## Trait Correlations
 
@@ -307,9 +307,10 @@ universal_size = full_data %>%
              size = 2, alpha = 0.7) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "CTmax (°C)",
-       x = "Prosome Length (mm)") +
-  theme_matt() + 
-  theme(legend.position = "right")
+       x = "") +
+  theme_matt(base_size = 14) + 
+  theme(legend.position = "right",
+        axis.title.x = element_blank())
 
 pop_size = full_data %>% 
   ggplot(aes(x = size, y = ctmax, colour = site)) + 
@@ -324,12 +325,13 @@ pop_size = full_data %>%
   geom_smooth(method = "lm", se = F,
               linewidth = 1) + 
   scale_colour_manual(values = site_cols) + 
+  scale_x_continuous(breaks = c(0.6, 0.8, 1)) + 
   labs(y = "CTmax (°C)",
        x = "Prosome Length (mm)") +
-  theme_matt(base_size = 12) + 
+  theme_matt(base_size = 14) + 
   theme(legend.position = "right")
 
-ggarrange(universal_size, pop_size, common.legend = T, legend = "bottom")
+ggarrange(universal_size, pop_size, common.legend = T, legend = "none", nrow = 2)
 ```
 
 <img src="../Figures/markdown/ctmax-vs-size-1.png" style="display: block; margin: auto;" />
@@ -344,8 +346,10 @@ trait_ranges = full_data %>%
   group_by(site, season, collection_temp, collection_salinity, doy, lat) %>% 
   summarise(mean_ctmax = mean(ctmax),
             ctmax_range = max(ctmax) - min(ctmax),
+            ctmax_var = var(ctmax),
             mean_size = mean(size),
-            size_range = max(size) - min(size)) %>% 
+            size_range = max(size) - min(size),
+            size_var = var(size)) %>% 
   mutate(prop_ctmax_range = ctmax_range / mean_ctmax,
          prop_size_range = size_range / mean_size)
 
@@ -368,7 +372,27 @@ size_range_lat = ggplot(trait_ranges, aes(x = collection_temp, y = size_range, c
 ggarrange(ctmax_range_lat, size_range_lat, common.legend = T, legend = "bottom")
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-2-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-1-1.png" style="display: block; margin: auto;" />
+
+Changes in trait variance may be indicative of phenotypic selection. If
+selection (as opposed to acclimation) are driving seasonal changes, we
+may expect to see a reduction in variance in the peak samples relative
+to the early season samples. Note that early season collection
+temperatures this year were higher than expected, driven by fairly
+strong heatwaves in the North Atlantic.
+
+``` r
+ggplot(trait_ranges, aes(x = season, y = ctmax_var, colour = site)) + 
+  geom_point(size = 3) + 
+  geom_line(size = 1.5) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "CTmax Variance",
+       x = "Season") +
+  theme_matt() + 
+  theme(legend.position = "right")
+```
+
+<img src="../Figures/markdown/season-var-1.png" style="display: block; margin: auto;" />
 
 ## Next Steps
 
