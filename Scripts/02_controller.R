@@ -26,14 +26,19 @@ kl_winter = read.csv(file = "Raw_data/outside_sources/key_largo_winter.csv") %>%
          collection_date = as.character(as.Date(collection_date, "%m/%d/%y")),
          exp_date = as.character(as.Date(exp_date, "%m/%d/%y")))
 
-full_data = read.csv(file = "Output/Output_data/full_data.csv") %>%  
+all_data = read.csv(file = "Output/Output_data/full_data.csv") %>%  
   bind_rows(kl_winter) %>% 
   mutate(doy = lubridate::yday(collection_date),
          ind_id = str_replace_all(paste(site, season, replicate, tube, sep = "_"), pattern = " ", replacement = "_")) %>% 
   inner_join(site_data, by = c("site")) %>% 
-  mutate(site = fct_reorder(site, lat)) %>%  
+  mutate(site = fct_reorder(site, lat))
+
+ full_data = all_data %>%  
   filter(ctmax > 31)
   
+excluded = all_data %>% 
+  filter(ctmax <= 31)
+
 temp_record = read.csv(file = "Output/Output_data/temp_record.csv")
 
 ramp_record = read.csv(file = "Output/Output_data/ramp_record.csv")

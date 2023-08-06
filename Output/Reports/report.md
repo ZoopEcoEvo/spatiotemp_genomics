@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-07-31
+2023-08-06
 
 - [Site Characteristics](#site-characteristics)
 - [Critical Thermal Limits](#critical-thermal-limits)
@@ -55,9 +55,7 @@ ggarrange(site_map, site_temp_plot, common.legend = T, legend = "bottom")
 
 <img src="../Figures/markdown/site-chars-1.png" style="display: block; margin: auto;" />
 
-Exact locations for the sites are provided here. The two sites in
-Maryland are differentiated by their salinity: Tyler’s Cove has a
-relatively high salinity (15 psu) compared to Ganey’s Wharf (2 psu).
+Exact locations for the sites are provided here.
 
 ``` r
 site_data %>%  
@@ -81,12 +79,18 @@ site_data %>%
 Nested within each of the three regions (South, Central, and Northern
 regions) are pairs of low and high salinity sites:
 
-- Manatee River (low salinity) and St. Petersburg (high salinity)
+``` r
+data.frame("Region" = c("South", "Central", "North"),
+           "Low Salinity" = c("Manatee River", "Ganey's Wharf", "Ritchie Wharf"),
+           "High Salinity" = c("St. Petersburg", "Tyler Cove", "St. Thomas de Kent Wharf")) %>% 
+  knitr::kable(align = "c")
+```
 
-- Ganey’s Wharf (low salinity) and Tyler Cove (high salinity)
-
-- Ritchie Wharf (low salinity) and St. Thomas de Kent Wharf (high
-  salinity)
+| Region  | Low.Salinity  |      High.Salinity       |
+|:-------:|:-------------:|:------------------------:|
+|  South  | Manatee River |      St. Petersburg      |
+| Central | Ganey’s Wharf |        Tyler Cove        |
+|  North  | Ritchie Wharf | St. Thomas de Kent Wharf |
 
  
 
@@ -146,6 +150,20 @@ ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "r
 <img src="../Figures/markdown/season-sal-comps-1.png" style="display: block; margin: auto;" />
 
 ## Critical Thermal Limits
+
+A total of 149 individuals were examined. Critical thermal limits and
+body size measurements were made before individuals were preserved in
+ethanol. We excluded data for 1 individual, detailed below.
+
+``` r
+excluded %>% 
+  select(region, site, season, collection_temp, collection_salinity, replicate, tube, ctmax, size) %>% 
+knitr::kable(align = "c")
+```
+
+|   region    |    site     | season | collection_temp | collection_salinity | replicate | tube |  ctmax   | size  |
+|:-----------:|:-----------:|:------:|:---------------:|:-------------------:|:---------:|:----:|:--------:|:-----:|
+| Connecticut | Esker Point | early  |      22.5       |         30          |     2     |  3   | 30.02604 | 0.687 |
 
 Critical thermal maxima (CTmax) was measured using a custom setup. The
 method uses a standard dynamic ramping assay to determine the maximum
@@ -372,7 +390,7 @@ size_range_lat = ggplot(trait_ranges, aes(x = collection_temp, y = size_range, c
 ggarrange(ctmax_range_lat, size_range_lat, common.legend = T, legend = "bottom")
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-1-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/trait-range-plot-1.png" style="display: block; margin: auto;" />
 
 Changes in trait variance may be indicative of phenotypic selection. If
 selection (as opposed to acclimation) are driving seasonal changes, we

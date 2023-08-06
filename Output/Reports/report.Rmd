@@ -133,9 +133,9 @@ site_temp_plot = full_data %>%
 ggarrange(site_map, site_temp_plot, common.legend = T, legend = "bottom")
 ```
 
-Exact locations for the sites are provided here. The two sites in Maryland are differentiated by their salinity: Tyler's Cove has a relatively high salinity (15 psu) compared to Ganey's Wharf (2 psu).
+Exact locations for the sites are provided here. 
 
-```{r site-tab}
+```{r site-table}
 site_data %>%  
   arrange(lat) %>%  
   select("Site" = site, "Region" = region, "Lat" = lat, "Long" = long) %>% 
@@ -144,11 +144,12 @@ site_data %>%
 
 Nested within each of the three regions (South, Central, and Northern regions) are pairs of low and high salinity sites:    
 
--   Manatee River (low salinity) and St. Petersburg (high salinity)
-
--   Ganey's Wharf (low salinity) and Tyler Cove (high salinity)
-
--   Ritchie Wharf (low salinity) and St. Thomas de Kent Wharf (high salinity)
+```{r sal-table}
+data.frame("Region" = c("South", "Central", "North"),
+           "Low Salinity" = c("Manatee River", "Ganey's Wharf", "Ritchie Wharf"),
+           "High Salinity" = c("St. Petersburg", "Tyler Cove", "St. Thomas de Kent Wharf")) %>% 
+  knitr::kable(align = "c")
+```
 
 \ 
 
@@ -203,6 +204,14 @@ ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "r
 ```
 
 ## Critical Thermal Limits
+
+A total of `r dim(all_data)[1]` individuals were examined. Critical thermal limits and body size measurements were made before individuals were preserved in ethanol. We excluded data for `r dim(excluded)[1]` individual, detailed below. 
+
+```{r excluded-inds}
+excluded %>% 
+  select(region, site, season, collection_temp, collection_salinity, replicate, tube, ctmax, size) %>% 
+knitr::kable(align = "c")
+```
 
 Critical thermal maxima (CTmax) was measured using a custom setup. The method uses a standard dynamic ramping assay to determine the maximum temperature individuals could sustain normal functioning. This differs from lethal temperatures, and indeed, all individuals observed so far recovered following the assay.
 
@@ -360,7 +369,7 @@ ggarrange(universal_size, pop_size, common.legend = T, legend = "none", nrow = 2
 
 Shown below is the trait variation (ranges) for each site. Ranges are calculated for each season separately.
 
-```{r}
+```{r trait-range-plot}
 trait_ranges = full_data %>% 
   group_by(site, season, collection_temp, collection_salinity, doy, lat) %>% 
   summarise(mean_ctmax = mean(ctmax),
