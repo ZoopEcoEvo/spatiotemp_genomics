@@ -84,8 +84,8 @@ theme_matt_facets = function(base_size = 18,
 }
 
 site_cols = c("Key Largo" = "indianred4", 
-              "Manatee River" = "coral3", 
-              "St. Petersburg" = "coral",
+              "Manatee River" = "coral", 
+              "Ft. Hamer" = "coral3",
               "Tyler Cove" = "goldenrod1",
               "Ganey's Wharf" = "darkgoldenrod3", 
               "Esker Point" = "darkseagreen3",
@@ -146,8 +146,8 @@ Nested within each of the three regions (South, Central, and Northern regions) a
 
 ```{r sal-table}
 data.frame("Region" = c("South", "Central", "North"),
-           "Low Salinity" = c("Manatee River", "Ganey's Wharf", "Ritchie Wharf"),
-           "High Salinity" = c("St. Petersburg", "Tyler Cove", "St. Thomas de Kent Wharf")) %>% 
+           "Low Salinity" = c("Ft. Hamer", "Ganey's Wharf", "Ritchie Wharf"),
+           "High Salinity" = c("Manatee River", "Tyler Cove", "St. Thomas de Kent Wharf")) %>% 
   knitr::kable(align = "c")
 ```
 
@@ -163,7 +163,7 @@ season_cols = c("early" = "grey75",
                 "late" = "grey25")
 
 sal_regions = data.frame(region = rep(c("South", "Central", "North"), each = 2), 
-                       site = c("Manatee River", "St. Petersburg", 
+                       site = c("Ft. Hamer", "Manatee River", 
                                 "Ganey's Wharf", "Tyler Cove", 
                                 "Ritchie Wharf", "St. Thomas de Kent Wharf"),
                        salinity = c("low", "high"))
@@ -173,8 +173,8 @@ sal_comps = full_data %>%
   inner_join(sal_regions, by = c("site")) %>% 
   select( region = region.y, site, salinity, season, doy, collection_temp, collection_salinity,
          size, ctmax, warming_tol) %>% 
-  mutate(salinity = fct_relevel(salinity, "low", "high"))#,
-         #region = fct_relevel(region, "South", "Central", "North")) #Add this line back in after data from Florida sites
+  mutate(salinity = fct_relevel(salinity, "low", "high"),
+         region = fct_relevel(region, "South", "Central", "North"))
 
 sal_comp_temps = sal_comps %>%  
   select(salinity, season, region, collection_temp, collection_salinity) %>% 
@@ -236,7 +236,8 @@ ggplot(full_data, aes(x = season, y = ctmax, colour = site)) +
   labs(y = "CTmax (°C)",
        x = "Season") +
   theme_matt() + 
-  theme(legend.position = "right")
+  theme(legend.position = "right", 
+        legend.title.align = 0.125)
 ```
 
 ## Body Size
@@ -260,7 +261,8 @@ ggplot(full_data, aes(x = season, y = size, colour = site)) +
   labs(y = "Prosome Length (mm)",
        x = "Season") +
   theme_matt() + 
-  theme(legend.position = "right")
+  theme(legend.position = "right", 
+        legend.title.align = 0.125)
 ```
 
 ### Salinity Pair Comparisons 
@@ -410,7 +412,8 @@ ggplot(trait_ranges, aes(x = season, y = ctmax_var, colour = site)) +
   labs(y = "CTmax Variance",
        x = "Season") +
   theme_matt() + 
-  theme(legend.position = "right")
+  theme(legend.position = "right", 
+        legend.title.align = 0.125)
 ```
 
 ```{r var-change-temp-change, include = F}
@@ -427,7 +430,8 @@ ggplot(var_change_data, aes(x = temp_change, y = var_change, colour = site)) +
   labs(x = "Temperature Change (°C)",
        y = "Change in CTmax Variance") + 
   theme_matt() + 
-  theme(legend.position = "right")
+  theme(legend.position = "right", 
+        legend.title.align = 0.125)
 ```
 
 ## Next Steps

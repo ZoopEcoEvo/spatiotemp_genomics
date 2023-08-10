@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-08-06
+2023-08-10
 
 - [Site Characteristics](#site-characteristics)
 - [Critical Thermal Limits](#critical-thermal-limits)
@@ -68,7 +68,7 @@ site_data %>%
 |:------------------------:|:-------------:|:--------:|:---------:|
 |        Key Largo         |    Florida    | 25.28391 | -80.33014 |
 |      Manatee River       |    Florida    | 27.50561 | -82.57277 |
-|      St. Petersburg      |    Florida    | 27.70367 | -82.63969 |
+|        Ft. Hamer         |    Florida    | 27.52488 | -82.43101 |
 |        Tyler Cove        |   Maryland    | 38.35083 | -76.22902 |
 |      Ganey’s Wharf       |   Maryland    | 38.80555 | -75.90906 |
 |       Esker Point        |  Connecticut  | 41.32081 | -72.00166 |
@@ -81,14 +81,14 @@ regions) are pairs of low and high salinity sites:
 
 ``` r
 data.frame("Region" = c("South", "Central", "North"),
-           "Low Salinity" = c("Manatee River", "Ganey's Wharf", "Ritchie Wharf"),
-           "High Salinity" = c("St. Petersburg", "Tyler Cove", "St. Thomas de Kent Wharf")) %>% 
+           "Low Salinity" = c("Ft. Hamer", "Ganey's Wharf", "Ritchie Wharf"),
+           "High Salinity" = c("Manatee River", "Tyler Cove", "St. Thomas de Kent Wharf")) %>% 
   knitr::kable(align = "c")
 ```
 
 | Region  | Low.Salinity  |      High.Salinity       |
 |:-------:|:-------------:|:------------------------:|
-|  South  | Manatee River |      St. Petersburg      |
+|  South  |   Ft. Hamer   |      Manatee River       |
 | Central | Ganey’s Wharf |        Tyler Cove        |
 |  North  | Ritchie Wharf | St. Thomas de Kent Wharf |
 
@@ -107,7 +107,7 @@ season_cols = c("early" = "grey75",
                 "late" = "grey25")
 
 sal_regions = data.frame(region = rep(c("South", "Central", "North"), each = 2), 
-                       site = c("Manatee River", "St. Petersburg", 
+                       site = c("Ft. Hamer", "Manatee River", 
                                 "Ganey's Wharf", "Tyler Cove", 
                                 "Ritchie Wharf", "St. Thomas de Kent Wharf"),
                        salinity = c("low", "high"))
@@ -117,8 +117,8 @@ sal_comps = full_data %>%
   inner_join(sal_regions, by = c("site")) %>% 
   select( region = region.y, site, salinity, season, doy, collection_temp, collection_salinity,
          size, ctmax, warming_tol) %>% 
-  mutate(salinity = fct_relevel(salinity, "low", "high"))#,
-         #region = fct_relevel(region, "South", "Central", "North")) #Add this line back in after data from Florida sites
+  mutate(salinity = fct_relevel(salinity, "low", "high"),
+         region = fct_relevel(region, "South", "Central", "North"))
 
 sal_comp_temps = sal_comps %>%  
   select(salinity, season, region, collection_temp, collection_salinity) %>% 
@@ -151,7 +151,7 @@ ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "r
 
 ## Critical Thermal Limits
 
-A total of 149 individuals were examined. Critical thermal limits and
+A total of 169 individuals were examined. Critical thermal limits and
 body size measurements were made before individuals were preserved in
 ethanol. We excluded data for 1 individual, detailed below.
 
@@ -202,7 +202,8 @@ ggplot(full_data, aes(x = season, y = ctmax, colour = site)) +
   labs(y = "CTmax (°C)",
        x = "Season") +
   theme_matt() + 
-  theme(legend.position = "right")
+  theme(legend.position = "right", 
+        legend.title.align = 0.125)
 ```
 
 <img src="../Figures/markdown/seasonal-ct-max-1.png" style="display: block; margin: auto;" />
@@ -231,7 +232,8 @@ ggplot(full_data, aes(x = season, y = size, colour = site)) +
   labs(y = "Prosome Length (mm)",
        x = "Season") +
   theme_matt() + 
-  theme(legend.position = "right")
+  theme(legend.position = "right", 
+        legend.title.align = 0.125)
 ```
 
 <img src="../Figures/markdown/seasonal-body-size-1.png" style="display: block; margin: auto;" />
@@ -407,7 +409,8 @@ ggplot(trait_ranges, aes(x = season, y = ctmax_var, colour = site)) +
   labs(y = "CTmax Variance",
        x = "Season") +
   theme_matt() + 
-  theme(legend.position = "right")
+  theme(legend.position = "right", 
+        legend.title.align = 0.125)
 ```
 
 <img src="../Figures/markdown/season-var-1.png" style="display: block; margin: auto;" />
