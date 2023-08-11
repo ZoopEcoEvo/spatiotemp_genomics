@@ -33,11 +33,17 @@ all_data = read.csv(file = "Output/Output_data/full_data.csv") %>%
   inner_join(site_data, by = c("site")) %>% 
   mutate(site = fct_reorder(site, lat))
 
+excluded_inds = c(
+  "Esker_Point_early_2_3",
+  "Manatee_River_peak_2_6",
+  "Manatee_River_peak_2_7"
+)
+
  full_data = all_data %>%  
-  filter(ctmax > 31)
+  filter(!(ind_id %in% excluded_inds))
   
-excluded = all_data %>% 
-  filter(ctmax <= 31)
+ excluded = all_data %>% 
+  filter(ind_id %in% excluded_inds)
 
 temp_record = read.csv(file = "Output/Output_data/temp_record.csv")
 

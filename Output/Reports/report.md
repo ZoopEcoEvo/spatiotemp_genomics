@@ -151,9 +151,9 @@ ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "r
 
 ## Critical Thermal Limits
 
-A total of 169 individuals were examined. Critical thermal limits and
+A total of 189 individuals were examined. Critical thermal limits and
 body size measurements were made before individuals were preserved in
-ethanol. We excluded data for 1 individual, detailed below.
+ethanol. We excluded data for 3 individual, detailed below.
 
 ``` r
 excluded %>% 
@@ -161,9 +161,11 @@ excluded %>%
 knitr::kable(align = "c")
 ```
 
-|   region    |    site     | season | collection_temp | collection_salinity | replicate | tube |  ctmax   | size  |
-|:-----------:|:-----------:|:------:|:---------------:|:-------------------:|:---------:|:----:|:--------:|:-----:|
-| Connecticut | Esker Point | early  |      22.5       |         30          |     2     |  3   | 30.02604 | 0.687 |
+|   region    |     site      | season | collection_temp | collection_salinity | replicate | tube |  ctmax   | size  |
+|:-----------:|:-------------:|:------:|:---------------:|:-------------------:|:---------:|:----:|:--------:|:-----:|
+| Connecticut |  Esker Point  | early  |      22.5       |         30          |     2     |  3   | 30.02604 | 0.687 |
+|   Florida   | Manatee River |  peak  |      34.0       |         29          |     2     |  6   | 38.45833 | 0.616 |
+|   Florida   | Manatee River |  peak  |      34.0       |         29          |     2     |  7   | 38.23750 | 0.593 |
 
 Critical thermal maxima (CTmax) was measured using a custom setup. The
 method uses a standard dynamic ramping assay to determine the maximum
