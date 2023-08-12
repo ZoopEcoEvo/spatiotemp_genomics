@@ -1,9 +1,10 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-08-10
+2023-08-11
 
 - [Site Characteristics](#site-characteristics)
 - [Critical Thermal Limits](#critical-thermal-limits)
+- [Warming tolerance](#warming-tolerance)
 - [Body Size](#body-size)
   - [Salinity Pair Comparisons](#salinity-pair-comparisons)
 - [Trait Correlations](#trait-correlations)
@@ -126,7 +127,7 @@ sal_comp_temps = sal_comps %>%
 ggplot(aes(x = salinity, y = collection_temp, colour = season, group = season)) + 
   facet_wrap(region~.) + 
   geom_point(size = 4) + 
-  geom_line(size = 1.5) + 
+  geom_line(linewidth = 1.5) + 
   scale_colour_manual(values = season_cols) + 
   labs(y = "Collection Temp. (°C)",
        x = "") + 
@@ -138,7 +139,7 @@ sal_comp_sal = sal_comps %>%
 ggplot(aes(x = salinity, y = collection_salinity, colour = season, group = season)) + 
   facet_wrap(region~.) + 
   geom_point(size = 4) + 
-  geom_line(size = 1.5) + 
+  geom_line(linewidth = 1.5) + 
   scale_colour_manual(values = season_cols) + 
   labs(y = "Collection Salinity (psu)",
        x = "Salinity") + 
@@ -153,7 +154,9 @@ ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "r
 
 A total of 189 individuals were examined. Critical thermal limits and
 body size measurements were made before individuals were preserved in
-ethanol. We excluded data for 3 individual, detailed below.
+ethanol. We excluded data for 3 individuals, detailed below. These
+individuals had either very low CTmax or were, upon re-examination of
+photographs, identified as juveniles instead of mature females.
 
 ``` r
 excluded %>% 
@@ -209,6 +212,36 @@ ggplot(full_data, aes(x = season, y = ctmax, colour = site)) +
 ```
 
 <img src="../Figures/markdown/seasonal-ct-max-1.png" style="display: block; margin: auto;" />
+
+## Warming tolerance
+
+Warming tolerance was calculated as the difference between measured
+CTmax values and the collection temperature. Lower warming tolerance
+values indicate that populations were nearer to their upper thermal
+limits, and may therefore be more vulnerable to additional warming.
+
+``` r
+mean_wt = full_data %>% 
+  group_by(site, season) %>% 
+  summarize(mean_wt = mean(warming_tol))
+
+ggplot(full_data, aes(x = season, y = warming_tol, colour = site)) + 
+  geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
+                                             dodge.width = 0.4),
+             alpha = 0.3) + 
+  geom_point(data = mean_wt, 
+             aes(y = mean_wt),
+             position = position_dodge(width = 0.4),
+             size = 4) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "Warming Tolerance (°C)",
+       x = "Season") +
+  theme_matt() + 
+  theme(legend.position = "right", 
+        legend.title.align = 0.125)
+```
+
+<img src="../Figures/markdown/seasonal-warming-tol-1.png" style="display: block; margin: auto;" />
 
 ## Body Size
 
@@ -296,7 +329,19 @@ size_temp_plot = ggplot(full_data, aes(x = collection_temp, y = size)) +
   theme_matt() + 
   theme(legend.position = "right")
 
-ggarrange(ctmax_temp_plot, size_temp_plot, common.legend = T, legend = "bottom")
+wt_temp_plot = ggplot(full_data, aes(x = collection_temp, y = warming_tol)) + 
+  geom_smooth(method = "lm", se = T,
+              linewidth = 2, 
+              colour = "grey") + 
+  geom_point(aes(colour = site), 
+             size = 2, alpha = 0.7) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "Warming Tolerance (°C)",
+       x = "Collection Temp. (°C)") +
+  theme_matt() + 
+  theme(legend.position = "right")
+
+ggarrange(ctmax_temp_plot, wt_temp_plot, size_temp_plot, common.legend = T, legend = "bottom", nrow = 1)
 ```
 
 <img src="../Figures/markdown/temp-cors-1.png" style="display: block; margin: auto;" />
@@ -375,7 +420,7 @@ trait_ranges = full_data %>%
   mutate(prop_ctmax_range = ctmax_range / mean_ctmax,
          prop_size_range = size_range / mean_size)
 
-ctmax_range_lat = ggplot(trait_ranges, aes(x = collection_temp, y = ctmax_range, colour = site)) + 
+ctmax_range_temp = ggplot(trait_ranges, aes(x = collection_temp, y = ctmax_range, colour = site)) + 
   geom_point(size = 3) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "CTmax Range (°C)",
@@ -383,7 +428,15 @@ ctmax_range_lat = ggplot(trait_ranges, aes(x = collection_temp, y = ctmax_range,
   theme_matt() + 
   theme(legend.position = "right")
 
-size_range_lat = ggplot(trait_ranges, aes(x = collection_temp, y = size_range, colour = site)) + 
+ctmax_var_temp = ggplot(trait_ranges, aes(x = collection_temp, y = ctmax_var, colour = site)) + 
+  geom_point(size = 3) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "CTmax Range (°C)",
+       x = "Collection Temp. (°C)") +
+  theme_matt() + 
+  theme(legend.position = "right")
+
+size_range_temp = ggplot(trait_ranges, aes(x = collection_temp, y = size_range, colour = site)) + 
   geom_point(size = 3) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "Size Range (mm)",
@@ -391,7 +444,7 @@ size_range_lat = ggplot(trait_ranges, aes(x = collection_temp, y = size_range, c
   theme_matt() + 
   theme(legend.position = "right")
 
-ggarrange(ctmax_range_lat, size_range_lat, common.legend = T, legend = "bottom")
+ggarrange(ctmax_range_temp, size_range_temp, common.legend = T, legend = "bottom")
 ```
 
 <img src="../Figures/markdown/trait-range-plot-1.png" style="display: block; margin: auto;" />
@@ -406,7 +459,7 @@ strong heatwaves in the North Atlantic.
 ``` r
 ggplot(trait_ranges, aes(x = season, y = ctmax_var, colour = site)) + 
   geom_point(size = 3) + 
-  geom_line(size = 1.5) + 
+  geom_line(linewidth = 1.5) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "CTmax Variance",
        x = "Season") +

@@ -182,7 +182,7 @@ sal_comp_temps = sal_comps %>%
 ggplot(aes(x = salinity, y = collection_temp, colour = season, group = season)) + 
   facet_wrap(region~.) + 
   geom_point(size = 4) + 
-  geom_line(size = 1.5) + 
+  geom_line(linewidth = 1.5) + 
   scale_colour_manual(values = season_cols) + 
   labs(y = "Collection Temp. (°C)",
        x = "") + 
@@ -194,7 +194,7 @@ sal_comp_sal = sal_comps %>%
 ggplot(aes(x = salinity, y = collection_salinity, colour = season, group = season)) + 
   facet_wrap(region~.) + 
   geom_point(size = 4) + 
-  geom_line(size = 1.5) + 
+  geom_line(linewidth = 1.5) + 
   scale_colour_manual(values = season_cols) + 
   labs(y = "Collection Salinity (psu)",
        x = "Salinity") + 
@@ -205,7 +205,7 @@ ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "r
 
 ## Critical Thermal Limits
 
-A total of `r dim(all_data)[1]` individuals were examined. Critical thermal limits and body size measurements were made before individuals were preserved in ethanol. We excluded data for `r dim(excluded)[1]` individual, detailed below. 
+A total of `r dim(all_data)[1]` individuals were examined. Critical thermal limits and body size measurements were made before individuals were preserved in ethanol. We excluded data for `r dim(excluded)[1]` individuals, detailed below. These individuals had either very low CTmax or were, upon re-examination of photographs, identified as juveniles instead of mature females.  
 
 ```{r excluded-inds}
 excluded %>% 
@@ -234,6 +234,31 @@ ggplot(full_data, aes(x = season, y = ctmax, colour = site)) +
              size = 4) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "CTmax (°C)",
+       x = "Season") +
+  theme_matt() + 
+  theme(legend.position = "right", 
+        legend.title.align = 0.125)
+```
+
+## Warming tolerance
+
+Warming tolerance was calculated as the difference between measured CTmax values and the collection temperature. Lower warming tolerance values indicate that populations were nearer to their upper thermal limits, and may therefore be more vulnerable to additional warming. 
+
+```{r seasonal-warming-tol}
+mean_wt = full_data %>% 
+  group_by(site, season) %>% 
+  summarize(mean_wt = mean(warming_tol))
+
+ggplot(full_data, aes(x = season, y = warming_tol, colour = site)) + 
+  geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
+                                             dodge.width = 0.4),
+             alpha = 0.3) + 
+  geom_point(data = mean_wt, 
+             aes(y = mean_wt),
+             position = position_dodge(width = 0.4),
+             size = 4) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "Warming Tolerance (°C)",
        x = "Season") +
   theme_matt() + 
   theme(legend.position = "right", 
@@ -294,7 +319,7 @@ ggarrange(sal_comp_ctmax, sal_comp_size, nrow = 2, common.legend = T, legend = "
 
 We expect that collections from warmer waters should yield copepods with higher thermal limits and smaller body sizes.
 
-```{r temp-cors, fig.width=10, fig.height=6}
+```{r temp-cors, fig.width=15, fig.height=6}
 ctmax_temp_plot = ggplot(full_data, aes(x = collection_temp, y = ctmax)) + 
   geom_smooth(method = "lm", se = T,
               linewidth = 2, 
@@ -319,7 +344,19 @@ size_temp_plot = ggplot(full_data, aes(x = collection_temp, y = size)) +
   theme_matt() + 
   theme(legend.position = "right")
 
-ggarrange(ctmax_temp_plot, size_temp_plot, common.legend = T, legend = "bottom")
+wt_temp_plot = ggplot(full_data, aes(x = collection_temp, y = warming_tol)) + 
+  geom_smooth(method = "lm", se = T,
+              linewidth = 2, 
+              colour = "grey") + 
+  geom_point(aes(colour = site), 
+             size = 2, alpha = 0.7) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "Warming Tolerance (°C)",
+       x = "Collection Temp. (°C)") +
+  theme_matt() + 
+  theme(legend.position = "right")
+
+ggarrange(ctmax_temp_plot, wt_temp_plot, size_temp_plot, common.legend = T, legend = "bottom", nrow = 1)
 ```
 
 Of particular interest is the relationship between prosome length and CTmax. In many cases, larger body sizes are associated with cold adaptation/acclimation. We may therefore see this pattern emerge across populations or seasons. If populations contain a mix of cold- and warm-adapted genotypes, however, we might also see this relationship emerge **within** individual collections. Shown below is the relationship between prosome length and CTmax for the individuals measured thus far. Individual regression lines for each site are also included. Note that raw CTmax and body size values are shown, rather than metrics like residuals from a statistical model correcting for variation in collection temperature.
@@ -383,7 +420,7 @@ trait_ranges = full_data %>%
   mutate(prop_ctmax_range = ctmax_range / mean_ctmax,
          prop_size_range = size_range / mean_size)
 
-ctmax_range_lat = ggplot(trait_ranges, aes(x = collection_temp, y = ctmax_range, colour = site)) + 
+ctmax_range_temp = ggplot(trait_ranges, aes(x = collection_temp, y = ctmax_range, colour = site)) + 
   geom_point(size = 3) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "CTmax Range (°C)",
@@ -391,7 +428,15 @@ ctmax_range_lat = ggplot(trait_ranges, aes(x = collection_temp, y = ctmax_range,
   theme_matt() + 
   theme(legend.position = "right")
 
-size_range_lat = ggplot(trait_ranges, aes(x = collection_temp, y = size_range, colour = site)) + 
+ctmax_var_temp = ggplot(trait_ranges, aes(x = collection_temp, y = ctmax_var, colour = site)) + 
+  geom_point(size = 3) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "CTmax Range (°C)",
+       x = "Collection Temp. (°C)") +
+  theme_matt() + 
+  theme(legend.position = "right")
+
+size_range_temp = ggplot(trait_ranges, aes(x = collection_temp, y = size_range, colour = site)) + 
   geom_point(size = 3) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "Size Range (mm)",
@@ -399,7 +444,7 @@ size_range_lat = ggplot(trait_ranges, aes(x = collection_temp, y = size_range, c
   theme_matt() + 
   theme(legend.position = "right")
 
-ggarrange(ctmax_range_lat, size_range_lat, common.legend = T, legend = "bottom")
+ggarrange(ctmax_range_temp, size_range_temp, common.legend = T, legend = "bottom")
 ```
 
 Changes in trait variance may be indicative of phenotypic selection. If selection (as opposed to acclimation) are driving seasonal changes, we may expect to see a reduction in variance in the peak samples relative to the early season samples. Note that early season collection temperatures this year were higher than expected, driven by fairly strong heatwaves in the North Atlantic.    
@@ -407,7 +452,7 @@ Changes in trait variance may be indicative of phenotypic selection. If selectio
 ```{r season-var}
 ggplot(trait_ranges, aes(x = season, y = ctmax_var, colour = site)) + 
   geom_point(size = 3) + 
-  geom_line(size = 1.5) + 
+  geom_line(linewidth = 1.5) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "CTmax Variance",
        x = "Season") +
@@ -425,7 +470,9 @@ var_change_data = trait_ranges %>%
   select(site, season, doy, lat, temp_change, var_change)
 
 ggplot(var_change_data, aes(x = temp_change, y = var_change, colour = site)) +
-  geom_point() + 
+  geom_hline(yintercept = 0) + 
+  geom_vline(xintercept = 0) + 
+  geom_point(size = 3) + 
   scale_colour_manual(values = site_cols) + 
   labs(x = "Temperature Change (°C)",
        y = "Change in CTmax Variance") + 

@@ -31,7 +31,8 @@ all_data = read.csv(file = "Output/Output_data/full_data.csv") %>%
   mutate(doy = lubridate::yday(collection_date),
          ind_id = str_replace_all(paste(site, season, replicate, tube, sep = "_"), pattern = " ", replacement = "_")) %>% 
   inner_join(site_data, by = c("site")) %>% 
-  mutate(site = fct_reorder(site, lat))
+  mutate(site = fct_reorder(site, lat),
+         warming_tol = ctmax - collection_temp)
 
 excluded_inds = c(
   "Esker_Point_early_2_3",
