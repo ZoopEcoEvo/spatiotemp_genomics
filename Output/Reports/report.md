@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-08-11
+2023-08-26
 
 - [Site Characteristics](#site-characteristics)
 - [Critical Thermal Limits](#critical-thermal-limits)
@@ -101,30 +101,28 @@ geographically proximate but isolated populations provide independent
 comparisons of the effects of seasonality.
 
 ``` r
-### To Do - replace raw CTmax with residuals from CTmax ~ Collection Temp.
-
 season_cols = c("early" = "grey75", 
                 "peak" = "grey50", 
                 "late" = "grey25")
 
 sal_regions = data.frame(region = rep(c("South", "Central", "North"), each = 2), 
-                       site = c("Ft. Hamer", "Manatee River", 
-                                "Ganey's Wharf", "Tyler Cove", 
-                                "Ritchie Wharf", "St. Thomas de Kent Wharf"),
-                       salinity = c("low", "high"))
+                         site = c("Ft. Hamer", "Manatee River", 
+                                  "Ganey's Wharf", "Tyler Cove", 
+                                  "Ritchie Wharf", "St. Thomas de Kent Wharf"),
+                         salinity = c("low", "high"))
 
 sal_comps = full_data %>% 
   filter(site %in% sal_regions$site) %>% 
   inner_join(sal_regions, by = c("site")) %>% 
   select( region = region.y, site, salinity, season, doy, collection_temp, collection_salinity,
-         size, ctmax, warming_tol) %>% 
+          size, ctmax, warming_tol) %>% 
   mutate(salinity = fct_relevel(salinity, "low", "high"),
          region = fct_relevel(region, "South", "Central", "North"))
 
 sal_comp_temps = sal_comps %>%  
   select(salinity, season, region, collection_temp, collection_salinity) %>% 
   distinct() %>% 
-ggplot(aes(x = salinity, y = collection_temp, colour = season, group = season)) + 
+  ggplot(aes(x = salinity, y = collection_temp, colour = season, group = season)) + 
   facet_wrap(region~.) + 
   geom_point(size = 4) + 
   geom_line(linewidth = 1.5) + 
@@ -136,7 +134,7 @@ ggplot(aes(x = salinity, y = collection_temp, colour = season, group = season)) 
 sal_comp_sal = sal_comps %>%  
   select(salinity, season, region, collection_temp, collection_salinity) %>% 
   distinct() %>% 
-ggplot(aes(x = salinity, y = collection_salinity, colour = season, group = season)) + 
+  ggplot(aes(x = salinity, y = collection_salinity, colour = season, group = season)) + 
   facet_wrap(region~.) + 
   geom_point(size = 4) + 
   geom_line(linewidth = 1.5) + 
@@ -152,7 +150,7 @@ ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "r
 
 ## Critical Thermal Limits
 
-A total of 189 individuals were examined. Critical thermal limits and
+A total of 209 individuals were examined. Critical thermal limits and
 body size measurements were made before individuals were preserved in
 ethanol. We excluded data for 3 individuals, detailed below. These
 individuals had either very low CTmax or were, upon re-examination of
@@ -161,7 +159,7 @@ photographs, identified as juveniles instead of mature females.
 ``` r
 excluded %>% 
   select(region, site, season, collection_temp, collection_salinity, replicate, tube, ctmax, size) %>% 
-knitr::kable(align = "c")
+  knitr::kable(align = "c")
 ```
 
 |   region    |     site      | season | collection_temp | collection_salinity | replicate | tube |  ctmax   | size  |
@@ -196,6 +194,10 @@ mean_ctmax = full_data %>%
   summarize(mean_ctmax = mean(ctmax))
 
 ggplot(full_data, aes(x = season, y = ctmax, colour = site)) + 
+  geom_line(data = mean_ctmax, 
+            aes(y = mean_ctmax, group = site),
+            position = position_dodge(width = 0.4),
+            linewidth = 1) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
                                              dodge.width = 0.4),
              alpha = 0.3) + 
@@ -226,6 +228,10 @@ mean_wt = full_data %>%
   summarize(mean_wt = mean(warming_tol))
 
 ggplot(full_data, aes(x = season, y = warming_tol, colour = site)) + 
+  geom_line(data = mean_wt, 
+            aes(y = mean_wt, group = site),
+            position = position_dodge(width = 0.4),
+            linewidth = 1) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
                                              dodge.width = 0.4),
              alpha = 0.3) + 
@@ -256,6 +262,10 @@ mean_size = full_data %>%
   summarize(mean_size = mean(size))
 
 ggplot(full_data, aes(x = season, y = size, colour = site)) + 
+  geom_line(data = mean_size, 
+            aes(y = mean_size, group = site),
+            position = position_dodge(width = 0.4),
+            linewidth = 1) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
                                              dodge.width = 0.4),
              alpha = 0.3) + 
@@ -276,6 +286,8 @@ ggplot(full_data, aes(x = season, y = size, colour = site)) +
 ### Salinity Pair Comparisons
 
 ``` r
+### To Do - replace raw CTmax with residuals from CTmax ~ Collection Temp.
+
 sal_comp_ctmax = ggplot(sal_comps, aes(x = salinity, y = ctmax, colour = season, group = season)) + 
   facet_wrap(region~.) + 
   geom_point(size = 2) + 
@@ -380,7 +392,7 @@ universal_size = full_data %>%
         axis.title.x = element_blank())
 
 pop_size = full_data %>% 
-  ggplot(aes(x = size, y = ctmax, colour = site)) + 
+  ggplot(aes(x = size, y = ctmax, colour = site, group = season)) + 
   facet_wrap(site~.) + 
   # geom_smooth(data = filter(full_data, ctmax > 31), 
   #             aes(x = size, y = ctmax),
@@ -458,8 +470,9 @@ strong heatwaves in the North Atlantic.
 
 ``` r
 ggplot(trait_ranges, aes(x = season, y = ctmax_var, colour = site)) + 
+  geom_line(aes(group = site), 
+            linewidth = 1.5) + 
   geom_point(size = 3) + 
-  geom_line(linewidth = 1.5) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "CTmax Variance",
        x = "Season") +
