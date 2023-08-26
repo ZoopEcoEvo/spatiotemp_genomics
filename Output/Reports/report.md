@@ -286,30 +286,75 @@ ggplot(full_data, aes(x = season, y = size, colour = site)) +
 ### Salinity Pair Comparisons
 
 ``` r
-### To Do - replace raw CTmax with residuals from CTmax ~ Collection Temp.
-
-sal_comp_ctmax = ggplot(sal_comps, aes(x = salinity, y = ctmax, colour = season, group = season)) + 
+sal_comp_ctmax_plot = sal_comps %>% 
+  ggplot(aes(x = salinity, y = ctmax, colour = season, group = season)) + 
   facet_wrap(region~.) + 
-  geom_point(size = 2) + 
+  geom_point(size = 2,
+             position = position_dodge(width = 0.5)) + 
   #geom_line(size = 1.5) + 
   scale_colour_manual(values = season_cols) + 
   labs(y = "CTmax (°C)",
        x = "") + 
   theme_matt_facets(base_size = 14)
 
-sal_comp_size = ggplot(sal_comps, aes(x = salinity, y = size, colour = season, group = season)) + 
+sal_comp_size_plot = sal_comps %>% 
+  ggplot(aes(x = salinity, y = size, colour = season, group = season)) + 
   facet_wrap(region~.) + 
-  geom_point(size = 2) + 
+  geom_point(size = 2, 
+             position = position_dodge(width = 0.5)) + 
   #geom_line(size = 1.5) + 
   scale_colour_manual(values = season_cols) + 
   labs(y = "Prosome Length (mm)",
        x = "") + 
   theme_matt_facets(base_size = 14)
 
-ggarrange(sal_comp_ctmax, sal_comp_size, nrow = 2, common.legend = T, legend = "right")
+ggarrange(sal_comp_ctmax_plot, sal_comp_size_plot, nrow = 2, common.legend = T, legend = "right")
 ```
 
 <img src="../Figures/markdown/sal-pair-traits-1.png" style="display: block; margin: auto;" />
+
+``` r
+
+###
+# 
+# sal_comp_ctmax.model = lm(ctmax ~ collection_temp, data = sal_comps)
+# # summary(ctmax_temp.model)
+# # car::Anova(ctmax_temp.model)
+# sal_comp_ctmax_resids = residuals(sal_comp_ctmax.model)
+# 
+# sal_comp_size.model = lm(size ~ collection_temp, data = sal_comps)
+# # summary(size_temp.model)
+# # car::Anova(size_temp.model)
+# sal_comp_size_resids = residuals(sal_comp_size.model)
+# 
+# sal_comp_ctmax_resid_plot = sal_comps %>% 
+#   mutate(ctmax_resids = sal_comp_ctmax_resids,
+#          size_resids = sal_comp_size_resids) %>% 
+#   ggplot(aes(x = salinity, y = ctmax_resids, colour = season, group = season)) + 
+#   facet_wrap(region~.) + 
+#   geom_point(size = 2,
+#              position = position_dodge(width = 0.5)) + 
+#   #geom_line(size = 1.5) + 
+#   scale_colour_manual(values = season_cols) + 
+#   labs(y = "CTmax \nResiduals",
+#        x = "") + 
+#   theme_matt_facets(base_size = 14)
+# 
+# sal_comp_size_resid_plot = sal_comps %>% 
+#   mutate(ctmax_resids = sal_comp_ctmax_resids,
+#          size_resids = sal_comp_size_resids) %>% 
+#   ggplot(aes(x = salinity, y = size_resids, colour = season, group = season)) + 
+#   facet_wrap(region~.) + 
+#   geom_point(size = 2, 
+#              position = position_dodge(width = 0.5)) + 
+#   #geom_line(size = 1.5) + 
+#   scale_colour_manual(values = season_cols) + 
+#   labs(y = "Prosome Length \nResiduals",
+#        x = "") + 
+#   theme_matt_facets(base_size = 14)
+# 
+# ggarrange(sal_comp_ctmax_resid_plot, sal_comp_size_resid_plot, nrow = 2, common.legend = T, legend = "right")
+```
 
 ## Trait Correlations
 
@@ -379,7 +424,7 @@ universal_size = full_data %>%
   #             colour = "grey60", 
   #             se = F,
   #             linewidth = 2) + 
-  geom_smooth(method = "lm", se = F,
+  geom_smooth(method = "lm", se = T,
               linewidth = 2,
               colour = "grey70") + 
   geom_point(aes(colour = site),
