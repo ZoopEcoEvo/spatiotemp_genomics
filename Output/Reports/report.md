@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-08-26
+2023-08-27
 
 - [Site Characteristics](#site-characteristics)
 - [Critical Thermal Limits](#critical-thermal-limits)
@@ -150,9 +150,9 @@ ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "r
 
 ## Critical Thermal Limits
 
-A total of 209 individuals were examined. Critical thermal limits and
+A total of 229 individuals were examined. Critical thermal limits and
 body size measurements were made before individuals were preserved in
-ethanol. We excluded data for 3 individuals, detailed below. These
+ethanol. We excluded data for 4 individuals, detailed below. These
 individuals had either very low CTmax or were, upon re-examination of
 photographs, identified as juveniles instead of mature females.
 
@@ -167,6 +167,7 @@ excluded %>%
 | Connecticut |  Esker Point  | early  |      22.5       |         30          |     2     |  3   | 30.02604 | 0.687 |
 |   Florida   | Manatee River |  peak  |      34.0       |         29          |     2     |  6   | 38.45833 | 0.616 |
 |   Florida   | Manatee River |  peak  |      34.0       |         29          |     2     |  7   | 38.23750 | 0.593 |
+|  Maryland   |  Tyler Cove   |  peak  |      29.5       |         15          |     2     |  2   | 36.84375 | 0.614 |
 
 Critical thermal maxima (CTmax) was measured using a custom setup. The
 method uses a standard dynamic ramping assay to determine the maximum
@@ -316,44 +317,44 @@ ggarrange(sal_comp_ctmax_plot, sal_comp_size_plot, nrow = 2, common.legend = T, 
 ``` r
 
 ###
-# 
-# sal_comp_ctmax.model = lm(ctmax ~ collection_temp, data = sal_comps)
-# # summary(ctmax_temp.model)
-# # car::Anova(ctmax_temp.model)
-# sal_comp_ctmax_resids = residuals(sal_comp_ctmax.model)
-# 
-# sal_comp_size.model = lm(size ~ collection_temp, data = sal_comps)
-# # summary(size_temp.model)
-# # car::Anova(size_temp.model)
-# sal_comp_size_resids = residuals(sal_comp_size.model)
-# 
-# sal_comp_ctmax_resid_plot = sal_comps %>% 
-#   mutate(ctmax_resids = sal_comp_ctmax_resids,
-#          size_resids = sal_comp_size_resids) %>% 
-#   ggplot(aes(x = salinity, y = ctmax_resids, colour = season, group = season)) + 
-#   facet_wrap(region~.) + 
-#   geom_point(size = 2,
-#              position = position_dodge(width = 0.5)) + 
-#   #geom_line(size = 1.5) + 
-#   scale_colour_manual(values = season_cols) + 
-#   labs(y = "CTmax \nResiduals",
-#        x = "") + 
-#   theme_matt_facets(base_size = 14)
-# 
-# sal_comp_size_resid_plot = sal_comps %>% 
-#   mutate(ctmax_resids = sal_comp_ctmax_resids,
-#          size_resids = sal_comp_size_resids) %>% 
-#   ggplot(aes(x = salinity, y = size_resids, colour = season, group = season)) + 
-#   facet_wrap(region~.) + 
-#   geom_point(size = 2, 
-#              position = position_dodge(width = 0.5)) + 
-#   #geom_line(size = 1.5) + 
-#   scale_colour_manual(values = season_cols) + 
-#   labs(y = "Prosome Length \nResiduals",
-#        x = "") + 
-#   theme_matt_facets(base_size = 14)
-# 
-# ggarrange(sal_comp_ctmax_resid_plot, sal_comp_size_resid_plot, nrow = 2, common.legend = T, legend = "right")
+
+sal_comp_ctmax.model = lm(ctmax ~ collection_temp, data = sal_comps)
+# summary(ctmax_temp.model)
+# car::Anova(ctmax_temp.model)
+sal_comp_ctmax_resids = residuals(sal_comp_ctmax.model)
+
+sal_comp_size.model = lm(size ~ collection_temp, data = sal_comps)
+# summary(size_temp.model)
+# car::Anova(size_temp.model)
+sal_comp_size_resids = residuals(sal_comp_size.model)
+
+sal_comp_ctmax_resid_plot = sal_comps %>%
+  mutate(ctmax_resids = sal_comp_ctmax_resids,
+         size_resids = sal_comp_size_resids) %>%
+  ggplot(aes(x = salinity, y = ctmax_resids, colour = season, group = season)) +
+  facet_wrap(region~.) +
+  geom_point(size = 2,
+             position = position_dodge(width = 0.5)) +
+  #geom_line(size = 1.5) +
+  scale_colour_manual(values = season_cols) +
+  labs(y = "CTmax \nResiduals",
+       x = "") +
+  theme_matt_facets(base_size = 14)
+
+sal_comp_size_resid_plot = sal_comps %>%
+  mutate(ctmax_resids = sal_comp_ctmax_resids,
+         size_resids = sal_comp_size_resids) %>%
+  ggplot(aes(x = salinity, y = size_resids, colour = season, group = season)) +
+  facet_wrap(region~.) +
+  geom_point(size = 2,
+             position = position_dodge(width = 0.5)) +
+  #geom_line(size = 1.5) +
+  scale_colour_manual(values = season_cols) +
+  labs(y = "Prosome Length \nResiduals",
+       x = "") +
+  theme_matt_facets(base_size = 14)
+
+#ggarrange(sal_comp_ctmax_resid_plot, sal_comp_size_resid_plot, nrow = 2, common.legend = T, legend = "right")
 ```
 
 ## Trait Correlations

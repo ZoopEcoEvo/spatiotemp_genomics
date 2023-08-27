@@ -37,7 +37,8 @@ all_data = read.csv(file = "Output/Output_data/full_data.csv") %>%
 excluded_inds = c(
   "Esker_Point_early_2_3",
   "Manatee_River_peak_2_6",
-  "Manatee_River_peak_2_7"
+  "Manatee_River_peak_2_7",
+  "Tyler_Cove_peak_2_2"
 )
 
  full_data = all_data %>%  
