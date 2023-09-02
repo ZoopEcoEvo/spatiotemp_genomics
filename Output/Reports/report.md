@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-08-27
+2023-09-02
 
 - [Site Characteristics](#site-characteristics)
 - [Critical Thermal Limits](#critical-thermal-limits)
@@ -150,7 +150,7 @@ ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "r
 
 ## Critical Thermal Limits
 
-A total of 229 individuals were examined. Critical thermal limits and
+A total of 248 individuals were examined. Critical thermal limits and
 body size measurements were made before individuals were preserved in
 ethanol. We excluded data for 4 individuals, detailed below. These
 individuals had either very low CTmax or were, upon re-examination of
