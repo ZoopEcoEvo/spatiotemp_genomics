@@ -4,7 +4,7 @@ library(tidyverse)
 library(ggpubr)
 
 #Determine which scripts should be run
-process_all_data = T #Runs data analysis 
+process_all_data = F #Runs data analysis 
 make_report = T #Runs project summary
 knit_manuscript = F #Compiles manuscript draft
 
@@ -38,7 +38,8 @@ excluded_inds = c(
   "Esker_Point_early_2_3",
   "Manatee_River_peak_2_6",
   "Manatee_River_peak_2_7",
-  "Tyler_Cove_peak_2_2"
+  "Tyler_Cove_peak_2_2",
+  "Sawyer_Park_peak_1_4"
 )
 
  full_data = all_data %>%  

@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-09-02
+2023-09-06
 
 - [Site Characteristics](#site-characteristics)
 - [Critical Thermal Limits](#critical-thermal-limits)
@@ -150,9 +150,9 @@ ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "r
 
 ## Critical Thermal Limits
 
-A total of 248 individuals were examined. Critical thermal limits and
+A total of 268 individuals were examined. Critical thermal limits and
 body size measurements were made before individuals were preserved in
-ethanol. We excluded data for 4 individuals, detailed below. These
+ethanol. We excluded data for 5 individuals, detailed below. These
 individuals had either very low CTmax or were, upon re-examination of
 photographs, identified as juveniles instead of mature females.
 
@@ -168,6 +168,7 @@ excluded %>%
 |   Florida   | Manatee River |  peak  |      34.0       |         29          |     2     |  6   | 38.45833 | 0.616 |
 |   Florida   | Manatee River |  peak  |      34.0       |         29          |     2     |  7   | 38.23750 | 0.593 |
 |  Maryland   |  Tyler Cove   |  peak  |      29.5       |         15          |     2     |  2   | 36.84375 | 0.614 |
+|    Maine    |  Sawyer Park  |  peak  |      22.0       |         30          |     1     |  4   | 30.81424 | 0.865 |
 
 Critical thermal maxima (CTmax) was measured using a custom setup. The
 method uses a standard dynamic ramping assay to determine the maximum
