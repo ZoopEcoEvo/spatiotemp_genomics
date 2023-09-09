@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-09-06
+2023-09-09
 
 - [Site Characteristics](#site-characteristics)
 - [Critical Thermal Limits](#critical-thermal-limits)
@@ -43,8 +43,8 @@ site_temp_plot = full_data %>%
   select(site, season, doy, collection_temp, collection_salinity) %>%  
   distinct() %>% 
   ggplot(aes(x = doy, y = collection_temp, colour = site)) + 
-  geom_point(size = 6) + 
   geom_line(linewidth = 1) + 
+  geom_point(size = 6) +
   scale_colour_manual(values = site_cols) + 
   labs(y = "Temperature (°C)",
        x = "Day of the Year") +
@@ -148,9 +148,23 @@ ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "r
 
 <img src="../Figures/markdown/season-sal-comps-1.png" style="display: block; margin: auto;" />
 
+``` r
+
+# sal_comps %>%  
+#   select(site, salinity, season, region, collection_temp, collection_salinity) %>% 
+#   distinct() %>% 
+#   ggplot(aes(x = collection_salinity, y = collection_temp, colour = site)) + 
+#   facet_grid(region~.) + 
+#   geom_point(size = 4) + 
+#   #stat_ellipse() +
+#   #geom_path(arrow = arrow(length = unit(0.1, "inches"), type = "closed")) + 
+#   scale_colour_manual(values = site_cols) + 
+#   theme_matt_facets(base_size = 14)
+```
+
 ## Critical Thermal Limits
 
-A total of 268 individuals were examined. Critical thermal limits and
+A total of 308 individuals were examined. Critical thermal limits and
 body size measurements were made before individuals were preserved in
 ethanol. We excluded data for 5 individuals, detailed below. These
 individuals had either very low CTmax or were, upon re-examination of
@@ -164,10 +178,10 @@ excluded %>%
 
 |   region    |     site      | season | collection_temp | collection_salinity | replicate | tube |  ctmax   | size  |
 |:-----------:|:-------------:|:------:|:---------------:|:-------------------:|:---------:|:----:|:--------:|:-----:|
-| Connecticut |  Esker Point  | early  |      22.5       |         30          |     2     |  3   | 30.02604 | 0.687 |
 |   Florida   | Manatee River |  peak  |      34.0       |         29          |     2     |  6   | 38.45833 | 0.616 |
 |   Florida   | Manatee River |  peak  |      34.0       |         29          |     2     |  7   | 38.23750 | 0.593 |
 |  Maryland   |  Tyler Cove   |  peak  |      29.5       |         15          |     2     |  2   | 36.84375 | 0.614 |
+| Connecticut |  Esker Point  | early  |      22.5       |         30          |     2     |  3   | 30.02604 | 0.687 |
 |    Maine    |  Sawyer Park  |  peak  |      22.0       |         30          |     1     |  4   | 30.81424 | 0.865 |
 
 Critical thermal maxima (CTmax) was measured using a custom setup. The
@@ -292,7 +306,7 @@ sal_comp_ctmax_plot = sal_comps %>%
   ggplot(aes(x = salinity, y = ctmax, colour = season, group = season)) + 
   facet_wrap(region~.) + 
   geom_point(size = 2,
-             position = position_dodge(width = 0.5)) + 
+             position = position_dodge(width = 0.2)) + 
   #geom_line(size = 1.5) + 
   scale_colour_manual(values = season_cols) + 
   labs(y = "CTmax (°C)",
@@ -303,7 +317,7 @@ sal_comp_size_plot = sal_comps %>%
   ggplot(aes(x = salinity, y = size, colour = season, group = season)) + 
   facet_wrap(region~.) + 
   geom_point(size = 2, 
-             position = position_dodge(width = 0.5)) + 
+             position = position_dodge(width = 0.2)) + 
   #geom_line(size = 1.5) + 
   scale_colour_manual(values = season_cols) + 
   labs(y = "Prosome Length (mm)",

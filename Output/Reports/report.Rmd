@@ -122,8 +122,8 @@ site_temp_plot = full_data %>%
   select(site, season, doy, collection_temp, collection_salinity) %>%  
   distinct() %>% 
   ggplot(aes(x = doy, y = collection_temp, colour = site)) + 
-  geom_point(size = 6) + 
   geom_line(linewidth = 1) + 
+  geom_point(size = 6) +
   scale_colour_manual(values = site_cols) + 
   labs(y = "Temperature (°C)",
        x = "Day of the Year") +
@@ -199,6 +199,17 @@ sal_comp_sal = sal_comps %>%
   theme_matt_facets(base_size = 14)
 
 ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "right")
+
+# sal_comps %>%  
+#   select(site, salinity, season, region, collection_temp, collection_salinity) %>% 
+#   distinct() %>% 
+#   ggplot(aes(x = collection_salinity, y = collection_temp, colour = site)) + 
+#   facet_grid(region~.) + 
+#   geom_point(size = 4) + 
+#   #stat_ellipse() +
+#   #geom_path(arrow = arrow(length = unit(0.1, "inches"), type = "closed")) + 
+#   scale_colour_manual(values = site_cols) + 
+#   theme_matt_facets(base_size = 14)
 ```
 
 ## Critical Thermal Limits
@@ -307,7 +318,7 @@ sal_comp_ctmax_plot = sal_comps %>%
   ggplot(aes(x = salinity, y = ctmax, colour = season, group = season)) + 
   facet_wrap(region~.) + 
   geom_point(size = 2,
-             position = position_dodge(width = 0.5)) + 
+             position = position_dodge(width = 0.2)) + 
   #geom_line(size = 1.5) + 
   scale_colour_manual(values = season_cols) + 
   labs(y = "CTmax (°C)",
@@ -318,7 +329,7 @@ sal_comp_size_plot = sal_comps %>%
   ggplot(aes(x = salinity, y = size, colour = season, group = season)) + 
   facet_wrap(region~.) + 
   geom_point(size = 2, 
-             position = position_dodge(width = 0.5)) + 
+             position = position_dodge(width = 0.2)) + 
   #geom_line(size = 1.5) + 
   scale_colour_manual(values = season_cols) + 
   labs(y = "Prosome Length (mm)",
@@ -514,6 +525,14 @@ pop_resids = filtered_data %>%
 ggarrange(universal_resids, pop_resids, common.legend = T, legend = "none", nrow = 2)
 ```
 
+```{r ctmax-model, include = F}
+ctmax.model = lme4::lmer(data = full_data,
+           ctmax ~ collection_temp + size + (1|site))
+
+summary(ctmax.model)
+car::Anova(ctmax.model)
+```
+
 
 ## Trait Variability
 
@@ -578,8 +597,9 @@ var_change_data = trait_ranges %>%
   group_by(site) %>% 
   arrange(doy) %>%  
   mutate(temp_change = collection_temp - lag(collection_temp),
+         ctmax_change = mean_ctmax - lag(mean_ctmax),
          var_change = ctmax_var - lag(ctmax_var)) %>%  
-  select(site, season, doy, lat, temp_change, var_change)
+  select(site, season, doy, lat, temp_change, var_change, ctmax_change)
 
 ggplot(var_change_data, aes(x = temp_change, y = var_change, colour = site)) +
   geom_hline(yintercept = 0) + 
