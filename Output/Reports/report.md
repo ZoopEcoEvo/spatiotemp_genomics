@@ -1,7 +1,8 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-09-09
+2023-09-28
 
+- [Project Organization](#project-organization)
 - [Site Characteristics](#site-characteristics)
 - [Critical Thermal Limits](#critical-thermal-limits)
 - [Warming tolerance](#warming-tolerance)
@@ -11,6 +12,14 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
 - [Trait Variability](#trait-variability)
 - [Next Steps](#next-steps)
 - [Misc. Details](#misc-details)
+
+## Project Organization
+
+``` r
+print(dir_tree(path = ".", type = "directory"))
+## .
+## character(0)
+```
 
 ## Site Characteristics
 

@@ -121,6 +121,7 @@ site_map = map_data("world") %>%
 site_temp_plot = full_data %>% 
   select(site, season, doy, collection_temp, collection_salinity) %>%  
   distinct() %>% 
+  filter(doy > 100) %>% 
   ggplot(aes(x = doy, y = collection_temp, colour = site)) + 
   geom_line(linewidth = 1) + 
   geom_point(size = 6) +
