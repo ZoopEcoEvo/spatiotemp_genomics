@@ -1,8 +1,7 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-09-28
+2023-10-18
 
-- [Project Organization](#project-organization)
 - [Site Characteristics](#site-characteristics)
 - [Critical Thermal Limits](#critical-thermal-limits)
 - [Warming tolerance](#warming-tolerance)
@@ -12,14 +11,6 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
 - [Trait Variability](#trait-variability)
 - [Next Steps](#next-steps)
 - [Misc. Details](#misc-details)
-
-## Project Organization
-
-``` r
-print(dir_tree(path = ".", type = "directory"))
-## .
-## character(0)
-```
 
 ## Site Characteristics
 
@@ -51,6 +42,7 @@ site_map = map_data("world") %>%
 site_temp_plot = full_data %>% 
   select(site, season, doy, collection_temp, collection_salinity) %>%  
   distinct() %>% 
+  filter(doy > 100) %>% 
   ggplot(aes(x = doy, y = collection_temp, colour = site)) + 
   geom_line(linewidth = 1) + 
   geom_point(size = 6) +
@@ -173,7 +165,7 @@ ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "r
 
 ## Critical Thermal Limits
 
-A total of 308 individuals were examined. Critical thermal limits and
+A total of 316 individuals were examined. Critical thermal limits and
 body size measurements were made before individuals were preserved in
 ethanol. We excluded data for 5 individuals, detailed below. These
 individuals had either very low CTmax or were, upon re-examination of

@@ -32,8 +32,9 @@ all_data = read.csv(file = "Output/Output_data/full_data.csv") %>%
          ind_id = str_replace_all(paste(site, season, replicate, tube, sep = "_"), pattern = " ", replacement = "_")) %>% 
   inner_join(site_data, by = c("site")) %>% 
   mutate(site = fct_reorder(site, lat),
+         season = fct_relevel(season, "early", "peak", "late"),
          warming_tol = ctmax - collection_temp) %>%  
-  arrange(site)
+  arrange(site) 
 
 excluded_inds = c(
   "Esker_Point_early_2_3",
