@@ -41,7 +41,8 @@ excluded_inds = c(
   "Manatee_River_peak_2_6",
   "Manatee_River_peak_2_7",
   "Tyler_Cove_peak_2_2",
-  "Sawyer_Park_peak_1_4"
+  "Sawyer_Park_peak_1_4",
+  "St._Thomas_de_Kent_Wharf_late_1_3"
 )
 
  full_data = all_data %>%  
