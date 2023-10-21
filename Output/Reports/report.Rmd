@@ -227,23 +227,24 @@ Critical thermal maxima (CTmax) was measured using a custom setup. The method us
 
 Individuals were rested for one hour after collection before the assay. During the assay, copepods were held in 0.2 um filtered seawater, adjusted to match the salinity at the time of collection with bottled spring water. During the assay, several 'control' individuals were maintained in this adjusted salinity solution, but did not experience the temperature ramp, to ensure that there was no background mortality.
 
-Shown below are the measured CTmax values. Note: CTmax values for the early season Key Largo copepods were collected at the end of February 2023 as part of a separate project. Body size values were not measured during this project, nor were copepods individually preserved after the experiments. These early season CTmax values are included as a point of comparison.
+Shown below are the measured CTmax values. Note: CTmax values for the early season Key Largo copepods were collected at the end of February 2023 as part of a separate project. Body size values were not measured during this project, nor were copepods individually preserved after the experiments. These early season CTmax values are included as a point of comparison. Individual measurements are shown in small points for each collection. The large point indicates the median value. 
 
 ```{r seasonal-ct-max}
 mean_ctmax = full_data %>% 
   group_by(site, season) %>% 
-  summarize(mean_ctmax = mean(ctmax))
+  summarize(mean_ctmax = mean(ctmax),
+            median_ctmax = median(ctmax))
 
 ggplot(full_data, aes(x = season, y = ctmax, colour = site)) + 
   geom_line(data = mean_ctmax, 
-            aes(y = mean_ctmax, group = site),
+            aes(y = median_ctmax, group = site),
             position = position_dodge(width = 0.4),
             linewidth = 1) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
                                              dodge.width = 0.4),
              alpha = 0.3) + 
   geom_point(data = mean_ctmax, 
-             aes(y = mean_ctmax),
+             aes(y = median_ctmax),
              position = position_dodge(width = 0.4),
              size = 4) + 
   scale_colour_manual(values = site_cols) + 
@@ -261,18 +262,19 @@ Warming tolerance was calculated as the difference between measured CTmax values
 ```{r seasonal-warming-tol}
 mean_wt = full_data %>% 
   group_by(site, season) %>% 
-  summarize(mean_wt = mean(warming_tol))
+  summarize(mean_wt = mean(warming_tol),
+            median_wt = median(warming_tol))
 
 ggplot(full_data, aes(x = season, y = warming_tol, colour = site)) + 
   geom_line(data = mean_wt, 
-            aes(y = mean_wt, group = site),
+            aes(y = median_wt, group = site),
             position = position_dodge(width = 0.4),
             linewidth = 1) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
                                              dodge.width = 0.4),
              alpha = 0.3) + 
   geom_point(data = mean_wt, 
-             aes(y = mean_wt),
+             aes(y = median_wt),
              position = position_dodge(width = 0.4),
              size = 4) + 
   scale_colour_manual(values = site_cols) + 
@@ -290,18 +292,19 @@ Following the CTmax assay, individuals were photographed for body size measureme
 ```{r seasonal-body-size}
 mean_size = full_data %>% 
   group_by(site, season) %>% 
-  summarize(mean_size = mean(size))
+  summarize(mean_size = mean(size),
+            median_size = median(size))
 
 ggplot(full_data, aes(x = season, y = size, colour = site)) + 
   geom_line(data = mean_size, 
-            aes(y = mean_size, group = site),
+            aes(y = median_size, group = site),
             position = position_dodge(width = 0.4),
             linewidth = 1) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
                                              dodge.width = 0.4),
              alpha = 0.3) + 
   geom_point(data = mean_size, 
-             aes(y = mean_size),
+             aes(y = median_size),
              position = position_dodge(width = 0.4),
              size = 4) + 
   scale_colour_manual(values = site_cols) + 
@@ -474,10 +477,10 @@ ggarrange(universal_size, pop_size, common.legend = T, legend = "none", nrow = 2
 filtered_data = full_data %>% 
   drop_na(size, ctmax)
 
-ctmax_temp.model = lm(ctmax ~ collection_temp, data = filtered_data)
+ctmax_temp.model = lm(ctmax ~ collection_temp + site, data = filtered_data)
 ctmax_resids = residuals(ctmax_temp.model)
 
-size_temp.model = lm(size ~ collection_temp, data = filtered_data)
+size_temp.model = lm(size ~ collection_temp + site, data = filtered_data)
 size_resids = residuals(size_temp.model)
 
 universal_resids = filtered_data %>% 
@@ -496,7 +499,7 @@ universal_resids = filtered_data %>%
   geom_point(aes(colour = site),
              size = 2, alpha = 0.7) + 
   scale_colour_manual(values = site_cols) + 
-  labs(y = "CTmax (°C)",
+  labs(y = "CTmax Residuals",
        x = "") +
   theme_matt(base_size = 14) + 
   theme(legend.position = "right",
@@ -517,9 +520,8 @@ pop_resids = filtered_data %>%
   geom_smooth(method = "lm", se = F,
               linewidth = 1) + 
   scale_colour_manual(values = site_cols) + 
-  scale_x_continuous(breaks = c(0.6, 0.8, 1)) + 
-  labs(y = "CTmax (°C)",
-       x = "Prosome Length (mm)") +
+  labs(y = "CTmax Residuals",
+       x = "Prosome Length Residuals") +
   theme_matt(base_size = 14) + 
   theme(legend.position = "right")
 

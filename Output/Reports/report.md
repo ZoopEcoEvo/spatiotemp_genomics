@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-10-20
+2023-10-21
 
 - [Site Characteristics](#site-characteristics)
 - [Critical Thermal Limits](#critical-thermal-limits)
@@ -165,7 +165,7 @@ ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "r
 
 ## Critical Thermal Limits
 
-A total of 336 individuals were examined. Critical thermal limits and
+A total of 356 individuals were examined. Critical thermal limits and
 body size measurements were made before individuals were preserved in
 ethanol. We excluded data for 6 individuals, detailed below. These
 individuals had either very low CTmax or were, upon re-examination of
@@ -204,23 +204,25 @@ early season Key Largo copepods were collected at the end of February
 2023 as part of a separate project. Body size values were not measured
 during this project, nor were copepods individually preserved after the
 experiments. These early season CTmax values are included as a point of
-comparison.
+comparison. Individual measurements are shown in small points for each
+collection. The large point indicates the median value.
 
 ``` r
 mean_ctmax = full_data %>% 
   group_by(site, season) %>% 
-  summarize(mean_ctmax = mean(ctmax))
+  summarize(mean_ctmax = mean(ctmax),
+            median_ctmax = median(ctmax))
 
 ggplot(full_data, aes(x = season, y = ctmax, colour = site)) + 
   geom_line(data = mean_ctmax, 
-            aes(y = mean_ctmax, group = site),
+            aes(y = median_ctmax, group = site),
             position = position_dodge(width = 0.4),
             linewidth = 1) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
                                              dodge.width = 0.4),
              alpha = 0.3) + 
   geom_point(data = mean_ctmax, 
-             aes(y = mean_ctmax),
+             aes(y = median_ctmax),
              position = position_dodge(width = 0.4),
              size = 4) + 
   scale_colour_manual(values = site_cols) + 
@@ -243,18 +245,19 @@ limits, and may therefore be more vulnerable to additional warming.
 ``` r
 mean_wt = full_data %>% 
   group_by(site, season) %>% 
-  summarize(mean_wt = mean(warming_tol))
+  summarize(mean_wt = mean(warming_tol),
+            median_wt = median(warming_tol))
 
 ggplot(full_data, aes(x = season, y = warming_tol, colour = site)) + 
   geom_line(data = mean_wt, 
-            aes(y = mean_wt, group = site),
+            aes(y = median_wt, group = site),
             position = position_dodge(width = 0.4),
             linewidth = 1) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
                                              dodge.width = 0.4),
              alpha = 0.3) + 
   geom_point(data = mean_wt, 
-             aes(y = mean_wt),
+             aes(y = median_wt),
              position = position_dodge(width = 0.4),
              size = 4) + 
   scale_colour_manual(values = site_cols) + 
@@ -277,18 +280,19 @@ below.
 ``` r
 mean_size = full_data %>% 
   group_by(site, season) %>% 
-  summarize(mean_size = mean(size))
+  summarize(mean_size = mean(size),
+            median_size = median(size))
 
 ggplot(full_data, aes(x = season, y = size, colour = site)) + 
   geom_line(data = mean_size, 
-            aes(y = mean_size, group = site),
+            aes(y = median_size, group = site),
             position = position_dodge(width = 0.4),
             linewidth = 1) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
                                              dodge.width = 0.4),
              alpha = 0.3) + 
   geom_point(data = mean_size, 
-             aes(y = mean_size),
+             aes(y = median_size),
              position = position_dodge(width = 0.4),
              size = 4) + 
   scale_colour_manual(values = site_cols) + 
