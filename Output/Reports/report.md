@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-10-21
+2023-10-22
 
 - [Site Characteristics](#site-characteristics)
 - [Critical Thermal Limits](#critical-thermal-limits)
@@ -44,8 +44,8 @@ site_temp_plot = full_data %>%
   distinct() %>% 
   filter(doy > 100) %>% 
   ggplot(aes(x = doy, y = collection_temp, colour = site)) + 
-  geom_line(linewidth = 1) + 
-  geom_point(size = 6) +
+  geom_line(linewidth = 2) + 
+  geom_point(size = 5) +
   scale_colour_manual(values = site_cols) + 
   labs(y = "Temperature (°C)",
        x = "Day of the Year") +
@@ -209,7 +209,7 @@ collection. The large point indicates the median value.
 
 ``` r
 mean_ctmax = full_data %>% 
-  group_by(site, season) %>% 
+  group_by(site, season, collection_temp) %>% 
   summarize(mean_ctmax = mean(ctmax),
             median_ctmax = median(ctmax))
 
@@ -234,6 +234,35 @@ ggplot(full_data, aes(x = season, y = ctmax, colour = site)) +
 ```
 
 <img src="../Figures/markdown/seasonal-ct-max-1.png" style="display: block; margin: auto;" />
+
+``` r
+ggplot(full_data, aes(x = season, y = ctmax, colour = site)) + 
+  facet_wrap(.~site, scales = "free_y") + 
+  geom_line(data = mean_ctmax, 
+            aes(y = median_ctmax, group = site),
+            position = position_dodge(width = 0.4),
+            linewidth = 3, alpha = 0.5) + 
+  geom_line(data = mean_ctmax, 
+            aes(y = collection_temp, group = site),
+            position = position_dodge(width = 0.4),
+            linewidth = 2,
+            colour = "grey") + 
+  geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
+                                             dodge.width = 0.4),
+             alpha = 0.8) + 
+  # geom_point(data = mean_ctmax, 
+  #            aes(y = median_ctmax),
+  #            position = position_dodge(width = 0.4),
+  #            size = 4) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "CTmax (°C)",
+       x = "Season") +
+  theme_matt() + 
+  theme(legend.position = "none", 
+        legend.title.align = 0.125)
+```
+
+<img src="../Figures/markdown/ctmax-ind-pops-1.png" style="display: block; margin: auto;" />
 
 ## Warming tolerance
 
@@ -304,6 +333,30 @@ ggplot(full_data, aes(x = season, y = size, colour = site)) +
 ```
 
 <img src="../Figures/markdown/seasonal-body-size-1.png" style="display: block; margin: auto;" />
+
+``` r
+ggplot(full_data, aes(x = season, y = size, colour = site)) + 
+  facet_wrap(.~site) + 
+  geom_line(data = mean_size, 
+            aes(y = median_size, group = site),
+            position = position_dodge(width = 0.4),
+            linewidth = 3, alpha = 0.5) + 
+  geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
+                                             dodge.width = 0.4),
+             alpha = 0.8) + 
+  # geom_point(data = mean_ctmax, 
+  #            aes(y = median_ctmax),
+  #            position = position_dodge(width = 0.4),
+  #            size = 4) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "Prosome Length (mm)",
+       x = "Season") +
+  theme_matt() + 
+  theme(legend.position = "none", 
+        legend.title.align = 0.125)
+```
+
+<img src="../Figures/markdown/size-ind-pops-1.png" style="display: block; margin: auto;" />
 
 ### Salinity Pair Comparisons
 
@@ -394,7 +447,7 @@ ctmax_temp_plot = ggplot(full_data, aes(x = collection_temp, y = ctmax)) +
   labs(y = "CTmax (°C)",
        x = "Collection Temp. (°C)") +
   theme_matt() + 
-  theme(legend.position = "right")
+  theme(legend.position = "none")
 
 size_temp_plot = ggplot(full_data, aes(x = collection_temp, y = size)) + 
   geom_smooth(method = "lm", se = T,
@@ -468,6 +521,9 @@ pop_size = full_data %>%
   #             se = F,
   #             linewidth = 2) + 
   geom_point(size = 1.3, alpha = 0.3) + 
+  geom_smooth(data = full_data, 
+              aes(x = size, y = ctmax, group = site), 
+              colour = "grey70", method = "lm", se = F) + 
   geom_smooth(method = "lm", se = F,
               linewidth = 1) + 
   scale_colour_manual(values = site_cols) + 
@@ -516,6 +572,14 @@ ctmax_var_temp = ggplot(trait_ranges, aes(x = collection_temp, y = ctmax_var, co
   theme(legend.position = "right")
 
 size_range_temp = ggplot(trait_ranges, aes(x = collection_temp, y = size_range, colour = site)) + 
+  geom_point(size = 3) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "Size Range (mm)",
+       x = "Collection Temp. (°C)") +
+  theme_matt() + 
+  theme(legend.position = "right")
+
+size_var_temp = ggplot(trait_ranges, aes(x = collection_temp, y = size_var, colour = site)) + 
   geom_point(size = 3) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "Size Range (mm)",
