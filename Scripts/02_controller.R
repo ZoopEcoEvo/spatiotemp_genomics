@@ -55,6 +55,14 @@ temp_record = read.csv(file = "Output/Output_data/temp_record.csv")
 
 ramp_record = read.csv(file = "Output/Output_data/ramp_record.csv")
 
+full_data %>%  
+  group_by(site, season) %>% 
+  summarise(mean_ctmax = mean(ctmax)) %>% 
+  mutate(mean_ctmax = round(mean_ctmax, digits = 1)) %>% 
+  pivot_wider(names_from = season, 
+              values_from = mean_ctmax) %>% 
+  write.csv("Output/Output_data/lim_summary.csv")
+
 if(make_report == T){
   render(input = "Output/Reports/report.Rmd", #Input the path to your .Rmd file here
          #output_file = "report", #Name your file here if you want it to have a different name; leave off the .html, .md, etc. - it will add the correct one automatically

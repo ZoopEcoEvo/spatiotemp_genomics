@@ -14,10 +14,18 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
 
 ## Site Characteristics
 
+``` r
+site_temps = full_data %>% 
+  select(site, season, doy, collection_temp, collection_salinity) %>%  
+  distinct() %>% 
+  filter(doy > 100) 
+```
+
 Copepods were collected by surface tow from sites across the Western
 Atlantic at several times throughout the year. The sites are shown
 below. Temperatures at the time of collection were measured using a
-manual thermometer.
+manual thermometer. Across the entire set of collections, temperature
+ranged from 12°C to 36°C.
 
 ``` r
 coords = site_data %>%
@@ -39,11 +47,7 @@ site_map = map_data("world") %>%
        y = "Latitude") + 
   theme_matt(base_size = 16)
 
-site_temp_plot = full_data %>% 
-  select(site, season, doy, collection_temp, collection_salinity) %>%  
-  distinct() %>% 
-  filter(doy > 100) %>% 
-  ggplot(aes(x = doy, y = collection_temp, colour = site)) + 
+site_temp_plot = ggplot(site_temps, aes(x = doy, y = collection_temp, colour = site)) + 
   geom_line(linewidth = 2) + 
   geom_point(size = 5) +
   scale_colour_manual(values = site_cols) + 
