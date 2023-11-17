@@ -3,9 +3,10 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
 2023-11-16
 
 - [Site Characteristics](#site-characteristics)
-- [Critical Thermal Limits](#critical-thermal-limits)
-- [Warming tolerance](#warming-tolerance)
-- [Body Size](#body-size)
+- [Phenotypic Measurements](#phenotypic-measurements)
+  - [Critical Thermal Limits](#critical-thermal-limits)
+  - [Warming tolerance](#warming-tolerance)
+  - [Body Size](#body-size)
   - [Salinity Pair Comparisons](#salinity-pair-comparisons)
 - [Trait Correlations](#trait-correlations)
 - [Trait Variability](#trait-variability)
@@ -13,16 +14,6 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
   (Haldanes)](#comparing-rates-of-change-haldanes)
 - [Next Steps](#next-steps)
 - [Misc. Details](#misc-details)
-
-``` r
-# TO DO 
-
-# - Use temperature residuals for Haldanes in order to account for the influence of plasticity? 
-# - Temperature plots for context 
-# - Actual stats (mixed effects model, trait ~ collection temp, with experimental replicate as random effect)
-# - ARR for % change to directly compare traits 
-# - Framework for quantifying the effects of within- and across-population variation in thermal limits to spatial patterns in vulnerability to warming. Comparing predictions based on 1) median, 2) overall CTmax vs. temp regression, 3) population variation in intercepts, 4) population variation in both slope and intercept
-```
 
 ## Site Characteristics
 
@@ -115,7 +106,10 @@ data.frame("Region" = c("South", "Central", "North"),
 There are fairly well-established divergences between high salinity and
 low salinity populations of *Acartia tonsa*. These sets of
 geographically proximate but isolated populations provide independent
-comparisons of the effects of seasonality.
+comparisons of the effects of seasonality. Shown here are the collection
+conditions for these pairs of sites. Temperature was typically similar
+across the pairs within each collection, while salinity differences were
+fairly stable across collections.
 
 ``` r
 season_cols = c("early" = "grey75", 
@@ -179,13 +173,17 @@ ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "r
 #   theme_matt_facets(base_size = 14)
 ```
 
-## Critical Thermal Limits
+## Phenotypic Measurements
+
+### Critical Thermal Limits
 
 A total of 376 individuals were examined. Critical thermal limits and
 body size measurements were made before individuals were preserved in
 ethanol. We excluded data for 6 individuals, detailed below. These
 individuals had either very low CTmax or were, upon re-examination of
-photographs, identified as juveniles instead of mature females.
+photographs, identified as juveniles instead of mature females. With
+these individuals excluded, **the full data set contains 370 phenotyped
+individuals**.
 
 ``` r
 excluded %>% 
@@ -209,11 +207,14 @@ from lethal temperatures, and indeed, all individuals observed so far
 recovered following the assay.
 
 Individuals were rested for one hour after collection before the assay.
-During the assay, copepods were held in 0.2 um filtered seawater,
-adjusted to match the salinity at the time of collection with bottled
-spring water. During the assay, several ‘control’ individuals were
-maintained in this adjusted salinity solution, but did not experience
-the temperature ramp, to ensure that there was no background mortality.
+During the assay, copepods were held in artificial seawater, composed of
+bottled spring water and Instant Ocean salt mix adjusted to match
+collection salinities. During the assay, several ‘control’ individuals
+were maintained in this solution at ambient temperatures without the
+temperature ramp to ensure that there was no background mortality. When
+sorting individuals from the plankton tow contents, they were held in a
+50:50 mix of 60 um filtered water from the collection site and
+artificial seawater as an additional acclimation step.
 
 Shown below are the measured CTmax values. Note: CTmax values for the
 early season Key Largo copepods were collected at the end of February
@@ -221,7 +222,8 @@ early season Key Largo copepods were collected at the end of February
 during this project, nor were copepods individually preserved after the
 experiments. These early season CTmax values are included as a point of
 comparison. Individual measurements are shown in small points for each
-collection. The large point indicates the median value.
+collection. The large points indicate the median values for each
+collection.
 
 ``` r
 mean_ctmax = full_data %>% 
@@ -251,6 +253,11 @@ ggplot(full_data, aes(x = season, y = ctmax, colour = site)) +
 
 <img src="../Figures/markdown/seasonal-ct-max-1.png" style="display: block; margin: auto;" />
 
+The same data is shown below, plotted against day of the year instead of
+season. This accounts for the variable timing of collections across
+regions (e.g. - the compressed collections from the Northern sites to
+accomodate the earlier onset of cold temperatures).
+
 ``` r
 ggplot(filter(full_data, site != "Key Largo"), aes(x = doy, y = ctmax, colour = site)) + 
   geom_line(data = filter(mean_ctmax, site != "Key Largo"), 
@@ -274,34 +281,9 @@ ggplot(filter(full_data, site != "Key Largo"), aes(x = doy, y = ctmax, colour = 
 
 <img src="../Figures/markdown/doy-ct-max-1.png" style="display: block; margin: auto;" />
 
-``` r
-ggplot(full_data, aes(x = season, y = ctmax, colour = site)) + 
-  facet_wrap(.~site, scales = "free_y") + 
-  geom_line(data = mean_ctmax, 
-            aes(y = median_ctmax, group = site),
-            position = position_dodge(width = 0.4),
-            linewidth = 3, alpha = 0.5) + 
-  geom_line(data = mean_ctmax, 
-            aes(y = collection_temp, group = site),
-            position = position_dodge(width = 0.4),
-            linewidth = 2,
-            colour = "grey") + 
-  geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
-                                             dodge.width = 0.4),
-             alpha = 0.8) + 
-  # geom_point(data = mean_ctmax, 
-  #            aes(y = median_ctmax),
-  #            position = position_dodge(width = 0.4),
-  #            size = 4) + 
-  scale_colour_manual(values = site_cols) + 
-  labs(y = "CTmax (°C)",
-       x = "Season") +
-  theme_matt() + 
-  theme(legend.position = "none", 
-        legend.title.align = 0.125)
-```
-
-<img src="../Figures/markdown/ctmax-ind-pops-season-1.png" style="display: block; margin: auto;" />
+CTmax data for each individual site is shown below, plotted against day
+of the year. The grey line in each facet shows the collection
+temperatures. Note that both axes vary across facets.
 
 ``` r
 ggplot(full_data, aes(x = doy, y = ctmax, colour = site)) + 
@@ -324,7 +306,7 @@ ggplot(full_data, aes(x = doy, y = ctmax, colour = site)) +
   #            size = 4) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "CTmax (°C)",
-       x = "Season") +
+       x = "Day of Year") +
   theme_matt() + 
   theme(legend.position = "none", 
         legend.title.align = 0.125)
@@ -332,10 +314,12 @@ ggplot(full_data, aes(x = doy, y = ctmax, colour = site)) +
 
 <img src="../Figures/markdown/ctmax-ind-pops-doy-1.png" style="display: block; margin: auto;" />
 
-## Warming tolerance
+### Warming tolerance
 
-Warming tolerance was calculated as the difference between measured
-CTmax values and the collection temperature. Lower warming tolerance
+Warming tolerance (the difference between thermal limits and
+environmental temperatures) is a commonly used metric of climate
+vulnerability. We calculated this as the difference between measured
+CTmax values and the collection temperature. Smaller warming tolerance
 values indicate that populations were nearer to their upper thermal
 limits, and may therefore be more vulnerable to additional warming.
 
@@ -367,12 +351,12 @@ ggplot(full_data, aes(x = season, y = warming_tol, colour = site)) +
 
 <img src="../Figures/markdown/seasonal-warming-tol-1.png" style="display: block; margin: auto;" />
 
-## Body Size
+### Body Size
 
 Following the CTmax assay, individuals were photographed for body size
 measurements. Prosome lengths were measured from these photographs using
 a scale micrometer and the software ImageJ. These measurements are shown
-below.
+below. As before, large points indicate the median body size.
 
 ``` r
 mean_size = full_data %>% 
@@ -426,30 +410,6 @@ ggplot(drop_na(full_data, size), aes(x = doy, y = size, colour = site)) +
 <img src="../Figures/markdown/doy-body-size-1.png" style="display: block; margin: auto;" />
 
 ``` r
-ggplot(full_data, aes(x = season, y = size, colour = site)) + 
-  facet_wrap(.~site) + 
-  geom_line(data = mean_size, 
-            aes(y = median_size, group = site),
-            position = position_dodge(width = 0.4),
-            linewidth = 3, alpha = 0.5) + 
-  geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
-                                             dodge.width = 0.4),
-             alpha = 0.8) + 
-  # geom_point(data = mean_ctmax, 
-  #            aes(y = median_ctmax),
-  #            position = position_dodge(width = 0.4),
-  #            size = 4) + 
-  scale_colour_manual(values = site_cols) + 
-  labs(y = "Prosome Length (mm)",
-       x = "Season") +
-  theme_matt() + 
-  theme(legend.position = "none", 
-        legend.title.align = 0.125)
-```
-
-<img src="../Figures/markdown/size-ind-pops-season-1.png" style="display: block; margin: auto;" />
-
-``` r
 ggplot(drop_na(full_data, size), aes(x = doy, y = size, colour = site)) + 
   facet_wrap(.~site) + 
   geom_line(data = drop_na(mean_size, mean_size), 
@@ -465,7 +425,7 @@ ggplot(drop_na(full_data, size), aes(x = doy, y = size, colour = site)) +
   #            size = 4) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "Prosome Length (mm)",
-       x = "Season") +
+       x = "Day of Year") +
   theme_matt() + 
   theme(legend.position = "none", 
         legend.title.align = 0.125)
@@ -474,6 +434,9 @@ ggplot(drop_na(full_data, size), aes(x = doy, y = size, colour = site)) +
 <img src="../Figures/markdown/size-ind-pops-doy-1.png" style="display: block; margin: auto;" />
 
 ### Salinity Pair Comparisons
+
+The three pairs of salinity comparisons do not show any general pattern,
+with variation dominated by seasonal changes.
 
 ``` r
 sal_comp_ctmax_plot = sal_comps %>% 
@@ -549,7 +512,10 @@ sal_comp_size_resid_plot = sal_comps %>%
 ## Trait Correlations
 
 We expect that collections from warmer waters should yield copepods with
-higher thermal limits and smaller body sizes.
+higher thermal limits and smaller body sizes. Our observations largely
+fit this expectation, with strong increases in CTmax at higher
+temperatures, and a general decrease in prosome lengths as temperature
+increased.
 
 ``` r
 ctmax_temp_plot = ggplot(full_data, aes(x = collection_temp, y = ctmax)) + 
@@ -598,12 +564,12 @@ CTmax. In many cases, larger body sizes are associated with cold
 adaptation/acclimation. We may therefore see this pattern emerge across
 populations or seasons. If populations contain a mix of cold- and
 warm-adapted genotypes, however, we might also see this relationship
-emerge **within** individual collections. Shown below is the
-relationship between prosome length and CTmax for the individuals
-measured thus far. Individual regression lines for each site are also
-included. Note that raw CTmax and body size values are shown, rather
-than metrics like residuals from a statistical model correcting for
-variation in collection temperature.
+emerge **within** populations or even individual collections. Shown
+below is the relationship between prosome length and CTmax in our data
+set. Individual regression lines for each site are also included - the
+dark grey lines in the background represent the ‘universal’ regression
+for that site, with individual colored regression lines for each
+collection.
 
 ``` r
 universal_size = full_data %>% 
@@ -635,10 +601,10 @@ pop_size = full_data %>%
   #             colour = "grey60", 
   #             se = F,
   #             linewidth = 2) + 
-  geom_point(size = 1.3, alpha = 0.3) + 
   geom_smooth(data = full_data, 
               aes(x = size, y = ctmax, group = site), 
-              colour = "grey70", method = "lm", se = F) + 
+              colour = "grey20", method = "lm", se = F) + 
+  geom_point(size = 1.3, alpha = 0.3) + 
   geom_smooth(method = "lm", se = F,
               linewidth = 1) + 
   scale_colour_manual(values = site_cols) + 
@@ -653,10 +619,74 @@ ggarrange(universal_size, pop_size, common.legend = T, legend = "none", nrow = 2
 
 <img src="../Figures/markdown/ctmax-vs-size-1.png" style="display: block; margin: auto;" />
 
+This relationship may be affected by changes in temperature at each
+site, however, which is controlled for here by examining the
+relationship between CTmax and size residuals, acquired from regressions
+of these traits against collection temperature. This substantially
+reduces the strength of the apparent relationship, but there is still a
+slightly negative overall relationship.
+
+``` r
+filtered_data = full_data %>% 
+  drop_na(size, ctmax)
+
+ctmax_temp.model = lm(ctmax ~ collection_temp + site, data = filtered_data)
+ctmax_resids = residuals(ctmax_temp.model)
+
+size_temp.model = lm(size ~ collection_temp + site, data = filtered_data)
+size_resids = residuals(size_temp.model)
+
+universal_resids = filtered_data %>% 
+  mutate(ctmax_resids = ctmax_resids,
+         size_resids = size_resids) 
+
+all_resids = ggplot(universal_resids, aes(x = size_resids, y = ctmax_resids)) + 
+  # geom_smooth(data = filter(full_data, ctmax > 31), 
+  #             aes(x = size, y = ctmax),
+  #             method = "lm", 
+  #             colour = "grey60", 
+  #             se = F,
+  #             linewidth = 2) + 
+  geom_smooth(method = "lm", se = T,
+              linewidth = 2,
+              colour = "grey70") + 
+  geom_point(aes(colour = site),
+             size = 2, alpha = 0.7) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "CTmax Residuals",
+       x = "") +
+  theme_matt(base_size = 14) + 
+  theme(legend.position = "right",
+        axis.title.x = element_blank())
+
+pop_resids = ggplot(universal_resids, aes(x = size_resids, y = ctmax_resids, colour = site, group = season)) + 
+  facet_wrap(site~.) + 
+  # geom_smooth(data = filter(full_data, ctmax > 31), 
+  #             aes(x = size, y = ctmax),
+  #             method = "lm", 
+  #             colour = "grey60", 
+  #             se = F,
+  #             linewidth = 2) + 
+  geom_smooth(aes(x = size_resids, y = ctmax_resids, group = site), 
+              colour = "grey20", method = "lm", se = F) + 
+  geom_point(size = 1.3, alpha = 0.3) + 
+  geom_smooth(method = "lm", se = F,
+              linewidth = 1) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "CTmax Residuals",
+       x = "Prosome Length Residuals") +
+  theme_matt(base_size = 14) + 
+  theme(legend.position = "right")
+
+ggarrange(all_resids, pop_resids, common.legend = T, legend = "none", nrow = 2)
+```
+
+<img src="../Figures/markdown/ctmax-vs-size-resids-1.png" style="display: block; margin: auto;" />
+
 ## Trait Variability
 
 Shown below is the trait variation (ranges) for each site. Ranges are
-calculated for each season separately.
+calculated for each collection separately.
 
 ``` r
 trait_ranges = full_data %>% 
@@ -712,7 +742,7 @@ selection (as opposed to acclimation) are driving seasonal changes, we
 may expect to see a reduction in variance in the peak samples relative
 to the early season samples. Note that early season collection
 temperatures this year were higher than expected, driven by fairly
-strong heatwaves in the North Atlantic.
+strong heatwaves across the North Atlantic.
 
 ``` r
 ggplot(trait_ranges, aes(x = season, y = ctmax_var, colour = site)) + 
@@ -755,16 +785,15 @@ adj_slopes = full_data %>%
   drop_na() %>% 
   mutate(adj_ctmax_slope = ctmax_slope / ctmax_sd,
          adj_size_slope = size_slope / size_sd) %>% 
-  pivot_longer(cols = starts_with("adj_"), 
+  pivot_longer(cols = contains("_slope"), 
                names_to = "slope_type",
-               names_prefix = "adj_",
                values_to = "slope")
 
 # ggplot(adj_slopes, aes(x = lat, y = temp_range)) + 
 #   geom_point() + 
 #   theme_matt()
 
-ggplot(adj_slopes, aes(x = slope_type, y = abs(slope), 
+ggplot(filter(adj_slopes, str_detect(slope_type, "adj_")), aes(x = slope_type, y = abs(slope), 
                        group = site, colour = site)) + 
   geom_hline(yintercept = 0) + 
   geom_line(linewidth = 1) + 
@@ -773,7 +802,7 @@ ggplot(adj_slopes, aes(x = slope_type, y = abs(slope),
   theme(legend.position = "right")
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-5-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
 
 Haldanes are a similar unit, representing change in units of standard
 deviations per generation. This can be a useful metric for comparing
@@ -782,8 +811,17 @@ sampling period likely varies across populations. The calculation of
 haldanes is taken from Hendry and Kinnison (1999), which in turn is
 based on work from Gingerich (1993). We estimated the number of
 generations passed between collections using the empirical relationship
-between temperature and development time from \_\_\_\_. For initial
-estimates, we used a temperature halfway in between collections.
+between temperature and development time for *Acartia tonsa* from
+Leandro et al. (2006). For initial estimates, we used a temperature
+halfway between what was observed during collection. Changes were
+examined for each pair of collections (early to peak, and peak to late).
+
+Shown below is a comparison of the estimated haldane values for CTmax
+and body size, separated by season. Keep in mind that while this metric
+accounts for differences in the number of generations between
+collections, it does not directly account for differences in
+temperature, leading to inflated values in the “peak to late”
+comparisons, which typically covered a larger range of temperatures.
 
 ``` r
 early_peak = full_data %>% 
@@ -848,7 +886,7 @@ haldanes = bind_rows(early_peak, peak_late) %>%
 
 haldanes %>% 
   ungroup() %>% 
-  select(site, season, ctmax_haldanes, size_haldanes) %>% 
+  select(site, temp_change, season, ctmax_haldanes, size_haldanes) %>% 
   pivot_longer(cols = c(ctmax_haldanes, size_haldanes),
                names_to = c("type", NA), 
                names_sep = "_",
@@ -856,14 +894,21 @@ haldanes %>%
   ggplot(aes(x = type, y = haldanes, group = site, colour = site)) + 
   facet_wrap(season~.) + 
   geom_hline(yintercept = 0) + 
-  geom_line(linewidth = 1) + 
+  geom_line(aes(linewidth = desc(temp_change))) + 
   scale_colour_manual(values = site_cols) + 
+  labs(x = "Trait", 
+       y = "Haldanes", 
+       linewidth = "Temp. Change") + 
   theme_matt_facets()
 ```
 
 <img src="../Figures/markdown/haldane-comp-plot-1.png" style="display: block; margin: auto;" />
 
-Shown below are the haldane values plotted against latitude.
+Shown below are the haldane values plotted against latitude. Note that
+even though large changes in temperature occured between peak and late
+samples in the Chesapeake, the change in haldanes is relatively small,
+while in the Northern populations, changes are larger, though more
+variable.
 
 ``` r
 ctmax_haldanes = ggplot(haldanes, aes(x = lat, y = ctmax_haldanes, colour = site, shape = season)) + 
@@ -937,3 +982,33 @@ ggplot(ramp_record2, aes(x = minute_interval, y = mean_ramp)) +
 ```
 
 <img src="../Figures/markdown/ramp-record-plot-1.png" style="display: block; margin: auto;" />
+
+``` r
+full_data %>% 
+  drop_na(replicate) %>%  
+  ggplot(aes(x = factor(replicate), y = ctmax, group = site)) + 
+  facet_grid(site~season, scales = "free_y") + 
+  geom_point(position = position_jitter(width = 0.1, height = 0),
+             alpha = 0.4,
+             colour = "grey30") + 
+  geom_smooth(method = "lm", colour = "black") + 
+  labs(x = "Replicate", 
+       y = "CTmax") + 
+  theme_matt_facets()
+```
+
+<img src="../Figures/markdown/rep-comp-1.png" style="display: block; margin: auto;" />
+
+``` r
+ggplot(haldanes, aes(x = lat, y = gens, colour = site, shape = season)) + 
+  geom_hline(yintercept = 0) + 
+  geom_point(size = 5) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(x = "Latitude", 
+       y = "Generations between \ncollections") +
+  scale_y_continuous(breaks = seq(from = 0, to = 11, by = 2)) + 
+  theme_matt() + 
+  theme(legend.position = "right")
+```
+
+<img src="../Figures/markdown/num-gens-plot-1.png" style="display: block; margin: auto;" />
