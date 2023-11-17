@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-10-22
+2023-11-16
 
 - [Site Characteristics](#site-characteristics)
 - [Critical Thermal Limits](#critical-thermal-limits)
@@ -9,8 +9,20 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
   - [Salinity Pair Comparisons](#salinity-pair-comparisons)
 - [Trait Correlations](#trait-correlations)
 - [Trait Variability](#trait-variability)
+- [Comparing rates of change
+  (Haldanes)](#comparing-rates-of-change-haldanes)
 - [Next Steps](#next-steps)
 - [Misc. Details](#misc-details)
+
+``` r
+# TO DO 
+
+# - Use temperature residuals for Haldanes in order to account for the influence of plasticity? 
+# - Temperature plots for context 
+# - Actual stats (mixed effects model, trait ~ collection temp, with experimental replicate as random effect)
+# - ARR for % change to directly compare traits 
+# - Framework for quantifying the effects of within- and across-population variation in thermal limits to spatial patterns in vulnerability to warming. Comparing predictions based on 1) median, 2) overall CTmax vs. temp regression, 3) population variation in intercepts, 4) population variation in both slope and intercept
+```
 
 ## Site Characteristics
 
@@ -169,7 +181,7 @@ ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "r
 
 ## Critical Thermal Limits
 
-A total of 356 individuals were examined. Critical thermal limits and
+A total of 376 individuals were examined. Critical thermal limits and
 body size measurements were made before individuals were preserved in
 ethanol. We excluded data for 6 individuals, detailed below. These
 individuals had either very low CTmax or were, upon re-examination of
@@ -213,7 +225,7 @@ collection. The large point indicates the median value.
 
 ``` r
 mean_ctmax = full_data %>% 
-  group_by(site, season, collection_temp) %>% 
+  group_by(site, season, doy, collection_temp) %>% 
   summarize(mean_ctmax = mean(ctmax),
             median_ctmax = median(ctmax))
 
@@ -238,6 +250,29 @@ ggplot(full_data, aes(x = season, y = ctmax, colour = site)) +
 ```
 
 <img src="../Figures/markdown/seasonal-ct-max-1.png" style="display: block; margin: auto;" />
+
+``` r
+ggplot(filter(full_data, site != "Key Largo"), aes(x = doy, y = ctmax, colour = site)) + 
+  geom_line(data = filter(mean_ctmax, site != "Key Largo"), 
+            aes(y = median_ctmax, group = site),
+            position = position_dodge(width = 0.4),
+            linewidth = 1) + 
+  geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
+                                             dodge.width = 0.4),
+             alpha = 0.3) + 
+  geom_point(data = filter(mean_ctmax, site != "Key Largo"), 
+             aes(y = median_ctmax),
+             position = position_dodge(width = 0.4),
+             size = 4) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "CTmax (°C)",
+       x = "Season") +
+  theme_matt() + 
+  theme(legend.position = "right", 
+        legend.title.align = 0.125)
+```
+
+<img src="../Figures/markdown/doy-ct-max-1.png" style="display: block; margin: auto;" />
 
 ``` r
 ggplot(full_data, aes(x = season, y = ctmax, colour = site)) + 
@@ -266,7 +301,36 @@ ggplot(full_data, aes(x = season, y = ctmax, colour = site)) +
         legend.title.align = 0.125)
 ```
 
-<img src="../Figures/markdown/ctmax-ind-pops-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/ctmax-ind-pops-season-1.png" style="display: block; margin: auto;" />
+
+``` r
+ggplot(full_data, aes(x = doy, y = ctmax, colour = site)) + 
+  facet_wrap(.~site, scales = "free") + 
+  geom_line(data = mean_ctmax, 
+            aes(y = median_ctmax, group = site),
+            position = position_dodge(width = 0.4),
+            linewidth = 3, alpha = 0.5) + 
+  geom_line(data = mean_ctmax, 
+            aes(y = collection_temp, group = site),
+            position = position_dodge(width = 0.4),
+            linewidth = 2,
+            colour = "grey") + 
+  geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
+                                             dodge.width = 0.4),
+             alpha = 0.8) + 
+  # geom_point(data = mean_ctmax, 
+  #            aes(y = median_ctmax),
+  #            position = position_dodge(width = 0.4),
+  #            size = 4) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "CTmax (°C)",
+       x = "Season") +
+  theme_matt() + 
+  theme(legend.position = "none", 
+        legend.title.align = 0.125)
+```
+
+<img src="../Figures/markdown/ctmax-ind-pops-doy-1.png" style="display: block; margin: auto;" />
 
 ## Warming tolerance
 
@@ -312,7 +376,7 @@ below.
 
 ``` r
 mean_size = full_data %>% 
-  group_by(site, season) %>% 
+  group_by(site, season, doy, collection_temp) %>% 
   summarize(mean_size = mean(size),
             median_size = median(size))
 
@@ -339,6 +403,29 @@ ggplot(full_data, aes(x = season, y = size, colour = site)) +
 <img src="../Figures/markdown/seasonal-body-size-1.png" style="display: block; margin: auto;" />
 
 ``` r
+ggplot(drop_na(full_data, size), aes(x = doy, y = size, colour = site)) + 
+  geom_line(data = drop_na(mean_size, mean_size), 
+            aes(y = median_size, group = site),
+            position = position_dodge(width = 0.4),
+            linewidth = 1) + 
+  geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
+                                             dodge.width = 0.4),
+             alpha = 0.3) + 
+  geom_point(data = drop_na(mean_size, mean_size), 
+             aes(y = median_size),
+             position = position_dodge(width = 0.4),
+             size = 4) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "Prosome Length (mm)",
+       x = "Season") +
+  theme_matt() + 
+  theme(legend.position = "right", 
+        legend.title.align = 0.125)
+```
+
+<img src="../Figures/markdown/doy-body-size-1.png" style="display: block; margin: auto;" />
+
+``` r
 ggplot(full_data, aes(x = season, y = size, colour = site)) + 
   facet_wrap(.~site) + 
   geom_line(data = mean_size, 
@@ -360,7 +447,31 @@ ggplot(full_data, aes(x = season, y = size, colour = site)) +
         legend.title.align = 0.125)
 ```
 
-<img src="../Figures/markdown/size-ind-pops-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/size-ind-pops-season-1.png" style="display: block; margin: auto;" />
+
+``` r
+ggplot(drop_na(full_data, size), aes(x = doy, y = size, colour = site)) + 
+  facet_wrap(.~site) + 
+  geom_line(data = drop_na(mean_size, mean_size), 
+            aes(y = median_size, group = site),
+            position = position_dodge(width = 0.4),
+            linewidth = 3, alpha = 0.5) + 
+  geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
+                                             dodge.width = 0.4),
+             alpha = 0.8) + 
+  # geom_point(data = mean_ctmax, 
+  #            aes(y = median_ctmax),
+  #            position = position_dodge(width = 0.4),
+  #            size = 4) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "Prosome Length (mm)",
+       x = "Season") +
+  theme_matt() + 
+  theme(legend.position = "none", 
+        legend.title.align = 0.125)
+```
+
+<img src="../Figures/markdown/size-ind-pops-doy-1.png" style="display: block; margin: auto;" />
 
 ### Salinity Pair Comparisons
 
@@ -617,6 +728,164 @@ ggplot(trait_ranges, aes(x = season, y = ctmax_var, colour = site)) +
 ```
 
 <img src="../Figures/markdown/season-var-1.png" style="display: block; margin: auto;" />
+
+## Comparing rates of change (Haldanes)
+
+Both CTmax and body size varied between sites and across seasons. It can
+be difficult to directly compare these two traits. We take two
+approaches to ease this comparison. Shown below is a comparison of the
+slopes from the trait regressions against collection temperature for
+each population, standardized by the standard deviation of the trait for
+each population (across all collections). This presents change per
+degree change in collection temperature in units of standard deviations
+for both CTmax and body size.
+
+``` r
+adj_slopes = full_data %>% 
+  group_by(site, lat) %>% 
+  arrange(doy) %>%  
+  filter(site != "Key Largo") %>%
+  summarize("ctmax_slope" = coef(lm(ctmax ~ collection_temp))["collection_temp"], 
+            "mean_ctmax" = mean(ctmax),
+            "ctmax_sd" = sd(ctmax),
+            "size_slope" = coef(lm(size ~ collection_temp))["collection_temp"], 
+            "mean_size" = mean(size),
+            "size_sd" = sd(size), 
+            "temp_range" = max(collection_temp) - min(collection_temp)) %>%  
+  drop_na() %>% 
+  mutate(adj_ctmax_slope = ctmax_slope / ctmax_sd,
+         adj_size_slope = size_slope / size_sd) %>% 
+  pivot_longer(cols = starts_with("adj_"), 
+               names_to = "slope_type",
+               names_prefix = "adj_",
+               values_to = "slope")
+
+# ggplot(adj_slopes, aes(x = lat, y = temp_range)) + 
+#   geom_point() + 
+#   theme_matt()
+
+ggplot(adj_slopes, aes(x = slope_type, y = abs(slope), 
+                       group = site, colour = site)) + 
+  geom_hline(yintercept = 0) + 
+  geom_line(linewidth = 1) + 
+  scale_colour_manual(values = site_cols) + 
+  theme_matt() + 
+  theme(legend.position = "right")
+```
+
+<img src="../Figures/markdown/unnamed-chunk-5-1.png" style="display: block; margin: auto;" />
+
+Haldanes are a similar unit, representing change in units of standard
+deviations per generation. This can be a useful metric for comparing
+across traits, especially as the number of generations covered by our
+sampling period likely varies across populations. The calculation of
+haldanes is taken from Hendry and Kinnison (1999), which in turn is
+based on work from Gingerich (1993). We estimated the number of
+generations passed between collections using the empirical relationship
+between temperature and development time from \_\_\_\_. For initial
+estimates, we used a temperature halfway in between collections.
+
+``` r
+early_peak = full_data %>% 
+  filter(season %in% c("early", "peak")) %>% 
+  mutate(season = if_else(season == "early", "one", "two")) %>% 
+  group_by(site) %>% 
+  mutate(ctmax_sd_p = sd(ctmax),
+         size_sd_p = sd(size), 
+         temp_change = max(collection_temp) - min(collection_temp),
+         avg_temp = (max(collection_temp) + min(collection_temp)) / 2,
+         days_passed = max(doy) - min(doy)) %>% 
+  select(site, lat, season, 
+         ctmax_sd_p, size_sd_p, 
+         temp_change, avg_temp, days_passed, 
+         ctmax, size) %>%
+  group_by(site, lat, season, 
+           ctmax_sd_p, size_sd_p, 
+           temp_change, avg_temp, days_passed) %>% 
+  summarize(ctmax = mean(ctmax),
+            size = mean(size)) %>% 
+  pivot_wider(id_cols = c(site, lat, ctmax_sd_p, size_sd_p, 
+                          temp_change, avg_temp, days_passed), 
+              names_from = season, 
+              values_from = c(ctmax, size)) %>% 
+  mutate(season = "early_to_peak") %>%  
+  drop_na()
+
+peak_late = full_data %>% 
+  filter(season %in% c("peak", "late")) %>% 
+  mutate(season = if_else(season == "peak", "one", "two")) %>% 
+  group_by(site) %>% 
+  mutate(ctmax_sd_p = sd(ctmax),
+         size_sd_p = sd(size), 
+         temp_change = last(collection_temp) - first(collection_temp),
+         avg_temp = (max(collection_temp) + min(collection_temp)) / 2,
+         days_passed = max(doy) - min(doy)) %>% 
+  select(site, lat, season, ctmax_sd_p, size_sd_p, 
+         temp_change, avg_temp, days_passed, 
+         ctmax, size) %>%
+  group_by(site, lat, season, ctmax_sd_p, size_sd_p, 
+           temp_change, avg_temp, days_passed) %>% 
+  summarize(ctmax = mean(ctmax),
+            size = mean(size)) %>% 
+  pivot_wider(id_cols = c(site, lat, ctmax_sd_p, size_sd_p, 
+                          temp_change, avg_temp, days_passed), 
+              names_from = season, 
+              values_from = c(ctmax, size)) %>% 
+  mutate(season = "peak_to_late") %>%  
+  drop_na()
+
+calc_halds = function(x1, x2, sd_p, g){
+  ((x2 / sd_p) - (x1 / sd_p)) / g
+}
+
+haldanes = bind_rows(early_peak, peak_late) %>% 
+  mutate("gen_time" = 5490*(avg_temp + 1)^-2.05, 
+         "gens" = floor(days_passed / gen_time),
+         "ctmax_haldanes" = calc_halds(x2 = ctmax_two, x1 = ctmax_one, 
+                                       sd_p = ctmax_sd_p, g = gens),
+         "size_haldanes" = calc_halds(x2 = size_two, x1 = size_one, 
+                                      sd_p = size_sd_p, g = gens))
+
+haldanes %>% 
+  ungroup() %>% 
+  select(site, season, ctmax_haldanes, size_haldanes) %>% 
+  pivot_longer(cols = c(ctmax_haldanes, size_haldanes),
+               names_to = c("type", NA), 
+               names_sep = "_",
+               values_to = "haldanes") %>% 
+  ggplot(aes(x = type, y = haldanes, group = site, colour = site)) + 
+  facet_wrap(season~.) + 
+  geom_hline(yintercept = 0) + 
+  geom_line(linewidth = 1) + 
+  scale_colour_manual(values = site_cols) + 
+  theme_matt_facets()
+```
+
+<img src="../Figures/markdown/haldane-comp-plot-1.png" style="display: block; margin: auto;" />
+
+Shown below are the haldane values plotted against latitude.
+
+``` r
+ctmax_haldanes = ggplot(haldanes, aes(x = lat, y = ctmax_haldanes, colour = site, shape = season)) + 
+  geom_hline(yintercept = 0) + 
+  geom_point(size = 3) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(x = "Latitude",
+       y = "Change in CTmax (haldanes)") + 
+  theme_matt_facets()
+
+size_haldanes = ggplot(haldanes, aes(x = lat, y = size_haldanes, colour = site, shape = season)) + 
+  geom_hline(yintercept = 0) + 
+  geom_point(size = 3) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(x = "Latitude",
+       y = "Change in Size (haldanes)") + 
+  theme_matt_facets()
+
+ggarrange(ctmax_haldanes, size_haldanes, common.legend = T, legend = "right", nrow = 2)
+```
+
+<img src="../Figures/markdown/haldanes-lat-plot-1.png" style="display: block; margin: auto;" />
 
 ## Next Steps
 
