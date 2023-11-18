@@ -745,11 +745,50 @@ ggarrange(all_resids, pop_resids, common.legend = T, legend = "none", nrow = 2)
 ```
 
 ```{r ctmax-model, include = F}
-ctmax.model = lme4::lmer(data = filtered_data,
+# 
+# full.model = lm(data = filtered_data, 
+#                 ctmax ~ site * collection_temp * size, 
+#                    na.action = "na.fail")
+# 
+# dredge_results = MuMIn::dredge(full.model)
+# top_model = MuMIn::get.models(dredge_results, 1)[[1]] #Best model
+# 
+# temp_vals = as_tibble(emtrends(top_model, spec = "site", var = "collection_temp")) 
+# size_vals = as_tibble(emtrends(top_model, spec = "site", var = "size")) 
+
+```
+
+To more formally test the relationships between CTmax, collection temperature, and size, we used a linear mixed effects model, structured as `ctmax ~ collection_temp + size + (1|site)`. This examines the effects of temperature and size on CTmax, with random intercepts for each site. Both fixed effects have a significant effect on CTmax. The overall effect of temperature suggests an increase in CTmax of 0.15°C per °C increase in collection temperature (i.e. - an ARR value of 0.15), while increasing body sizes decrease CTmax by 3.7°C per mm (or a decrease of ~0.37°C per tenth of a mm, which is more biologically realistic for *A. tonsa*). This ARR value is slightly lower than observed for other copepod species, but well within the range of previously observed values. The estimated effect of body size is, as expected, similar to that from the residuals plot above. 
+
+```{r}
+ctmax.model = lme4::lmer(data = filtered_data, 
                          ctmax ~ collection_temp + size + (1|site))
 
-summary(ctmax.model)
-car::Anova(ctmax.model)
+effects_summary = data.frame("Temperature" = unname(lme4::fixef(ctmax.model)["collection_temp"]),
+           "Size" = unname(lme4::fixef(ctmax.model)["size"]))
+
+knitr::kable(effects_summary)
+```
+
+By extracting the conditional mode for the random effects, we can also examine how thermal limits vary across sites beyond the influence of collection temperatures and body sizes. Shown below are these values, extracted from the linear mixed effects model. We can see that, similar to what's been observed in common garden experiments with *A. tonsa* previously, copepods from southern sites had higher thermal limits than those from northern sites. Interestingly, these population effects indicate that low salinity sites tended to have lower thermal limits than their paired high salinity site. 
+
+```{r pop-effs-plot, fig.width=9, fig.height=6}
+pop_effs = as.data.frame(lme4::ranef(ctmax.model)) %>% 
+  select("site" = grp, "pop_eff" = condval, "sd" = condsd) %>% 
+  inner_join(site_data, by = c("site")) %>% 
+  mutate(site = fct_reorder(site, lat))
+
+ggplot(pop_effs, aes(x = lat, y = pop_eff, colour = site)) + 
+  geom_hline(yintercept = 0) +
+  geom_errorbar(aes(ymin = pop_eff - sd, ymax = pop_eff + sd),
+                width = 0.5, linewidth = 1) + 
+  geom_point(size = 3) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(x = "Latitude", 
+       y = "Population Effect") + 
+  theme_matt() + 
+  theme(legend.position = "right")
+
 ```
 
 
@@ -821,16 +860,17 @@ ggplot(trait_ranges, aes(x = season, y = ctmax_var, colour = site)) +
 
 ```{r var-change-temp-change, include = F}
 var_change_data = trait_ranges %>%  
+  ungroup() %>% 
   mutate(mean_wt = mean_ctmax - collection_temp) %>% 
   group_by(site) %>% 
-  arrange(doy) %>%  
+  arrange(site, doy) %>%  
   mutate(temp_change = collection_temp - lag(collection_temp),
          ctmax_change = mean_ctmax - lag(mean_ctmax),
          wt_change = mean_wt - lag(mean_wt),
          var_change = ctmax_var - lag(ctmax_var)) %>%  
   select(site, season, doy, lat, temp_change, var_change, ctmax_change, wt_change)
 
-ggplot(var_change_data, aes(x = wt_change, y = var_change, colour = site)) +
+ggplot(var_change_data, aes(x = temp_change, y = var_change, colour = site)) +
   geom_hline(yintercept = 0) + 
   geom_vline(xintercept = 0) + 
   geom_point(size = 3) + 
@@ -851,7 +891,7 @@ ggplot(trait_ranges, aes(x = size_range, y = size_var)) +
 Both CTmax and body size varied between sites and across seasons. It can be difficult to directly compare these two traits. We take two approaches to ease this comparison. 
 Shown below is a comparison of the slopes from the trait regressions against collection temperature for each population, standardized by the standard deviation of the trait for each population (across all collections). This presents change per degree change in collection temperature in units of standard deviations for both CTmax and body size.
 
-```{r}
+```{r adj-slope-comp, fig.width=7, fig.height=6}
 adj_slopes = full_data %>% 
   group_by(site, lat) %>% 
   arrange(doy) %>%  
@@ -879,8 +919,11 @@ ggplot(filter(adj_slopes, str_detect(slope_type, "adj_")), aes(x = slope_type, y
   geom_hline(yintercept = 0) + 
   geom_line(linewidth = 1) + 
   scale_colour_manual(values = site_cols) + 
+  labs(x = "", 
+       y = "Slope (absolute value)") + 
   theme_matt() + 
-  theme(legend.position = "right")
+  theme(legend.position = "right",
+        axis.text.x = element_text(angle = 300, hjust = 0, vjust = 0.5))
 ```
 
 Haldanes are a similar unit, representing change in units of standard deviations per generation. This can be a useful metric for comparing across traits, especially as the number of generations covered by our sampling period likely varies across populations. The calculation of haldanes is taken from Hendry and Kinnison (1999), which in turn is based on work from Gingerich (1993). We estimated the number of generations passed between collections using the empirical relationship between temperature and development time for *Acartia tonsa* from Leandro et al. (2006). For initial estimates, we used a temperature halfway between what was observed during collection. Changes were examined for each pair of collections (early to peak, and peak to late).    

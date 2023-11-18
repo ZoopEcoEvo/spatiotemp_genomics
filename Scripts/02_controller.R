@@ -2,6 +2,7 @@
 library(rmarkdown)
 library(tidyverse)
 library(ggpubr)
+library(emmeans)
 
 #Determine which scripts should be run
 process_all_data = F #Runs data analysis 

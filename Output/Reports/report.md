@@ -15,6 +15,16 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
 - [Next Steps](#next-steps)
 - [Misc. Details](#misc-details)
 
+``` r
+# TO DO 
+
+# - Use temperature residuals for Haldanes in order to account for the influence of plasticity? 
+# - Temperature plots for context 
+# - Actual stats (mixed effects model, trait ~ collection temp, with experimental replicate as random effect)
+# - ARR for % change to directly compare traits 
+# - Framework for quantifying the effects of within- and across-population variation in thermal limits to spatial patterns in vulnerability to warming. Comparing predictions based on 1) median, 2) overall CTmax vs. temp regression, 3) population variation in intercepts, 4) population variation in both slope and intercept
+```
+
 ## Site Characteristics
 
 ``` r
@@ -705,6 +715,64 @@ ggarrange(all_resids, pop_resids, common.legend = T, legend = "none", nrow = 2)
 
 <img src="../Figures/markdown/ctmax-vs-size-resids-1.png" style="display: block; margin: auto;" />
 
+To more formally test the relationships between CTmax, collection
+temperature, and size, we used a linear mixed effects model, structured
+as `ctmax ~ collection_temp + size + (1|site)`. This examines the
+effects of temperature and size on CTmax, with random intercepts for
+each site. Both fixed effects have a significant effect on CTmax. The
+overall effect of temperature suggests an increase in CTmax of 0.15°C
+per °C increase in collection temperature (i.e. - an ARR value of 0.15),
+while increasing body sizes decrease CTmax by 3.7°C per mm (or a
+decrease of ~0.37°C per tenth of a mm, which is more biologically
+realistic for *A. tonsa*). This ARR value is slightly lower than
+observed for other copepod species, but well within the range of
+previously observed values. The estimated effect of body size is, as
+expected, similar to that from the residuals plot above.
+
+``` r
+ctmax.model = lme4::lmer(data = filtered_data, 
+                         ctmax ~ collection_temp + size + (1|site))
+
+effects_summary = data.frame("Temperature" = unname(lme4::fixef(ctmax.model)["collection_temp"]),
+           "Size" = unname(lme4::fixef(ctmax.model)["size"]))
+
+knitr::kable(effects_summary)
+```
+
+| Temperature |      Size |
+|------------:|----------:|
+|   0.1500287 | -3.722419 |
+
+By extracting the conditional mode for the random effects, we can also
+examine how thermal limits vary across sites beyond the influence of
+collection temperatures and body sizes. Shown below are these values,
+extracted from the linear mixed effects model. We can see that, similar
+to what’s been observed in common garden experiments with *A. tonsa*
+previously, copepods from southern sites had higher thermal limits than
+those from northern sites. Interestingly, these population effects
+indicate that low salinity sites tended to have lower thermal limits
+than their paired high salinity site.
+
+``` r
+pop_effs = as.data.frame(lme4::ranef(ctmax.model)) %>% 
+  select("site" = grp, "pop_eff" = condval, "sd" = condsd) %>% 
+  inner_join(site_data, by = c("site")) %>% 
+  mutate(site = fct_reorder(site, lat))
+
+ggplot(pop_effs, aes(x = lat, y = pop_eff, colour = site)) + 
+  geom_hline(yintercept = 0) +
+  geom_errorbar(aes(ymin = pop_eff - sd, ymax = pop_eff + sd),
+                width = 0.5, linewidth = 1) + 
+  geom_point(size = 3) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(x = "Latitude", 
+       y = "Population Effect") + 
+  theme_matt() + 
+  theme(legend.position = "right")
+```
+
+<img src="../Figures/markdown/pop-effs-plot-1.png" style="display: block; margin: auto;" />
+
 ## Trait Variability
 
 Shown below is the trait variation (ranges) for each site. Ranges are
@@ -820,11 +888,14 @@ ggplot(filter(adj_slopes, str_detect(slope_type, "adj_")), aes(x = slope_type, y
   geom_hline(yintercept = 0) + 
   geom_line(linewidth = 1) + 
   scale_colour_manual(values = site_cols) + 
+  labs(x = "", 
+       y = "Slope (absolute value)") + 
   theme_matt() + 
-  theme(legend.position = "right")
+  theme(legend.position = "right",
+        axis.text.x = element_text(angle = 300, hjust = 0, vjust = 0.5))
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/adj-slope-comp-1.png" style="display: block; margin: auto;" />
 
 Haldanes are a similar unit, representing change in units of standard
 deviations per generation. This can be a useful metric for comparing
