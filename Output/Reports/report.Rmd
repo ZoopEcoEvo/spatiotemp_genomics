@@ -110,7 +110,7 @@ site_cols = c("Key Largo" = "indianred4",
 
 ```{r}
 site_temps = full_data %>% 
-  select(site, season, doy, collection_temp, collection_salinity) %>%  
+  select(site, lat, season, doy, collection_temp, collection_salinity) %>%  
   distinct() %>% 
   filter(doy > 100) 
 ```
@@ -227,6 +227,23 @@ ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "r
 #   scale_colour_manual(values = site_cols) + 
 #   theme_matt_facets(base_size = 14)
 ```
+
+The latitudinal gradient covers a wide range of seasonality. Shown below is the temperature range. While based on collection temperatures, and therefore an underestimate of the total seasonal range of temperatures, these patterns are representative of the expected latitudinal gradient in seasonality. 
+
+```{r lat-temp-range-plot, fig.width=8, fig.height=5}
+site_temps %>% 
+  group_by(site, lat) %>%  
+  summarise(temp_range = max(collection_temp) - min(collection_temp)) %>%  
+  ggplot(aes(x = lat, y = temp_range)) + 
+  geom_point(aes(colour = site),
+             size = 3) + 
+  scale_color_manual(values = site_cols) + 
+  labs(x = "Latitude", 
+       y = "Collection Temp. Range (°C)") + 
+  theme_matt() + 
+  theme(legend.position = "right")
+```
+
 
 ## Phenotypic Measurements 
 

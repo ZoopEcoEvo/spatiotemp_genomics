@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-11-16
+2023-11-17
 
 - [Site Characteristics](#site-characteristics)
 - [Phenotypic Measurements](#phenotypic-measurements)
@@ -19,7 +19,7 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
 
 ``` r
 site_temps = full_data %>% 
-  select(site, season, doy, collection_temp, collection_salinity) %>%  
+  select(site, lat, season, doy, collection_temp, collection_salinity) %>%  
   distinct() %>% 
   filter(doy > 100) 
 ```
@@ -135,8 +135,8 @@ sal_comp_temps = sal_comps %>%
   distinct() %>% 
   ggplot(aes(x = salinity, y = collection_temp, colour = season, group = season)) + 
   facet_wrap(region~.) + 
-  geom_point(size = 4) + 
   geom_line(linewidth = 1.5) + 
+  geom_point(size = 4) + 
   scale_colour_manual(values = season_cols) + 
   labs(y = "Collection Temp. (°C)",
        x = "") + 
@@ -147,8 +147,8 @@ sal_comp_sal = sal_comps %>%
   distinct() %>% 
   ggplot(aes(x = salinity, y = collection_salinity, colour = season, group = season)) + 
   facet_wrap(region~.) + 
-  geom_point(size = 4) + 
   geom_line(linewidth = 1.5) + 
+  geom_point(size = 4) + 
   scale_colour_manual(values = season_cols) + 
   labs(y = "Collection Salinity (psu)",
        x = "Salinity") + 
@@ -173,16 +173,38 @@ ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "r
 #   theme_matt_facets(base_size = 14)
 ```
 
+The latitudinal gradient covers a wide range of seasonality. Shown below
+is the temperature range. While based on collection temperatures, and
+therefore an underestimate of the total seasonal range of temperatures,
+these patterns are representative of the expected latitudinal gradient
+in seasonality.
+
+``` r
+site_temps %>% 
+  group_by(site, lat) %>%  
+  summarise(temp_range = max(collection_temp) - min(collection_temp)) %>%  
+  ggplot(aes(x = lat, y = temp_range)) + 
+  geom_point(aes(colour = site),
+             size = 3) + 
+  scale_color_manual(values = site_cols) + 
+  labs(x = "Latitude", 
+       y = "Collection Temp. Range (°C)") + 
+  theme_matt() + 
+  theme(legend.position = "right")
+```
+
+<img src="../Figures/markdown/lat-temp-range-plot-1.png" style="display: block; margin: auto;" />
+
 ## Phenotypic Measurements
 
 ### Critical Thermal Limits
 
-A total of 376 individuals were examined. Critical thermal limits and
+A total of 396 individuals were examined. Critical thermal limits and
 body size measurements were made before individuals were preserved in
 ethanol. We excluded data for 6 individuals, detailed below. These
 individuals had either very low CTmax or were, upon re-examination of
 photographs, identified as juveniles instead of mature females. With
-these individuals excluded, **the full data set contains 370 phenotyped
+these individuals excluded, **the full data set contains 390 phenotyped
 individuals**.
 
 ``` r
