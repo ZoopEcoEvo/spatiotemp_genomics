@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-11-17
+2023-11-20
 
 - [Site Characteristics](#site-characteristics)
 - [Phenotypic Measurements](#phenotypic-measurements)
@@ -10,8 +10,7 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
   - [Salinity Pair Comparisons](#salinity-pair-comparisons)
 - [Trait Correlations](#trait-correlations)
 - [Trait Variability](#trait-variability)
-- [Comparing rates of change
-  (Haldanes)](#comparing-rates-of-change-haldanes)
+- [Comparing rates of change](#comparing-rates-of-change)
 - [Next Steps](#next-steps)
 - [Misc. Details](#misc-details)
 
@@ -38,7 +37,7 @@ Copepods were collected by surface tow from sites across the Western
 Atlantic at several times throughout the year. The sites are shown
 below. Temperatures at the time of collection were measured using a
 manual thermometer. Across the entire set of collections, temperature
-ranged from 12°C to 36°C.
+ranged from 10°C to 36°C.
 
 ``` r
 coords = site_data %>%
@@ -209,12 +208,12 @@ site_temps %>%
 
 ### Critical Thermal Limits
 
-A total of 396 individuals were examined. Critical thermal limits and
+A total of 416 individuals were examined. Critical thermal limits and
 body size measurements were made before individuals were preserved in
 ethanol. We excluded data for 6 individuals, detailed below. These
 individuals had either very low CTmax or were, upon re-examination of
 photographs, identified as juveniles instead of mature females. With
-these individuals excluded, **the full data set contains 390 phenotyped
+these individuals excluded, **the full data set contains 410 phenotyped
 individuals**.
 
 ``` r
@@ -731,7 +730,36 @@ expected, similar to that from the residuals plot above.
 
 ``` r
 ctmax.model = lme4::lmer(data = filtered_data, 
-                         ctmax ~ collection_temp + size + (1|site))
+                         ctmax ~ collection_temp + size + 
+                           (1|site))
+
+summary(ctmax.model)
+## Linear mixed model fit by REML ['lmerMod']
+## Formula: ctmax ~ collection_temp + size + (1 | site)
+##    Data: filtered_data
+## 
+## REML criterion at convergence: 1237
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -4.2461 -0.4828  0.0573  0.6827  2.6165 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev.
+##  site     (Intercept) 0.870    0.9327  
+##  Residual             1.392    1.1800  
+## Number of obs: 381, groups:  site, 8
+## 
+## Fixed effects:
+##                 Estimate Std. Error t value
+## (Intercept)      33.1793     1.0044  33.035
+## collection_temp   0.1901     0.0130  14.626
+## size             -3.0888     0.8974  -3.442
+## 
+## Correlation of Fixed Effects:
+##             (Intr) cllct_
+## collctn_tmp -0.729       
+## size        -0.906  0.570
 
 effects_summary = data.frame("Temperature" = unname(lme4::fixef(ctmax.model)["collection_temp"]),
            "Size" = unname(lme4::fixef(ctmax.model)["size"]))
@@ -739,9 +767,9 @@ effects_summary = data.frame("Temperature" = unname(lme4::fixef(ctmax.model)["co
 knitr::kable(effects_summary)
 ```
 
-| Temperature |      Size |
-|------------:|----------:|
-|   0.1500287 | -3.722419 |
+| Temperature |     Size |
+|------------:|---------:|
+|   0.1900845 | -3.08885 |
 
 By extracting the conditional mode for the random effects, we can also
 examine how thermal limits vary across sites beyond the influence of
@@ -754,14 +782,16 @@ indicate that low salinity sites tended to have lower thermal limits
 than their paired high salinity site.
 
 ``` r
-pop_effs = as.data.frame(lme4::ranef(ctmax.model)) %>% 
-  select("site" = grp, "pop_eff" = condval, "sd" = condsd) %>% 
+pop_effs = REsim(ctmax.model) %>% 
+  dplyr::select("site" = groupID, term, mean, sd) %>% 
   inner_join(site_data, by = c("site")) %>% 
   mutate(site = fct_reorder(site, lat))
 
-ggplot(pop_effs, aes(x = lat, y = pop_eff, colour = site)) + 
+#plotREsim(REsim(ctmax.model))  # plot the interval estimates
+
+ggplot(pop_effs, aes(x = lat, y = mean, colour = site)) + 
   geom_hline(yintercept = 0) +
-  geom_errorbar(aes(ymin = pop_eff - sd, ymax = pop_eff + sd),
+  geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd),
                 width = 0.5, linewidth = 1) + 
   geom_point(size = 3) + 
   scale_colour_manual(values = site_cols) + 
@@ -849,7 +879,7 @@ ggplot(trait_ranges, aes(x = season, y = ctmax_var, colour = site)) +
 
 <img src="../Figures/markdown/season-var-1.png" style="display: block; margin: auto;" />
 
-## Comparing rates of change (Haldanes)
+## Comparing rates of change
 
 Both CTmax and body size varied between sites and across seasons. It can
 be difficult to directly compare these two traits. We take two
@@ -1105,3 +1135,35 @@ ggplot(haldanes, aes(x = lat, y = gens, colour = site, shape = season)) +
 ```
 
 <img src="../Figures/markdown/num-gens-plot-1.png" style="display: block; margin: auto;" />
+
+``` r
+obs_ranks = ggplot(full_data, aes(x = rank)) + 
+  facet_wrap(tube~.) + 
+  geom_histogram(binwidth = 1) + 
+  scale_x_continuous(breaks = c(2,4,6,8,10)) + 
+  ggtitle("Observation") + 
+  theme_matt_facets()
+
+sim_data = data.frame()
+for(i in 1:max(full_data$run)){
+  rep_data = data.frame("tube" = sample(c(1:10), size = 10, replace = F), 
+           "rank" = c(1:10),
+           "rep" = i) %>% 
+  arrange(tube)
+  
+  sim_data = bind_rows(sim_data, rep_data)
+  
+}
+
+sim_ranks = ggplot(sim_data, aes(x = rank)) + 
+  facet_wrap(tube~.) + 
+  geom_histogram(binwidth = 1) + 
+  scale_x_continuous(breaks = c(2,4,6,8,10)) + 
+  ggtitle("Simulation") + 
+  theme_matt_facets()
+
+
+ggarrange(obs_ranks, sim_ranks)
+```
+
+<img src="../Figures/markdown/rank-sims-1.png" style="display: block; margin: auto;" />

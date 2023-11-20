@@ -1,8 +1,9 @@
 # Load in required packages
 library(rmarkdown)
+library(merTools)
 library(tidyverse)
 library(ggpubr)
-library(emmeans)
+library(lme4)
 
 #Determine which scripts should be run
 process_all_data = F #Runs data analysis 

@@ -762,7 +762,10 @@ To more formally test the relationships between CTmax, collection temperature, a
 
 ```{r}
 ctmax.model = lme4::lmer(data = filtered_data, 
-                         ctmax ~ collection_temp + size + (1|site))
+                         ctmax ~ collection_temp + size + 
+                           (1|site))
+
+summary(ctmax.model)
 
 effects_summary = data.frame("Temperature" = unname(lme4::fixef(ctmax.model)["collection_temp"]),
            "Size" = unname(lme4::fixef(ctmax.model)["size"]))
@@ -773,14 +776,16 @@ knitr::kable(effects_summary)
 By extracting the conditional mode for the random effects, we can also examine how thermal limits vary across sites beyond the influence of collection temperatures and body sizes. Shown below are these values, extracted from the linear mixed effects model. We can see that, similar to what's been observed in common garden experiments with *A. tonsa* previously, copepods from southern sites had higher thermal limits than those from northern sites. Interestingly, these population effects indicate that low salinity sites tended to have lower thermal limits than their paired high salinity site. 
 
 ```{r pop-effs-plot, fig.width=9, fig.height=6}
-pop_effs = as.data.frame(lme4::ranef(ctmax.model)) %>% 
-  select("site" = grp, "pop_eff" = condval, "sd" = condsd) %>% 
+pop_effs = REsim(ctmax.model) %>% 
+  dplyr::select("site" = groupID, term, mean, sd) %>% 
   inner_join(site_data, by = c("site")) %>% 
   mutate(site = fct_reorder(site, lat))
 
-ggplot(pop_effs, aes(x = lat, y = pop_eff, colour = site)) + 
+#plotREsim(REsim(ctmax.model))  # plot the interval estimates
+
+ggplot(pop_effs, aes(x = lat, y = mean, colour = site)) + 
   geom_hline(yintercept = 0) +
-  geom_errorbar(aes(ymin = pop_eff - sd, ymax = pop_eff + sd),
+  geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd),
                 width = 0.5, linewidth = 1) + 
   geom_point(size = 3) + 
   scale_colour_manual(values = site_cols) + 
@@ -887,7 +892,7 @@ ggplot(trait_ranges, aes(x = size_range, y = size_var)) +
   theme_matt()
 ```
 
-## Comparing rates of change (Haldanes)
+## Comparing rates of change
 Both CTmax and body size varied between sites and across seasons. It can be difficult to directly compare these two traits. We take two approaches to ease this comparison. 
 Shown below is a comparison of the slopes from the trait regressions against collection temperature for each population, standardized by the standard deviation of the trait for each population (across all collections). This presents change per degree change in collection temperature in units of standard deviations for both CTmax and body size.
 
@@ -1009,6 +1014,86 @@ haldanes %>%
   theme_matt_facets()
 ```
 
+
+```{r haldane-resids-comp-plot, fig.height=3.5, fig.width=9, include = F}
+early_peak_resids = universal_resids %>% 
+  filter(season %in% c("early", "peak")) %>% 
+  mutate(season = if_else(season == "early", "one", "two")) %>% 
+  group_by(site) %>% 
+  mutate(ctmax_sd_p = sd(ctmax_resids),
+         size_sd_p = sd(size_resids), 
+         temp_change = max(collection_temp) - min(collection_temp),
+         avg_temp = (max(collection_temp) + min(collection_temp)) / 2,
+         days_passed = max(doy) - min(doy)) %>% 
+  select(site, lat, season, 
+         ctmax_sd_p, size_sd_p, 
+         temp_change, avg_temp, days_passed, 
+         ctmax_resids, size_resids) %>%
+  group_by(site, lat, season, 
+           ctmax_sd_p, size_sd_p, 
+           temp_change, avg_temp, days_passed) %>% 
+  summarize(ctmax = mean(ctmax_resids),
+            size = mean(size_resids)) %>% 
+  pivot_wider(id_cols = c(site, lat, ctmax_sd_p, size_sd_p, 
+                          temp_change, avg_temp, days_passed), 
+              names_from = season, 
+              values_from = c(ctmax, size)) %>% 
+  mutate(season = "early_to_peak") %>%  
+  drop_na()
+
+peak_late_resids = universal_resids %>% 
+  filter(season %in% c("peak", "late")) %>% 
+  mutate(season = if_else(season == "peak", "one", "two")) %>% 
+  group_by(site) %>% 
+  mutate(ctmax_sd_p = sd(ctmax_resids),
+         size_sd_p = sd(size_resids), 
+         temp_change = last(collection_temp) - first(collection_temp),
+         avg_temp = (max(collection_temp) + min(collection_temp)) / 2,
+         days_passed = max(doy) - min(doy)) %>% 
+  select(site, lat, season, ctmax_sd_p, size_sd_p, 
+         temp_change, avg_temp, days_passed, 
+         ctmax_resids, size_resids) %>%
+  group_by(site, lat, season, ctmax_sd_p, size_sd_p, 
+           temp_change, avg_temp, days_passed) %>% 
+  summarize(ctmax = mean(ctmax_resids),
+            size = mean(size_resids)) %>% 
+  pivot_wider(id_cols = c(site, lat, ctmax_sd_p, size_sd_p, 
+                          temp_change, avg_temp, days_passed), 
+              names_from = season, 
+              values_from = c(ctmax, size)) %>% 
+  mutate(season = "peak_to_late") %>%  
+  drop_na()
+
+calc_halds = function(x1, x2, sd_p, g){
+  ((x2 / sd_p) - (x1 / sd_p)) / g
+}
+
+haldanes_resids = bind_rows(early_peak_resids, peak_late_resids) %>% 
+  mutate("gen_time" = 5490*(avg_temp + 1)^-2.05, 
+         "gens" = floor(days_passed / gen_time),
+         "ctmax_haldanes" = calc_halds(x2 = ctmax_two, x1 = ctmax_one, 
+                                       sd_p = ctmax_sd_p, g = gens),
+         "size_haldanes" = calc_halds(x2 = size_two, x1 = size_one, 
+                                      sd_p = size_sd_p, g = gens))
+
+haldanes_resids %>% 
+  ungroup() %>% 
+  select(site, temp_change, season, ctmax_haldanes, size_haldanes) %>% 
+  pivot_longer(cols = c(ctmax_haldanes, size_haldanes),
+               names_to = c("type", NA), 
+               names_sep = "_",
+               values_to = "haldanes") %>% 
+  ggplot(aes(x = type, y = haldanes, group = site, colour = site)) + 
+  facet_wrap(season~.) + 
+  geom_hline(yintercept = 0) + 
+  geom_line(aes(linewidth = desc(temp_change))) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(x = "Trait", 
+       y = "Haldanes", 
+       linewidth = "Temp. Change") + 
+  theme_matt_facets()
+```
+
 Shown below are the haldane values plotted against latitude. Note that even though large changes in temperature occured between peak and late samples in the Chesapeake, the change in haldanes is relatively small, while in the Northern populations, changes are larger, though more variable. 
 
 ```{r haldanes-lat-plot, fig.height=10, fig.width=8}
@@ -1096,5 +1181,35 @@ ggplot(haldanes, aes(x = lat, y = gens, colour = site, shape = season)) +
   scale_y_continuous(breaks = seq(from = 0, to = 11, by = 2)) + 
   theme_matt() + 
   theme(legend.position = "right")
+```
+
+```{r rank-sims, fig.width=18, fig.height=8}
+obs_ranks = ggplot(full_data, aes(x = rank)) + 
+  facet_wrap(tube~.) + 
+  geom_histogram(binwidth = 1) + 
+  scale_x_continuous(breaks = c(2,4,6,8,10)) + 
+  ggtitle("Observation") + 
+  theme_matt_facets()
+
+sim_data = data.frame()
+for(i in 1:max(full_data$run)){
+  rep_data = data.frame("tube" = sample(c(1:10), size = 10, replace = F), 
+           "rank" = c(1:10),
+           "rep" = i) %>% 
+  arrange(tube)
+  
+  sim_data = bind_rows(sim_data, rep_data)
+  
+}
+
+sim_ranks = ggplot(sim_data, aes(x = rank)) + 
+  facet_wrap(tube~.) + 
+  geom_histogram(binwidth = 1) + 
+  scale_x_continuous(breaks = c(2,4,6,8,10)) + 
+  ggtitle("Simulation") + 
+  theme_matt_facets()
+
+
+ggarrange(obs_ranks, sim_ranks)
 ```
 
