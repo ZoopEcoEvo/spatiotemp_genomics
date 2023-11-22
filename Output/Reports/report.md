@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-11-20
+2023-11-21
 
 - [Site Characteristics](#site-characteristics)
 - [Phenotypic Measurements](#phenotypic-measurements)
@@ -11,18 +11,10 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
 - [Trait Correlations](#trait-correlations)
 - [Trait Variability](#trait-variability)
 - [Comparing rates of change](#comparing-rates-of-change)
+- [Why does intraspecific data
+  matter?](#why-does-intraspecific-data-matter)
 - [Next Steps](#next-steps)
 - [Misc. Details](#misc-details)
-
-``` r
-# TO DO 
-
-# - Use temperature residuals for Haldanes in order to account for the influence of plasticity? 
-# - Temperature plots for context 
-# - Actual stats (mixed effects model, trait ~ collection temp, with experimental replicate as random effect)
-# - ARR for % change to directly compare traits 
-# - Framework for quantifying the effects of within- and across-population variation in thermal limits to spatial patterns in vulnerability to warming. Comparing predictions based on 1) median, 2) overall CTmax vs. temp regression, 3) population variation in intercepts, 4) population variation in both slope and intercept
-```
 
 ## Site Characteristics
 
@@ -719,10 +711,10 @@ temperature, and size, we used a linear mixed effects model, structured
 as `ctmax ~ collection_temp + size + (1|site)`. This examines the
 effects of temperature and size on CTmax, with random intercepts for
 each site. Both fixed effects have a significant effect on CTmax. The
-overall effect of temperature suggests an increase in CTmax of 0.15°C
-per °C increase in collection temperature (i.e. - an ARR value of 0.15),
-while increasing body sizes decrease CTmax by 3.7°C per mm (or a
-decrease of ~0.37°C per tenth of a mm, which is more biologically
+overall effect of temperature suggests an increase in CTmax of 0.19°C
+per °C increase in collection temperature (i.e. - an ARR value of 0.19),
+while increasing body sizes decrease CTmax by -3.09°C per mm (or a
+decrease of ~-0.309°C per tenth of a mm, which is more biologically
 realistic for *A. tonsa*). This ARR value is slightly lower than
 observed for other copepod species, but well within the range of
 previously observed values. The estimated effect of body size is, as
@@ -730,39 +722,13 @@ expected, similar to that from the residuals plot above.
 
 ``` r
 ctmax.model = lme4::lmer(data = filtered_data, 
-                         ctmax ~ collection_temp + size + 
-                           (1|site))
+                         ctmax ~ collection_temp + size + (1|site))
 
-summary(ctmax.model)
-## Linear mixed model fit by REML ['lmerMod']
-## Formula: ctmax ~ collection_temp + size + (1 | site)
-##    Data: filtered_data
-## 
-## REML criterion at convergence: 1237
-## 
-## Scaled residuals: 
-##     Min      1Q  Median      3Q     Max 
-## -4.2461 -0.4828  0.0573  0.6827  2.6165 
-## 
-## Random effects:
-##  Groups   Name        Variance Std.Dev.
-##  site     (Intercept) 0.870    0.9327  
-##  Residual             1.392    1.1800  
-## Number of obs: 381, groups:  site, 8
-## 
-## Fixed effects:
-##                 Estimate Std. Error t value
-## (Intercept)      33.1793     1.0044  33.035
-## collection_temp   0.1901     0.0130  14.626
-## size             -3.0888     0.8974  -3.442
-## 
-## Correlation of Fixed Effects:
-##             (Intr) cllct_
-## collctn_tmp -0.729       
-## size        -0.906  0.570
+#summary(ctmax.model)
 
-effects_summary = data.frame("Temperature" = unname(lme4::fixef(ctmax.model)["collection_temp"]),
-           "Size" = unname(lme4::fixef(ctmax.model)["size"]))
+effects_summary = data.frame(
+  "Temperature" = unname(fixef(ctmax.model)["collection_temp"]),
+  "Size" = unname(fixef(ctmax.model)["size"]))
 
 knitr::kable(effects_summary)
 ```
@@ -784,6 +750,7 @@ than their paired high salinity site.
 ``` r
 pop_effs = REsim(ctmax.model) %>% 
   dplyr::select("site" = groupID, term, mean, sd) %>% 
+  filter(term == "(Intercept)") %>% 
   inner_join(site_data, by = c("site")) %>% 
   mutate(site = fct_reorder(site, lat))
 
@@ -791,7 +758,7 @@ pop_effs = REsim(ctmax.model) %>%
 
 ggplot(pop_effs, aes(x = lat, y = mean, colour = site)) + 
   geom_hline(yintercept = 0) +
-  geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd),
+  geom_errorbar(aes(ymin = mean - 1.96 * sd, ymax = mean + 1.96 * sd),
                 width = 0.5, linewidth = 1) + 
   geom_point(size = 3) + 
   scale_colour_manual(values = site_cols) + 
@@ -1054,6 +1021,34 @@ ggarrange(ctmax_haldanes, size_haldanes, common.legend = T, legend = "right", nr
 ```
 
 <img src="../Figures/markdown/haldanes-lat-plot-1.png" style="display: block; margin: auto;" />
+
+## Why does intraspecific data matter?
+
+``` r
+# Compare estimated warming tolerance "ranges" when: 1) CTmax for "average" collection is used; 2) When CTmax for one collection per population is used; and 3) When all collections are used. The idea is to show that not accounting for intra-specific and intra-population variation leads to incorrect predictions of vulnerability to warming because this variation can be substantial - across populations within each seasonal collection, there is at least 5°C variation in thermal limits, while across collections within populations, acclimation to changes in temperature can drive substantial variation. 
+
+## Scenario 1 - single point estimates 
+
+est_1 = full_data %>% 
+  group_by(site, season) %>% 
+  summarise("mean_ctmax" = mean(ctmax)) %>% 
+  filter(site == "Tyler Cove", season == "peak")
+
+scenario_1 = full_data %>% 
+  mutate(rep_ctmax = est_1$mean_ctmax,
+         pred_wt = rep_ctmax - collection_temp, 
+         wt_diff = pred_wt - warming_tol)
+  
+ggplot(scenario_1, aes(x = lat, y = wt_diff)) + 
+  facet_wrap(season~., nrow = 3) + 
+  geom_hline(yintercept = 0) + 
+  geom_point() + 
+  labs(x = "Latitude", 
+       y = "Predicted - Observed WT") + 
+  theme_matt_facets()
+```
+
+<img src="../Figures/markdown/unnamed-chunk-5-1.png" style="display: block; margin: auto;" />
 
 ## Next Steps
 
