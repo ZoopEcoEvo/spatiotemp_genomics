@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-11-21
+2023-11-27
 
 - [Site Characteristics](#site-characteristics)
 - [Phenotypic Measurements](#phenotypic-measurements)
@@ -20,7 +20,7 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
 
 ``` r
 site_temps = full_data %>% 
-  select(site, lat, season, doy, collection_temp, collection_salinity) %>%  
+  dplyr::select(site, lat, season, doy, collection_temp, collection_salinity) %>%  
   distinct() %>% 
   filter(doy > 100) 
 ```
@@ -33,7 +33,7 @@ ranged from 10°C to 36°C.
 
 ``` r
 coords = site_data %>%
-  select(site, long, lat) %>%
+  dplyr::select(site, long, lat) %>%
   distinct()
 
 site_map = map_data("world") %>% 
@@ -64,6 +64,57 @@ ggarrange(site_map, site_temp_plot, common.legend = T, legend = "bottom")
 ```
 
 <img src="../Figures/markdown/site-chars-1.png" style="display: block; margin: auto;" />
+
+Collections aimed to obtain copepods near the onset of peak
+temperatures, after peak temperatures, and then at low temperatures.
+Regional data is not available for all sites, so here we’ve pieced
+together daily temperature values from either local temperature sensors
+(sites in Florida and the Chesapeake) and high resolution satellite
+temperature data (Connecticut, Maine, and the Canadian sites). This
+satellite data comes from the NOAA 1/4° Daily Optimum Interpolation Sea
+Surface Temperature (OISST).
+
+These temperature profiles are shown below, with the temperatures
+measured during the time of collection included for comparison In
+several cases collection temperature does not match the recorded daily
+averages, but the temperature records do give a general sense of the
+timing of seasonal maxima. In general, the first sample from each site
+fell just after the site reached the warmest period. The exception to
+that pattern is in Florida, where collections occurred after an extended
+period of high temperatures.
+
+``` r
+temp_profiles = temp_profiles %>% 
+  mutate(region = fct_relevel(region, "Florida", "Chesapeake", "Connecticut",
+                              "Maine", "Shediac", "Miramichi"))
+
+site_temps2 = site_temps %>% 
+  mutate(region = case_when(
+    site == "Manatee River" ~ "Florida",
+    site == "Ft. Hamer" ~ "Florida",
+    site == "Tyler Cove" ~ "Chesapeake",
+    site == "Ganey's Wharf" ~ "Chesapeake",
+    site == "Esker Point" ~ "Connecticut",
+    site == "Sawyer Park" ~ "Maine",
+    site == "St. Thomas de Kent Wharf" ~ "Shediac",
+    site == "Ritchie Wharf" ~ "Miramichi"),
+    region = fct_relevel(region, "Florida", "Chesapeake", "Connecticut",
+                         "Maine", "Shediac", "Miramichi"))
+
+ggplot(temp_profiles, aes(x = doy, y = temp_c)) + 
+  facet_wrap(region~., scales = "free_y") + 
+  geom_point(data = site_temps2,
+             aes(x = doy, y = collection_temp, colour = site),
+             size = 3) +
+    geom_line() + 
+  scale_colour_manual(values = site_cols) + 
+  labs(x = "Day of the Year", 
+       y = "Mean Daily Temp. (°C)") + 
+  theme_matt_facets() + 
+  theme(legend.position = "none")
+```
+
+<img src="../Figures/markdown/continuous-temps-1.png" style="display: block; margin: auto;" />
 
 Exact locations for the sites are provided here.
 
@@ -721,8 +772,6 @@ previously observed values. The estimated effect of body size is, as
 expected, similar to that from the residuals plot above.
 
 ``` r
-ctmax.model = lme4::lmer(data = filtered_data, 
-                         ctmax ~ collection_temp + size + (1|site))
 
 #summary(ctmax.model)
 
@@ -881,7 +930,7 @@ adj_slopes = full_data %>%
 #   theme_matt()
 
 ggplot(filter(adj_slopes, str_detect(slope_type, "adj_")), aes(x = slope_type, y = abs(slope), 
-                       group = site, colour = site)) + 
+                                                               group = site, colour = site)) + 
   geom_hline(yintercept = 0) + 
   geom_line(linewidth = 1) + 
   scale_colour_manual(values = site_cols) + 
@@ -1038,7 +1087,7 @@ scenario_1 = full_data %>%
   mutate(rep_ctmax = est_1$mean_ctmax,
          pred_wt = rep_ctmax - collection_temp, 
          wt_diff = pred_wt - warming_tol)
-  
+
 ggplot(scenario_1, aes(x = lat, y = wt_diff)) + 
   facet_wrap(season~., nrow = 3) + 
   geom_hline(yintercept = 0) + 
@@ -1142,9 +1191,9 @@ obs_ranks = ggplot(full_data, aes(x = rank)) +
 sim_data = data.frame()
 for(i in 1:max(full_data$run)){
   rep_data = data.frame("tube" = sample(c(1:10), size = 10, replace = F), 
-           "rank" = c(1:10),
-           "rep" = i) %>% 
-  arrange(tube)
+                        "rank" = c(1:10),
+                        "rep" = i) %>% 
+    arrange(tube)
   
   sim_data = bind_rows(sim_data, rep_data)
   

@@ -1,12 +1,13 @@
 # Load in required packages
 library(rmarkdown)
 library(merTools)
-library(tidyverse)
 library(ggpubr)
 library(lme4)
+library(tidyverse)
 
 #Determine which scripts should be run
 process_all_data = F #Runs data analysis 
+process_site_temps = F #Compiles continuous temperature data for the sites
 make_report = T #Runs project summary
 knit_manuscript = F #Compiles manuscript draft
 
@@ -21,6 +22,15 @@ source(file = "Scripts/01_data_processing.R")
 ##################################
 site_data = read.csv(file = "Raw_data/site_data.csv") %>% 
   mutate(site = fct_reorder(site, lat))
+
+### Processes temperature data
+if(process_site_temps == T){
+  source(file = "Scripts/00_site_temps.R")
+}
+
+temp_profiles = read.csv(file = "Output/Output_data/temp_profiles.csv") %>% 
+  mutate(date = lubridate::as_datetime(date),
+         doy = lubridate::yday(date))
 
 kl_winter = read.csv(file = "Raw_data/outside_sources/key_largo_winter.csv") %>% 
   filter(bopyrid == "no") %>% 

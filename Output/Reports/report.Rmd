@@ -15,9 +15,7 @@ output:
 
 ```{r}
 # TO DO 
-# - Temperature plots for context 
-# - ARR for % change to directly compare traits 
-# - Framework for quantifying the effects of within- and across-population variation in thermal limits to spatial patterns in vulnerability to warming. Comparing predictions based on 1) median, 2) overall CTmax vs. temp regression, 3) population variation in intercepts, 4) population variation in both slope and intercept
+# - Framework for quantifying the effects of within- and across-population variation in thermal limits to spatial patterns in vulnerability to warming. Comparing predictions based on 1) median, 2) overall CTmax vs. temp regression, 3) population variation in intercepts, 4) population variation in both slope and intercept. The end metric I could use to compare across scenarios is i) the cumulative amount of underestimation (summed across populations) or ii) the number of sites that have overestimated WT, or iii) the slope of WT (local adaptation and seasonal acclimation should result in more shallow slopes). 
 ```
 
 
@@ -106,7 +104,7 @@ site_cols = c("Key Largo" = "indianred4",
 
 ```{r}
 site_temps = full_data %>% 
-  select(site, lat, season, doy, collection_temp, collection_salinity) %>%  
+  dplyr::select(site, lat, season, doy, collection_temp, collection_salinity) %>%  
   distinct() %>% 
   filter(doy > 100) 
 ```
@@ -115,7 +113,7 @@ Copepods were collected by surface tow from sites across the Western Atlantic at
 
 ```{r site-chars, fig.width=10, fig.height=6}
 coords = site_data %>%
-  select(site, long, lat) %>%
+  dplyr::select(site, long, lat) %>%
   distinct()
 
 site_map = map_data("world") %>% 
@@ -144,6 +142,42 @@ site_temp_plot = ggplot(site_temps, aes(x = doy, y = collection_temp, colour = s
 
 ggarrange(site_map, site_temp_plot, common.legend = T, legend = "bottom")
 ```
+
+Collections aimed to obtain copepods near the onset of peak temperatures, after peak temperatures, and then at low temperatures. Regional data is not available for all sites, so here we've pieced together daily temperature values from either local temperature sensors (sites in Florida and the Chesapeake) and high resolution satellite temperature data (Connecticut, Maine, and the Canadian sites). This satellite data comes from the NOAA 1/4° Daily Optimum Interpolation Sea Surface Temperature (OISST). 
+
+These temperature profiles are shown below, with the temperatures measured during the time of collection included for comparison In several cases collection temperature does not match the recorded daily averages, but the temperature records do give a general sense of the timing of seasonal maxima. In general, the first sample from each site fell just after the site reached the warmest period. The exception to that pattern is in Florida, where collections occurred after an extended period of high temperatures. 
+
+```{r continuous-temps, fig.width=8, fig.height=6}
+temp_profiles = temp_profiles %>% 
+  mutate(region = fct_relevel(region, "Florida", "Chesapeake", "Connecticut",
+                              "Maine", "Shediac", "Miramichi"))
+
+site_temps2 = site_temps %>% 
+  mutate(region = case_when(
+    site == "Manatee River" ~ "Florida",
+    site == "Ft. Hamer" ~ "Florida",
+    site == "Tyler Cove" ~ "Chesapeake",
+    site == "Ganey's Wharf" ~ "Chesapeake",
+    site == "Esker Point" ~ "Connecticut",
+    site == "Sawyer Park" ~ "Maine",
+    site == "St. Thomas de Kent Wharf" ~ "Shediac",
+    site == "Ritchie Wharf" ~ "Miramichi"),
+    region = fct_relevel(region, "Florida", "Chesapeake", "Connecticut",
+                         "Maine", "Shediac", "Miramichi"))
+
+ggplot(temp_profiles, aes(x = doy, y = temp_c)) + 
+  facet_wrap(region~., scales = "free_y") + 
+  geom_point(data = site_temps2,
+             aes(x = doy, y = collection_temp, colour = site),
+             size = 3) +
+    geom_line() + 
+  scale_colour_manual(values = site_cols) + 
+  labs(x = "Day of the Year", 
+       y = "Mean Daily Temp. (°C)") + 
+  theme_matt_facets() + 
+  theme(legend.position = "none")
+```
+
 
 Exact locations for the sites are provided here. 
 
@@ -752,13 +786,13 @@ ggarrange(all_resids, pop_resids, common.legend = T, legend = "none", nrow = 2)
 # temp_vals = as_tibble(emtrends(top_model, spec = "site", var = "collection_temp")) 
 # size_vals = as_tibble(emtrends(top_model, spec = "site", var = "size")) 
 
+ctmax.model = lme4::lmer(data = filtered_data, 
+                         ctmax ~ collection_temp + size + (1|site))
 ```
 
 To more formally test the relationships between CTmax, collection temperature, and size, we used a linear mixed effects model, structured as `ctmax ~ collection_temp + size + (1|site)`. This examines the effects of temperature and size on CTmax, with random intercepts for each site. Both fixed effects have a significant effect on CTmax. The overall effect of temperature suggests an increase in CTmax of `r round(unname(fixef(ctmax.model)["collection_temp"]), digits = 2)`°C per °C increase in collection temperature (i.e. - an ARR value of `r round(unname(fixef(ctmax.model)["collection_temp"]), digits = 2)`), while increasing body sizes decrease CTmax by `r round(unname(fixef(ctmax.model)["size"]), digits = 2)`°C per mm (or a decrease of ~`r round(unname(fixef(ctmax.model)["size"]), digits = 2)/10`°C per tenth of a mm, which is more biologically realistic for *A. tonsa*). This ARR value is slightly lower than observed for other copepod species, but well within the range of previously observed values. The estimated effect of body size is, as expected, similar to that from the residuals plot above. 
 
 ```{r}
-ctmax.model = lme4::lmer(data = filtered_data, 
-                         ctmax ~ collection_temp + size + (1|site))
 
 #summary(ctmax.model)
 
@@ -876,7 +910,7 @@ ggplot(var_change_data, aes(x = temp_change, y = var_change, colour = site)) +
   geom_vline(xintercept = 0) + 
   geom_point(size = 3) + 
   scale_colour_manual(values = site_cols) + 
-  labs(x = "Warming Tolerance Change (°C)",
+  labs(x = "Temperature Change (°C)",
        y = "Change in CTmax Variance") + 
   theme_matt() + 
   theme(legend.position = "right", 
@@ -916,7 +950,7 @@ adj_slopes = full_data %>%
 #   theme_matt()
 
 ggplot(filter(adj_slopes, str_detect(slope_type, "adj_")), aes(x = slope_type, y = abs(slope), 
-                       group = site, colour = site)) + 
+                                                               group = site, colour = site)) + 
   geom_hline(yintercept = 0) + 
   geom_line(linewidth = 1) + 
   scale_colour_manual(values = site_cols) + 
@@ -1127,7 +1161,7 @@ scenario_1 = full_data %>%
   mutate(rep_ctmax = est_1$mean_ctmax,
          pred_wt = rep_ctmax - collection_temp, 
          wt_diff = pred_wt - warming_tol)
-  
+
 ggplot(scenario_1, aes(x = lat, y = wt_diff)) + 
   facet_wrap(season~., nrow = 3) + 
   geom_hline(yintercept = 0) + 
@@ -1216,9 +1250,9 @@ obs_ranks = ggplot(full_data, aes(x = rank)) +
 sim_data = data.frame()
 for(i in 1:max(full_data$run)){
   rep_data = data.frame("tube" = sample(c(1:10), size = 10, replace = F), 
-           "rank" = c(1:10),
-           "rep" = i) %>% 
-  arrange(tube)
+                        "rank" = c(1:10),
+                        "rep" = i) %>% 
+    arrange(tube)
   
   sim_data = bind_rows(sim_data, rep_data)
   
