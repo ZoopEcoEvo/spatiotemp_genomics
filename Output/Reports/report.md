@@ -99,10 +99,10 @@ site_temps2 = site_temps %>%
     site == "St. Thomas de Kent Wharf" ~ "Shediac",
     site == "Ritchie Wharf" ~ "Miramichi"),
     region = fct_relevel(region, "Florida", "Chesapeake", "Connecticut",
-                         "Maine", "Shediac", "Miramichi"))
+                              "Maine", "Shediac", "Miramichi"))
 
 ggplot(temp_profiles, aes(x = doy, y = temp_c)) + 
-  facet_wrap(region~., scales = "free_y") + 
+  facet_wrap(region~.) + 
   geom_point(data = site_temps2,
              aes(x = doy, y = collection_temp, colour = site),
              size = 3) +

@@ -45,35 +45,54 @@ ches_temps = read.csv(file = "Raw_data/site_temps/GR_OCEAN_2023_trimmed.csv") %>
 #   mutate(date = lubridate::as_datetime(date)) %>% 
 #   mutate("site" = "Connecticut")
 
-#### Florida #### 
-# https://www.ndbc.noaa.gov/station_history.php?station=pmaf1
+#### Florida - Low Salinity #### 
+# https://waterdata.usgs.gov/monitoring-location/023000095/#parameterCode=00010&period=P365D&showMedian=true&timeSeriesId=31853
 
-flor_1 = read.table(file = "Raw_data/site_temps/pmaf162023.txt", header = T) %>% 
-  select(YY:mm, WTMP)
+siteNumber = "023000095"
+siteInfo = dataRetrieval::readNWISsite(siteNumber)
+parameterCd = "00010"
+startDate = "2023-06-01"
+endDate = ""
 
-flor_2 = read.table(file = "Raw_data/site_temps/pmaf172023.txt", header = T) %>% 
-  select(YY:mm, WTMP)
+# Constructs the URL for the data wanted then downloads the data
+url = dataRetrieval::constructNWISURL(siteNumbers = siteNumber, parameterCd = parameterCd,
+                                      startDate = startDate, endDate = endDate, service = "uv")
 
-flor_3 = read.table(file = "Raw_data/site_temps/pmaf182023.txt", header = T) %>% 
-  select(YY:mm, WTMP)
-
-flor_4 = read.table(file = "Raw_data/site_temps/pmaf192023.txt", header = T) %>% 
-  select(YY:mm, WTMP)
-
-flor_5 = read.table(file = "Raw_data/site_temps/pmaf102023.txt", header = T) %>% 
-  select(YY:mm, WTMP)
-
-# flor_6 = read.table(file = "Raw_data/site_temps/pmaf182023.txt", header = T) %>% 
-#   select(YY:mm, WTMP) ### ADD THIS IN AFTER SAMPLING IN DECEMBER
-
-flor_temps = bind_rows(flor_1, flor_2, flor_3, flor_4, flor_5) %>% 
-  filter(WTMP != 999) %>% 
-  mutate("date" = lubridate::make_datetime(year = YY, month = MM, day = DD, hour = hh, min = mm)) %>% 
-  select(date, "temp_c" = WTMP) %>% 
+flor_temps = dataRetrieval::importWaterML1(url, asDateTime = T) %>%
+  select("date" = dateTime, "temp_c" = X_TOP_00010_00000) %>%
+  mutate(date = lubridate::as_datetime(date)) %>%
   mutate("site" = "Florida")
 
-temp_profiles1 = bind_rows(ches_temps, 
-                       flor_temps) %>% 
+
+# #### Florida - High Salinity #### 
+# # https://www.ndbc.noaa.gov/station_history.php?station=pmaf1
+# 
+# man_riv_1 = read.table(file = "Raw_data/site_temps/pmaf162023.txt", header = T) %>% 
+#   select(YY:mm, WTMP)
+# 
+# man_riv_2 = read.table(file = "Raw_data/site_temps/pmaf172023.txt", header = T) %>% 
+#   select(YY:mm, WTMP)
+# 
+# man_riv_3 = read.table(file = "Raw_data/site_temps/pmaf182023.txt", header = T) %>% 
+#   select(YY:mm, WTMP)
+# 
+# man_riv_4 = read.table(file = "Raw_data/site_temps/pmaf192023.txt", header = T) %>% 
+#   select(YY:mm, WTMP)
+# 
+# man_riv_5 = read.table(file = "Raw_data/site_temps/pmaf102023.txt", header = T) %>% 
+#   select(YY:mm, WTMP)
+# 
+# # flor_6 = read.table(file = "Raw_data/site_temps/pmaf182023.txt", header = T) %>% 
+# #   select(YY:mm, WTMP) ### ADD THIS IN AFTER SAMPLING IN DECEMBER
+# 
+# man_riv_temps = bind_rows(man_riv_1, man_riv_2, man_riv_3, man_riv_4, man_riv_5) %>% 
+#   filter(WTMP != 999) %>% 
+#   mutate("date" = lubridate::make_datetime(year = YY, month = MM, day = DD, hour = hh, min = mm)) %>% 
+#   select(date, "temp_c" = WTMP) %>% 
+#   mutate("site" = "Manatee River")
+
+insitu_temps = bind_rows(ches_temps, 
+                           flor_temps) %>% 
   filter(date > "2023-06-01")
 
 #### Version 2 ####
@@ -146,7 +165,7 @@ temp_profiles2 = bind_rows(ct_temps, maine_temps, shediac_temps, mira_temps) %>%
          doy = yday(date)) %>%  
   select(-t)
 
-temp_profiles1 = temp_profiles1 %>% 
+temp_profiles1 = insitu_temps %>% 
   mutate(date = as_date(date),
          doy = yday(date)) %>%
   group_by(site, doy, date) %>%  
