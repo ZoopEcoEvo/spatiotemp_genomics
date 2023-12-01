@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-11-27
+2023-11-30
 
 - [Site Characteristics](#site-characteristics)
 - [Phenotypic Measurements](#phenotypic-measurements)
@@ -251,12 +251,12 @@ site_temps %>%
 
 ### Critical Thermal Limits
 
-A total of 416 individuals were examined. Critical thermal limits and
+A total of 436 individuals were examined. Critical thermal limits and
 body size measurements were made before individuals were preserved in
 ethanol. We excluded data for 6 individuals, detailed below. These
 individuals had either very low CTmax or were, upon re-examination of
 photographs, identified as juveniles instead of mature females. With
-these individuals excluded, **the full data set contains 410 phenotyped
+these individuals excluded, **the full data set contains 430 phenotyped
 individuals**.
 
 ``` r
@@ -762,10 +762,10 @@ temperature, and size, we used a linear mixed effects model, structured
 as `ctmax ~ collection_temp + size + (1|site)`. This examines the
 effects of temperature and size on CTmax, with random intercepts for
 each site. Both fixed effects have a significant effect on CTmax. The
-overall effect of temperature suggests an increase in CTmax of 0.19°C
-per °C increase in collection temperature (i.e. - an ARR value of 0.19),
-while increasing body sizes decrease CTmax by -3.09°C per mm (or a
-decrease of ~-0.309°C per tenth of a mm, which is more biologically
+overall effect of temperature suggests an increase in CTmax of 0.18°C
+per °C increase in collection temperature (i.e. - an ARR value of 0.18),
+while increasing body sizes decrease CTmax by -3.67°C per mm (or a
+decrease of ~-0.367°C per tenth of a mm, which is more biologically
 realistic for *A. tonsa*). This ARR value is slightly lower than
 observed for other copepod species, but well within the range of
 previously observed values. The estimated effect of body size is, as
@@ -782,9 +782,9 @@ effects_summary = data.frame(
 knitr::kable(effects_summary)
 ```
 
-| Temperature |     Size |
-|------------:|---------:|
-|   0.1900845 | -3.08885 |
+| Temperature |      Size |
+|------------:|----------:|
+|   0.1777391 | -3.672851 |
 
 By extracting the conditional mode for the random effects, we can also
 examine how thermal limits vary across sites beyond the influence of
@@ -802,6 +802,16 @@ pop_effs = REsim(ctmax.model) %>%
   filter(term == "(Intercept)") %>% 
   inner_join(site_data, by = c("site")) %>% 
   mutate(site = fct_reorder(site, lat))
+
+# coefficients(ctmax.model)$site %>%
+#   janitor::clean_names() %>% 
+#   rownames_to_column(var = "site") %>% 
+#   ggplot(aes(x = intercept, y = collection_temp)) +
+#   geom_point(aes(colour = site),
+#              size = 5) + 
+#   scale_colour_manual(values = site_cols) + 
+#   theme_matt() + 
+#   theme(legend.position = "right")
 
 #plotREsim(REsim(ctmax.model))  # plot the interval estimates
 
@@ -1173,7 +1183,7 @@ ggplot(haldanes, aes(x = lat, y = gens, colour = site, shape = season)) +
   scale_colour_manual(values = site_cols) + 
   labs(x = "Latitude", 
        y = "Generations between \ncollections") +
-  scale_y_continuous(breaks = seq(from = 0, to = 11, by = 2)) + 
+  scale_y_continuous(breaks = seq(from = 0, to = 21, by = 5)) + 
   theme_matt() + 
   theme(legend.position = "right")
 ```

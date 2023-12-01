@@ -106,7 +106,7 @@ library(tidyverse) # A staple for modern data management in R
 
 OISST_data = griddap(datasetx = "ncdcOisst21Agg_LonPM180", 
         url = "https://coastwatch.pfeg.noaa.gov/erddap/", 
-        time = c("2023-06-01", "2023-11-11"), 
+        time = c("2023-06-01", "2023-11-15"), 
         zlev = c(0, 0),
         latitude = c(20, 50),
         longitude = c(-85, -55),

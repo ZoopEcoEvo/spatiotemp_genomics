@@ -812,6 +812,16 @@ pop_effs = REsim(ctmax.model) %>%
   inner_join(site_data, by = c("site")) %>% 
   mutate(site = fct_reorder(site, lat))
 
+# coefficients(ctmax.model)$site %>%
+#   janitor::clean_names() %>% 
+#   rownames_to_column(var = "site") %>% 
+#   ggplot(aes(x = intercept, y = collection_temp)) +
+#   geom_point(aes(colour = site),
+#              size = 5) + 
+#   scale_colour_manual(values = site_cols) + 
+#   theme_matt() + 
+#   theme(legend.position = "right")
+
 #plotREsim(REsim(ctmax.model))  # plot the interval estimates
 
 ggplot(pop_effs, aes(x = lat, y = mean, colour = site)) + 
@@ -1234,7 +1244,7 @@ ggplot(haldanes, aes(x = lat, y = gens, colour = site, shape = season)) +
   scale_colour_manual(values = site_cols) + 
   labs(x = "Latitude", 
        y = "Generations between \ncollections") +
-  scale_y_continuous(breaks = seq(from = 0, to = 11, by = 2)) + 
+  scale_y_continuous(breaks = seq(from = 0, to = 21, by = 5)) + 
   theme_matt() + 
   theme(legend.position = "right")
 ```
