@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-11-30
+2023-12-01
 
 - [Site Characteristics](#site-characteristics)
 - [Phenotypic Measurements](#phenotypic-measurements)
@@ -15,6 +15,11 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
   matter?](#why-does-intraspecific-data-matter)
 - [Next Steps](#next-steps)
 - [Misc. Details](#misc-details)
+
+``` r
+# TO DO 
+# - Framework for quantifying the effects of within- and across-population variation in thermal limits to spatial patterns in vulnerability to warming. Comparing predictions based on 1) median, 2) overall CTmax vs. temp regression, 3) population variation in intercepts, 4) population variation in both slope and intercept. The end metric I could use to compare across scenarios is i) the cumulative amount of underestimation (summed across populations) or ii) the number of sites that have overestimated WT, or iii) the slope of WT (local adaptation and seasonal acclimation should result in more shallow slopes). 
+```
 
 ## Site Characteristics
 
@@ -251,12 +256,12 @@ site_temps %>%
 
 ### Critical Thermal Limits
 
-A total of 436 individuals were examined. Critical thermal limits and
+A total of 456 individuals were examined. Critical thermal limits and
 body size measurements were made before individuals were preserved in
-ethanol. We excluded data for 6 individuals, detailed below. These
+ethanol. We excluded data for 7 individuals, detailed below. These
 individuals had either very low CTmax or were, upon re-examination of
 photographs, identified as juveniles instead of mature females. With
-these individuals excluded, **the full data set contains 430 phenotyped
+these individuals excluded, **the full data set contains 449 phenotyped
 individuals**.
 
 ``` r
@@ -269,6 +274,7 @@ excluded %>%
 |:-------------:|:------------------------:|:------:|:---------------:|:-------------------:|:---------:|:----:|:--------:|:-----:|
 |    Florida    |      Manatee River       |  peak  |      34.0       |         29          |     2     |  6   | 38.45833 | 0.616 |
 |    Florida    |      Manatee River       |  peak  |      34.0       |         29          |     2     |  7   | 38.23750 | 0.593 |
+|    Florida    |        Ft. Hamer         |  late  |      20.0       |         18          |     2     |  3   | 36.59280 | 0.619 |
 |   Maryland    |        Tyler Cove        |  peak  |      29.5       |         15          |     2     |  2   | 36.84375 | 0.614 |
 |  Connecticut  |       Esker Point        | early  |      22.5       |         30          |     2     |  3   | 30.02604 | 0.687 |
 |     Maine     |       Sawyer Park        |  peak  |      22.0       |         30          |     1     |  4   | 30.81424 | 0.865 |
@@ -762,10 +768,10 @@ temperature, and size, we used a linear mixed effects model, structured
 as `ctmax ~ collection_temp + size + (1|site)`. This examines the
 effects of temperature and size on CTmax, with random intercepts for
 each site. Both fixed effects have a significant effect on CTmax. The
-overall effect of temperature suggests an increase in CTmax of 0.18°C
-per °C increase in collection temperature (i.e. - an ARR value of 0.18),
-while increasing body sizes decrease CTmax by -3.67°C per mm (or a
-decrease of ~-0.367°C per tenth of a mm, which is more biologically
+overall effect of temperature suggests an increase in CTmax of 0.17°C
+per °C increase in collection temperature (i.e. - an ARR value of 0.17),
+while increasing body sizes decrease CTmax by -4.07°C per mm (or a
+decrease of ~-0.407°C per tenth of a mm, which is more biologically
 realistic for *A. tonsa*). This ARR value is slightly lower than
 observed for other copepod species, but well within the range of
 previously observed values. The estimated effect of body size is, as
@@ -784,7 +790,7 @@ knitr::kable(effects_summary)
 
 | Temperature |      Size |
 |------------:|----------:|
-|   0.1777391 | -3.672851 |
+|    0.165597 | -4.068539 |
 
 By extracting the conditional mode for the random effects, we can also
 examine how thermal limits vary across sites beyond the influence of

@@ -54,13 +54,14 @@ excluded_inds = c(
   "Manatee_River_peak_2_7",
   "Tyler_Cove_peak_2_2",
   "Sawyer_Park_peak_1_4",
-  "St._Thomas_de_Kent_Wharf_late_1_3"
+  "St._Thomas_de_Kent_Wharf_late_1_3",
+  "Ft._Hamer_late_2_3"
 )
 
- full_data = all_data %>%  
+full_data = all_data %>%  
   filter(!(ind_id %in% excluded_inds))
-  
- excluded = all_data %>% 
+
+excluded = all_data %>% 
   filter(ind_id %in% excluded_inds)
 
 temp_record = read.csv(file = "Output/Output_data/temp_record.csv")
@@ -88,7 +89,7 @@ if(make_report == T){
 if(knit_manuscript == T){
   render(input = "Manuscript/manuscript_name.Rmd", #Input the path to your .Rmd file here
          output_file = paste("dev_draft_", Sys.Date(), sep = ""), #Name your file here; as it is, this line will create reports named with the date
-                                                                  #NOTE: Any file with the dev_ prefix in the Drafts directory will be ignored. Remove "dev_" if you want to include draft files in the GitHub repo
+         #NOTE: Any file with the dev_ prefix in the Drafts directory will be ignored. Remove "dev_" if you want to include draft files in the GitHub repo
          output_dir = "Output/Drafts/", #Set the path to the desired output directory here
          output_format = "all",
          clean = T)
