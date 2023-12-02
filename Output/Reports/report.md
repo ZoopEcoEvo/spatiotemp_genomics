@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-12-01
+2023-12-02
 
 - [Site Characteristics](#site-characteristics)
 - [Phenotypic Measurements](#phenotypic-measurements)
@@ -15,11 +15,6 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
   matter?](#why-does-intraspecific-data-matter)
 - [Next Steps](#next-steps)
 - [Misc. Details](#misc-details)
-
-``` r
-# TO DO 
-# - Framework for quantifying the effects of within- and across-population variation in thermal limits to spatial patterns in vulnerability to warming. Comparing predictions based on 1) median, 2) overall CTmax vs. temp regression, 3) population variation in intercepts, 4) population variation in both slope and intercept. The end metric I could use to compare across scenarios is i) the cumulative amount of underestimation (summed across populations) or ii) the number of sites that have overestimated WT, or iii) the slope of WT (local adaptation and seasonal acclimation should result in more shallow slopes). 
-```
 
 ## Site Characteristics
 
@@ -104,14 +99,14 @@ site_temps2 = site_temps %>%
     site == "St. Thomas de Kent Wharf" ~ "Shediac",
     site == "Ritchie Wharf" ~ "Miramichi"),
     region = fct_relevel(region, "Florida", "Chesapeake", "Connecticut",
-                              "Maine", "Shediac", "Miramichi"))
+                         "Maine", "Shediac", "Miramichi"))
 
 ggplot(temp_profiles, aes(x = doy, y = temp_c)) + 
   facet_wrap(region~.) + 
   geom_point(data = site_temps2,
              aes(x = doy, y = collection_temp, colour = site),
              size = 3) +
-    geom_line() + 
+  geom_line() + 
   scale_colour_manual(values = site_cols) + 
   labs(x = "Day of the Year", 
        y = "Mean Daily Temp. (°C)") + 
@@ -296,13 +291,42 @@ sorting individuals from the plankton tow contents, they were held in a
 50:50 mix of 60 um filtered water from the collection site and
 artificial seawater as an additional acclimation step.
 
+Sample sizes varied slightly across experiments, but most sites had 20
+individuals measured per season. The major exceptions were the early
+samples from the Florida sites and the late sample from Sawyer Park
+(Maine). Only two sets of samples (peak and late) were collected from
+Fort Hamer and Manatee River. No samples were collected from Key Largo
+for this project, as *Acartia tonsa* wasn’t present in the water during
+the peak season, likely due to the recent extreme heat event. The late
+season collection from Sawyer Park occurred after *Acartia tonsa*
+abundance decreased. Samples from this period were dominated by *Acartia
+hudsonica* instead.
+
+``` r
+ggplot(full_data, aes(x = site, fill = site)) + 
+  facet_wrap(season~.) + 
+  geom_hline(yintercept = c(0,20),
+             colour = "grey70") + 
+  geom_bar() + 
+  scale_fill_manual(values = site_cols) + 
+  coord_flip() +
+  theme_matt() + 
+  theme(legend.position = "none",
+        panel.border = element_rect(linewidth = 1,
+                                    fill = NA),
+        strip.text = element_text(size = 20),
+        axis.title.y = element_blank())
+```
+
+<img src="../Figures/markdown/sample-size-plot-1.png" style="display: block; margin: auto;" />
+
 Shown below are the measured CTmax values. Note: CTmax values for the
 early season Key Largo copepods were collected at the end of February
 2023 as part of a separate project. Body size values were not measured
 during this project, nor were copepods individually preserved after the
 experiments. These early season CTmax values are included as a point of
 comparison. Individual measurements are shown in small points for each
-collection. The large points indicate the median values for each
+collection. The large points indicate the mean values for each
 collection.
 
 ``` r
@@ -313,14 +337,14 @@ mean_ctmax = full_data %>%
 
 ggplot(full_data, aes(x = season, y = ctmax, colour = site)) + 
   geom_line(data = mean_ctmax, 
-            aes(y = median_ctmax, group = site),
+            aes(y = mean_ctmax, group = site),
             position = position_dodge(width = 0.4),
             linewidth = 1) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
                                              dodge.width = 0.4),
              alpha = 0.3) + 
   geom_point(data = mean_ctmax, 
-             aes(y = median_ctmax),
+             aes(y = mean_ctmax),
              position = position_dodge(width = 0.4),
              size = 4) + 
   scale_colour_manual(values = site_cols) + 
@@ -333,50 +357,21 @@ ggplot(full_data, aes(x = season, y = ctmax, colour = site)) +
 
 <img src="../Figures/markdown/seasonal-ct-max-1.png" style="display: block; margin: auto;" />
 
-The same data is shown below, plotted against day of the year instead of
-season. This accounts for the variable timing of collections across
-regions (e.g. - the compressed collections from the Northern sites to
-accomodate the earlier onset of cold temperatures).
-
-``` r
-ggplot(filter(full_data, site != "Key Largo"), aes(x = doy, y = ctmax, colour = site)) + 
-  geom_line(data = filter(mean_ctmax, site != "Key Largo"), 
-            aes(y = median_ctmax, group = site),
-            position = position_dodge(width = 0.4),
-            linewidth = 1) + 
-  geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
-                                             dodge.width = 0.4),
-             alpha = 0.3) + 
-  geom_point(data = filter(mean_ctmax, site != "Key Largo"), 
-             aes(y = median_ctmax),
-             position = position_dodge(width = 0.4),
-             size = 4) + 
-  scale_colour_manual(values = site_cols) + 
-  labs(y = "CTmax (°C)",
-       x = "Season") +
-  theme_matt() + 
-  theme(legend.position = "right", 
-        legend.title.align = 0.125)
-```
-
-<img src="../Figures/markdown/doy-ct-max-1.png" style="display: block; margin: auto;" />
-
 CTmax data for each individual site is shown below, plotted against day
-of the year. The grey line in each facet shows the collection
-temperatures. Note that both axes vary across facets.
+of the year.
 
 ``` r
 ggplot(full_data, aes(x = doy, y = ctmax, colour = site)) + 
   facet_wrap(.~site, scales = "free") + 
   geom_line(data = mean_ctmax, 
-            aes(y = median_ctmax, group = site),
+            aes(y = mean_ctmax, group = site),
             position = position_dodge(width = 0.4),
             linewidth = 3, alpha = 0.5) + 
-  geom_line(data = mean_ctmax, 
-            aes(y = collection_temp, group = site),
-            position = position_dodge(width = 0.4),
-            linewidth = 2,
-            colour = "grey") + 
+  # geom_line(data = mean_ctmax, 
+  #           aes(y = collection_temp, group = site),
+  #           position = position_dodge(width = 0.4),
+  #           linewidth = 2,
+  #           colour = "grey") + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
                                              dodge.width = 0.4),
              alpha = 0.8) + 
@@ -411,14 +406,14 @@ mean_wt = full_data %>%
 
 ggplot(full_data, aes(x = season, y = warming_tol, colour = site)) + 
   geom_line(data = mean_wt, 
-            aes(y = median_wt, group = site),
+            aes(y = mean_wt, group = site),
             position = position_dodge(width = 0.4),
             linewidth = 1) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
                                              dodge.width = 0.4),
              alpha = 0.3) + 
   geom_point(data = mean_wt, 
-             aes(y = median_wt),
+             aes(y = mean_wt),
              position = position_dodge(width = 0.4),
              size = 4) + 
   scale_colour_manual(values = site_cols) + 
@@ -436,7 +431,9 @@ ggplot(full_data, aes(x = season, y = warming_tol, colour = site)) +
 Following the CTmax assay, individuals were photographed for body size
 measurements. Prosome lengths were measured from these photographs using
 a scale micrometer and the software ImageJ. These measurements are shown
-below. As before, large points indicate the median body size.
+below. As before, large points indicate the mean body size. While less
+cohesive than CTmax, a general trend of increasing body size with
+latitude and time of year can be seen.
 
 ``` r
 mean_size = full_data %>% 
@@ -446,14 +443,14 @@ mean_size = full_data %>%
 
 ggplot(full_data, aes(x = season, y = size, colour = site)) + 
   geom_line(data = mean_size, 
-            aes(y = median_size, group = site),
+            aes(y = mean_size, group = site),
             position = position_dodge(width = 0.4),
             linewidth = 1) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
                                              dodge.width = 0.4),
              alpha = 0.3) + 
   geom_point(data = mean_size, 
-             aes(y = median_size),
+             aes(y = mean_size),
              position = position_dodge(width = 0.4),
              size = 4) + 
   scale_colour_manual(values = site_cols) + 
@@ -466,34 +463,13 @@ ggplot(full_data, aes(x = season, y = size, colour = site)) +
 
 <img src="../Figures/markdown/seasonal-body-size-1.png" style="display: block; margin: auto;" />
 
-``` r
-ggplot(drop_na(full_data, size), aes(x = doy, y = size, colour = site)) + 
-  geom_line(data = drop_na(mean_size, mean_size), 
-            aes(y = median_size, group = site),
-            position = position_dodge(width = 0.4),
-            linewidth = 1) + 
-  geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
-                                             dodge.width = 0.4),
-             alpha = 0.3) + 
-  geom_point(data = drop_na(mean_size, mean_size), 
-             aes(y = median_size),
-             position = position_dodge(width = 0.4),
-             size = 4) + 
-  scale_colour_manual(values = site_cols) + 
-  labs(y = "Prosome Length (mm)",
-       x = "Season") +
-  theme_matt() + 
-  theme(legend.position = "right", 
-        legend.title.align = 0.125)
-```
-
-<img src="../Figures/markdown/doy-body-size-1.png" style="display: block; margin: auto;" />
+Shown below is the body size data for each individual site.
 
 ``` r
 ggplot(drop_na(full_data, size), aes(x = doy, y = size, colour = site)) + 
   facet_wrap(.~site) + 
   geom_line(data = drop_na(mean_size, mean_size), 
-            aes(y = median_size, group = site),
+            aes(y = mean_size, group = site),
             position = position_dodge(width = 0.4),
             linewidth = 3, alpha = 0.5) + 
   geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
@@ -515,8 +491,18 @@ ggplot(drop_na(full_data, size), aes(x = doy, y = size, colour = site)) +
 
 ### Salinity Pair Comparisons
 
-The three pairs of salinity comparisons do not show any general pattern,
-with variation dominated by seasonal changes.
+The three pairs of cross-salinity comparisons do show evidence for
+fine-scale trait divergence, although there was no consistent pattern in
+the direction or magnitude of differences. CTmax was similar across
+sites in the Southern and Central pairs. In the Northern pair, CTmax
+tended to be slightly lower for individuals from the low salinity site.
+Size was more variable between the paired sites. In the South, low
+salinity individuals were consistently smaller than high salinity
+individuals, despite the similar temperatures. In the Central pair,
+individuals from the low salinity site tended to be slightly larger than
+those from the high salinity site, although this varied seasonally.
+Sizes tended to be more similar across the collections from the Northern
+pair.
 
 ``` r
 sal_comp_ctmax_plot = sal_comps %>% 
@@ -591,11 +577,12 @@ sal_comp_size_resid_plot = sal_comps %>%
 
 ## Trait Correlations
 
-We expect that collections from warmer waters should yield copepods with
-higher thermal limits and smaller body sizes. Our observations largely
-fit this expectation, with strong increases in CTmax at higher
-temperatures, and a general decrease in prosome lengths as temperature
-increased.
+Regardless of the underlying mechanism (genetic differentiation or
+phenotypic plasticity), we expect that collections from warmer waters
+should yield copepods with higher thermal limits and smaller body sizes.
+Our observations largely fit this expectation, with strong increases in
+CTmax at higher temperatures, and a general decrease in prosome lengths
+as temperature increased.
 
 ``` r
 ctmax_temp_plot = ggplot(full_data, aes(x = collection_temp, y = ctmax)) + 
@@ -639,17 +626,59 @@ ggarrange(ctmax_temp_plot, wt_temp_plot, size_temp_plot, common.legend = T, lege
 
 <img src="../Figures/markdown/temp-cors-1.png" style="display: block; margin: auto;" />
 
-Of particular interest is the relationship between prosome length and
-CTmax. In many cases, larger body sizes are associated with cold
-adaptation/acclimation. We may therefore see this pattern emerge across
-populations or seasons. If populations contain a mix of cold- and
-warm-adapted genotypes, however, we might also see this relationship
-emerge **within** populations or even individual collections. Shown
-below is the relationship between prosome length and CTmax in our data
-set. Individual regression lines for each site are also included - the
-dark grey lines in the background represent the ‘universal’ regression
-for that site, with individual colored regression lines for each
-collection.
+Shown below are these temperature correlations for each individual
+population. Variation in the temperature sensitivity of these traits
+appears to vary across populations, with reduced slopes in both the
+lowest and the highest latitude populations. Again, we emphasize that
+this observed trait variation may stem from either (or both) plastic and
+genetic effects. However, these observations provide estimates for
+realistic patterns in temperature sensitivity for these populations.
+
+``` r
+ggplot(full_data, aes(x = collection_temp, y = ctmax)) + 
+  facet_wrap(.~site) + 
+  geom_smooth(method = "lm", se = T,
+              linewidth = 2, 
+              colour = "grey") + 
+  geom_point(aes(colour = site), 
+             size = 2, alpha = 0.7) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "CTmax (°C)",
+       x = "Collection Temp. (°C)") +
+  theme_matt() + 
+  theme(legend.position = "none")
+```
+
+<img src="../Figures/markdown/pop-temp-cors-1.png" style="display: block; margin: auto;" />
+
+``` r
+
+ggplot(full_data, aes(x = collection_temp, y = size)) + 
+  facet_wrap(.~site) + 
+  geom_smooth(method = "lm", se = T,
+              linewidth = 2, 
+              colour = "grey") + 
+  geom_point(aes(colour = site), 
+             size = 2, alpha = 0.7) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "Prosome Length (mm)",
+       x = "Collection Temp. (°C)") +
+  theme_matt() + 
+  theme(legend.position = "none")
+```
+
+<img src="../Figures/markdown/pop-temp-cors-2.png" style="display: block; margin: auto;" />
+
+One additional correlation of interest is the relationship between
+prosome length and CTmax. In many cases, larger body sizes are
+associated with cold adaptation/acclimation, and there is a general
+trend of decreasing thermal limits with increasing size. Shown below is
+the relationship between prosome length and CTmax in our data set.
+Individual regression lines for each site are also included - the dark
+grey lines in the background represent the ‘universal’ regression for
+that site, with individual colored regression lines for each collection.
+Across our collections, we see evidence for this relationship, with
+larger individuals having lower thermal limits.
 
 ``` r
 universal_size = full_data %>% 
@@ -700,15 +729,23 @@ ggarrange(universal_size, pop_size, common.legend = T, legend = "none", nrow = 2
 <img src="../Figures/markdown/ctmax-vs-size-1.png" style="display: block; margin: auto;" />
 
 This relationship may be affected by changes in temperature at each
-site, however, which is controlled for here by examining the
+site, however, which may affect both body size and thermal limits. If
+there is a true mechanistic relationship between body size and thermal
+limits, we would expect to see this relationship emerge **within**
+populations or even individual collections. Shown below is the
 relationship between CTmax and size residuals, acquired from regressions
 of these traits against collection temperature. This substantially
 reduces the strength of the apparent relationship, but there is still a
-slightly negative overall relationship.
+slightly negative overall relationship, spanning both across-population,
+within-population, and even within-collection scales (see the Sawyer
+Park collections, for example).
 
 ``` r
 filtered_data = full_data %>% 
-  drop_na(size, ctmax)
+  drop_na(size, ctmax) %>% 
+  mutate(temp_cent = scale(collection_temp, scale = F),
+         sal_cent = scale(collection_salinity, scale = F),
+         sal_type = if_else(collection_salinity > 20, "High", "Low"))
 
 ctmax_temp.model = lm(ctmax ~ collection_temp + site, data = filtered_data)
 ctmax_resids = residuals(ctmax_temp.model)
@@ -765,42 +802,50 @@ ggarrange(all_resids, pop_resids, common.legend = T, legend = "none", nrow = 2)
 
 To more formally test the relationships between CTmax, collection
 temperature, and size, we used a linear mixed effects model, structured
-as `ctmax ~ collection_temp + size + (1|site)`. This examines the
-effects of temperature and size on CTmax, with random intercepts for
-each site. Both fixed effects have a significant effect on CTmax. The
-overall effect of temperature suggests an increase in CTmax of 0.17°C
-per °C increase in collection temperature (i.e. - an ARR value of 0.17),
-while increasing body sizes decrease CTmax by -4.07°C per mm (or a
-decrease of ~-0.407°C per tenth of a mm, which is more biologically
-realistic for *A. tonsa*). This ARR value is slightly lower than
-observed for other copepod species, but well within the range of
-previously observed values. The estimated effect of body size is, as
-expected, similar to that from the residuals plot above.
+as `ctmax ~ collection_temp + size + salinity_type + (1|site)`. This
+examines the effects of temperature and size on CTmax, along with
+differences between the salinity groupings. Collection temperature was
+centered and salinity type assigned (“low” salinity as anything below 20
+psu, “high” salinity as anything above 20 psu) before model fitting. The
+model also includes random intercepts for each site and random slopes
+for collection temperature (i.e. - variation in the acclimation capacity
+of CTmax).
+
+Collection temperature and body size both had a significant effect on
+CTmax, but salinity type did not. The overall effect of temperature
+suggests an increase in CTmax of 0.2°C per °C increase in collection
+temperature (i.e. - an ARR value of 0.2), while increasing body sizes
+decrease CTmax by -3.15°C per mm (or a decrease of ~-0.315°C per tenth
+of a mm, which is more biologically realistic for *A. tonsa*). While not
+significant, the model suggests low salinity sites had lower thermal
+limits by ~1°C.
 
 ``` r
 
 #summary(ctmax.model)
 
 effects_summary = data.frame(
-  "Temperature" = unname(fixef(ctmax.model)["collection_temp"]),
-  "Size" = unname(fixef(ctmax.model)["size"]))
+  "Temperature" = unname(fixef(ctmax.model)["temp_cent"]),
+  "Size" = unname(fixef(ctmax.model)["size"]),
+  "Salinity" = unname(fixef(ctmax.model)["sal_typeLow"]))
 
 knitr::kable(effects_summary)
 ```
 
-| Temperature |      Size |
-|------------:|----------:|
-|    0.165597 | -4.068539 |
+| Temperature |      Size |  Salinity |
+|------------:|----------:|----------:|
+|    0.195262 | -3.153573 | -1.041622 |
 
 By extracting the conditional mode for the random effects, we can also
 examine how thermal limits vary across sites beyond the influence of
 collection temperatures and body sizes. Shown below are these values,
 extracted from the linear mixed effects model. We can see that, similar
 to what’s been observed in common garden experiments with *A. tonsa*
-previously, copepods from southern sites had higher thermal limits than
-those from northern sites. Interestingly, these population effects
-indicate that low salinity sites tended to have lower thermal limits
-than their paired high salinity site.
+previously, significant divergences are present at only a few sites,
+with Fort Hamer and Ritchie Wharf having increased and decreased thermal
+limits respectively. Interestingly, both of these sites were low
+salinity sites, also in line with previous results suggesting gene flow
+between high salinity sites may constrain differentiation.
 
 ``` r
 pop_effs = REsim(ctmax.model) %>% 
@@ -808,16 +853,6 @@ pop_effs = REsim(ctmax.model) %>%
   filter(term == "(Intercept)") %>% 
   inner_join(site_data, by = c("site")) %>% 
   mutate(site = fct_reorder(site, lat))
-
-# coefficients(ctmax.model)$site %>%
-#   janitor::clean_names() %>% 
-#   rownames_to_column(var = "site") %>% 
-#   ggplot(aes(x = intercept, y = collection_temp)) +
-#   geom_point(aes(colour = site),
-#              size = 5) + 
-#   scale_colour_manual(values = site_cols) + 
-#   theme_matt() + 
-#   theme(legend.position = "right")
 
 #plotREsim(REsim(ctmax.model))  # plot the interval estimates
 
@@ -834,6 +869,31 @@ ggplot(pop_effs, aes(x = lat, y = mean, colour = site)) +
 ```
 
 <img src="../Figures/markdown/pop-effs-plot-1.png" style="display: block; margin: auto;" />
+
+Finally, shown below are the estimated random slopes for each site.
+These represent the effects of collection temperature on CTmax for each
+site. Interestingly, these estimates diverge from the results of
+previous common garden experiments, which showed the strongest
+plasticity in high latitude sites. Here, acclimation appears to peak in
+mid-latitudes, and decrease at both high and low latitude sites.
+
+``` r
+coefficients(ctmax.model)$site %>%
+  janitor::clean_names() %>%
+  rownames_to_column(var = "site") %>%
+  inner_join(site_data) %>% 
+  mutate(site = fct_reorder(site, lat)) %>% 
+  ggplot(aes(x = temp_cent, y = site)) +
+  geom_point(aes(colour = site),
+             size = 5) +
+  scale_colour_manual(values = site_cols) +
+  labs(x = "ARR") + 
+  theme_matt() +
+  theme(legend.position = "none",
+        axis.title.y = element_blank())
+```
+
+<img src="../Figures/markdown/site-arr-plot-1.png" style="display: block; margin: auto;" />
 
 ## Trait Variability
 
@@ -884,7 +944,7 @@ size_var_temp = ggplot(trait_ranges, aes(x = collection_temp, y = size_var, colo
   theme_matt() + 
   theme(legend.position = "right")
 
-ggarrange(ctmax_range_temp, size_range_temp, common.legend = T, legend = "bottom")
+ggarrange(ctmax_range_temp, size_range_temp, common.legend = T, legend = "right")
 ```
 
 <img src="../Figures/markdown/trait-range-plot-1.png" style="display: block; margin: auto;" />
@@ -894,7 +954,20 @@ selection (as opposed to acclimation) are driving seasonal changes, we
 may expect to see a reduction in variance in the peak samples relative
 to the early season samples. Note that early season collection
 temperatures this year were higher than expected, driven by fairly
-strong heatwaves across the North Atlantic.
+strong heatwaves across the North Atlantic. As shown in the temperature
+profiles for each site, the ‘early’ samples were collected just after
+high temperatures were reached, while ‘peak’ samples were collected
+after sites had experienced high temperatures for several weeks
+(generations). As warming tolerances were fairly high throughout this
+period, we will assume that selection was weak before the early samples.
+If the early onset of high temperatures filtered out vulnerable
+genotypes prior to our sampling, the results will be a conservative
+estimate of the effects of selection on trait variance.
+
+Shown below is the seasonal progression of variance in CTmax for each
+site. For many sites, variance decreased between the early and peak
+samples, and then increased again in the late sample. For some sites
+(e.g. Esker Point), this increase in the late sample was substantial.
 
 ``` r
 ggplot(trait_ranges, aes(x = season, y = ctmax_var, colour = site)) + 
@@ -910,6 +983,62 @@ ggplot(trait_ranges, aes(x = season, y = ctmax_var, colour = site)) +
 ```
 
 <img src="../Figures/markdown/season-var-1.png" style="display: block; margin: auto;" />
+
+Shown below is the seasonal progression of variance in body size. A
+similar pattern of decreasing variance in peak samples relative to early
+and late samples is again seen for many sites. The obvious exception is
+the Esker Point sample, which saw the opposite trend.
+
+``` r
+ggplot(trait_ranges, aes(x = season, y = size_var, colour = site)) + 
+  geom_line(aes(group = site), 
+            linewidth = 1.5) + 
+  geom_point(size = 3) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "CTmax Variance",
+       x = "Season") +
+  theme_matt() + 
+  theme(legend.position = "right", 
+        legend.title.align = 0.125)
+```
+
+<img src="../Figures/markdown/unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
+
+Shown below are the seasonal changes in trait variance for each site
+individually.
+
+``` r
+ggplot(trait_ranges, aes(x = season, y = ctmax_var, colour = site)) + 
+  facet_wrap(site~.) + 
+  geom_line(aes(group = site), 
+            linewidth = 1.5) + 
+  geom_point(size = 3) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "CTmax Variance",
+       x = "Season") +
+  theme_matt() + 
+  theme(legend.position = "none", 
+        legend.title.align = 0.125)
+```
+
+<img src="../Figures/markdown/var-ind-pops-season-1.png" style="display: block; margin: auto;" />
+
+``` r
+
+ggplot(trait_ranges, aes(x = season, y = size_var, colour = site)) + 
+  facet_wrap(site~.) + 
+  geom_line(aes(group = site), 
+            linewidth = 1.5) + 
+  geom_point(size = 3) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "CTmax Variance",
+       x = "Season") +
+  theme_matt() + 
+  theme(legend.position = "none", 
+        legend.title.align = 0.125)
+```
+
+<img src="../Figures/markdown/var-ind-pops-season-2.png" style="display: block; margin: auto;" />
 
 ## Comparing rates of change
 
@@ -968,8 +1097,11 @@ based on work from Gingerich (1993). We estimated the number of
 generations passed between collections using the empirical relationship
 between temperature and development time for *Acartia tonsa* from
 Leandro et al. (2006). For initial estimates, we used a temperature
-halfway between what was observed during collection. Changes were
-examined for each pair of collections (early to peak, and peak to late).
+halfway between what was observed during collection, although this
+estimate can be improved by using non-linear averaging to account for
+Jenzen’s Inequality and the effect of temperature variation on rate
+functions. Changes were examined for each pair of collections (early to
+peak, and peak to late).
 
 Shown below is a comparison of the estimated haldane values for CTmax
 and body size, separated by season. Keep in mind that while this metric
@@ -1039,53 +1171,53 @@ haldanes = bind_rows(early_peak, peak_late) %>%
          "size_haldanes" = calc_halds(x2 = size_two, x1 = size_one, 
                                       sd_p = size_sd_p, g = gens))
 
-haldanes %>% 
+# haldanes %>% 
+#   ungroup() %>% 
+#   select(site, temp_change, season, ctmax_haldanes, size_haldanes) %>% 
+#   pivot_longer(cols = c(ctmax_haldanes, size_haldanes),
+#                names_to = c("type", NA), 
+#                names_sep = "_",
+#                values_to = "haldanes") %>% 
+#   ggplot(aes(x = type, y = haldanes, group = site, colour = site)) + 
+#   facet_wrap(season~.) + 
+#   geom_hline(yintercept = 0) + 
+#   geom_line(aes(linewidth = desc(temp_change))) + 
+#   scale_colour_manual(values = site_cols) + 
+#   labs(x = "Trait", 
+#        y = "Haldanes", 
+#        linewidth = "Temp. Change") + 
+#   theme_matt_facets()
+
+ctmax_halds_plot = haldanes %>% 
   ungroup() %>% 
-  select(site, temp_change, season, ctmax_haldanes, size_haldanes) %>% 
-  pivot_longer(cols = c(ctmax_haldanes, size_haldanes),
-               names_to = c("type", NA), 
-               names_sep = "_",
-               values_to = "haldanes") %>% 
-  ggplot(aes(x = type, y = haldanes, group = site, colour = site)) + 
-  facet_wrap(season~.) + 
-  geom_hline(yintercept = 0) + 
-  geom_line(aes(linewidth = desc(temp_change))) + 
+  select(site, temp_change, season, ctmax_haldanes, size_haldanes) %>%   
+  ggplot(aes(x = season, y = ctmax_haldanes, colour = site, group = site)) + 
+  geom_hline(yintercept = 0, colour = "grey70") + 
+  geom_line(linewidth = 2) + 
   scale_colour_manual(values = site_cols) + 
-  labs(x = "Trait", 
-       y = "Haldanes", 
-       linewidth = "Temp. Change") + 
-  theme_matt_facets()
+  labs(x = "Season",
+       y = "Haldanes") + 
+  ggtitle("CTmax") + 
+  theme_matt() + 
+  theme(legend.position = "right")
+
+size_halds_plot = haldanes %>% 
+  ungroup() %>% 
+  select(site, temp_change, season, ctmax_haldanes, size_haldanes) %>%   
+  ggplot(aes(x = season, y = size_haldanes, colour = site, group = site)) + 
+  geom_hline(yintercept = 0, colour = "grey70") + 
+  geom_line(linewidth = 2) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(x = "Season",
+       y = "Haldanes") + 
+  ggtitle("Size") + 
+  theme_matt() + 
+  theme(legend.position = "right")
+
+ggarrange(ctmax_halds_plot, size_halds_plot, common.legend = T, legend = "bottom")
 ```
 
 <img src="../Figures/markdown/haldane-comp-plot-1.png" style="display: block; margin: auto;" />
-
-Shown below are the haldane values plotted against latitude. Note that
-even though large changes in temperature occured between peak and late
-samples in the Chesapeake, the change in haldanes is relatively small,
-while in the Northern populations, changes are larger, though more
-variable.
-
-``` r
-ctmax_haldanes = ggplot(haldanes, aes(x = lat, y = ctmax_haldanes, colour = site, shape = season)) + 
-  geom_hline(yintercept = 0) + 
-  geom_point(size = 3) + 
-  scale_colour_manual(values = site_cols) + 
-  labs(x = "Latitude",
-       y = "Change in CTmax (haldanes)") + 
-  theme_matt_facets()
-
-size_haldanes = ggplot(haldanes, aes(x = lat, y = size_haldanes, colour = site, shape = season)) + 
-  geom_hline(yintercept = 0) + 
-  geom_point(size = 3) + 
-  scale_colour_manual(values = site_cols) + 
-  labs(x = "Latitude",
-       y = "Change in Size (haldanes)") + 
-  theme_matt_facets()
-
-ggarrange(ctmax_haldanes, size_haldanes, common.legend = T, legend = "right", nrow = 2)
-```
-
-<img src="../Figures/markdown/haldanes-lat-plot-1.png" style="display: block; margin: auto;" />
 
 ## Why does intraspecific data matter?
 
