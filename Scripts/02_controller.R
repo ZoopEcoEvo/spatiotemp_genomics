@@ -80,6 +80,23 @@ if(make_report == T){
   render(input = "Output/Reports/report.Rmd", #Input the path to your .Rmd file here
          #output_file = "report", #Name your file here if you want it to have a different name; leave off the .html, .md, etc. - it will add the correct one automatically
          output_format = "all")
+  
+  # ### Summary figure for Melissa's MIRA proposal (7x8in portrait)
+  # ggarrange(
+  #   site_map + scale_x_continuous(breaks = c(-80, -70, -60)) + theme_matt(base_size = 16) + guides(colour=guide_legend(nrow=3,byrow=F)),
+  #   ctmax_plot + theme_matt(base_size = 16) + guides(colour=guide_legend(nrow=3,byrow=F)),
+  #   ctmax_temp_plot + theme_matt(base_size = 16) + guides(colour=guide_legend(nrow=3,byrow=F)),
+  #   pop_effs_plot + theme_matt(base_size = 16) + guides(colour=guide_legend(nrow=3,byrow=F)), 
+  #   ggplot() + theme_void(),
+  #   nrow = 3, ncol = 2,
+  #   heights = c(1,1,0.1),
+  #   common.legend = T,
+  #   align = "hv",
+  #   legend = "bottom",
+  #   labels = c("A", "B", "C", "D", "")
+  # )
+  
+  
 }
 
 ##################################

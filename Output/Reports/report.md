@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2023-12-02
+2024-01-08
 
 - [Site Characteristics](#site-characteristics)
 - [Phenotypic Measurements](#phenotypic-measurements)
@@ -13,8 +13,19 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
 - [Comparing rates of change](#comparing-rates-of-change)
 - [Why does intraspecific data
   matter?](#why-does-intraspecific-data-matter)
+  - [Scenario 1 - Invariant thermal
+    limits](#scenario-1---invariant-thermal-limits)
+  - [Scenario 2 - Seasonally invariant thermal
+    limits](#scenario-2---seasonally-invariant-thermal-limits)
+  - [Scenario 3 - Population
+    sub-sampling](#scenario-3---population-sub-sampling)
 - [Next Steps](#next-steps)
 - [Misc. Details](#misc-details)
+
+``` r
+# TO DO 
+# - Framework for quantifying the effects of within- and across-population variation in thermal limits to spatial patterns in vulnerability to warming. Comparing predictions based on 1) median, 2) overall CTmax vs. temp regression, 3) population variation in intercepts, 4) population variation in both slope and intercept. The end metric I could use to compare across scenarios is i) the cumulative amount of underestimation (summed across populations) or ii) the number of sites that have overestimated WT, or iii) the slope of WT (local adaptation and seasonal acclimation should result in more shallow slopes). 
+```
 
 ## Site Characteristics
 
@@ -1221,6 +1232,57 @@ ggarrange(ctmax_halds_plot, size_halds_plot, common.legend = T, legend = "bottom
 
 ## Why does intraspecific data matter?
 
+Thermal limits vary substantially across both spatial and temporal
+scales in this species, highlighting the importance of considering both
+intraspecific and temporal variation in thermal limits for predictions
+of vulnerability to climate change. Single point estimates of thermal
+limits (as commonly used in larger, general analyses across taxa)
+obscure this crucial variation, and may bias our estimates of spatial
+patterns in vulnerability. Here we explore three separate scenarios to
+illustrate and quantify the importance of this intraspecific
+vulnerability.
+
+### Scenario 1 - Invariant thermal limits
+
+The first scenario assumes that thermal limits are constant across both
+spatial and temporal axes (i.e. a single point estimate of the thermal
+limit for this species). Here we selected a central population (the high
+salinity Chesapeake Bay site), and used the average thermal limit from
+the peak season sample as our ‘representative’ thermal limit. This
+approach is similar to that used in Bennet et al. to compile the
+GlobTherm dataset. These thermal limits are used to re-estimate warming
+tolerance for each collection (mean thermal limit - collection
+temperature). We then compared this predicted warming tolerance with the
+actual observed warming tolerances from each collection. A positive
+difference indicates an overestimated warming tolerance (the population
+is actually closer to their thermal limits than would be predicted from
+the estimated value, and therefore more vulnerable). A negative
+difference indicates an underestimated warming tolerance (the population
+is further from their thermal limit than would be predicted, and
+therefore less vulnerable).
+
+Both overestimates and underestimates can be problematic for accurate
+management and conservation strategies. We summarize each of the
+scenarios using 1) the number of populations with a difference between
+estimates \>2°C in either direction, 2) the average magnitude of
+difference for that subset of populations, and 3) the slope of the
+difference against latitude. Effective estimation strategies will have a
+small number of populations with under- or over-estimated warming
+tolerance, a small magnitude difference between predicted and observed
+warming tolerance, and a shallow latitudinal slope.
+
+In this first scenario (single point estimate of thermal limits), the
+effectiveness of the estimate varied across latitude and across seasons.
+During the early season, thermal limits from the central site were a
+decent predictor of warming tolerance at the other sites, and there was
+only a slight latitudinal trend. This latitudinal trend increased,
+however, during the peak and late season collections, driven by
+increasingly large differences in the northern sites (indicating
+increased vulnerability relative to predictions in these sites). During
+the peak season collection, warming tolerance in the southern sites was
+underestimated by several degrees (these populations were less
+vulnerable than predicted by the central site thermal limits).
+
 ``` r
 # Compare estimated warming tolerance "ranges" when: 1) CTmax for "average" collection is used; 2) When CTmax for one collection per population is used; and 3) When all collections are used. The idea is to show that not accounting for intra-specific and intra-population variation leads to incorrect predictions of vulnerability to warming because this variation can be substantial - across populations within each seasonal collection, there is at least 5°C variation in thermal limits, while across collections within populations, acclimation to changes in temperature can drive substantial variation. 
 
@@ -1239,6 +1301,7 @@ scenario_1 = full_data %>%
 ggplot(scenario_1, aes(x = lat, y = wt_diff)) + 
   facet_wrap(season~., nrow = 3) + 
   geom_hline(yintercept = 0) + 
+  geom_smooth(method = "lm") + 
   geom_point() + 
   labs(x = "Latitude", 
        y = "Predicted - Observed WT") + 
@@ -1246,6 +1309,291 @@ ggplot(scenario_1, aes(x = lat, y = wt_diff)) +
 ```
 
 <img src="../Figures/markdown/unnamed-chunk-5-1.png" style="display: block; margin: auto;" />
+
+``` r
+
+lat.model1 = lm(data = scenario_1,
+                wt_diff ~ lat*season)
+
+lat_slope_1 = emmeans::emtrends(lat.model1, var = "lat", specs = "season") %>% 
+  as.data.frame() %>% 
+  select(season, lat.trend)
+
+performance_1 = scenario_1 %>% 
+  select(site, lat, season, wt_diff) %>%  
+  group_by(site, season, lat) %>% 
+  summarise("mean_diff" = mean(wt_diff),
+            "abs_diff" = abs(mean_diff)) %>% 
+  ungroup() %>% 
+  mutate("flag" = if_else(abs_diff >= 2, "yes", "no")) %>% 
+  filter(flag == "yes") %>%  
+  group_by(season) %>% 
+  summarise("avg_diff" = mean(abs_diff),
+            "n" = n()) %>% 
+  inner_join(lat_slope_1, by = "season")
+```
+
+### Scenario 2 - Seasonally invariant thermal limits
+
+Local adaptation of thermal limits is widely observed across a range of
+taxa, including *Acartia tonsa*. In the second scenario, we account for
+this by using average thermal limits from the peak season for each
+population in the estimates of warming tolerance throughout the year.
+
+Unsurprisingly, this approach eliminates the latitudinal trend. Instead
+we see that peak season estimates were generally decent predictors of
+warming tolerance during the early season (although there were slight
+overestimates in several populations), and slightly underestimated
+warming tolerance during the late season.
+
+``` r
+est_2 = full_data %>% 
+  group_by(site, season) %>% 
+  summarise("mean_ctmax" = mean(ctmax)) %>% 
+  filter(season == "peak") %>% 
+  select(site, mean_ctmax)
+
+scenario_2 = full_data %>% 
+  inner_join(est_2, by = c("site")) %>% 
+  mutate(pred_wt = mean_ctmax - collection_temp, 
+         wt_diff = pred_wt - warming_tol)
+
+ggplot(scenario_2, aes(x = lat, y = wt_diff)) + 
+  facet_wrap(season~., nrow = 3) + 
+  geom_hline(yintercept = 0) + 
+  geom_smooth(method = "lm") + 
+  geom_point() + 
+  labs(x = "Latitude", 
+       y = "Predicted - Observed WT") + 
+  theme_matt_facets()
+```
+
+<img src="../Figures/markdown/unnamed-chunk-6-1.png" style="display: block; margin: auto;" />
+
+``` r
+
+lat.model2 = lm(data = scenario_2,
+                wt_diff ~ lat*season)
+
+lat_slope_2 = emmeans::emtrends(lat.model2, var = "lat", specs = "season") %>% 
+  as.data.frame() %>% 
+  select(season, lat.trend)
+
+performance_2 = scenario_2 %>% 
+  select(site, lat, season, wt_diff) %>%  
+  group_by(site, season, lat) %>% 
+  summarise("mean_diff" = mean(wt_diff),
+            "abs_diff" = abs(mean_diff)) %>% 
+  ungroup() %>% 
+  mutate("flag" = if_else(abs_diff >= 2, "yes", "no")) %>% 
+  filter(flag == "yes") %>%  
+  group_by(season) %>% 
+  summarise("avg_diff" = mean(abs_diff),
+            "n" = n()) %>%  
+  inner_join(lat_slope_2, by = c("season"))
+```
+
+### Scenario 3 - Population sub-sampling
+
+Both of the previous approaches to estimating warming tolerance result
+in overestimates of warming tolerance. These reductive methods increase
+the feasibility, but are unable to account for the co-occuring shifts in
+ambient temperature and thermal limits. Continuous in-situ monitoring of
+thermal limits is impractical, however, especially for species with
+small popuation sizes and/or very large range distributions. One
+potential compromise solution is to sub-sample populations and use
+observed data to predict spatial and seasonal changes in warming
+tolerance.
+
+In this third approach, we randomly selected nine collections, fit a
+linear model of CTmax ~ collection temperature, and used this regression
+to predict thermal limits and warming tolerance across the full set of
+collections. These predicted warming tolerance values were then compared
+against observed warming tolerance as before. We repeated this process
+100 times (100 random sets of 9 collections) to examine the sensitivity
+of this approach the populations and seasons collected. In addition to
+this random data, we also included a scenario where all seasonal
+collections from Ft. Hamer, Tyler Cove, and Miramichi (the latitudinal
+extremes and a central point) were used to predict thermal limits.
+
+``` r
+
+scenario_3 = data.frame()
+performance_3 = data.frame()
+
+for(i in 1:100){
+  
+  est_3 = full_data %>% 
+    group_by(site, season, collection_temp) %>% 
+    summarise("mean_ctmax" = mean(ctmax), .groups = "keep") %>% 
+    ungroup() %>% 
+    filter(row_number() %in% sample(c(1:max(row_number())), size = 9, replace = F))
+  
+  rep.model = lm(data = est_3, mean_ctmax ~ collection_temp)
+  
+  rep_data = full_data %>% 
+    group_by(site, season) %>%  
+    mutate(mean_wt = mean(warming_tol)) %>% 
+    select(site, season, collection_temp, lat, mean_wt) %>% 
+    ungroup() %>% 
+    distinct() %>%  
+    mutate(pred_ctmax = predict(rep.model, newdata = .),
+           pred_wt = pred_ctmax - collection_temp,
+           wt_diff = pred_wt - mean_wt,
+           run = i,
+           group = "random")
+  
+  scenario_3 = bind_rows(scenario_3, rep_data)
+  
+  lat.model3 = lm(data = scenario_3,
+                  wt_diff ~ lat*season)
+  
+  lat_slope_3 = emmeans::emtrends(lat.model3, var = "lat", specs = "season") %>% 
+    as.data.frame() %>% 
+    select(season, lat.trend)
+  
+  rep_performance = scenario_3 %>% 
+    select(site, lat, season, wt_diff) %>%  
+    group_by(site, season, lat) %>% 
+    summarise("mean_diff" = mean(wt_diff),
+              "abs_diff" = abs(mean_diff), 
+              .groups = "keep") %>% 
+    ungroup() %>% 
+    mutate("flag" = if_else(abs_diff >= 2, "yes", "no")) %>% 
+    filter(flag == "yes") %>%  
+    group_by(season) %>% 
+    summarise("avg_diff" = mean(abs_diff),
+              "n" = n(),
+              .groups = "keep") %>%  
+    inner_join(lat_slope_3, by = c("season"))
+  
+  performance_3 = bind_rows(performance_3, rep_performance)
+  
+}
+
+gold_stand = full_data %>% 
+  group_by(site, season, collection_temp) %>% 
+  summarise("mean_ctmax" = mean(ctmax), .groups = "keep") %>% 
+  ungroup() %>% 
+  filter(site %in% c("Ft. Hamer", "Tyler Cove", "Miramichi"))
+
+gold.model = lm(data = gold_stand, mean_ctmax ~ collection_temp)
+
+gold_data = full_data %>% 
+  group_by(site, season) %>%  
+  mutate(mean_wt = mean(warming_tol)) %>% 
+  select(site, season, collection_temp, lat, mean_wt) %>% 
+  ungroup() %>% 
+  distinct() %>%  
+  mutate(pred_ctmax = predict(gold.model, newdata = .),
+         pred_wt = pred_ctmax - collection_temp,
+         wt_diff = pred_wt - mean_wt,
+         run = i + 1,
+         group = "gold")
+
+gold.model = lm(data = gold_data,
+                wt_diff ~ lat*season)
+
+gold_slope = emmeans::emtrends(gold.model, var = "lat", specs = "season") %>% 
+  as.data.frame() %>% 
+  select(season, lat.trend)
+
+gold_performance = gold_data %>% 
+  select(site, lat, season, wt_diff) %>%  
+  group_by(site, season, lat) %>% 
+  summarise("mean_diff" = mean(wt_diff),
+            "abs_diff" = abs(mean_diff), 
+            .groups = "keep") %>% 
+  ungroup() %>% 
+  mutate("flag" = if_else(abs_diff >= 2, "yes", "no")) %>% 
+  filter(flag == "yes") %>%  
+  group_by(season) %>% 
+  summarise("avg_diff" = mean(abs_diff),
+            "n" = n(),
+            .groups = "keep") %>%  
+  inner_join(gold_slope, by = c("season"))
+
+scenario_3 = bind_rows(scenario_3, gold_data)
+
+performance_3_sum = performance_3 %>%  
+  group_by(season) %>%  
+  summarise("avg_diff" = mean(avg_diff),
+            "n" = mean(n),
+            "lat.trend" = mean(lat.trend))
+
+ggplot(scenario_3, aes(x = lat, y = wt_diff, colour = group, group = run)) + 
+  facet_wrap(season~., nrow = 3) + 
+  geom_hline(yintercept = 0) + 
+  geom_smooth(aes(colour = group), 
+              method = "lm", se = F) + 
+  geom_point() + 
+  labs(x = "Latitude", 
+       y = "Predicted - Observed WT") + 
+  theme_matt_facets()
+```
+
+<img src="../Figures/markdown/unnamed-chunk-7-1.png" style="display: block; margin: auto;" />
+
+``` r
+knitr::kable(performance_1, caption = "Scenario 1")
+```
+
+| season | avg_diff |   n | lat.trend |
+|:-------|---------:|----:|----------:|
+| early  | 2.879537 |   1 | 0.0942793 |
+| peak   | 3.059815 |   3 | 0.2746916 |
+| late   | 4.059209 |   6 | 0.2516853 |
+
+Scenario 1
+
+``` r
+
+knitr::kable(performance_2, caption = "Scenario 2")
+```
+
+| season | avg_diff |   n |  lat.trend |
+|:-------|---------:|----:|-----------:|
+| early  | 2.208815 |   1 | -0.1249784 |
+| late   | 2.692996 |   5 | -0.0248105 |
+
+Scenario 2
+
+``` r
+
+knitr::kable(performance_3_sum, caption = "Scenario 3")
+```
+
+| season | avg_diff |        n | lat.trend |
+|:-------|---------:|---------:|----------:|
+| early  | 2.147667 | 1.000000 | 0.0654007 |
+| peak   | 3.618375 | 1.000000 | 0.0915800 |
+| late   | 2.268843 | 1.939394 | 0.1632478 |
+
+Scenario 3
+
+``` r
+
+knitr::kable(gold_performance, caption = "`Gold` Standard")
+```
+
+| season | avg_diff |   n | lat.trend |
+|:-------|---------:|----:|----------:|
+| early  | 2.795142 |   1 | 0.0766049 |
+| peak   | 4.837180 |   1 | 0.1476920 |
+| late   | 3.116444 |   3 | 0.1901852 |
+
+`Gold` Standard
+
+``` r
+best = bind_rows(
+  mutate(performance_1, "scenario" = "one"),
+  mutate(performance_2, "scenario" = "two"),
+  mutate(performance_3_sum, "scenario" = "three"),
+  mutate(gold_performance, "scenario" = "gold")) %>% 
+  group_by(season) %>%  
+  filter(abs(lat.trend) == min(abs(lat.trend)))
+  #filter(avg_diff == min(avg_diff))
+```
 
 ## Next Steps
 
