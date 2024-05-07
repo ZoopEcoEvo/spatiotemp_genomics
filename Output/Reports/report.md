@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2024-02-11
+2024-05-07
 
 - [Site Characteristics](#site-characteristics)
 - [Phenotypic Measurements](#phenotypic-measurements)
@@ -118,7 +118,8 @@ ggplot(temp_profiles, aes(x = doy, y = temp_c)) +
   labs(x = "Day of the Year", 
        y = "Mean Daily Temp. (°C)") + 
   theme_matt_facets() + 
-  theme(legend.position = "none")
+  theme(legend.position = "none", 
+        axis.text.x = element_text(angle = 320, hjust = 0, vjust = 0.5))
 ```
 
 <img src="../Figures/markdown/continuous-temps-1.png" style="display: block; margin: auto;" />
@@ -370,30 +371,20 @@ CTmax data for each individual site is shown below, plotted against day
 of the year.
 
 ``` r
-ggplot(full_data, aes(x = doy, y = ctmax, colour = site)) + 
+ggplot(filter(full_data, site != "Key Largo"), 
+       aes(x = doy, y = ctmax, colour = site)) + 
   facet_wrap(.~site, scales = "free") + 
-  geom_line(data = mean_ctmax, 
+  geom_line(data = filter(mean_ctmax, site != "Key Largo"), 
             aes(y = mean_ctmax, group = site),
-            position = position_dodge(width = 0.4),
             linewidth = 3, alpha = 0.5) + 
-  # geom_line(data = mean_ctmax, 
-  #           aes(y = collection_temp, group = site),
-  #           position = position_dodge(width = 0.4),
-  #           linewidth = 2,
-  #           colour = "grey") + 
-  geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
-                                             dodge.width = 0.4),
-             alpha = 0.8) + 
-  # geom_point(data = mean_ctmax, 
-  #            aes(y = median_ctmax),
-  #            position = position_dodge(width = 0.4),
-  #            size = 4) + 
+  geom_point(alpha = 0.8) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "CTmax (°C)",
        x = "Day of Year") +
   theme_matt() + 
   theme(legend.position = "none", 
-        legend.title.align = 0.125)
+        legend.title.align = 0.125,
+        axis.text.x = element_text(angle = 320, hjust = 0, vjust = 0.5))
 ```
 
 <img src="../Figures/markdown/ctmax-ind-pops-doy-1.png" style="display: block; margin: auto;" />
@@ -473,30 +464,6 @@ ggplot(full_data, aes(x = season, y = size, colour = site)) +
 <img src="../Figures/markdown/seasonal-body-size-1.png" style="display: block; margin: auto;" />
 
 Shown below is the body size data for each individual site.
-
-``` r
-ggplot(drop_na(full_data, size), aes(x = doy, y = size, colour = site)) + 
-  facet_wrap(.~site) + 
-  geom_line(data = drop_na(mean_size, mean_size), 
-            aes(y = mean_size, group = site),
-            position = position_dodge(width = 0.4),
-            linewidth = 3, alpha = 0.5) + 
-  geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
-                                             dodge.width = 0.4),
-             alpha = 0.8) + 
-  # geom_point(data = mean_ctmax, 
-  #            aes(y = median_ctmax),
-  #            position = position_dodge(width = 0.4),
-  #            size = 4) + 
-  scale_colour_manual(values = site_cols) + 
-  labs(y = "Prosome Length (mm)",
-       x = "Day of Year") +
-  theme_matt() + 
-  theme(legend.position = "none", 
-        legend.title.align = 0.125)
-```
-
-<img src="../Figures/markdown/size-ind-pops-doy-1.png" style="display: block; margin: auto;" />
 
 ### Salinity Pair Comparisons
 
@@ -581,8 +548,10 @@ sal_comp_size_resid_plot = sal_comps %>%
        x = "") +
   theme_matt_facets(base_size = 14)
 
-#ggarrange(sal_comp_ctmax_resid_plot, sal_comp_size_resid_plot, nrow = 2, common.legend = T, legend = "right")
+ggarrange(sal_comp_ctmax_resid_plot, sal_comp_size_resid_plot, nrow = 2, common.legend = T, legend = "right")
 ```
+
+<img src="../Figures/markdown/sal-pair-traits-2.png" style="display: block; margin: auto;" />
 
 ## Trait Correlations
 
@@ -834,16 +803,16 @@ limits by ~1°C.
 #summary(ctmax.model)
 
 effects_summary = data.frame(
-  "Temperature" = unname(fixef(ctmax.model)["temp_cent"]),
-  "Size" = unname(fixef(ctmax.model)["size"]),
-  "Salinity" = unname(fixef(ctmax.model)["sal_typeLow"]))
+  "Temperature (per degree)" = unname(fixef(ctmax.model)["temp_cent"]),
+  "Size (per mm)" = unname(fixef(ctmax.model)["size"]),
+  "Salinity (Low vs. High)" = unname(fixef(ctmax.model)["sal_typeLow"]))
 
 knitr::kable(effects_summary)
 ```
 
-| Temperature |      Size |  Salinity |
-|------------:|----------:|----------:|
-|    0.195262 | -3.153573 | -1.041622 |
+| Temperature..per.degree. | Size..per.mm. | Salinity..Low.vs..High. |
+|-------------------------:|--------------:|------------------------:|
+|                 0.195262 |     -3.153573 |               -1.041622 |
 
 By extracting the conditional mode for the random effects, we can also
 examine how thermal limits vary across sites beyond the influence of
@@ -916,10 +885,10 @@ coefficients(ctmax.model)$site %>%
   geom_point(aes(colour = site),
              size = 5) +
   scale_colour_manual(values = site_cols) +
-  labs(x = "ARR") + 
+  labs(x = "Intercept (°C)", 
+       y = "ARR (°C per °C)") +
   theme_matt() +
-  theme(legend.position = "none",
-        axis.title.y = element_blank())
+  theme(legend.position = "none")
 ```
 
 <img src="../Figures/markdown/unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
@@ -941,8 +910,10 @@ trait_ranges = full_data %>%
   mutate(prop_ctmax_range = ctmax_range / mean_ctmax,
          prop_size_range = size_range / mean_size)
 
-ctmax_range_temp = ggplot(trait_ranges, aes(x = collection_temp, y = ctmax_range, colour = site)) + 
-  geom_point(size = 3) + 
+ctmax_range_temp = ggplot(trait_ranges, aes(x = collection_temp, y = ctmax_range)) + 
+  geom_smooth(method = "lm", colour = "black") + 
+  geom_point(aes(colour = site), 
+             size = 3) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "CTmax Range (°C)",
        x = "Collection Temp. (°C)") +
@@ -1060,7 +1031,7 @@ ggplot(trait_ranges, aes(x = season, y = size_var, colour = site)) +
             linewidth = 1.5) + 
   geom_point(size = 3) + 
   scale_colour_manual(values = site_cols) + 
-  labs(y = "CTmax Variance",
+  labs(y = "Size Variance",
        x = "Season") +
   theme_matt() + 
   theme(legend.position = "none", 
@@ -1073,12 +1044,14 @@ ggplot(trait_ranges, aes(x = season, y = size_var, colour = site)) +
 
 Both CTmax and body size varied between sites and across seasons. It can
 be difficult to directly compare these two traits. We take two
-approaches to ease this comparison. Shown below is a comparison of the
-slopes from the trait regressions against collection temperature for
-each population, standardized by the standard deviation of the trait for
-each population (across all collections). This presents change per
-degree change in collection temperature in units of standard deviations
-for both CTmax and body size.
+approaches to ease this comparison.
+
+Shown below is a comparison of the slopes from the trait regressions
+against collection temperature for each population, standardized by the
+standard deviation of the trait for each population (across all
+collections). This standardizes trait change in units of standard
+deviations per degree change in collection temperature for both CTmax
+and body size.
 
 ``` r
 adj_slopes = full_data %>% 
@@ -1581,10 +1554,11 @@ Scenario 2
 knitr::kable(performance_3_sum, caption = "Scenario 3")
 ```
 
-| season | avg_diff |   n | lat.trend |
-|:-------|---------:|----:|----------:|
-| peak   | 3.634390 |   1 | 0.0866985 |
-| late   | 2.253588 |   2 | 0.1609355 |
+| season | avg_diff |    n | lat.trend |
+|:-------|---------:|-----:|----------:|
+| early  | 2.036006 | 1.00 | 0.0737246 |
+| peak   | 3.638879 | 1.00 | 0.0934138 |
+| late   | 2.227105 | 1.98 | 0.1641559 |
 
 Scenario 3
 
@@ -1609,7 +1583,7 @@ best = bind_rows(
   mutate(gold_performance, "scenario" = "gold")) %>% 
   group_by(season) %>%  
   filter(abs(lat.trend) == min(abs(lat.trend)))
-  #filter(avg_diff == min(avg_diff))
+#filter(avg_diff == min(avg_diff))
 ```
 
 ## Next Steps
@@ -1681,7 +1655,7 @@ full_data %>%
 
 ``` r
 ggplot(haldanes, aes(x = lat, y = gens, colour = site, shape = season)) + 
-  geom_hline(yintercept = 0) + 
+  geom_hline(yintercept = 1) + 
   geom_point(size = 5) + 
   scale_colour_manual(values = site_cols) + 
   labs(x = "Latitude", 
