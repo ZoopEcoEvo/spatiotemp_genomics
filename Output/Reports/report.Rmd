@@ -100,6 +100,11 @@ site_cols = c("Key Largo" = "indianred4",
               "Ritchie Wharf" = "steelblue4")
 ```
 
+## Main Message
+
+By assaying thermal limits several times per year in natural populations distributed across a large latitudinal gradient, we highlight the importance of intra-specific variation for predicting vulnerability to climate change. Indeed, across the entire spatiotemporal framework examined here, we observed an ~12°C range in thermal limits. Both spatial and temporal variation in thermal limits is essential for robust predictions.
+
+
 ## Site Characteristics
 
 ```{r}
@@ -247,17 +252,6 @@ sal_comp_sal = sal_comps %>%
   theme_matt_facets(base_size = 14)
 
 ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "right")
-
-# sal_comps %>%  
-#   select(site, salinity, season, region, collection_temp, collection_salinity) %>% 
-#   distinct() %>% 
-#   ggplot(aes(x = collection_salinity, y = collection_temp, colour = site)) + 
-#   facet_grid(region~.) + 
-#   geom_point(size = 4) + 
-#   #stat_ellipse() +
-#   #geom_path(arrow = arrow(length = unit(0.1, "inches"), type = "closed")) + 
-#   scale_colour_manual(values = site_cols) + 
-#   theme_matt_facets(base_size = 14)
 ```
 
 The latitudinal gradient covers a wide range of seasonality. Shown below is the temperature range. While based on collection temperatures, and therefore an underestimate of the total seasonal range of temperatures, these patterns are representative of the expected latitudinal gradient in seasonality. 
@@ -368,9 +362,9 @@ ggplot(filter(full_data, site != "Key Largo"), aes(x = doy, y = ctmax, colour = 
         legend.title.align = 0.125)
 ```
 
-CTmax data for each individual site is shown below, plotted against day of the year. 
+```{r ctmax-ind-pops-doy, fig.width=8, fig.height=6, include = F}
+# CTmax data for each individual site is shown below, plotted against day of the year. 
 
-```{r ctmax-ind-pops-doy, fig.width=8, fig.height=6}
 ggplot(filter(full_data, site != "Key Largo"), 
        aes(x = doy, y = ctmax, colour = site)) + 
   facet_wrap(.~site, scales = "free") + 
@@ -495,9 +489,10 @@ ggplot(drop_na(full_data, size), aes(x = doy, y = size, colour = site)) +
         legend.title.align = 0.125)
 ```
 
-Shown below is the body size data for each individual site. 
 
 ```{r size-ind-pops-doy, fig.width=8, fig.height=6, include = F}
+# Shown below is the body size data for each individual site. 
+
 ggplot(drop_na(full_data, size), aes(x = doy, y = size, colour = site)) + 
   facet_wrap(.~site) + 
   geom_line(data = drop_na(mean_size, mean_size), 
@@ -543,7 +538,7 @@ ggplot(full_data, aes(x = season, y = size, colour = site)) +
 
 ### Salinity Pair Comparisons 
 
-The three pairs of cross-salinity comparisons do show evidence for fine-scale trait divergence, although there was no consistent pattern in the direction or magnitude of differences. CTmax was similar across sites in the Southern and Central pairs. In the Northern pair, CTmax tended to be slightly lower for individuals from the low salinity site. Size was more variable between the paired sites. In the South, low salinity individuals were consistently smaller than high salinity individuals, despite the similar temperatures. In the Central pair, individuals from the low salinity site tended to be slightly larger than those from the high salinity site, although this varied seasonally. Sizes tended to be more similar across the collections from the Northern pair. 
+The three pairs of cross-salinity comparisons do show evidence for fine-scale trait divergence, although there was no consistent pattern in the direction or magnitude of differences. CTmax was similar across sites in the Southern and Central pairs. In the Northern pair, CTmax tended to be slightly lower for individuals from the low salinity site. Size was more variable between the paired sites. In the South, low salinity individuals were consistently smaller than high salinity individuals, despite experiencing similar temperatures. In the Central pair, individuals from the low salinity site tended to be slightly larger than those from the high salinity site, although this varied seasonally. Sizes tended to be more similar across the collections from the Northern pair. 
 
 ```{r sal-pair-traits}
 sal_comp_ctmax_plot = sal_comps %>% 
@@ -571,49 +566,49 @@ sal_comp_size_plot = sal_comps %>%
 ggarrange(sal_comp_ctmax_plot, sal_comp_size_plot, nrow = 2, common.legend = T, legend = "right")
 
 ###
-
-sal_comp_ctmax.model = lm(ctmax ~ collection_temp, data = sal_comps)
-# summary(ctmax_temp.model)
-# car::Anova(ctmax_temp.model)
-sal_comp_ctmax_resids = residuals(sal_comp_ctmax.model)
-
-sal_comp_size.model = lm(size ~ collection_temp, data = sal_comps)
-# summary(size_temp.model)
-# car::Anova(size_temp.model)
-sal_comp_size_resids = residuals(sal_comp_size.model)
-
-sal_comp_ctmax_resid_plot = sal_comps %>%
-  mutate(ctmax_resids = sal_comp_ctmax_resids,
-         size_resids = sal_comp_size_resids) %>%
-  ggplot(aes(x = salinity, y = ctmax_resids, colour = season, group = season)) +
-  facet_wrap(region~.) +
-  geom_point(size = 2,
-             position = position_dodge(width = 0.5)) +
-  #geom_line(size = 1.5) +
-  scale_colour_manual(values = season_cols) +
-  labs(y = "CTmax \nResiduals",
-       x = "") +
-  theme_matt_facets(base_size = 14)
-
-sal_comp_size_resid_plot = sal_comps %>%
-  mutate(ctmax_resids = sal_comp_ctmax_resids,
-         size_resids = sal_comp_size_resids) %>%
-  ggplot(aes(x = salinity, y = size_resids, colour = season, group = season)) +
-  facet_wrap(region~.) +
-  geom_point(size = 2,
-             position = position_dodge(width = 0.5)) +
-  #geom_line(size = 1.5) +
-  scale_colour_manual(values = season_cols) +
-  labs(y = "Prosome Length \nResiduals",
-       x = "") +
-  theme_matt_facets(base_size = 14)
-
-ggarrange(sal_comp_ctmax_resid_plot, sal_comp_size_resid_plot, nrow = 2, common.legend = T, legend = "right")
+# 
+# sal_comp_ctmax.model = lm(ctmax ~ collection_temp, data = sal_comps)
+# # summary(ctmax_temp.model)
+# # car::Anova(ctmax_temp.model)
+# sal_comp_ctmax_resids = residuals(sal_comp_ctmax.model)
+# 
+# sal_comp_size.model = lm(size ~ collection_temp, data = sal_comps)
+# # summary(size_temp.model)
+# # car::Anova(size_temp.model)
+# sal_comp_size_resids = residuals(sal_comp_size.model)
+# 
+# sal_comp_ctmax_resid_plot = sal_comps %>%
+#   mutate(ctmax_resids = sal_comp_ctmax_resids,
+#          size_resids = sal_comp_size_resids) %>%
+#   ggplot(aes(x = salinity, y = ctmax_resids, colour = season, group = season)) +
+#   facet_wrap(region~.) +
+#   geom_point(size = 2,
+#              position = position_dodge(width = 0.5)) +
+#   #geom_line(size = 1.5) +
+#   scale_colour_manual(values = season_cols) +
+#   labs(y = "CTmax \nResiduals",
+#        x = "") +
+#   theme_matt_facets(base_size = 14)
+# 
+# sal_comp_size_resid_plot = sal_comps %>%
+#   mutate(ctmax_resids = sal_comp_ctmax_resids,
+#          size_resids = sal_comp_size_resids) %>%
+#   ggplot(aes(x = salinity, y = size_resids, colour = season, group = season)) +
+#   facet_wrap(region~.) +
+#   geom_point(size = 2,
+#              position = position_dodge(width = 0.5)) +
+#   #geom_line(size = 1.5) +
+#   scale_colour_manual(values = season_cols) +
+#   labs(y = "Prosome Length \nResiduals",
+#        x = "") +
+#   theme_matt_facets(base_size = 14)
+# 
+# ggarrange(sal_comp_ctmax_resid_plot, sal_comp_size_resid_plot, nrow = 2, common.legend = T, legend = "right")
 ```
 
 ## Trait Correlations
 
-Regardless of the underlying mechanism (genetic differentiation or phenotypic plasticity), we expect that collections from warmer waters should yield copepods with higher thermal limits and smaller body sizes. Our observations largely fit this expectation, with strong increases in CTmax at higher temperatures, and a general decrease in prosome lengths as temperature increased. 
+Regardless of the underlying mechanism (genetic differentiation or phenotypic plasticity), we expect that collections from warmer waters should yield copepods with higher thermal limits and smaller body sizes. Our observations largely fit this expectation, with strong increases in CTmax at higher temperatures, and a general decrease in prosome lengths as temperature increased. There was a larger correlation between CTmax and temperature than size and temperature. There are myriad reasons this might be observed, but one potential is the potential for acclimation of thermal limits. Body size is fixed in the adult stage, while CTmax can continue to vary as water temperature changes. This is indirect evidence for the importance of rapid acclimation in the observed patterns. 
 
 ```{r temp-cors, fig.width=15, fig.height=6}
 ctmax_temp_plot = ggplot(full_data, aes(x = collection_temp, y = ctmax)) + 
@@ -655,9 +650,9 @@ wt_temp_plot = ggplot(full_data, aes(x = collection_temp, y = warming_tol)) +
 ggarrange(ctmax_temp_plot, wt_temp_plot, size_temp_plot, common.legend = T, legend = "bottom", nrow = 1)
 ```
 
-Shown below are these temperature correlations for each individual population. Variation in the temperature sensitivity of these traits appears to vary across populations, with reduced slopes in both the lowest and the highest latitude populations. Again, we emphasize that this observed trait variation may stem from either (or both) plastic and genetic effects. However, these observations provide estimates for realistic patterns in temperature sensitivity for these populations. 
+```{r pop-temp-cors, fig.width=8, fig.height=6, include = F}
+# Shown below are these temperature correlations for each individual population. Variation in the temperature sensitivity of these traits appears to vary across populations, with reduced slopes in both the lowest and the highest latitude populations. Again, we emphasize that this observed trait variation may stem from either (or both) plastic and genetic effects. However, these observations provide estimates for realistic patterns in temperature sensitivity for these populations. 
 
-```{r pop-temp-cors, fig.width=8, fig.height=6}
 ggplot(full_data, aes(x = collection_temp, y = ctmax)) + 
   facet_wrap(.~site) + 
   geom_smooth(method = "lm", se = T,
@@ -734,12 +729,13 @@ pop_size = full_data %>%
 ggarrange(universal_size, pop_size, common.legend = T, legend = "none", nrow = 2)
 ```
 
-This relationship may be affected by changes in temperature at each site, however, which may affect both body size and thermal limits. If there is a true mechanistic relationship between body size and thermal limits, we would expect to see this relationship emerge **within** populations or even individual collections. Shown below is the relationship between CTmax and size residuals, acquired from regressions of these traits against collection temperature. This substantially reduces the strength of the apparent relationship, but there is still a slightly negative overall relationship, spanning both across-population, within-population, and even within-collection scales (see the Sawyer Park collections, for example).     
+This relationship may be affected by changes in temperature at each site, however, which can affect both body size and thermal limits. If there is a true mechanistic relationship between body size and thermal limits, we would expect to see this relationship emerge **within** populations, or even individual collections. Shown below is the relationship between CTmax and size residuals, acquired from regressions of these traits against collection temperature. This substantially reduces the strength of the apparent relationship, but there is still a slightly negative overall relationship, spanning both across-population, within-population, and even within-collection scales (see the Sawyer Park collections, for example).     
 
 ```{r ctmax-vs-size-resids, fig.width=6, fig.height=10}
 filtered_data = full_data %>% 
   drop_na(size, ctmax) %>% 
   mutate(temp_cent = scale(collection_temp, scale = F),
+         size_cent = scale(size, scale = F),
          sal_cent = scale(collection_salinity, scale = F),
          sal_type = if_else(collection_salinity > 20, "High", "Low"))
 
@@ -795,39 +791,29 @@ ggarrange(all_resids, pop_resids, common.legend = T, legend = "none", nrow = 2)
 ```
 
 ```{r ctmax-model, include = F}
-# 
-# full.model = lm(data = filtered_data, 
-#                 ctmax ~ site * collection_temp * size, 
-#                    na.action = "na.fail")
-# 
-# dredge_results = MuMIn::dredge(full.model)
-# top_model = MuMIn::get.models(dredge_results, 1)[[1]] #Best model
-# 
-# temp_vals = as_tibble(emtrends(top_model, spec = "site", var = "collection_temp")) 
-# size_vals = as_tibble(emtrends(top_model, spec = "site", var = "size")) 
-
 ctmax.model = lme4::lmer(
   data = filtered_data, 
-  ctmax ~ temp_cent + size + sal_type + (1 + temp_cent|site))
+  ctmax ~ temp_cent + size + sal_type + (1 + temp_cent|site) + (1|season))
 ```
 
-To more formally test the relationships between CTmax, collection temperature, and size, we used a linear mixed effects model, structured as `ctmax ~ collection_temp + size + salinity_type + (1|site)`. This examines the effects of temperature and size on CTmax, along with differences between the salinity groupings. Collection temperature was centered and salinity type assigned ("low" salinity as anything below 20 psu, "high" salinity as anything above 20 psu) before model fitting. The model also includes random intercepts for each site and random slopes for collection temperature (i.e. - variation in the acclimation capacity of CTmax). 
+To more formally test the relationships between CTmax, collection temperature, and size, we used a linear mixed effects model, structured as `ctmax ~ collection temp. + size + salinity + (1 + collection temp.|site)`. This examines the effects of temperature and size on CTmax, along with differences between the salinity groupings. Collection temperature and size were both centered and salinity transformed into a categorical variable ("low" salinity as anything below 20 psu, "high" salinity as anything above 20 psu) before model fitting. The model also includes random intercepts for each site and random slopes for collection temperature (i.e. - variation in the acclimation capacity of CTmax). A random intercept for season is also included. 
 
 Collection temperature and body size both had a significant effect on CTmax, but salinity type did not. The overall effect of temperature suggests an increase in CTmax of `r round(unname(fixef(ctmax.model)["temp_cent"]), digits = 2)`°C per °C increase in collection temperature (i.e. - an ARR value of `r round(unname(fixef(ctmax.model)["temp_cent"]), digits = 2)`), while increasing body sizes decrease CTmax by `r round(unname(fixef(ctmax.model)["size"]), digits = 2)`°C per mm (or a decrease of ~`r round(unname(fixef(ctmax.model)["size"]), digits = 2)/10`°C per tenth of a mm, which is more biologically realistic for *A. tonsa*). While not significant, the model suggests low salinity sites had lower thermal limits by ~`r abs(round(unname(fixef(ctmax.model)["sal_typeLow"]), digits = 1))`°C.
 
 ```{r}
 
-#summary(ctmax.model)
-
 effects_summary = data.frame(
-  "Temperature (per degree)" = unname(fixef(ctmax.model)["temp_cent"]),
-  "Size (per mm)" = unname(fixef(ctmax.model)["size"]),
-  "Salinity (Low vs. High)" = unname(fixef(ctmax.model)["sal_typeLow"]))
+  "Temperature" = unname(fixef(ctmax.model)["temp_cent"]),
+  "Size" = unname(fixef(ctmax.model)["size"]),
+  "Salinity" = unname(fixef(ctmax.model)["sal_typeLow"])) %>%  
+  select("Temperature (per degree)" = Temperature, 
+         "Size (per mm)" = Size, 
+         "Salinity (Low vs. High)" = Salinity)
 
 knitr::kable(effects_summary)
 ```
 
-By extracting the conditional mode for the random effects, we can also examine how thermal limits vary across sites beyond the influence of collection temperatures and body sizes. Shown below are these values, extracted from the linear mixed effects model. We can see that, similar to what's been observed in common garden experiments with *A. tonsa* previously, significant divergences are present at only a few sites, with Fort Hamer and Ritchie Wharf having increased and decreased thermal limits respectively. Interestingly, both of these sites were low salinity sites, also in line with previous results suggesting gene flow between high salinity sites may constrain differentiation. 
+By extracting the conditional mode for the random effects, we can also examine how thermal limits vary across sites beyond the influence of collection temperatures and body sizes. Shown below are these "population" values (essentially, all else being equal, how would thermal limit vary across populations). We can see that, similar to what's been observed in common garden experiments with *A. tonsa* previously, significant divergences are present at only a few sites near the latitudinal extremes, with Fort Hamer and Ritchie Wharf having increased and decreased thermal limits respectively. Interestingly, both of these sites were low salinity sites, also in line with previous results suggesting gene flow between high salinity sites may constrain differentiation. 
 
 ```{r pop-effs-plot, fig.width=9, fig.height=6}
 pop_effs = REsim(ctmax.model) %>% 
@@ -835,6 +821,11 @@ pop_effs = REsim(ctmax.model) %>%
   filter(term == "(Intercept)") %>% 
   inner_join(site_data, by = c("site")) %>% 
   mutate(site = fct_reorder(site, lat))
+
+season_effs = REsim(ctmax.model) %>% 
+  dplyr::select("site" = groupID, term, mean, sd) %>% 
+  filter(site %in% c("early", "peak", "late")) %>% 
+  select("season" = site, mean, sd)
 
 #plotREsim(REsim(ctmax.model))  # plot the interval estimates
 
@@ -852,7 +843,7 @@ pop_effs_plot = ggplot(pop_effs, aes(x = lat, y = mean, colour = site)) +
 pop_effs_plot
 ```
 
-Finally, shown below are the estimated random slopes for each site. These represent the effects of collection temperature on CTmax for each site. Interestingly, these estimates diverge from the results of previous common garden experiments, which showed the strongest plasticity in high latitude sites. Here, acclimation appears to peak in mid-latitudes, and decrease at both high and low latitude sites. 
+Finally, shown below are the estimated random slopes for each site. These represent the effects of collection temperature on CTmax for each site. Interestingly, these estimates diverge from the results of previous common garden experiments, which showed the strongest plasticity in high latitude sites. Here, acclimation appears to peak in mid-latitudes, and decrease at both high and low latitude sites. This suggests factors may constrain acclimation capacity in natural populations (e.g. food availability, environmental variation, pathogens, etc.). 
 
 ```{r site-arr-plot, fig.width=6, fig.height=4}
 coefficients(ctmax.model)$site %>%
@@ -869,23 +860,6 @@ coefficients(ctmax.model)$site %>%
   theme(legend.position = "none",
         axis.title.y = element_blank())
 ```
-
-```{r}
-coefficients(ctmax.model)$site %>%
-  janitor::clean_names() %>%
-  rownames_to_column(var = "site") %>%
-  inner_join(site_data) %>% 
-  mutate(site = fct_reorder(site, lat)) %>% 
-  ggplot(aes(x = intercept, y = temp_cent)) +
-  geom_point(aes(colour = site),
-             size = 5) +
-  scale_colour_manual(values = site_cols) +
-  labs(x = "Intercept (°C)", 
-       y = "ARR (°C per °C)") +
-  theme_matt() +
-  theme(legend.position = "none")
-```
-
 
 ## Trait Variability
 
@@ -1041,6 +1015,13 @@ var_change_data %>%
   geom_histogram(binwidth = 0.1)
 
 ```
+
+```{r}
+
+knitr::knit_exit()
+
+```
+
 
 ## Comparing rates of change
 Both CTmax and body size varied between sites and across seasons. It can be difficult to directly compare these two traits. We take two approaches to ease this comparison. 
