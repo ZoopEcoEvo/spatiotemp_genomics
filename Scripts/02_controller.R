@@ -99,6 +99,15 @@ if(make_report == T){
   
 }
 
+if(molecular_report == T){
+  st_curve = readxl::read_excel(path = "Molecular/method_test/extraction_nanodrop.xlsx")
+  
+  render(input = "Output/Reports/mol_report.Rmd", #Input the path to your .Rmd file here
+         #output_file = "report", #Name your file here if you want it to have a different name; leave off the .html, .md, etc. - it will add the correct one automatically
+         output_format = "all")
+  
+}
+
 ##################################
 ### Read in the PROCESSED data ###
 ##################################
