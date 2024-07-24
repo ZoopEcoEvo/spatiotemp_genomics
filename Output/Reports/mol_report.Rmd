@@ -41,11 +41,15 @@ theme_matt = function(base_size = 18,
 
 ```{r}
 filter(st_curve, id != "SO3") %>% 
-  group_by(date) %>% 
+  mutate(pop = substr(id, 1, 2),
+         date_group = paste0(date, pop)) %>% 
+  filter(pop %in% c("AT", "MR", "CT")) %>% 
+  group_by(date_group) %>% 
   mutate(conc_st = scale(concentration, center = T, scale = F)) %>% 
   ggplot(aes(x = individuals, 
-             y = conc_st, 
-             group = date)) + 
+             y = concentration, 
+             group = date_group,
+             colour = pop)) + 
   geom_point() + 
   geom_smooth(se = F, method = "gam", formula = y ~ s(x, k = 3)) + 
   theme_matt()
