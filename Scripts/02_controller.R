@@ -8,6 +8,8 @@ library(tidyverse)
 #Determine which scripts should be run
 process_all_data = F #Runs data analysis 
 process_site_temps = F #Compiles continuous temperature data for the sites
+process_reads = F
+align_reads = F
 make_report = T #Runs project summary
 knit_manuscript = F #Compiles manuscript draft
 
@@ -67,14 +69,44 @@ excluded = all_data %>%
 temp_record = read.csv(file = "Output/Output_data/temp_record.csv")
 
 ramp_record = read.csv(file = "Output/Output_data/ramp_record.csv")
+ 
+# full_data %>%  
+#   group_by(site, season, collection_date) %>% 
+#   summarise(mean_ctmax = mean(ctmax)) %>% 
+#   mutate(mean_ctmax = round(mean_ctmax, digits = 1)) %>% 
+#   pivot_wider(names_from = season, 
+#               values_from = mean_ctmax) %>% 
+#   write.csv("Output/Output_data/lim_summary.csv")
 
-full_data %>%  
-  group_by(site, season) %>% 
-  summarise(mean_ctmax = mean(ctmax)) %>% 
-  mutate(mean_ctmax = round(mean_ctmax, digits = 1)) %>% 
-  pivot_wider(names_from = season, 
-              values_from = mean_ctmax) %>% 
-  write.csv("Output/Output_data/lim_summary.csv")
+full_data %>%
+  group_by(site, season, collection_date, collection_temp, collection_salinity) %>%
+  summarise(mean_ctmax = mean(ctmax)) %>%
+  write.csv("Output/Output_data/collection_summary.csv")
+
+temp_summaries = full_data %>% 
+  select(site, season, collection_temp) %>% 
+  distinct() %>% 
+  pivot_wider(id_cols = c("site"),
+              names_from = season, 
+              values_from = collection_temp) %>% 
+  inner_join(site_data) %>% 
+  group_by(site) %>% 
+  mutate(season_mean = mean(c(early, peak, late), na.rm = T)) %>% 
+  ungroup() %>% 
+  mutate(cent_season = scale(season_mean, center = T, scale = F)[,1]) %>% 
+  select(site, region, lat, long, early, peak, late, season_mean, cent_season)
+
+#########
+
+if(process_reads == T){
+  
+  readxl::read_excel(path = "Molecular/twist_map.xlsx") %>% 
+    select(Sample_Name, Sample_Id, Sample_Barcode, "Well" = well) %>% 
+    write.csv("Molecular/sample_map.csv", row.names = F)
+  
+  
+}
+
 
 if(make_report == T){
   render(input = "Output/Reports/report.Rmd", #Input the path to your .Rmd file here
@@ -95,8 +127,7 @@ if(make_report == T){
   #   legend = "bottom",
   #   labels = c("A", "B", "C", "D", "")
   # )
-  
-  
+
 }
 
 if(molecular_report == T){

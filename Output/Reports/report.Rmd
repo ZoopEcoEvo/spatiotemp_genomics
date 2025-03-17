@@ -733,10 +733,11 @@ This relationship may be affected by changes in temperature at each site, howeve
 
 ```{r ctmax-vs-size-resids, fig.width=6, fig.height=10}
 filtered_data = full_data %>% 
+  ungroup() %>% 
   drop_na(size, ctmax) %>% 
-  mutate(temp_cent = scale(collection_temp, scale = F),
-         size_cent = scale(size, scale = F),
-         sal_cent = scale(collection_salinity, scale = F),
+  mutate(temp_cent = scale(collection_temp, scale = F)[,1],
+         size_cent = scale(size, scale = F)[,1],
+         sal_cent = scale(collection_salinity, scale = F)[,1],
          sal_type = if_else(collection_salinity > 20, "High", "Low"))
 
 ctmax_temp.model = lm(ctmax ~ collection_temp + site, data = filtered_data)
@@ -794,6 +795,8 @@ ggarrange(all_resids, pop_resids, common.legend = T, legend = "none", nrow = 2)
 ctmax.model = lme4::lmer(
   data = filtered_data, 
   ctmax ~ temp_cent + size + sal_type + (1 + temp_cent|site) + (1|season))
+
+lmerTest::ranova(ctmax.model)
 ```
 
 To more formally test the relationships between CTmax, collection temperature, and size, we used a linear mixed effects model, structured as `ctmax ~ collection temp. + size + salinity + (1 + collection temp.|site)`. This examines the effects of temperature and size on CTmax, along with differences between the salinity groupings. Collection temperature and size were both centered and salinity transformed into a categorical variable ("low" salinity as anything below 20 psu, "high" salinity as anything above 20 psu) before model fitting. The model also includes random intercepts for each site and random slopes for collection temperature (i.e. - variation in the acclimation capacity of CTmax). A random intercept for season is also included. 
@@ -815,14 +818,14 @@ knitr::kable(effects_summary)
 
 By extracting the conditional mode for the random effects, we can also examine how thermal limits vary across sites beyond the influence of collection temperatures and body sizes. Shown below are these "population" values (essentially, all else being equal, how would thermal limit vary across populations). We can see that, similar to what's been observed in common garden experiments with *A. tonsa* previously, significant divergences are present at only a few sites near the latitudinal extremes, with Fort Hamer and Ritchie Wharf having increased and decreased thermal limits respectively. Interestingly, both of these sites were low salinity sites, also in line with previous results suggesting gene flow between high salinity sites may constrain differentiation. 
 
-```{r pop-effs-plot, fig.width=9, fig.height=6}
+```{r pop-effs-plot, fig.width=10, fig.height=5}
 pop_effs = REsim(ctmax.model) %>% 
   dplyr::select("site" = groupID, term, mean, sd) %>% 
   filter(term == "(Intercept)") %>% 
-  inner_join(site_data, by = c("site")) %>% 
+  inner_join(temp_summaries, by = c("site")) %>% 
   mutate(site = fct_reorder(site, lat))
 
-season_effs = REsim(ctmax.model) %>% 
+season_effs =season_effs =season_effs = REsim(ctmax.model) %>% 
   dplyr::select("site" = groupID, term, mean, sd) %>% 
   filter(site %in% c("early", "peak", "late")) %>% 
   select("season" = site, mean, sd)
@@ -840,7 +843,17 @@ pop_effs_plot = ggplot(pop_effs, aes(x = lat, y = mean, colour = site)) +
   theme_matt() + 
   theme(legend.position = "right")
 
-pop_effs_plot
+pop_clim_plot = ggplot(pop_effs, aes(x = season_mean, y = mean)) + 
+  #geom_abline(slope = 1, intercept = -19) + 
+  geom_smooth(method = "lm", colour = "black") +
+  geom_point(aes(colour = site), size = 4) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(x = "Mean Season Temp.", 
+       y = "Population Effect") + 
+  theme_matt() + 
+  theme(legend.position = "right")
+
+ggarrange(pop_effs_plot, pop_clim_plot, common.legend = T, legend = "bottom")
 ```
 
 Finally, shown below are the estimated random slopes for each site. These represent the effects of collection temperature on CTmax for each site. Interestingly, these estimates diverge from the results of previous common garden experiments, which showed the strongest plasticity in high latitude sites. Here, acclimation appears to peak in mid-latitudes, and decrease at both high and low latitude sites. This suggests factors may constrain acclimation capacity in natural populations (e.g. food availability, environmental variation, pathogens, etc.). 
@@ -860,6 +873,38 @@ coefficients(ctmax.model)$site %>%
   theme(legend.position = "none",
         axis.title.y = element_blank())
 ```
+
+## Partitioning change 
+Ramada-Perez et al. 2024 used a large collection of herbarium samples to disentangle plastic and genetic effects on flowering date. 
+
+```{r}
+part_model.data = full_data %>% 
+  ungroup() %>% 
+  drop_na(size, ctmax) %>% 
+  inner_join(temp_summaries) %>% 
+  mutate(temp_cent = scale(collection_temp, scale = F, center = T)[,1],
+         size_cent = scale(size)[,1],
+         sal_cent = scale(collection_salinity)[,1],
+         ctmax_cent = scale(ctmax)[,1], 
+         sal_type = if_else(collection_salinity > 20, "High", "Low")) %>% 
+  select(site, season, sal_type, ind_id, temp_cent, cent_season, ctmax, size, ctmax_cent, size_cent)
+
+
+ctmax_part.model = lme4::lmer(data = part_model.data,
+                        ctmax ~ cent_season + temp_cent + (1 + temp_cent | site))
+
+fixef(ctmax_part.model)
+ranef(ctmax_part.model)
+
+size_part.model = lme4::lmer(data = part_model.data,
+                        size ~ cent_season + temp_cent + (1 + temp_cent | site))
+
+fixef(size_part.model)
+ranef(size_part.model)
+
+```
+
+
 
 ## Trait Variability
 
