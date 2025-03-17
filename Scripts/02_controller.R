@@ -100,10 +100,40 @@ temp_summaries = full_data %>%
 
 if(process_reads == T){
   
-  readxl::read_excel(path = "Molecular/twist_map.xlsx") %>% 
-    select(Sample_Name, Sample_Id, Sample_Barcode, "Well" = well) %>% 
-    write.csv("Molecular/sample_map.csv", row.names = F)
+  sample_map = readxl::read_excel(path = "Molecular/twist_map.xlsx") %>% 
+    select(Sample_Name, Sample_Id, Sample_Barcode, "Well" = well) # %>% 
+    # write.csv("Molecular/sample_map.csv", row.names = F)
   
+  sequence_comp = sample_map %>% 
+    select(Sample_Name) %>% 
+    filter(!Sample_Name %in% c("ME_late_1_02", "ME_late_1_03", "ME_late_1_04", "ME_late_1_05", "ME_late_1_06",
+                              "ME_late_1_07", "ME_late_1_08", "ME_late_1_09", "ME_late_1_10")) %>% 
+    separate_wider_delim(Sample_Name, delim = "_", names = c("site", "season", "run", "tube")) %>% 
+    group_by(site, season) %>%  
+    summarise("seq_n" = n()) 
+  
+  data_comp = all_data %>%  
+    filter(site != "Key Largo") %>% 
+    select(site, season, run, tube) %>%  
+    mutate(site = case_when(
+      site == "Manatee River" ~ "MR", 
+      site == "Ft. Hamer" ~ "FH", 
+      site == "Tyler Cove" ~ "MD", 
+      site == "Ganey's Wharf" ~ "GW", 
+      site == "Esker Point" ~ "CT", 
+      site == "Sawyer Park" ~ "ME", 
+      site == "St. Thomas de Kent Wharf" ~ "TK", 
+      site == "Ritchie Wharf" ~ "RW", 
+    )) %>% 
+    group_by(site, season) %>%  
+    summarise("data_n" = n())
+  
+  comp_data = inner_join(sequence_comp, data_comp) 
+  
+  comp_data %>% 
+    ggplot(aes(x = data_n, y = seq_n)) +  
+    geom_point() + 
+    geom_abline(intercept = 0, slope = 1)
   
 }
 
