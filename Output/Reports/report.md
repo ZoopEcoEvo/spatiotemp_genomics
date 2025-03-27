@@ -12,6 +12,13 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
 - [Trait Correlations](#trait-correlations)
 - [Partitioning change](#partitioning-change)
 - [Trait Variability](#trait-variability)
+- [Low-Coverage Whole Genome
+  Sequencing](#low-coverage-whole-genome-sequencing)
+
+``` r
+# TO DO 
+# - Framework for quantifying the effects of within- and across-population variation in thermal limits to spatial patterns in vulnerability to warming. Comparing predictions based on 1) median, 2) overall CTmax vs. temp regression, 3) population variation in intercepts, 4) population variation in both slope and intercept. The end metric I could use to compare across scenarios is i) the cumulative amount of underestimation (summed across populations) or ii) the number of sites that have overestimated WT, or iii) the slope of WT (local adaptation and seasonal acclimation should result in more shallow slopes). 
+```
 
 ## Main Message
 
@@ -1028,6 +1035,88 @@ ggplot(trait_ranges, aes(x = season, y = size_var, colour = site)) +
 ```
 
 <img src="../Figures/markdown/var-ind-pops-season-2.png" style="display: block; margin: auto;" />
+
+## Low-Coverage Whole Genome Sequencing
+
+After phenotyping, each individual was preserved in 95% ethanol.
+Individual DNA libraries will be prepared using Twist Bio 96-plex prep
+kits, then sequenced on an Illumina NovaSeq X Plus. Using the
+low-coverage whole genome sequences, we will examine seasonal patterns
+in allele frequency change, and compare these fine scale temporal
+patterns with the larger latitudinal patterns in allele frequency to
+determine whether the same alleles driving rapid seasonal adaptation are
+in play over larger spatial (and longer temporal) scales.
+
+Libraries were prepared using a Twist Bio 96-plex kit before being sent
+for sequencing with Novogene. Reads were de-multiplexed first to the
+plate level, and then to the plate level. The number of reads per sample
+varied, as shown below.
+
+``` r
+read_data %>% 
+  ggplot(aes(templates))+ 
+  geom_histogram() + 
+  theme_matt()
+```
+
+<img src="../Figures/markdown/unnamed-chunk-6-1.png" style="display: block; margin: auto;" />
+
+The sample read counts are shown below separated out by site and season.
+
+``` r
+read_data %>% 
+  mutate(site = fct_relevel(site, "Key Largo", "Manatee River", "Ft. Hamer", 
+                            "Tyler Cove", "Ganey's Wharf", "Esker Point", 
+                            "Sawyer Park", "St. Thomas de Kent Wharf", "Ritchie Wharf"),
+         season = fct_relevel(season, "early", "peak", "late")) %>% 
+  ggplot(aes(templates, fill = site)) + 
+  facet_grid(site~season) + 
+  geom_histogram(binwidth = 5000000) + 
+  scale_fill_manual(values = site_cols) +
+  scale_y_continuous(breaks = c(0, 5, 10)) + 
+  scale_x_continuous(breaks = c(0, 40000000)) + 
+    theme_matt_facets() + 
+  theme(legend.position = "none")
+```
+
+<img src="../Figures/markdown/unnamed-chunk-7-1.png" style="display: block; margin: auto;" />
+
+While the number of reads recovered for each individual varies, there is
+no clear relationship between read counts and size or CTmax.
+
+``` r
+pheno_read_comps = full_data %>%  
+  select(site, season, replicate, tube, size, ctmax) %>% 
+  inner_join(read_data)
+
+reads_size_plot = ggplot(pheno_read_comps, aes(x = size, y = templates)) + 
+  geom_smooth() + 
+  geom_point() + 
+  theme_matt()
+
+reads_ctmax_plot = ggplot(pheno_read_comps, aes(x = ctmax, y = templates)) + 
+  geom_smooth() + 
+  geom_point() + 
+  theme_matt()
+
+ggarrange(reads_size_plot, reads_ctmax_plot, nrow = 1)
+```
+
+<img src="../Figures/markdown/unnamed-chunk-8-1.png" style="display: block; margin: auto;" />
+
+``` r
+
+read.model = lm(data = pheno_read_comps, 
+                templates ~ size + ctmax)
+
+knitr::kable(car::Anova(read.model))
+```
+
+|           |       Sum Sq |  Df |   F value |   Pr(\>F) |
+|:----------|-------------:|----:|----------:|----------:|
+| size      | 1.827825e+12 |   1 | 0.0392238 | 0.8432333 |
+| ctmax     | 2.579683e+12 |   1 | 0.0553581 | 0.8142611 |
+| Residuals | 8.248186e+15 | 177 |        NA |        NA |
 
 ``` r
 

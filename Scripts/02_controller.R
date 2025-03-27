@@ -9,6 +9,7 @@ library(tidyverse)
 process_all_data = F #Runs data analysis 
 process_site_temps = F #Compiles continuous temperature data for the sites
 make_report = T #Runs project summary
+molecular_report = F
 knit_manuscript = F #Compiles manuscript draft
 
 ############################
@@ -95,7 +96,7 @@ temp_summaries = full_data %>%
   select(site, region, lat, long, early, peak, late, season_mean, cent_season)
 
 ######## Sequencing data
-read_data = read_table("~/Desktop/read_metrics.txt") %>% 
+read_data = read_table("Raw_data/molecular/read_metrics.txt") %>% 
   filter(sample_id != "unmatched") %>% 
   arrange(templates) %>% 
   mutate("site" = str_split_fixed(sample_id, pattern = "_", n = 2)[,1], 
