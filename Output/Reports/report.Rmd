@@ -1068,27 +1068,33 @@ After phenotyping, each individual was preserved in 95% ethanol. Individual DNA 
 
 Libraries were prepared using a Twist Bio 96-plex kit before being sent for sequencing with Novogene. Reads were de-multiplexed first to the plate level, and then to the plate level. The number of reads per sample varied, as shown below. 
 
-```{r}
-read_data %>% 
-  ggplot(aes(templates))+ 
-  geom_histogram() + 
+```{r overall-read-counts, fig.width=6, fig.height=6}
+read_data  %>% 
+  mutate(site = fct_relevel(site, "Key Largo", "Manatee River", "Ft. Hamer", 
+                            "Tyler Cove", "Ganey's Wharf", "Esker Point", 
+                            "Sawyer Park", "St. Thomas de Kent Wharf", "Ritchie Wharf"),
+         season = fct_relevel(season, "early", "peak", "late"),
+         reads_millions = templates / 1000000) %>% 
+  ggplot(aes(reads_millions))+ 
+  geom_histogram(binwidth = 2) + 
   theme_matt()
 ```
 
 The sample read counts are shown below separated out by site and season. 
 
-```{r}
+```{r site-season-read-counts, fig.width=9, fig.height=14}
 read_data %>% 
   mutate(site = fct_relevel(site, "Key Largo", "Manatee River", "Ft. Hamer", 
                             "Tyler Cove", "Ganey's Wharf", "Esker Point", 
                             "Sawyer Park", "St. Thomas de Kent Wharf", "Ritchie Wharf"),
-         season = fct_relevel(season, "early", "peak", "late")) %>% 
-  ggplot(aes(templates, fill = site)) + 
+         season = fct_relevel(season, "early", "peak", "late"),
+         reads_millions = templates / 1000000) %>% 
+  ggplot(aes(reads_millions, fill = site)) + 
   facet_grid(site~season) + 
-  geom_histogram(binwidth = 5000000) + 
+  geom_histogram(binwidth = 10) + 
   scale_fill_manual(values = site_cols) +
   scale_y_continuous(breaks = c(0, 5, 10)) + 
-  scale_x_continuous(breaks = c(0, 40000000)) + 
+  scale_x_continuous(breaks = c(0, 40)) + 
     theme_matt_facets() + 
   theme(legend.position = "none")
 ```
