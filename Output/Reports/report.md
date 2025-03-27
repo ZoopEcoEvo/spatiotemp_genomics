@@ -1,7 +1,8 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2024-05-13
+2025-03-27
 
+- [Main Message](#main-message)
 - [Site Characteristics](#site-characteristics)
 - [Phenotypic Measurements](#phenotypic-measurements)
   - [Critical Thermal Limits](#critical-thermal-limits)
@@ -9,7 +10,18 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
   - [Body Size](#body-size)
   - [Salinity Pair Comparisons](#salinity-pair-comparisons)
 - [Trait Correlations](#trait-correlations)
+- [Partitioning change](#partitioning-change)
 - [Trait Variability](#trait-variability)
+
+## Main Message
+
+By assaying thermal limits several times per year in natural populations
+distributed across a large latitudinal gradient, we highlight the
+importance of intra-specific variation for predicting vulnerability to
+climate change. Indeed, across the entire spatiotemporal framework
+examined here, we observed an ~12°C range in thermal limits. Both
+spatial and temporal variation in thermal limits is essential for robust
+predictions.
 
 ## Site Characteristics
 
@@ -631,10 +643,11 @@ Park collections, for example).
 
 ``` r
 filtered_data = full_data %>% 
+  ungroup() %>% 
   drop_na(size, ctmax) %>% 
-  mutate(temp_cent = scale(collection_temp, scale = F),
-         size_cent = scale(size, scale = F),
-         sal_cent = scale(collection_salinity, scale = F),
+  mutate(temp_cent = scale(collection_temp, scale = F)[,1],
+         size_cent = scale(size, scale = F)[,1],
+         sal_cent = scale(collection_salinity, scale = F)[,1],
          sal_type = if_else(collection_salinity > 20, "High", "Low"))
 
 ctmax_temp.model = lm(ctmax ~ collection_temp + site, data = filtered_data)
@@ -746,10 +759,10 @@ differentiation.
 pop_effs = REsim(ctmax.model) %>% 
   dplyr::select("site" = groupID, term, mean, sd) %>% 
   filter(term == "(Intercept)") %>% 
-  inner_join(site_data, by = c("site")) %>% 
+  inner_join(temp_summaries, by = c("site")) %>% 
   mutate(site = fct_reorder(site, lat))
 
-season_effs = REsim(ctmax.model) %>% 
+season_effs =season_effs =season_effs = REsim(ctmax.model) %>% 
   dplyr::select("site" = groupID, term, mean, sd) %>% 
   filter(site %in% c("early", "peak", "late")) %>% 
   select("season" = site, mean, sd)
@@ -767,7 +780,17 @@ pop_effs_plot = ggplot(pop_effs, aes(x = lat, y = mean, colour = site)) +
   theme_matt() + 
   theme(legend.position = "right")
 
-pop_effs_plot
+pop_clim_plot = ggplot(pop_effs, aes(x = season_mean, y = mean)) + 
+  #geom_abline(slope = 1, intercept = -19) + 
+  geom_smooth(method = "lm", colour = "black") +
+  geom_point(aes(colour = site), size = 4) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(x = "Mean Season Temp.", 
+       y = "Population Effect") + 
+  theme_matt() + 
+  theme(legend.position = "right")
+
+ggarrange(pop_effs_plot, pop_clim_plot, common.legend = T, legend = "bottom")
 ```
 
 <img src="../Figures/markdown/pop-effs-plot-1.png" style="display: block; margin: auto;" />
@@ -799,6 +822,65 @@ coefficients(ctmax.model)$site %>%
 ```
 
 <img src="../Figures/markdown/site-arr-plot-1.png" style="display: block; margin: auto;" />
+
+## Partitioning change
+
+Ramada-Perez et al. 2024 used a large collection of herbarium samples to
+disentangle plastic and genetic effects on flowering date.
+
+``` r
+part_model.data = full_data %>% 
+  ungroup() %>% 
+  drop_na(size, ctmax) %>% 
+  inner_join(temp_summaries) %>% 
+  mutate(temp_cent = scale(collection_temp, scale = F, center = T)[,1],
+         size_cent = scale(size)[,1],
+         sal_cent = scale(collection_salinity)[,1],
+         ctmax_cent = scale(ctmax)[,1], 
+         sal_type = if_else(collection_salinity > 20, "High", "Low")) %>% 
+  select(site, season, sal_type, ind_id, temp_cent, cent_season, ctmax, size, ctmax_cent, size_cent)
+
+
+ctmax_part.model = lme4::lmer(data = part_model.data,
+                        ctmax ~ cent_season + temp_cent + (1 + temp_cent | site))
+
+fixef(ctmax_part.model)
+## (Intercept) cent_season   temp_cent 
+##  35.4514093   0.4681551   0.2047111
+ranef(ctmax_part.model)
+## $site
+##                          (Intercept)   temp_cent
+## Manatee River             -0.4973635 -0.06061870
+## Ft. Hamer                 -0.9464055 -0.08036702
+## Tyler Cove                -0.2448906 -0.02333442
+## Ganey's Wharf             -0.7925898 -0.04777954
+## Esker Point                2.5912388  0.18663334
+## Sawyer Park                0.1336556  0.07285348
+## St. Thomas de Kent Wharf   1.2301307  0.03924877
+## Ritchie Wharf             -1.4737758 -0.08663591
+## 
+## with conditional variances for "site"
+
+size_part.model = lme4::lmer(data = part_model.data,
+                        size ~ cent_season + temp_cent + (1 + temp_cent | site))
+
+fixef(size_part.model)
+##  (Intercept)  cent_season    temp_cent 
+##  0.783846773 -0.030293122 -0.006559457
+ranef(size_part.model)
+## $site
+##                          (Intercept)     temp_cent
+## Manatee River             0.06783083  0.0084860214
+## Ft. Hamer                 0.00116212  0.0047380353
+## Tyler Cove               -0.01814592  0.0003729756
+## Ganey's Wharf             0.01879683  0.0000296742
+## Esker Point              -0.04140901 -0.0021360798
+## Sawyer Park               0.09350270  0.0007396981
+## St. Thomas de Kent Wharf -0.07625958 -0.0120477604
+## Ritchie Wharf            -0.04547797 -0.0001825645
+## 
+## with conditional variances for "site"
+```
 
 ## Trait Variability
 
@@ -909,7 +991,7 @@ ggplot(trait_ranges, aes(x = season, y = size_var, colour = site)) +
         legend.title.align = 0.125)
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-5-1.png" style="display: block; margin: auto;" />
 
 Shown below are the seasonal changes in trait variance for each site
 individually.
