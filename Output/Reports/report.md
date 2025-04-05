@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2025-03-27
+2025-04-05
 
 - [Main Message](#main-message)
 - [Site Characteristics](#site-characteristics)
@@ -1115,9 +1115,9 @@ knitr::kable(car::Anova(read.model))
 
 |           |       Sum Sq |  Df |   F value |   Pr(\>F) |
 |:----------|-------------:|----:|----------:|----------:|
-| size      | 2.410115e+14 |   1 | 2.2349975 | 0.1356732 |
-| ctmax     | 5.899499e+12 |   1 | 0.0547084 | 0.8151787 |
-| Residuals | 4.496730e+16 | 417 |        NA |        NA |
+| size      | 1.555297e+14 |   1 | 1.4474295 | 0.2296235 |
+| ctmax     | 5.751075e+11 |   1 | 0.0053522 | 0.9417148 |
+| Residuals | 4.480764e+16 | 417 |        NA |        NA |
 
 ``` r
 
