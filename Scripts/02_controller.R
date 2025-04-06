@@ -208,19 +208,24 @@ if(process_clades == T){
               append = T)
 }
 
-clade_matches = read.csv(file = "Output/Output_data/clade_matches.csv") %>% 
+clade_summary = read.csv(file = "Output/Output_data/COI_clades_summary.csv") %>% 
   mutate(population = fct_relevel(population, "MR", "FH", "MD", "GW", "CT", "ME", "TK", "RW"), 
-         rep = as.numeric(rep), 
-         tube = as.numeric(tube),
          season = fct_relevel(season, "early", "peak", "late"), 
          sample = fct_reorder2(sample, .y = population, .x = season, .desc = F))
 
-best_matches = read.csv(file = "Output/Output_data/best_matches.csv") %>% 
-  mutate(population = fct_relevel(population, "MR", "FH", "MD", "GW", "CT", "ME", "TK", "RW"), 
-         rep = as.numeric(rep), 
-         tube = as.numeric(tube),
-         season = fct_relevel(season, "early", "peak", "late"), 
-         sample = fct_reorder2(sample, .y = population, .x = season, .desc = F))
+# clade_matches = read.csv(file = "Output/Output_data/clade_matches.csv") %>% 
+#   mutate(population = fct_relevel(population, "MR", "FH", "MD", "GW", "CT", "ME", "TK", "RW"), 
+#          rep = as.numeric(rep), 
+#          tube = as.numeric(tube),
+#          season = fct_relevel(season, "early", "peak", "late"), 
+#          sample = fct_reorder2(sample, .y = population, .x = season, .desc = F))
+# 
+# best_matches = read.csv(file = "Output/Output_data/best_matches.csv") %>% 
+#   mutate(population = fct_relevel(population, "MR", "FH", "MD", "GW", "CT", "ME", "TK", "RW"), 
+#          rep = as.numeric(rep), 
+#          tube = as.numeric(tube),
+#          season = fct_relevel(season, "early", "peak", "late"), 
+#          sample = fct_reorder2(sample, .y = population, .x = season, .desc = F))
 
 if(make_report == T){
   render(input = "Output/Reports/report.Rmd", #Input the path to your .Rmd file here
