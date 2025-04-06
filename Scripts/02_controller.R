@@ -8,6 +8,7 @@ library(tidyverse)
 #Determine which scripts should be run
 process_all_data = F #Runs data analysis 
 process_site_temps = F #Compiles continuous temperature data for the sites
+process_clades = F #Runs the script to read in clade matches and compile the summary files (takes a long time)
 make_report = T #Runs project summary
 molecular_report = F
 knit_manuscript = F #Compiles manuscript draft
@@ -151,6 +152,75 @@ read_data = read.csv("Raw_data/molecular/read_metrics.csv") %>%
 #   geom_point() + 
 #   geom_abline(intercept = 0, slope = 1)
 
+if(process_clades == T){
+  
+  ref_clades = read_tsv("raw_data/molecular/reference_clade_labels.txt",  show_col_types = FALSE) %>% distinct()
+  
+  clade_matches = data.frame()
+  no_matches = c()
+  
+  for(i in dir("Raw_data/molecular/clade_matches/")){
+    
+    blast_results = read.csv(file = paste0("Raw_data/molecular/clade_matches/", i, collapse = ""),
+                             col.names = c("read", "ref", "pident", "length", "mismatch", "gapopen", 
+                                           "qstart", "qend", "sstart", "send", "evalue", "bitscore")) 
+    
+    clade_counts = blast_results %>% 
+      group_by(read) %>% 
+      filter(evalue == min(evalue)) %>% 
+      ungroup() %>% 
+      filter(length > 100) %>% 
+      filter(pident > 95) %>% 
+      left_join(ref_clades, join_by(ref == label)) %>%  
+      mutate("sample" = str_split_fixed(i, pattern = ".csv", n = 2)[,1], 
+             "population" = str_split_fixed(sample, pattern = "_", n = 4)[,1], 
+             "season" = str_split_fixed(sample, pattern = "_", n = 4)[,2], 
+             "rep" = as.numeric(str_split_fixed(sample, pattern = "_", n = 4)[,3]), 
+             "tube" = str_split_fixed(sample, pattern = "_", n = 4)[,4])
+    
+    if(dim(clade_counts)[1] == 0){
+      no_matches = c(no_matches, str_split_fixed(i, pattern = ".csv", n = 2)[,1])
+    }else{
+      clade_matches = bind_rows(clade_matches, clade_counts)
+    }
+  }
+  
+  clade_matches = clade_matches %>% 
+    ungroup() %>% 
+    mutate(Clade = case_when(
+      Clade == "I" ~ "A_hudsonica",
+      .default = Clade
+    ))
+  
+  write.table(clade_matches, file = "Output/Output_data/clade_matches.csv", 
+              sep = ",", row.names = F, col.names = !file.exists("Output/Output_data/clade_matches.csv"), 
+              append = T)
+  
+  best_matches = clade_matches %>% 
+    group_by(sample) %>% 
+    filter(length == max(length)) %>% 
+    filter(evalue == min(evalue)) %>% 
+    select(sample, population, season, rep, tube, Clade) %>% 
+    distinct()
+  
+  write.table(best_matches, file = "Output/Output_data/best_matches.csv", 
+              sep = ",", row.names = F, col.names = !file.exists("Output/Output_data/best_matches.csv"), 
+              append = T)
+}
+
+clade_matches = read.csv(file = "Output/Output_data/clade_matches.csv") %>% 
+  mutate(population = fct_relevel(population, "MR", "FH", "MD", "GW", "CT", "ME", "TK", "RW"), 
+         rep = as.numeric(rep), 
+         tube = as.numeric(tube),
+         season = fct_relevel(season, "early", "peak", "late"), 
+         sample = fct_reorder2(sample, .y = population, .x = season, .desc = F))
+
+best_matches = read.csv(file = "Output/Output_data/best_matches.csv") %>% 
+  mutate(population = fct_relevel(population, "MR", "FH", "MD", "GW", "CT", "ME", "TK", "RW"), 
+         rep = as.numeric(rep), 
+         tube = as.numeric(tube),
+         season = fct_relevel(season, "early", "peak", "late"), 
+         sample = fct_reorder2(sample, .y = population, .x = season, .desc = F))
 
 if(make_report == T){
   render(input = "Output/Reports/report.Rmd", #Input the path to your .Rmd file here

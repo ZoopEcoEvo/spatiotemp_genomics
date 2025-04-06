@@ -1125,6 +1125,67 @@ knitr::kable(car::Anova(read.model))
 
 ```
 
+```{r}
+clade_matches %>% 
+  mutate(individual = str_split_fixed(sample, pattern = "_", n = 3)[,3]) %>% 
+  mutate(population = fct_relevel(population, "MR", "FH", "MD", "GW", "CT", "ME", "TK", "RW"), 
+         rep = as.numeric(rep), 
+         tube = as.numeric(tube),
+         season = fct_relevel(season, "early", "peak", "late"), 
+         sample = fct_reorder2(sample, .y = population, .x = season, .desc = F)) %>% 
+ggplot(aes(x = individual, fill = Clade)) + 
+  facet_grid(population~season, scales = "free_x") + 
+  geom_bar(position = "fill") + 
+  scale_y_continuous(breaks = c(0, 0.5, 1)) + 
+  scale_fill_manual(values = c("A_hudsonica" = "#1B9E99",
+                               "A_lilljeborgi" = "#D95F02",
+                               "F" = "#7570B3",
+                               "IV" = "#E7298A",
+                               "out_group" = "#666666",
+                               "S" = "#66A61E",
+                               "SB" = "#E6AB02",
+                               "X" = "#A6761D"),
+                    na.value = "black") + 
+  labs(x = "Individual", 
+       y = "Proportion") + 
+  theme_bw(base_size = 18) + 
+  theme(panel.grid = element_blank(), 
+        axis.text.x = element_text(angle = 290, hjust = 0, vjust = 0.5))
+```
+
+```{r}
+clade_matches %>% 
+  group_by(sample) %>% 
+  count(Clade) %>% 
+  mutate(population = str_split_fixed(sample, pattern = "_", n = 4)[,1],
+         season = str_split_fixed(sample, pattern = "_", n = 4)[,2],
+         individual = str_split_fixed(sample, pattern = "_", n = 3)[,3])  %>% 
+  ungroup() %>% 
+  mutate(population = fct_relevel(population, "MR", "FH", "MD", "GW", "CT", "ME", "TK", "RW"), 
+         season = fct_relevel(season, "early", "peak", "late"), 
+         sample = fct_reorder2(sample, .y = population, .x = season, .desc = F)) %>% 
+  #write.csv(file = "Output/Output_data/COI_clades_summary.csv", row.names = F)
+  ggplot(aes(x = individual, y = n, fill = Clade)) + 
+  facet_grid(population~season) + 
+  geom_bar(stat = "identity", position = "fill") + 
+  scale_y_continuous(breaks = c(0, 0.5, 1)) + 
+  scale_fill_manual(values = c("A_hudsonica" = "#1B9E99",
+                               "A_lilljeborgi" = "#D95F02",
+                               "F" = "#7570B3",
+                               "IV" = "#E7298A",
+                               "out_group" = "#666666",
+                               "S" = "#66A61E",
+                               "SB" = "#E6AB02",
+                               "X" = "#A6761D"),
+                    na.value = "black") + 
+  labs(x = "Individual", 
+       y = "Proportion") + 
+  theme_bw(base_size = 18) + 
+  theme(panel.grid = element_blank(), 
+        axis.text.x = element_text(angle = 290, hjust = 0, vjust = 0.5))
+```
+
+
 
 ```{r}
 
