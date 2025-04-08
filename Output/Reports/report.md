@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2025-04-05
+2025-04-07
 
 - [Main Message](#main-message)
 - [Site Characteristics](#site-characteristics)
@@ -262,15 +262,15 @@ excluded %>%
   knitr::kable(align = "c")
 ```
 
-|    region     |           site           | season | collection_temp | collection_salinity | replicate | tube |  ctmax   | size  |
-|:-------------:|:------------------------:|:------:|:---------------:|:-------------------:|:---------:|:----:|:--------:|:-----:|
-|    Florida    |      Manatee River       |  peak  |      34.0       |         29          |     2     |  6   | 38.45833 | 0.616 |
-|    Florida    |      Manatee River       |  peak  |      34.0       |         29          |     2     |  7   | 38.23750 | 0.593 |
-|    Florida    |        Ft. Hamer         |  late  |      20.0       |         18          |     2     |  3   | 36.59280 | 0.619 |
-|   Maryland    |        Tyler Cove        |  peak  |      29.5       |         15          |     2     |  2   | 36.84375 | 0.614 |
-|  Connecticut  |       Esker Point        | early  |      22.5       |         30          |     2     |  3   | 30.02604 | 0.687 |
-|     Maine     |       Sawyer Park        |  peak  |      22.0       |         30          |     1     |  4   | 30.81424 | 0.865 |
-| New Brunswick | St. Thomas de Kent Wharf |  late  |      13.5       |         28          |     1     |  3   | 28.78299 | 1.039 |
+| region | site | season | collection_temp | collection_salinity | replicate | tube | ctmax | size |
+|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| Florida | Manatee River | peak | 34.0 | 29 | 2 | 6 | 38.45833 | 0.616 |
+| Florida | Manatee River | peak | 34.0 | 29 | 2 | 7 | 38.23750 | 0.593 |
+| Florida | Ft. Hamer | late | 20.0 | 18 | 2 | 3 | 36.59280 | 0.619 |
+| Maryland | Tyler Cove | peak | 29.5 | 15 | 2 | 2 | 36.84375 | 0.614 |
+| Connecticut | Esker Point | early | 22.5 | 30 | 2 | 3 | 30.02604 | 0.687 |
+| Maine | Sawyer Park | peak | 22.0 | 30 | 1 | 4 | 30.81424 | 0.865 |
+| New Brunswick | St. Thomas de Kent Wharf | late | 13.5 | 28 | 1 | 3 | 28.78299 | 1.039 |
 
 Critical thermal maxima (CTmax) was measured using a custom setup. The
 method uses a standard dynamic ramping assay to determine the maximum
@@ -742,7 +742,7 @@ knitr::kable(effects_summary)
 
 | Temperature (per degree) | Size (per mm) | Salinity (Low vs. High) |
 |-------------------------:|--------------:|------------------------:|
-|                0.1664574 |     -3.165841 |              -0.6942512 |
+|                0.1664616 |     -3.165866 |              -0.6942631 |
 
 By extracting the conditional mode for the random effects, we can also
 examine how thermal limits vary across sites beyond the influence of
@@ -848,18 +848,18 @@ ctmax_part.model = lme4::lmer(data = part_model.data,
 
 fixef(ctmax_part.model)
 ## (Intercept) cent_season   temp_cent 
-##  35.4514093   0.4681551   0.2047111
+##  35.4514095   0.4681554   0.2047111
 ranef(ctmax_part.model)
 ## $site
 ##                          (Intercept)   temp_cent
-## Manatee River             -0.4973635 -0.06061870
-## Ft. Hamer                 -0.9464055 -0.08036702
-## Tyler Cove                -0.2448906 -0.02333442
-## Ganey's Wharf             -0.7925898 -0.04777954
-## Esker Point                2.5912388  0.18663334
-## Sawyer Park                0.1336556  0.07285348
-## St. Thomas de Kent Wharf   1.2301307  0.03924877
-## Ritchie Wharf             -1.4737758 -0.08663591
+## Manatee River             -0.4973650 -0.06061869
+## Ft. Hamer                 -0.9464074 -0.08036703
+## Tyler Cove                -0.2448912 -0.02333442
+## Ganey's Wharf             -0.7925902 -0.04777955
+## Esker Point                2.5912406  0.18663335
+## Sawyer Park                0.1336562  0.07285339
+## St. Thomas de Kent Wharf   1.2301320  0.03924884
+## Ritchie Wharf             -1.4737749 -0.08663590
 ## 
 ## with conditional variances for "site"
 
@@ -868,18 +868,18 @@ size_part.model = lme4::lmer(data = part_model.data,
 
 fixef(size_part.model)
 ##  (Intercept)  cent_season    temp_cent 
-##  0.783846773 -0.030293122 -0.006559457
+##  0.783846764 -0.030293138 -0.006559457
 ranef(size_part.model)
 ## $site
-##                          (Intercept)     temp_cent
-## Manatee River             0.06783083  0.0084860214
-## Ft. Hamer                 0.00116212  0.0047380353
-## Tyler Cove               -0.01814592  0.0003729756
-## Ganey's Wharf             0.01879683  0.0000296742
-## Esker Point              -0.04140901 -0.0021360798
-## Sawyer Park               0.09350270  0.0007396981
-## St. Thomas de Kent Wharf -0.07625958 -0.0120477604
-## Ritchie Wharf            -0.04547797 -0.0001825645
+##                           (Intercept)     temp_cent
+## Manatee River             0.067830897  8.486021e-03
+## Ft. Hamer                 0.001162206  4.738036e-03
+## Tyler Cove               -0.018145889  3.729756e-04
+## Ganey's Wharf             0.018796851  2.967435e-05
+## Esker Point              -0.041409095 -2.136080e-03
+## Sawyer Park               0.093502681  7.396993e-04
+## St. Thomas de Kent Wharf -0.076259636 -1.204776e-02
+## Ritchie Wharf            -0.045478015 -1.825651e-04
 ## 
 ## with conditional variances for "site"
 ```
@@ -1118,6 +1118,303 @@ knitr::kable(car::Anova(read.model))
 | size      | 1.555297e+14 |   1 | 1.4474295 | 0.2296235 |
 | ctmax     | 5.751075e+11 |   1 | 0.0053522 | 0.9417148 |
 | Residuals | 4.480764e+16 | 417 |        NA |        NA |
+
+*Acartia tonsa* is well known to comprise multiple, deeply diverged
+clades. To determine the clade composition of our sample set, we skimmed
+COI sequences from the low-coverage data.
+
+``` r
+# clade_matches %>% 
+#   group_by(sample) %>% 
+#   count(Clade) %>% 
+#   mutate(population = str_split_fixed(sample, pattern = "_", n = 4)[,1],
+#          season = str_split_fixed(sample, pattern = "_", n = 4)[,2],
+#          individual = str_split_fixed(sample, pattern = "_", n = 3)[,3])  %>% 
+#   ungroup() %>% 
+#   mutate(population = fct_relevel(population, "MR", "FH", "MD", "GW", "CT", "ME", "TK", "RW"), 
+#          season = fct_relevel(season, "early", "peak", "late"), 
+#          sample = fct_reorder2(sample, .y = population, .x = season, .desc = F))
+#   #write.csv(file = "Output/Output_data/COI_clades_summary.csv", row.names = F)
+
+ggplot(clade_summary, aes(x = individual, y = n, fill = Clade)) + 
+  facet_grid(population~season) + 
+  geom_bar(stat = "identity", position = "fill") + 
+  scale_y_continuous(breaks = c(0, 0.5, 1)) + 
+  scale_fill_manual(values = c("A_hudsonica" = "#1B9E99",
+                               "A_lilljeborgi" = "#D95F02",
+                               "F" = "#7570B3",
+                               "IV" = "#E7298A",
+                               "out_group" = "#666666",
+                               "S" = "#66A61E",
+                               "SB" = "#E6AB02",
+                               "X" = "#A6761D"),
+                    na.value = "black") + 
+  labs(x = "Individual", 
+       y = "Proportion") + 
+  theme_bw(base_size = 18) + 
+  theme(panel.grid = element_blank(), 
+        axis.text.x = element_text(angle = 290, hjust = 0, vjust = 0.5))
+```
+
+<img src="../Figures/markdown/unnamed-chunk-7-1.png" style="display: block; margin: auto;" />
+
+These COI clades were then merged with the CTmax and body size data set
+to examine clade-specific patterns of divergence. By plotting CTmax and
+size against the collection temperature we can see that these clades
+appear to be physiologically differentiated. Clades F and S tend to have
+higher CTmax, even when collected at the same temperatures as Clades X
+and IV. Size is more variable, with varying degrees of temperature
+sensitivity across the clades. Overall, however, Clade F tends to be
+smaller than Clades S and X. Clade IV tended to be the largest.
+
+``` r
+clade_assignments = clade_summary %>% 
+  group_by(sample) %>% 
+  filter(n == max(n))
+  
+
+clade_ctmax = full_data %>% 
+  select(-exp_date, -days_in_lab, -rank, -time, -ramp_rate, -bopyrid, -ind_id, -region, -long) %>% 
+  mutate(pop = case_when(
+    site == "Key Largo" ~ "KL",
+    site == "Manatee River" ~ "MR",
+    site == "Ft. Hamer" ~ "FH",
+    site == "Tyler Cove" ~ "MD",
+    site == "Ganey's Wharf" ~ "GW",
+    site == "Esker Point" ~ "CT",
+    site == "Sawyer Park" ~ "ME",
+    site == "St. Thomas de Kent Wharf" ~ "TK",
+    site == "Ritchie Wharf" ~ "RW"
+  ), 
+  sample = paste(pop, "_", season, "_", replicate, "_", 0, tube, sep = "")) %>% 
+  left_join(select(clade_assignments, sample, Clade)) %>% 
+  drop_na(Clade)
+
+clade_ctmax_plot = ggplot(clade_ctmax, aes(x = collection_temp, y = ctmax, colour = Clade)) + 
+  geom_point(size = 2, alpha = 0.5) + 
+  geom_smooth(method = "lm", linewidth = 2) + 
+  labs(x = "Collection Temp. (°C)", 
+       y = "CTmax (°C)") + 
+  scale_colour_manual(values = c("A_hudsonica" = "#1B9E99",
+                               "A_lilljeborgi" = "#D95F02",
+                               "F" = "#7570B3",
+                               "IV" = "#E7298A",
+                               "out_group" = "#666666",
+                               "S" = "#66A61E",
+                               "SB" = "#E6AB02",
+                               "X" = "#A6761D"),
+                    na.value = "black") + 
+  theme_matt()
+
+clade_size_plot = ggplot(clade_ctmax, aes(x = collection_temp, y = size, colour = Clade)) + 
+  geom_point(size = 2, alpha = 0.5) + 
+  geom_smooth(method = "lm", linewidth = 2) + 
+    labs(x = "Collection Temp. (°C)", 
+       y = "Prosome Length (mm)") + 
+  scale_colour_manual(values = c("A_hudsonica" = "#1B9E99",
+                               "A_lilljeborgi" = "#D95F02",
+                               "F" = "#7570B3",
+                               "IV" = "#E7298A",
+                               "out_group" = "#666666",
+                               "S" = "#66A61E",
+                               "SB" = "#E6AB02",
+                               "X" = "#A6761D"),
+                    na.value = "black") + 
+  theme_matt()
+
+ggarrange(clade_ctmax_plot, clade_size_plot, nrow = 1, common.legend = T, legend = "bottom")
+```
+
+<img src="../Figures/markdown/unnamed-chunk-8-1.png" style="display: block; margin: auto;" />
+
+``` r
+
+# ggplot(clade_ctmax, aes(x = size, y = ctmax, colour = Clade)) + 
+#   geom_point(size = 2) + 
+#   #geom_smooth(method = "lm", linewidth = 2) + 
+#     labs(y = "CTmax (°C)", 
+#        x = "Prosome Length (mm)") + 
+#   scale_colour_manual(values = c("A_hudsonica" = "#1B9E99",
+#                                "A_lilljeborgi" = "#D95F02",
+#                                "F" = "#7570B3",
+#                                "IV" = "#E7298A",
+#                                "out_group" = "#666666",
+#                                "S" = "#66A61E",
+#                                "SB" = "#E6AB02",
+#                                "X" = "#A6761D"),
+#                     na.value = "black") + 
+#   theme_matt_facets()
+```
+
+These differences in physiology correspond to the distributional
+patterns for each clade - shown below are logistic regressions of clade
+presence against latitude or collection temperature.
+
+``` r
+clade_occurence = clade_ctmax %>% 
+  select(site, season, Clade, collection_temp, lat) %>% 
+  group_by(site, season, collection_temp, lat) %>% 
+  count(Clade) %>% 
+  ungroup() %>% 
+  complete(nesting(site, season, collection_temp, lat), Clade, fill = list(n = 0)) %>%  
+  mutate(n = if_else(n == 0, 0, 1), 
+         num_season = case_when(
+           season == "early" ~ 1,
+           season == "peak" ~ 2,
+           season == "late" ~ 3))
+
+lat_clade_plot = ggplot(clade_occurence, aes(x = lat, y = n, colour = Clade)) + 
+  facet_wrap(Clade~.) + 
+  geom_point(size = 3, 
+             position = position_jitter(width = 0, height = 0.02)) + 
+  geom_smooth(method = "glm", 
+    method.args = list(family = "binomial"), 
+    se = T, 
+    linewidth = 3) + 
+  labs(x = "Latitude", 
+       y = "Presence") + 
+  scale_y_continuous(breaks = c(0,1)) + 
+  scale_colour_manual(values = c("A_hudsonica" = "#1B9E99",
+                               "A_lilljeborgi" = "#D95F02",
+                               "F" = "#7570B3",
+                               "IV" = "#E7298A",
+                               "out_group" = "#666666",
+                               "S" = "#66A61E",
+                               "SB" = "#E6AB02",
+                               "X" = "#A6761D"),
+                    na.value = "black") + 
+  theme_matt_facets() + 
+  theme(legend.position = "none")
+
+temp_clade_plot = ggplot(clade_occurence, aes(x = collection_temp, y = n, colour = Clade)) + 
+  facet_wrap(Clade~.) + 
+  geom_point(size = 3, 
+             position = position_jitter(width = 0, height = 0.02)) + 
+  geom_smooth(method = "glm", 
+    method.args = list(family = "binomial"), 
+    se = T, 
+    linewidth = 3) + 
+  labs(x = "Collection Temp. (°C)", 
+       y = "Presence") + 
+  scale_y_continuous(breaks = c(0,1)) + 
+  scale_colour_manual(values = c("A_hudsonica" = "#1B9E99",
+                               "A_lilljeborgi" = "#D95F02",
+                               "F" = "#7570B3",
+                               "IV" = "#E7298A",
+                               "out_group" = "#666666",
+                               "S" = "#66A61E",
+                               "SB" = "#E6AB02",
+                               "X" = "#A6761D"),
+                    na.value = "black") + 
+  theme_matt_facets() + 
+  theme(legend.position = "none")
+
+ggarrange(lat_clade_plot, temp_clade_plot)
+```
+
+<img src="../Figures/markdown/unnamed-chunk-9-1.png" style="display: block; margin: auto;" />
+
+These relationships are refined a bit when switching to quasi-binomial
+regressions for the clades’ proportional abundance (what proportion of
+individuals in each collection were assigned to a clade).
+
+``` r
+clade_prop = clade_ctmax %>% 
+  select(site, season, Clade, collection_temp, lat) %>% 
+  group_by(site, season, collection_temp, lat) %>% 
+  count(Clade) %>% 
+  ungroup(collection_temp, lat) %>% 
+  mutate("prop" = n / sum(n)) %>% 
+  ungroup() %>% 
+  complete(nesting(site, season, collection_temp, lat), Clade, fill = list(prop = 0, n = 0)) %>%  
+  mutate(n = if_else(n == 0, 0, 1), 
+         num_season = case_when(
+           season == "early" ~ 1,
+           season == "peak" ~ 2,
+           season == "late" ~ 3))
+
+
+lat_clade_prop_plot = ggplot(clade_prop, aes(x = lat, y = prop, colour = Clade)) + 
+  facet_wrap(Clade~.) + 
+  geom_point(size = 3) + 
+  geom_smooth(method = "glm", 
+    method.args = list(family = "quasibinomial"), 
+    se = T, 
+    linewidth = 3) + 
+  labs(x = "Latitude", 
+       y = "Presence") + 
+  scale_y_continuous(breaks = c(0,1)) + 
+  scale_colour_manual(values = c("A_hudsonica" = "#1B9E99",
+                               "A_lilljeborgi" = "#D95F02",
+                               "F" = "#7570B3",
+                               "IV" = "#E7298A",
+                               "out_group" = "#666666",
+                               "S" = "#66A61E",
+                               "SB" = "#E6AB02",
+                               "X" = "#A6761D"),
+                    na.value = "black") + 
+  theme_matt_facets() + 
+  theme(legend.position = "none")
+
+temp_clade_prop_plot = ggplot(clade_prop, aes(x = collection_temp, y = prop, colour = Clade)) + 
+  facet_wrap(Clade~.) + 
+  geom_point(size = 3) + 
+  geom_smooth(method = "glm", 
+    method.args = list(family = "quasibinomial"), 
+    se = T, 
+    linewidth = 3) + 
+  labs(x = "Collection Temp. (°C)", 
+       y = "Presence") + 
+  scale_y_continuous(breaks = c(0,1)) + 
+  scale_colour_manual(values = c("A_hudsonica" = "#1B9E99",
+                               "A_lilljeborgi" = "#D95F02",
+                               "F" = "#7570B3",
+                               "IV" = "#E7298A",
+                               "out_group" = "#666666",
+                               "S" = "#66A61E",
+                               "SB" = "#E6AB02",
+                               "X" = "#A6761D"),
+                    na.value = "black") + 
+  theme_matt_facets() + 
+  theme(legend.position = "none")
+
+ggarrange(lat_clade_prop_plot, temp_clade_prop_plot)
+```
+
+<img src="../Figures/markdown/unnamed-chunk-10-1.png" style="display: block; margin: auto;" />
+
+Using a Loess smoother (span = 2), highlights how the proportional
+abundance of the clades is affected by temperature in different ways.
+Clade F occurs in high proportion at high temperature, Clade IV occurs
+in high proportions at low temperatures, while Clade X occurs in high
+proportions at intermediate temperatures. Clade S generally occurs in
+low proportions, with a few exceptions.
+
+``` r
+ggplot(clade_prop, aes(x = collection_temp, y = prop, colour = Clade)) + 
+  facet_wrap(Clade~.) + 
+  geom_point(size = 3) + 
+  geom_smooth(span = 2,
+    se = T, 
+    linewidth = 3) + 
+  labs(x = "Collection Temp. (°C)", 
+       y = "Presence") + 
+  coord_cartesian(ylim = c(0,1)) + 
+  scale_y_continuous(breaks = c(0,1)) + 
+  scale_colour_manual(values = c("A_hudsonica" = "#1B9E99",
+                               "A_lilljeborgi" = "#D95F02",
+                               "F" = "#7570B3",
+                               "IV" = "#E7298A",
+                               "out_group" = "#666666",
+                               "S" = "#66A61E",
+                               "SB" = "#E6AB02",
+                               "X" = "#A6761D"),
+                    na.value = "black") + 
+  theme_matt_facets() + 
+  theme(legend.position = "none")
+```
+
+<img src="../Figures/markdown/unnamed-chunk-11-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
