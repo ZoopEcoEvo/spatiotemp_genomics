@@ -36,6 +36,7 @@ temp_profiles = read.csv(file = "Output/Output_data/temp_profiles.csv") %>%
 
 kl_winter = read.csv(file = "Raw_data/outside_sources/key_largo_winter.csv") %>% 
   filter(bopyrid == "no") %>% 
+  select(-bopyrid) %>% 
   mutate(warming_tol = ctmax - collection_temp,
          collection_date = as.character(as.Date(collection_date, "%m/%d/%y")),
          exp_date = as.character(as.Date(exp_date, "%m/%d/%y")))
@@ -78,10 +79,10 @@ ramp_record = read.csv(file = "Output/Output_data/ramp_record.csv")
 #               values_from = mean_ctmax) %>% 
 #   write.csv("Output/Output_data/lim_summary.csv")
 
-full_data %>%
-  group_by(site, season, collection_date, collection_temp, collection_salinity) %>%
-  summarise(mean_ctmax = mean(ctmax)) %>%
-  write.csv("Output/Output_data/collection_summary.csv")
+# full_data %>%
+#   group_by(site, season, collection_date, collection_temp, collection_salinity) %>%
+#   summarise(mean_ctmax = mean(ctmax)) %>%
+#   write.csv("Output/Output_data/collection_summary.csv")
 
 temp_summaries = full_data %>% 
   select(site, season, collection_temp) %>% 

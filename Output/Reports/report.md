@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2025-04-07
+2025-04-08
 
 - [Main Message](#main-message)
 - [Site Characteristics](#site-characteristics)
@@ -10,10 +10,10 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
   - [Body Size](#body-size)
   - [Salinity Pair Comparisons](#salinity-pair-comparisons)
 - [Trait Correlations](#trait-correlations)
-- [Partitioning change](#partitioning-change)
 - [Trait Variability](#trait-variability)
 - [Low-Coverage Whole Genome
   Sequencing](#low-coverage-whole-genome-sequencing)
+- [Misc. Details](#misc-details)
 
 ## Main Message
 
@@ -35,10 +35,10 @@ site_temps = full_data %>%
 ```
 
 Copepods were collected by surface tow from sites across the Western
-Atlantic at several times throughout the year. The sites are shown
-below. Temperatures at the time of collection were measured using a
-manual thermometer. Across the entire set of collections, temperature
-ranged from 10°C to 36°C.
+Atlantic at several times throughout the year. The sites are shown below
+along with surface temperatures and salinity were measured at the time
+of collection. Across the entire set of collections, temperature ranged
+from 10°C to 36°C.
 
 ``` r
 coords = site_data %>%
@@ -75,22 +75,25 @@ ggarrange(site_map, site_temp_plot, common.legend = T, legend = "bottom")
 <img src="../Figures/markdown/site-chars-1.png" style="display: block; margin: auto;" />
 
 Collections aimed to obtain copepods near the onset of peak
-temperatures, after peak temperatures, and then at low temperatures.
-Regional data is not available for all sites, so here we’ve pieced
-together daily temperature values from either local temperature sensors
-(sites in Florida and the Chesapeake) and high resolution satellite
-temperature data (Connecticut, Maine, and the Canadian sites). This
-satellite data comes from the NOAA 1/4° Daily Optimum Interpolation Sea
-Surface Temperature (OISST).
+temperatures, after peak temperatures, and then after temperatures
+cooled during the Fall. To put the temperature data we measured into
+this larger seasonal context, we examined continuous temperature records
+for each site. Continuous data is not available for all sites, however,
+so here we’ve pieced together daily temperature values from either local
+temperature sensors (sites in Florida and the Chesapeake) and high
+resolution satellite temperature data (Connecticut, Maine, and the
+Canadian sites). This satellite data comes from the NOAA 1/4° Daily
+Optimum Interpolation Sea Surface Temperature (OISST).
 
 These temperature profiles are shown below, with the temperatures
-measured during the time of collection included for comparison In
-several cases collection temperature does not match the recorded daily
-averages, but the temperature records do give a general sense of the
-timing of seasonal maxima. In general, the first sample from each site
-fell just after the site reached the warmest period. The exception to
-that pattern is in Florida, where collections occurred after an extended
-period of high temperatures.
+measured during the time of collection included for comparison While
+collection temperatures in Maine did not always match the recorded daily
+averages, across all sites the temperature records do give a general
+sense of the timing of seasonal maxima (and the proximity of collections
+to the seasonal maximum temperature). In general, the first sample from
+each site fell just after the site reached the warmest period. The
+exception to that pattern is in Florida, where collections occurred
+after an extended period of high temperatures.
 
 ``` r
 temp_profiles = temp_profiles %>% 
@@ -127,7 +130,7 @@ ggplot(temp_profiles, aes(x = doy, y = temp_c)) +
 
 <img src="../Figures/markdown/continuous-temps-1.png" style="display: block; margin: auto;" />
 
-Exact locations for the sites are provided here.
+Exact locations for the sites are provided here:
 
 ``` r
 site_data %>%  
@@ -168,11 +171,12 @@ data.frame("Region" = c("South", "Central", "North"),
 
 There are fairly well-established divergences between high salinity and
 low salinity populations of *Acartia tonsa*. These sets of
-geographically proximate but isolated populations provide independent
-comparisons of the effects of seasonality. Shown here are the collection
-conditions for these pairs of sites. Temperature was typically similar
-across the pairs within each collection, while salinity differences were
-fairly stable across collections.
+geographically proximate sites potentially provide independent
+comparisons of the effects of seasonality across salinity gradients.
+Shown here are the collection conditions for these pairs of sites.
+Temperature was typically similar across the pairs within each
+collection, while salinity differences were fairly stable across
+collections.
 
 ``` r
 season_cols = c("early" = "grey75", 
@@ -262,21 +266,21 @@ excluded %>%
   knitr::kable(align = "c")
 ```
 
-| region | site | season | collection_temp | collection_salinity | replicate | tube | ctmax | size |
-|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-| Florida | Manatee River | peak | 34.0 | 29 | 2 | 6 | 38.45833 | 0.616 |
-| Florida | Manatee River | peak | 34.0 | 29 | 2 | 7 | 38.23750 | 0.593 |
-| Florida | Ft. Hamer | late | 20.0 | 18 | 2 | 3 | 36.59280 | 0.619 |
-| Maryland | Tyler Cove | peak | 29.5 | 15 | 2 | 2 | 36.84375 | 0.614 |
-| Connecticut | Esker Point | early | 22.5 | 30 | 2 | 3 | 30.02604 | 0.687 |
-| Maine | Sawyer Park | peak | 22.0 | 30 | 1 | 4 | 30.81424 | 0.865 |
-| New Brunswick | St. Thomas de Kent Wharf | late | 13.5 | 28 | 1 | 3 | 28.78299 | 1.039 |
+|    region     |           site           | season | collection_temp | collection_salinity | replicate | tube |  ctmax   | size  |
+|:-------------:|:------------------------:|:------:|:---------------:|:-------------------:|:---------:|:----:|:--------:|:-----:|
+|    Florida    |      Manatee River       |  peak  |      34.0       |         29          |     2     |  6   | 38.45833 | 0.616 |
+|    Florida    |      Manatee River       |  peak  |      34.0       |         29          |     2     |  7   | 38.23750 | 0.593 |
+|    Florida    |        Ft. Hamer         |  late  |      20.0       |         18          |     2     |  3   | 36.59280 | 0.619 |
+|   Maryland    |        Tyler Cove        |  peak  |      29.5       |         15          |     2     |  2   | 36.84375 | 0.614 |
+|  Connecticut  |       Esker Point        | early  |      22.5       |         30          |     2     |  3   | 30.02604 | 0.687 |
+|     Maine     |       Sawyer Park        |  peak  |      22.0       |         30          |     1     |  4   | 30.81424 | 0.865 |
+| New Brunswick | St. Thomas de Kent Wharf |  late  |      13.5       |         28          |     1     |  3   | 28.78299 | 1.039 |
 
 Critical thermal maxima (CTmax) was measured using a custom setup. The
 method uses a standard dynamic ramping assay to determine the maximum
 temperature individuals could sustain normal functioning. This differs
-from lethal temperatures, and indeed, all individuals observed so far
-recovered following the assay.
+from lethal temperatures, and indeed, all individuals observed recovered
+following the assay.
 
 Individuals were rested for one hour after collection before the assay.
 During the assay, copepods were held in artificial seawater, composed of
@@ -288,43 +292,48 @@ sorting individuals from the plankton tow contents, they were held in a
 50:50 mix of 60 um filtered water from the collection site and
 artificial seawater as an additional acclimation step.
 
-Sample sizes varied slightly across experiments, but most sites had 20
-individuals measured per season. The major exceptions were the early
-samples from the Florida sites and the late sample from Sawyer Park
-(Maine). Only two sets of samples (peak and late) were collected from
-Fort Hamer and Manatee River. No samples were collected from Key Largo
-for this project, as *Acartia tonsa* wasn’t present in the water during
-the peak season, likely due to the recent extreme heat event. The late
-season collection from Sawyer Park occurred after *Acartia tonsa*
-abundance decreased. Samples from this period were dominated by *Acartia
-hudsonica* instead.
+Sample sizes varied slightly across experiments, but generally ~20
+individuals were measured per season at each site. The major exceptions
+were the early samples from the Florida sites and the late sample from
+Sawyer Park (Maine). Only two sets of samples (peak and late) were
+collected from Fort Hamer and Manatee River. The late season collection
+from Sawyer Park occurred after *Acartia tonsa* abundance decreased, and
+samples were dominated by *Acartia hudsonica*. Thermal limits were
+measured for all *A. tonsa* individuals recovered. No samples were
+collected from Key Largo for this project, as *Acartia tonsa* wasn’t
+present in the water during the peak season, likely due to a recent
+extreme heat event. Thermal limits from a separate project that examined
+thermal limits at this site (collected February 2023; Sasaki et
+al. 2023) are included as a point of comparison. Body size values were
+not measured for these Key Largo copepods, nor were copepods
+individually preserved after the experiments.
 
 ``` r
-ggplot(full_data, aes(x = site, fill = site)) + 
-  facet_wrap(season~.) + 
-  geom_hline(yintercept = c(0,20),
-             colour = "grey70") + 
-  geom_bar() + 
-  scale_fill_manual(values = site_cols) + 
-  coord_flip() +
-  theme_matt() + 
-  theme(legend.position = "none",
-        panel.border = element_rect(linewidth = 1,
-                                    fill = NA),
-        strip.text = element_text(size = 20),
-        axis.title.y = element_blank())
+full_data %>%  
+  group_by(site, season) %>% 
+  count() %>%  
+  pivot_wider(id_cols = "site", 
+              names_from = season, 
+              values_from = n, 
+              values_fill = 0) %>% 
+  knitr::kable()
 ```
 
-<img src="../Figures/markdown/sample-size-plot-1.png" style="display: block; margin: auto;" />
+| site                     | early | peak | late |
+|:-------------------------|------:|-----:|-----:|
+| Key Largo                |    29 |    0 |    0 |
+| Manatee River            |     0 |   18 |   20 |
+| Ft. Hamer                |     0 |   20 |   19 |
+| Tyler Cove               |    20 |   19 |   20 |
+| Ganey’s Wharf            |    20 |   20 |   20 |
+| Esker Point              |    19 |   19 |   20 |
+| Sawyer Park              |    20 |   19 |    8 |
+| St. Thomas de Kent Wharf |    20 |   20 |   19 |
+| Ritchie Wharf            |    20 |   20 |   20 |
 
-Shown below are the measured CTmax values. Note: CTmax values for the
-early season Key Largo copepods were collected at the end of February
-2023 as part of a separate project. Body size values were not measured
-during this project, nor were copepods individually preserved after the
-experiments. These early season CTmax values are included as a point of
-comparison. Individual measurements are shown in small points for each
-collection. The large points indicate the mean values for each
-collection.
+Shown below are the measured CTmax values. Individual measurements are
+shown in small points for each collection. The large points indicate the
+mean values for each collection.
 
 ``` r
 mean_ctmax = full_data %>% 
@@ -363,7 +372,7 @@ environmental temperatures) is a commonly used metric of climate
 vulnerability. We calculated this as the difference between measured
 CTmax values and the collection temperature. Smaller warming tolerance
 values indicate that populations were nearer to their upper thermal
-limits, and may therefore be more vulnerable to additional warming.
+limits, suggesting greater vulnerability.
 
 ``` r
 mean_wt = full_data %>% 
@@ -437,21 +446,43 @@ fine-scale trait divergence, although there was no consistent pattern in
 the direction or magnitude of differences. CTmax was similar across
 sites in the Southern and Central pairs. In the Northern pair, CTmax
 tended to be slightly lower for individuals from the low salinity site.
-Size was more variable between the paired sites. In the South, low
-salinity individuals were consistently smaller than high salinity
-individuals, despite experiencing similar temperatures. In the Central
-pair, individuals from the low salinity site tended to be slightly
-larger than those from the high salinity site, although this varied
-seasonally. Sizes tended to be more similar across the collections from
-the Northern pair.
+Size was more variable between the paired sites. In the South,
+individuals from the low salinity site were consistently smaller than
+individuals from the high salinity site, despite experiencing similar
+temperatures. By contrast, in the Central pair individuals from the low
+salinity site tended to be slightly larger than those from the high
+salinity site, although the magnitude of this difference this varied
+seasonally. In the Northern pair, individuals from the low salinity site
+were slightly larger than individuals from the high salinity site during
+the early and peak season collections, but there was an abrupt reversal
+of this pattern during the late collection, when individuals from the
+high salinity site were much larger than individuals from the low
+salinity site.
+
+We will return to potential mechanisms behind divergence between these
+geographically proximate but environmentally separated sites later in
+this report.
 
 ``` r
+sal_means = sal_comps %>% 
+  group_by(region, site, salinity, season) %>% 
+  summarize(mean_ctmax = mean(ctmax),
+            mean_size = median(size))
+
 sal_comp_ctmax_plot = sal_comps %>% 
   ggplot(aes(x = salinity, y = ctmax, colour = season, group = season)) + 
   facet_wrap(region~.) + 
-  geom_point(size = 2,
-             position = position_dodge(width = 0.2)) + 
-  #geom_line(size = 1.5) + 
+    geom_line(data = sal_means, 
+            aes(y = mean_ctmax, group = season),
+            position = position_dodge(width = 0.4),
+            linewidth = 1) + 
+  geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
+                                             dodge.width = 0.4),
+             alpha = 0.3) + 
+  geom_point(data = sal_means, 
+             aes(y = mean_ctmax),
+             position = position_dodge(width = 0.4),
+             size = 4) + 
   scale_colour_manual(values = season_cols) + 
   labs(y = "CTmax (°C)",
        x = "") + 
@@ -460,9 +491,17 @@ sal_comp_ctmax_plot = sal_comps %>%
 sal_comp_size_plot = sal_comps %>% 
   ggplot(aes(x = salinity, y = size, colour = season, group = season)) + 
   facet_wrap(region~.) + 
-  geom_point(size = 2, 
-             position = position_dodge(width = 0.2)) + 
-  #geom_line(size = 1.5) + 
+    geom_line(data = sal_means, 
+            aes(y = mean_size, group = season),
+            position = position_dodge(width = 0.4),
+            linewidth = 1) + 
+  geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
+                                             dodge.width = 0.4),
+             alpha = 0.3) + 
+  geom_point(data = sal_means, 
+             aes(y = mean_size),
+             position = position_dodge(width = 0.4),
+             size = 4) + 
   scale_colour_manual(values = season_cols) + 
   labs(y = "Prosome Length (mm)",
        x = "") + 
@@ -472,49 +511,6 @@ ggarrange(sal_comp_ctmax_plot, sal_comp_size_plot, nrow = 2, common.legend = T, 
 ```
 
 <img src="../Figures/markdown/sal-pair-traits-1.png" style="display: block; margin: auto;" />
-
-``` r
-
-###
-# 
-# sal_comp_ctmax.model = lm(ctmax ~ collection_temp, data = sal_comps)
-# # summary(ctmax_temp.model)
-# # car::Anova(ctmax_temp.model)
-# sal_comp_ctmax_resids = residuals(sal_comp_ctmax.model)
-# 
-# sal_comp_size.model = lm(size ~ collection_temp, data = sal_comps)
-# # summary(size_temp.model)
-# # car::Anova(size_temp.model)
-# sal_comp_size_resids = residuals(sal_comp_size.model)
-# 
-# sal_comp_ctmax_resid_plot = sal_comps %>%
-#   mutate(ctmax_resids = sal_comp_ctmax_resids,
-#          size_resids = sal_comp_size_resids) %>%
-#   ggplot(aes(x = salinity, y = ctmax_resids, colour = season, group = season)) +
-#   facet_wrap(region~.) +
-#   geom_point(size = 2,
-#              position = position_dodge(width = 0.5)) +
-#   #geom_line(size = 1.5) +
-#   scale_colour_manual(values = season_cols) +
-#   labs(y = "CTmax \nResiduals",
-#        x = "") +
-#   theme_matt_facets(base_size = 14)
-# 
-# sal_comp_size_resid_plot = sal_comps %>%
-#   mutate(ctmax_resids = sal_comp_ctmax_resids,
-#          size_resids = sal_comp_size_resids) %>%
-#   ggplot(aes(x = salinity, y = size_resids, colour = season, group = season)) +
-#   facet_wrap(region~.) +
-#   geom_point(size = 2,
-#              position = position_dodge(width = 0.5)) +
-#   #geom_line(size = 1.5) +
-#   scale_colour_manual(values = season_cols) +
-#   labs(y = "Prosome Length \nResiduals",
-#        x = "") +
-#   theme_matt_facets(base_size = 14)
-# 
-# ggarrange(sal_comp_ctmax_resid_plot, sal_comp_size_resid_plot, nrow = 2, common.legend = T, legend = "right")
-```
 
 ## Trait Correlations
 
@@ -572,16 +568,17 @@ ggarrange(ctmax_temp_plot, wt_temp_plot, size_temp_plot, common.legend = T, lege
 
 <img src="../Figures/markdown/temp-cors-1.png" style="display: block; margin: auto;" />
 
-One additional correlation of interest is the relationship between
-prosome length and CTmax. In many cases, larger body sizes are
-associated with cold adaptation/acclimation, and there is a general
-trend of decreasing thermal limits with increasing size. Shown below is
-the relationship between prosome length and CTmax in our data set.
-Individual regression lines for each site are also included - the dark
-grey lines in the background represent the ‘universal’ regression for
-that site, with individual colored regression lines for each collection.
-Across our collections, we see evidence for this relationship, with
-larger individuals having lower thermal limits.
+The relationship between prosome length and CTmax is also of interest.
+Given that larger body sizes are associated with cold
+adaptation/acclimation, it is unsurprising that there is a general trend
+of decreasing thermal limits with increasing size. Individual regression
+lines for each site are also included - the dark grey lines in the
+background represent the ‘universal’ regression for that site, with
+individual colored regression lines for each collection. At most sites,
+evidence for this negative relationship between CTmax and body size is
+observed across collections rather than within collections, suggesting
+this relationship is primaly a reflection of the response to seasonal
+temperature variation.
 
 ``` r
 universal_size = full_data %>% 
@@ -631,17 +628,15 @@ ggarrange(universal_size, pop_size, common.legend = T, legend = "none", nrow = 2
 
 <img src="../Figures/markdown/ctmax-vs-size-1.png" style="display: block; margin: auto;" />
 
-This relationship may be affected by changes in temperature at each
-site, however, which can affect both body size and thermal limits. If
-there is a true mechanistic relationship between body size and thermal
-limits, we would expect to see this relationship emerge **within**
-populations, or even individual collections. Shown below is the
-relationship between CTmax and size residuals, acquired from regressions
-of these traits against collection temperature. This substantially
-reduces the strength of the apparent relationship, but there is still a
-slightly negative overall relationship, spanning both across-population,
-within-population, and even within-collection scales (see the Sawyer
-Park collections, for example).
+If there is a true mechanistic relationship between body size and
+thermal limits, we would expect to see this relationship emerge
+**within** populations, or even individual collections. Shown below is
+the relationship between CTmax and size residuals, acquired from
+regressions of these traits against collection temperature. This
+substantially reduces the strength of the apparent relationship, but
+there is still a slightly negative overall relationship, spanning both
+across-population, within-population, and even within-collection scales
+(see the Sawyer Park collections, for example).
 
 ``` r
 filtered_data = full_data %>% 
@@ -650,7 +645,7 @@ filtered_data = full_data %>%
   mutate(temp_cent = scale(collection_temp, scale = F)[,1],
          size_cent = scale(size, scale = F)[,1],
          sal_cent = scale(collection_salinity, scale = F)[,1],
-         sal_type = if_else(collection_salinity > 20, "High", "Low"))
+         sal_type = if_else(collection_salinity > 15, "High", "Low"))
 
 ctmax_temp.model = lm(ctmax ~ collection_temp + site, data = filtered_data)
 ctmax_resids = residuals(ctmax_temp.model)
@@ -712,20 +707,19 @@ as
 This examines the effects of temperature and size on CTmax, along with
 differences between the salinity groupings. Collection temperature and
 size were both centered and salinity transformed into a categorical
-variable (“low” salinity as anything below 20 psu, “high” salinity as
+variable (“low” salinity as anything below 15 psu, “high” salinity as
 anything above 20 psu) before model fitting. The model also includes
 random intercepts for each site and random slopes for collection
-temperature (i.e. - variation in the acclimation capacity of CTmax). A
-random intercept for season is also included.
+temperature (i.e. - variation in the acclimation capacity of CTmax).
 
-Collection temperature and body size both had a significant effect on
-CTmax, but salinity type did not. The overall effect of temperature
-suggests an increase in CTmax of 0.17°C per °C increase in collection
-temperature (i.e. - an ARR value of 0.17), while increasing body sizes
-decrease CTmax by -3.17°C per mm (or a decrease of ~-0.317°C per tenth
-of a mm, which is more biologically realistic for *A. tonsa*). While not
-significant, the model suggests low salinity sites had lower thermal
-limits by ~0.7°C.
+All three factors (collection temperature, body size, and salinity type)
+had a significant effect on CTmax. The overall effect of temperature
+suggests an increase in CTmax of 0.21°C per °C increase in collection
+temperature (i.e. - an ARR value of 0.21), while increasing body sizes
+decrease CTmax by -3.21°C per mm (or a decrease of ~-0.321°C per tenth
+of a mm, which is more biologically realistic for *A. tonsa*). The model
+suggests copepods from low salinity sites had lower thermal limits than
+copepods from high salinity sites by ~1.7°C.
 
 ``` r
 
@@ -742,7 +736,7 @@ knitr::kable(effects_summary)
 
 | Temperature (per degree) | Size (per mm) | Salinity (Low vs. High) |
 |-------------------------:|--------------:|------------------------:|
-|                0.1664616 |     -3.165866 |              -0.6942631 |
+|                0.2137475 |     -3.205428 |               -1.713595 |
 
 By extracting the conditional mode for the random effects, we can also
 examine how thermal limits vary across sites beyond the influence of
@@ -750,12 +744,9 @@ collection temperatures and body sizes. Shown below are these
 “population” values (essentially, all else being equal, how would
 thermal limit vary across populations). We can see that, similar to
 what’s been observed in common garden experiments with *A. tonsa*
-previously, significant divergences are present at only a few sites near
-the latitudinal extremes, with Fort Hamer and Ritchie Wharf having
-increased and decreased thermal limits respectively. Interestingly, both
-of these sites were low salinity sites, also in line with previous
-results suggesting gene flow between high salinity sites may constrain
-differentiation.
+previously, there is a general latitudinal trend in thermal limits
+(decreasing with increasing latitude). Divergence is particularly strong
+in the Northern populations.
 
 ``` r
 pop_effs = REsim(ctmax.model) %>% 
@@ -824,65 +815,6 @@ coefficients(ctmax.model)$site %>%
 ```
 
 <img src="../Figures/markdown/site-arr-plot-1.png" style="display: block; margin: auto;" />
-
-## Partitioning change
-
-Ramada-Perez et al. 2024 used a large collection of herbarium samples to
-disentangle plastic and genetic effects on flowering date.
-
-``` r
-part_model.data = full_data %>% 
-  ungroup() %>% 
-  drop_na(size, ctmax) %>% 
-  inner_join(temp_summaries) %>% 
-  mutate(temp_cent = scale(collection_temp, scale = F, center = T)[,1],
-         size_cent = scale(size)[,1],
-         sal_cent = scale(collection_salinity)[,1],
-         ctmax_cent = scale(ctmax)[,1], 
-         sal_type = if_else(collection_salinity > 20, "High", "Low")) %>% 
-  select(site, season, sal_type, ind_id, temp_cent, cent_season, ctmax, size, ctmax_cent, size_cent)
-
-
-ctmax_part.model = lme4::lmer(data = part_model.data,
-                        ctmax ~ cent_season + temp_cent + (1 + temp_cent | site))
-
-fixef(ctmax_part.model)
-## (Intercept) cent_season   temp_cent 
-##  35.4514095   0.4681554   0.2047111
-ranef(ctmax_part.model)
-## $site
-##                          (Intercept)   temp_cent
-## Manatee River             -0.4973650 -0.06061869
-## Ft. Hamer                 -0.9464074 -0.08036703
-## Tyler Cove                -0.2448912 -0.02333442
-## Ganey's Wharf             -0.7925902 -0.04777955
-## Esker Point                2.5912406  0.18663335
-## Sawyer Park                0.1336562  0.07285339
-## St. Thomas de Kent Wharf   1.2301320  0.03924884
-## Ritchie Wharf             -1.4737749 -0.08663590
-## 
-## with conditional variances for "site"
-
-size_part.model = lme4::lmer(data = part_model.data,
-                        size ~ cent_season + temp_cent + (1 + temp_cent | site))
-
-fixef(size_part.model)
-##  (Intercept)  cent_season    temp_cent 
-##  0.783846764 -0.030293138 -0.006559457
-ranef(size_part.model)
-## $site
-##                           (Intercept)     temp_cent
-## Manatee River             0.067830897  8.486021e-03
-## Ft. Hamer                 0.001162206  4.738036e-03
-## Tyler Cove               -0.018145889  3.729756e-04
-## Ganey's Wharf             0.018796851  2.967435e-05
-## Esker Point              -0.041409095 -2.136080e-03
-## Sawyer Park               0.093502681  7.396993e-04
-## St. Thomas de Kent Wharf -0.076259636 -1.204776e-02
-## Ritchie Wharf            -0.045478015 -1.825651e-04
-## 
-## with conditional variances for "site"
-```
 
 ## Trait Variability
 
@@ -993,59 +925,25 @@ ggplot(trait_ranges, aes(x = season, y = size_var, colour = site)) +
         legend.title.align = 0.125)
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-5-1.png" style="display: block; margin: auto;" />
-
-Shown below are the seasonal changes in trait variance for each site
-individually.
-
-``` r
-ggplot(trait_ranges, aes(x = season, y = ctmax_var, colour = site)) + 
-  facet_wrap(site~.) + 
-  geom_line(aes(group = site), 
-            linewidth = 1.5) + 
-  geom_point(size = 3) + 
-  scale_colour_manual(values = site_cols) + 
-  labs(y = "CTmax Variance",
-       x = "Season") +
-  theme_matt() + 
-  theme(legend.position = "none", 
-        legend.title.align = 0.125)
-```
-
-<img src="../Figures/markdown/var-ind-pops-season-1.png" style="display: block; margin: auto;" />
-
-``` r
-
-ggplot(trait_ranges, aes(x = season, y = size_var, colour = site)) + 
-  facet_wrap(site~.) + 
-  geom_line(aes(group = site), 
-            linewidth = 1.5) + 
-  geom_point(size = 3) + 
-  scale_colour_manual(values = site_cols) + 
-  labs(y = "Size Variance",
-       x = "Season") +
-  theme_matt() + 
-  theme(legend.position = "none", 
-        legend.title.align = 0.125)
-```
-
-<img src="../Figures/markdown/var-ind-pops-season-2.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
 
 ## Low-Coverage Whole Genome Sequencing
 
-After phenotyping, each individual was preserved in 95% ethanol.
-Individual DNA libraries will be prepared using Twist Bio 96-plex prep
-kits, then sequenced on an Illumina NovaSeq X Plus. Using the
-low-coverage whole genome sequences, we will examine seasonal patterns
-in allele frequency change, and compare these fine scale temporal
-patterns with the larger latitudinal patterns in allele frequency to
-determine whether the same alleles driving rapid seasonal adaptation are
-in play over larger spatial (and longer temporal) scales.
+While plasticity appears to play a large role in the response of
+*Acartia tonsa* populations to seasonality, a growing number of studies
+have also uncovered patterns in allele frequency indicating of rapid
+adaptive responses to seasonality. Our data set of seasonal samples
+across a large latitudinal gradient enables a comparison of these fine
+scale temporal patterns with the larger latitudinal patterns in allele
+frequency to determine whether the same alleles driving rapid seasonal
+adaptation are in play over larger spatial (and longer temporal) scales.
 
-Libraries were prepared using a Twist Bio 96-plex kit before being sent
-for sequencing with Novogene. Reads were de-multiplexed first to the
-plate level, and then to the plate level. The number of reads per sample
-varied, as shown below.
+After phenotyping, each individual was preserved in 95% ethanol.
+Individual DNA libraries were prepared using Twist Bio 96-plex prep
+kits, then sequenced on two lanes of an Illumina NovaSeq X Plus 25B by
+Novogene. Reads were de-multiplexed first to the plate level, and then
+to the sample level. The number of reads per sample varied, as shown
+below.
 
 ``` r
 read_data  %>% 
@@ -1065,7 +963,7 @@ The sample read counts are shown below separated out by site and season.
 
 ``` r
 read_data %>% 
-  mutate(site = fct_relevel(site, "Key Largo", "Manatee River", "Ft. Hamer", 
+  mutate(site = fct_relevel(site, "Manatee River", "Ft. Hamer", 
                             "Tyler Cove", "Ganey's Wharf", "Esker Point", 
                             "Sawyer Park", "St. Thomas de Kent Wharf", "Ritchie Wharf"),
          season = fct_relevel(season, "early", "peak", "late"),
@@ -1103,7 +1001,7 @@ reads_ctmax_plot = ggplot(pheno_read_comps, aes(x = ctmax, y = templates)) +
 ggarrange(reads_size_plot, reads_ctmax_plot, nrow = 1)
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-6-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-5-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
@@ -1156,7 +1054,7 @@ ggplot(clade_summary, aes(x = individual, y = n, fill = Clade)) +
         axis.text.x = element_text(angle = 290, hjust = 0, vjust = 0.5))
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-7-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-6-1.png" style="display: block; margin: auto;" />
 
 These COI clades were then merged with the CTmax and body size data set
 to examine clade-specific patterns of divergence. By plotting CTmax and
@@ -1171,10 +1069,9 @@ smaller than Clades S and X. Clade IV tended to be the largest.
 clade_assignments = clade_summary %>% 
   group_by(sample) %>% 
   filter(n == max(n))
-  
 
 clade_ctmax = full_data %>% 
-  select(-exp_date, -days_in_lab, -rank, -time, -ramp_rate, -bopyrid, -ind_id, -region, -long) %>% 
+  select(-exp_date, -days_in_lab, -rank, -time, -ramp_rate, -ind_id, -region, -long) %>% 
   mutate(pop = case_when(
     site == "Key Largo" ~ "KL",
     site == "Manatee River" ~ "MR",
@@ -1225,7 +1122,7 @@ clade_size_plot = ggplot(clade_ctmax, aes(x = collection_temp, y = size, colour 
 ggarrange(clade_ctmax_plot, clade_size_plot, nrow = 1, common.legend = T, legend = "bottom")
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-8-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-7-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
@@ -1312,7 +1209,7 @@ temp_clade_plot = ggplot(clade_occurence, aes(x = collection_temp, y = n, colour
 ggarrange(lat_clade_plot, temp_clade_plot)
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-9-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-8-1.png" style="display: block; margin: auto;" />
 
 These relationships are refined a bit when switching to quasi-binomial
 regressions for the clades’ proportional abundance (what proportion of
@@ -1342,7 +1239,7 @@ lat_clade_prop_plot = ggplot(clade_prop, aes(x = lat, y = prop, colour = Clade))
     se = T, 
     linewidth = 3) + 
   labs(x = "Latitude", 
-       y = "Presence") + 
+       y = "Sample Proportion") + 
   scale_y_continuous(breaks = c(0,1)) + 
   scale_colour_manual(values = c("A_hudsonica" = "#1B9E99",
                                "A_lilljeborgi" = "#D95F02",
@@ -1364,7 +1261,7 @@ temp_clade_prop_plot = ggplot(clade_prop, aes(x = collection_temp, y = prop, col
     se = T, 
     linewidth = 3) + 
   labs(x = "Collection Temp. (°C)", 
-       y = "Presence") + 
+       y = "Sample Proportion") + 
   scale_y_continuous(breaks = c(0,1)) + 
   scale_colour_manual(values = c("A_hudsonica" = "#1B9E99",
                                "A_lilljeborgi" = "#D95F02",
@@ -1381,7 +1278,7 @@ temp_clade_prop_plot = ggplot(clade_prop, aes(x = collection_temp, y = prop, col
 ggarrange(lat_clade_prop_plot, temp_clade_prop_plot)
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-10-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-9-1.png" style="display: block; margin: auto;" />
 
 Using a Loess smoother (span = 2), highlights how the proportional
 abundance of the clades is affected by temperature in different ways.
@@ -1414,9 +1311,166 @@ ggplot(clade_prop, aes(x = collection_temp, y = prop, colour = Clade)) +
   theme(legend.position = "none")
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-11-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-10-1.png" style="display: block; margin: auto;" />
+
+## Misc. Details
+
+``` r
+ggplot(temp_record, aes(x = minute_passed, y = temp_C, group = factor(run))) + 
+  geom_abline(slope = 0.3, intercept = mean(temp_record[temp_record$minute_interval == 0, 8])) + 
+  geom_abline(slope = 0.1, intercept = mean(temp_record[temp_record$minute_interval == 0, 8])) + 
+  geom_line(linewidth = 0.2, alpha = 0.8) + 
+  geom_point(data = full_data, 
+             aes(x = time, y = ctmax + 0.4),
+             size = 2,
+             shape = 25) +
+  labs(x = "Time passed (minutes)",
+       y = "Temperature (degrees C)",
+       fill = "Trial Number") + 
+  guides(colour = "none") + 
+  theme_matt(base_size = 16) + 
+  theme(legend.position = "right")
+```
+
+<img src="../Figures/markdown/temp-record-plot-1.png" style="display: block; margin: auto;" />
+
+``` r
+ramp_record2 = ramp_record %>% 
+  group_by(run, minute_interval) %>% 
+  summarise(mean_ramp = mean(ramp_per_minute)) %>% 
+  ungroup()
+
+ggplot(ramp_record2, aes(x = minute_interval, y = mean_ramp)) + 
+  geom_hline(yintercept = 0.3) + 
+  geom_hline(yintercept = 0.1) + 
+  #geom_point() + 
+  geom_hex(bins = 30) + 
+  ylim(0, 0.35) + 
+  labs(y = "Ramp Rate (deg. C / min.)",
+       x = "Time into run (minute)") + 
+  theme_matt(base_size = 16) 
+```
+
+<img src="../Figures/markdown/ramp-record-plot-1.png" style="display: block; margin: auto;" />
+
+``` r
+full_data %>% 
+  drop_na(replicate) %>%  
+  ggplot(aes(x = factor(replicate), y = ctmax, group = site)) + 
+  facet_grid(site~season, scales = "free_y") + 
+  geom_point(position = position_jitter(width = 0.1, height = 0),
+             alpha = 0.4,
+             colour = "grey30") + 
+  geom_smooth(method = "lm", colour = "black") + 
+  labs(x = "Replicate", 
+       y = "CTmax") + 
+  theme_matt_facets()
+```
+
+<img src="../Figures/markdown/rep-comp-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
-knitr::knit_exit()
+early_peak = full_data %>% 
+  filter(season %in% c("early", "peak")) %>% 
+  mutate(season = if_else(season == "early", "one", "two")) %>% 
+  group_by(site) %>% 
+  mutate(ctmax_sd_p = sd(ctmax),
+         size_sd_p = sd(size), 
+         temp_change = max(collection_temp) - min(collection_temp),
+         avg_temp = (max(collection_temp) + min(collection_temp)) / 2,
+         days_passed = max(doy) - min(doy)) %>% 
+  select(site, lat, season, 
+         ctmax_sd_p, size_sd_p, 
+         temp_change, avg_temp, days_passed, 
+         ctmax, size) %>%
+  group_by(site, lat, season, 
+           ctmax_sd_p, size_sd_p, 
+           temp_change, avg_temp, days_passed) %>% 
+  summarize(ctmax = mean(ctmax),
+            size = mean(size)) %>% 
+  pivot_wider(id_cols = c(site, lat, ctmax_sd_p, size_sd_p, 
+                          temp_change, avg_temp, days_passed), 
+              names_from = season, 
+              values_from = c(ctmax, size)) %>% 
+  mutate(season = "early_to_peak") %>%  
+  drop_na()
+
+peak_late = full_data %>% 
+  filter(season %in% c("peak", "late")) %>% 
+  mutate(season = if_else(season == "peak", "one", "two")) %>% 
+  group_by(site) %>% 
+  mutate(ctmax_sd_p = sd(ctmax),
+         size_sd_p = sd(size), 
+         temp_change = last(collection_temp) - first(collection_temp),
+         avg_temp = (max(collection_temp) + min(collection_temp)) / 2,
+         days_passed = max(doy) - min(doy)) %>% 
+  select(site, lat, season, ctmax_sd_p, size_sd_p, 
+         temp_change, avg_temp, days_passed, 
+         ctmax, size) %>%
+  group_by(site, lat, season, ctmax_sd_p, size_sd_p, 
+           temp_change, avg_temp, days_passed) %>% 
+  summarize(ctmax = mean(ctmax),
+            size = mean(size)) %>% 
+  pivot_wider(id_cols = c(site, lat, ctmax_sd_p, size_sd_p, 
+                          temp_change, avg_temp, days_passed), 
+              names_from = season, 
+              values_from = c(ctmax, size)) %>% 
+  mutate(season = "peak_to_late") %>%  
+  drop_na()
+  
+
+haldanes = bind_rows(early_peak, peak_late) %>% 
+  mutate("gen_time" = 5490*(avg_temp + 1)^-2.05,
+         "gens" = floor(days_passed / gen_time),
+         "ctmax_haldanes" = calc_halds(x2 = ctmax_two, x1 = ctmax_one, 
+                                       sd_p = ctmax_sd_p, g = gens),
+         "size_haldanes" = calc_halds(x2 = size_two, x1 = size_one, 
+                                      sd_p = size_sd_p, g = gens))
 ```
+
+``` r
+ggplot(haldanes, aes(x = lat, y = gens, colour = site, shape = season)) + 
+  geom_hline(yintercept = 1) + 
+  geom_point(size = 5) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(x = "Latitude", 
+       y = "Generations between \ncollections") +
+  scale_y_continuous(breaks = seq(from = 0, to = 21, by = 5)) + 
+  theme_matt() + 
+  theme(legend.position = "right")
+```
+
+<img src="../Figures/markdown/num-gens-plot-1.png" style="display: block; margin: auto;" />
+
+``` r
+obs_ranks = ggplot(full_data, aes(x = rank)) + 
+  facet_wrap(tube~.) + 
+  geom_histogram(binwidth = 1) + 
+  scale_x_continuous(breaks = c(2,4,6,8,10)) + 
+  ggtitle("Observation") + 
+  theme_matt_facets()
+
+sim_data = data.frame()
+for(i in 1:max(full_data$run)){
+  rep_data = data.frame("tube" = sample(c(1:10), size = 10, replace = F), 
+                        "rank" = c(1:10),
+                        "rep" = i) %>% 
+    arrange(tube)
+  
+  sim_data = bind_rows(sim_data, rep_data)
+  
+}
+
+sim_ranks = ggplot(sim_data, aes(x = rank)) + 
+  facet_wrap(tube~.) + 
+  geom_histogram(binwidth = 1) + 
+  scale_x_continuous(breaks = c(2,4,6,8,10)) + 
+  ggtitle("Simulation") + 
+  theme_matt_facets()
+
+
+ggarrange(obs_ranks, sim_ranks)
+```
+
+<img src="../Figures/markdown/rank-sims-1.png" style="display: block; margin: auto;" />
