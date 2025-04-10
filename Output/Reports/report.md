@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2025-04-08
+2025-04-10
 
 - [Main Message](#main-message)
 - [Site Characteristics](#site-characteristics)
@@ -1295,7 +1295,7 @@ ggplot(clade_prop, aes(x = collection_temp, y = prop, colour = Clade)) +
     se = T, 
     linewidth = 3) + 
   labs(x = "Collection Temp. (°C)", 
-       y = "Presence") + 
+       y = "Proportion") + 
   coord_cartesian(ylim = c(0,1)) + 
   scale_y_continuous(breaks = c(0,1)) + 
   scale_colour_manual(values = c("A_hudsonica" = "#1B9E99",
@@ -1420,17 +1420,13 @@ peak_late = full_data %>%
   drop_na()
   
 
-haldanes = bind_rows(early_peak, peak_late) %>% 
+generations = bind_rows(early_peak, peak_late) %>% 
   mutate("gen_time" = 5490*(avg_temp + 1)^-2.05,
-         "gens" = floor(days_passed / gen_time),
-         "ctmax_haldanes" = calc_halds(x2 = ctmax_two, x1 = ctmax_one, 
-                                       sd_p = ctmax_sd_p, g = gens),
-         "size_haldanes" = calc_halds(x2 = size_two, x1 = size_one, 
-                                      sd_p = size_sd_p, g = gens))
+         "gens" = floor(days_passed / gen_time))
 ```
 
 ``` r
-ggplot(haldanes, aes(x = lat, y = gens, colour = site, shape = season)) + 
+ggplot(generations, aes(x = lat, y = gens, colour = site, shape = season)) + 
   geom_hline(yintercept = 1) + 
   geom_point(size = 5) + 
   scale_colour_manual(values = site_cols) + 
