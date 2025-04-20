@@ -1247,7 +1247,7 @@ ggplot(clade_prop, aes(x = collection_temp, y = prop, colour = Clade)) +
 
 ### PCA
 
-```{r all-pca, fig.width=6, fig.height=4.5}
+```{r all-pca, fig.width=8, fig.height=6.5}
 tonsa_inds = which(all_samples$Clade != "A_hudsonica")
 tonsa_samples = filter(all_samples, Clade != "A_hudsonica")
 tonsa_matrix = pcangsd_matrix[tonsa_inds, tonsa_inds]
@@ -1259,7 +1259,7 @@ tonsa_pca_df = tonsa_eigs %>%
   select(-collection_date, -site, -run, -warming_tol, -doy)
 
 ggplot(tonsa_pca_df, aes(x = X1, y = X2, colour = Clade)) + 
-  geom_point(size = 3) + 
+  geom_point(size = 5) + 
   labs(x = paste0("PC1 (", pc1_var, "%)", sep = ""),
        y = paste0("PC2 (", pc2_var, "%)", sep = "")) + 
   scale_colour_manual(values = c("F" = "#b8cfff",
@@ -1272,7 +1272,7 @@ ggplot(tonsa_pca_df, aes(x = X1, y = X2, colour = Clade)) +
 ```
 
 
-```{r clade-pca, fig.width=6, fig.height=4.5}
+```{r clade-pca, fig.width=8, fig.height=6.5}
 
 f_inds = which(all_samples$Clade == "F")
 f_samples = filter(all_samples, Clade == "F")
