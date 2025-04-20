@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2025-04-10
+2025-04-20
 
 - [Main Message](#main-message)
 - [Site Characteristics](#site-characteristics)
@@ -13,6 +13,7 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
 - [Trait Variability](#trait-variability)
 - [Low-Coverage Whole Genome
   Sequencing](#low-coverage-whole-genome-sequencing)
+  - [PCA](#pca)
 - [Misc. Details](#misc-details)
 
 ## Main Message
@@ -947,7 +948,7 @@ below.
 
 ``` r
 read_data  %>% 
-  mutate(site = fct_relevel(site, "Key Largo", "Manatee River", "Ft. Hamer", 
+  mutate(site = fct_relevel(site, "Manatee River", "Ft. Hamer", 
                             "Tyler Cove", "Ganey's Wharf", "Esker Point", 
                             "Sawyer Park", "St. Thomas de Kent Wharf", "Ritchie Wharf"),
          season = fct_relevel(season, "early", "peak", "late"),
@@ -985,7 +986,7 @@ no clear relationship between read counts and size or CTmax.
 
 ``` r
 pheno_read_comps = full_data %>%  
-  select(site, season, replicate, tube, size, ctmax) %>% 
+  dplyr::select(site, season, replicate, tube, size, ctmax) %>% 
   inner_join(read_data)
 
 reads_size_plot = ggplot(pheno_read_comps, aes(x = size, y = templates)) + 
@@ -1071,7 +1072,7 @@ clade_assignments = clade_summary %>%
   filter(n == max(n))
 
 clade_ctmax = full_data %>% 
-  select(-exp_date, -days_in_lab, -rank, -time, -ramp_rate, -ind_id, -region, -long) %>% 
+  dplyr::select(-exp_date, -days_in_lab, -rank, -time, -ramp_rate, -ind_id, -region, -long) %>% 
   mutate(pop = case_when(
     site == "Key Largo" ~ "KL",
     site == "Manatee River" ~ "MR",
@@ -1083,8 +1084,9 @@ clade_ctmax = full_data %>%
     site == "St. Thomas de Kent Wharf" ~ "TK",
     site == "Ritchie Wharf" ~ "RW"
   ), 
-  sample = paste(pop, "_", season, "_", replicate, "_", 0, tube, sep = "")) %>% 
-  left_join(select(clade_assignments, sample, Clade)) %>% 
+  sample = paste(pop, "_", season, "_", replicate, "_", 0, tube, sep = ""),
+  sample = str_replace_all(sample, pattern = "010", "10")) %>% 
+  full_join(dplyr::select(clade_assignments, sample, Clade)) %>% 
   drop_na(Clade)
 
 clade_ctmax_plot = ggplot(clade_ctmax, aes(x = collection_temp, y = ctmax, colour = Clade)) + 
@@ -1092,15 +1094,10 @@ clade_ctmax_plot = ggplot(clade_ctmax, aes(x = collection_temp, y = ctmax, colou
   geom_smooth(method = "lm", linewidth = 2) + 
   labs(x = "Collection Temp. (°C)", 
        y = "CTmax (°C)") + 
-  scale_colour_manual(values = c("A_hudsonica" = "#1B9E99",
-                               "A_lilljeborgi" = "#D95F02",
-                               "F" = "#7570B3",
+  scale_colour_manual(values = c("F" = "#7570B3",
                                "IV" = "#E7298A",
-                               "out_group" = "#666666",
                                "S" = "#66A61E",
-                               "SB" = "#E6AB02",
-                               "X" = "#A6761D"),
-                    na.value = "black") + 
+                               "X" = "#A6761D")) + 
   theme_matt()
 
 clade_size_plot = ggplot(clade_ctmax, aes(x = collection_temp, y = size, colour = Clade)) + 
@@ -1108,15 +1105,10 @@ clade_size_plot = ggplot(clade_ctmax, aes(x = collection_temp, y = size, colour 
   geom_smooth(method = "lm", linewidth = 2) + 
     labs(x = "Collection Temp. (°C)", 
        y = "Prosome Length (mm)") + 
-  scale_colour_manual(values = c("A_hudsonica" = "#1B9E99",
-                               "A_lilljeborgi" = "#D95F02",
-                               "F" = "#7570B3",
+  scale_colour_manual(values = c("F" = "#7570B3",
                                "IV" = "#E7298A",
-                               "out_group" = "#666666",
                                "S" = "#66A61E",
-                               "SB" = "#E6AB02",
-                               "X" = "#A6761D"),
-                    na.value = "black") + 
+                               "X" = "#A6761D")) + 
   theme_matt()
 
 ggarrange(clade_ctmax_plot, clade_size_plot, nrow = 1, common.legend = T, legend = "bottom")
@@ -1149,6 +1141,7 @@ presence against latitude or collection temperature.
 
 ``` r
 clade_occurence = clade_ctmax %>% 
+  filter(Clade != "A_hudsonica") %>% 
   select(site, season, Clade, collection_temp, lat) %>% 
   group_by(site, season, collection_temp, lat) %>% 
   count(Clade) %>% 
@@ -1217,6 +1210,7 @@ individuals in each collection were assigned to a clade).
 
 ``` r
 clade_prop = clade_ctmax %>% 
+  filter(Clade != "A_hudsonica") %>% 
   select(site, season, Clade, collection_temp, lat) %>% 
   group_by(site, season, collection_temp, lat) %>% 
   count(Clade) %>% 
@@ -1312,6 +1306,125 @@ ggplot(clade_prop, aes(x = collection_temp, y = prop, colour = Clade)) +
 ```
 
 <img src="../Figures/markdown/unnamed-chunk-10-1.png" style="display: block; margin: auto;" />
+
+### PCA
+
+``` r
+all_mds <- cmdscale(as.dist(ind_dist_matrix))
+all_mds_df = data.frame(all_mds) %>% 
+  bind_cols(tonsa_samples) %>% 
+  select(-collection_date, -site, -run, -warming_tol, -doy)
+
+
+all_mds_df %>% 
+  drop_na(Clade) %>% 
+ggplot(aes(X1, X2, colour = Clade)) + 
+  #facet_wrap(season~.) + 
+  geom_point(size = 3) + 
+  labs(x = "",
+       y = "") + 
+  scale_colour_manual(values = c("F" = "#b8cfff",
+                               "IV" = "#fc4e91",
+                               "S" = "#4b751c",
+                               "X" = "#ed9e0c")) + 
+  theme_matt_facets()
+```
+
+<img src="../Figures/markdown/all-mds-1.png" style="display: block; margin: auto;" />
+
+``` r
+
+f_inds = which(tonsa_samples$Clade == "F")
+f_samples = filter(tonsa_samples, Clade == "F")
+f_matrix = ind_dist_matrix[f_inds, f_inds]
+f_mds = cmdscale(as.dist(f_matrix))
+f_mds_df = data.frame(f_mds) %>% 
+  bind_cols(f_samples) %>% 
+  select(-collection_date, -site, -run, -warming_tol, -doy)
+
+f_mds_df %>% 
+  ggplot(aes(X1, X2, colour = pop)) + 
+  #facet_wrap(season~.) + 
+  geom_point(size = 3) + 
+  labs(x = "",
+       y = "", 
+       title = "Clade - F") + 
+  scale_color_manual(values = pop_cols)  + 
+  theme_matt_facets()
+```
+
+<img src="../Figures/markdown/clade-mds-1.png" style="display: block; margin: auto;" />
+
+``` r
+
+
+IV_inds = which(tonsa_samples$Clade == "IV")
+IV_samples = filter(tonsa_samples, Clade == "IV")
+IV_matrix = ind_dist_matrix[IV_inds, IV_inds]
+IV_mds = cmdscale(as.dist(IV_matrix))
+IV_mds_df = data.frame(IV_mds) %>% 
+  bind_cols(IV_samples) %>% 
+  select(-collection_date, -site, -run, -warming_tol, -doy)
+
+IV_mds_df %>% 
+  ggplot(aes(X1, X2, colour = pop)) + 
+  #facet_wrap(season~.) + 
+  geom_point(size = 3) + 
+  labs(x = "",
+       y = "", 
+       title = "Clade - IV") + 
+  scale_color_manual(values = pop_cols)  + 
+  theme_matt_facets()
+```
+
+<img src="../Figures/markdown/clade-mds-2.png" style="display: block; margin: auto;" />
+
+``` r
+
+
+S_inds = which(tonsa_samples$Clade == "S")
+S_samples = filter(tonsa_samples, Clade == "S")
+S_matrix = ind_dist_matrix[S_inds, S_inds]
+S_mds = cmdscale(as.dist(S_matrix))
+S_mds_df = data.frame(S_mds) %>% 
+  bind_cols(S_samples) %>% 
+  select(-collection_date, -site, -run, -warming_tol, -doy)
+
+S_mds_df %>% 
+  ggplot(aes(X1, X2, colour = pop)) + 
+  #facet_wrap(season~.) + 
+  geom_point(size = 3) + 
+  labs(x = "",
+       y = "", 
+       title = "Clade - S") + 
+  scale_color_manual(values = pop_cols)  + 
+  theme_matt_facets()
+```
+
+<img src="../Figures/markdown/clade-mds-3.png" style="display: block; margin: auto;" />
+
+``` r
+
+X_inds = which(tonsa_samples$Clade == "X" & tonsa_samples$sample != "FH_peak_1_10")
+X_samples = filter(tonsa_samples, Clade == "X", sample != "FH_peak_1_10")
+X_matrix = ind_dist_matrix[X_inds, X_inds]
+X_mds = cmdscale(as.dist(X_matrix))
+X_mds_df = data.frame(X_mds) %>% 
+  bind_cols(X_samples) %>% 
+  select(-collection_date, -site, -run, -warming_tol, -doy)
+
+X_mds_df %>% 
+  ggplot(aes(X1, X2, colour = pop)) + 
+  #facet_wrap(season~.) + 
+  geom_point(size = 3) + 
+  labs(x = "",
+       y = "", 
+       title = "Clade - X") + 
+  scale_color_manual(values = pop_cols)  + 
+  theme_matt_facets()
+```
+
+<img src="../Figures/markdown/clade-mds-4.png" style="display: block; margin: auto;" />
 
 ## Misc. Details
 

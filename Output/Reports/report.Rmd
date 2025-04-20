@@ -92,6 +92,16 @@ site_cols = c("Key Largo" = "indianred4",
               "Sawyer Park" = "palegreen4", 
               "St. Thomas de Kent Wharf" = "steelblue2",
               "Ritchie Wharf" = "steelblue4")
+
+pop_cols = c("KL" = "indianred4", 
+              "MR" = "coral", 
+              "FH" = "coral3",
+              "MD" = "goldenrod1",
+              "GW" = "darkgoldenrod3", 
+              "CT" = "darkseagreen3",
+              "ME" = "palegreen4", 
+              "TK" = "steelblue2",
+              "RW" = "steelblue4")
 ```
 
 ## Main Message
@@ -942,7 +952,7 @@ After phenotyping, each individual was preserved in 95% ethanol. Individual DNA 
 
 ```{r overall-read-counts, fig.width=6, fig.height=6}
 read_data  %>% 
-  mutate(site = fct_relevel(site, "Key Largo", "Manatee River", "Ft. Hamer", 
+  mutate(site = fct_relevel(site, "Manatee River", "Ft. Hamer", 
                             "Tyler Cove", "Ganey's Wharf", "Esker Point", 
                             "Sawyer Park", "St. Thomas de Kent Wharf", "Ritchie Wharf"),
          season = fct_relevel(season, "early", "peak", "late"),
@@ -975,7 +985,7 @@ While the number of reads recovered for each individual varies, there is no clea
 
 ```{r}
 pheno_read_comps = full_data %>%  
-  select(site, season, replicate, tube, size, ctmax) %>% 
+  dplyr::select(site, season, replicate, tube, size, ctmax) %>% 
   inner_join(read_data)
 
 reads_size_plot = ggplot(pheno_read_comps, aes(x = size, y = templates)) + 
@@ -1040,7 +1050,7 @@ clade_assignments = clade_summary %>%
   filter(n == max(n))
 
 clade_ctmax = full_data %>% 
-  select(-exp_date, -days_in_lab, -rank, -time, -ramp_rate, -ind_id, -region, -long) %>% 
+  dplyr::select(-exp_date, -days_in_lab, -rank, -time, -ramp_rate, -ind_id, -region, -long) %>% 
   mutate(pop = case_when(
     site == "Key Largo" ~ "KL",
     site == "Manatee River" ~ "MR",
@@ -1052,8 +1062,9 @@ clade_ctmax = full_data %>%
     site == "St. Thomas de Kent Wharf" ~ "TK",
     site == "Ritchie Wharf" ~ "RW"
   ), 
-  sample = paste(pop, "_", season, "_", replicate, "_", 0, tube, sep = "")) %>% 
-  left_join(select(clade_assignments, sample, Clade)) %>% 
+  sample = paste(pop, "_", season, "_", replicate, "_", 0, tube, sep = ""),
+  sample = str_replace_all(sample, pattern = "010", "10")) %>% 
+  full_join(dplyr::select(clade_assignments, sample, Clade)) %>% 
   drop_na(Clade)
 
 clade_ctmax_plot = ggplot(clade_ctmax, aes(x = collection_temp, y = ctmax, colour = Clade)) + 
@@ -1061,15 +1072,10 @@ clade_ctmax_plot = ggplot(clade_ctmax, aes(x = collection_temp, y = ctmax, colou
   geom_smooth(method = "lm", linewidth = 2) + 
   labs(x = "Collection Temp. (°C)", 
        y = "CTmax (°C)") + 
-  scale_colour_manual(values = c("A_hudsonica" = "#1B9E99",
-                               "A_lilljeborgi" = "#D95F02",
-                               "F" = "#7570B3",
+  scale_colour_manual(values = c("F" = "#7570B3",
                                "IV" = "#E7298A",
-                               "out_group" = "#666666",
                                "S" = "#66A61E",
-                               "SB" = "#E6AB02",
-                               "X" = "#A6761D"),
-                    na.value = "black") + 
+                               "X" = "#A6761D")) + 
   theme_matt()
 
 clade_size_plot = ggplot(clade_ctmax, aes(x = collection_temp, y = size, colour = Clade)) + 
@@ -1077,15 +1083,10 @@ clade_size_plot = ggplot(clade_ctmax, aes(x = collection_temp, y = size, colour 
   geom_smooth(method = "lm", linewidth = 2) + 
     labs(x = "Collection Temp. (°C)", 
        y = "Prosome Length (mm)") + 
-  scale_colour_manual(values = c("A_hudsonica" = "#1B9E99",
-                               "A_lilljeborgi" = "#D95F02",
-                               "F" = "#7570B3",
+  scale_colour_manual(values = c("F" = "#7570B3",
                                "IV" = "#E7298A",
-                               "out_group" = "#666666",
                                "S" = "#66A61E",
-                               "SB" = "#E6AB02",
-                               "X" = "#A6761D"),
-                    na.value = "black") + 
+                               "X" = "#A6761D")) + 
   theme_matt()
 
 ggarrange(clade_ctmax_plot, clade_size_plot, nrow = 1, common.legend = T, legend = "bottom")
@@ -1112,6 +1113,7 @@ These differences in physiology correspond to the distributional patterns for ea
 
 ```{r fig.width=12, fig.height=6}
 clade_occurence = clade_ctmax %>% 
+  filter(Clade != "A_hudsonica") %>% 
   select(site, season, Clade, collection_temp, lat) %>% 
   group_by(site, season, collection_temp, lat) %>% 
   count(Clade) %>% 
@@ -1177,6 +1179,7 @@ These relationships are refined a bit when switching to quasi-binomial regressio
 
 ```{r fig.width=12, fig.height=6}
 clade_prop = clade_ctmax %>% 
+  filter(Clade != "A_hudsonica") %>% 
   select(site, season, Clade, collection_temp, lat) %>% 
   group_by(site, season, collection_temp, lat) %>% 
   count(Clade) %>% 
@@ -1263,6 +1266,109 @@ ggplot(clade_prop, aes(x = collection_temp, y = prop, colour = Clade)) +
   theme_matt_facets() + 
   theme(legend.position = "none")
 ```
+
+### PCA
+
+```{r all-mds, fig.width=6, fig.height=4.5}
+all_mds <- cmdscale(as.dist(ind_dist_matrix))
+all_mds_df = data.frame(all_mds) %>% 
+  bind_cols(tonsa_samples) %>% 
+  select(-collection_date, -site, -run, -warming_tol, -doy)
+
+
+all_mds_df %>% 
+  drop_na(Clade) %>% 
+ggplot(aes(X1, X2, colour = Clade)) + 
+  #facet_wrap(season~.) + 
+  geom_point(size = 3) + 
+  labs(x = "",
+       y = "") + 
+  scale_colour_manual(values = c("F" = "#b8cfff",
+                               "IV" = "#fc4e91",
+                               "S" = "#4b751c",
+                               "X" = "#ed9e0c")) + 
+  theme_matt_facets()
+```
+
+
+```{r clade-mds, fig.width=6, fig.height=4.5}
+
+f_inds = which(tonsa_samples$Clade == "F")
+f_samples = filter(tonsa_samples, Clade == "F")
+f_matrix = ind_dist_matrix[f_inds, f_inds]
+f_mds = cmdscale(as.dist(f_matrix))
+f_mds_df = data.frame(f_mds) %>% 
+  bind_cols(f_samples) %>% 
+  select(-collection_date, -site, -run, -warming_tol, -doy)
+
+f_mds_df %>% 
+  ggplot(aes(X1, X2, colour = pop)) + 
+  #facet_wrap(season~.) + 
+  geom_point(size = 3) + 
+  labs(x = "",
+       y = "", 
+       title = "Clade - F") + 
+  scale_color_manual(values = pop_cols)  + 
+  theme_matt_facets()
+
+
+IV_inds = which(tonsa_samples$Clade == "IV")
+IV_samples = filter(tonsa_samples, Clade == "IV")
+IV_matrix = ind_dist_matrix[IV_inds, IV_inds]
+IV_mds = cmdscale(as.dist(IV_matrix))
+IV_mds_df = data.frame(IV_mds) %>% 
+  bind_cols(IV_samples) %>% 
+  select(-collection_date, -site, -run, -warming_tol, -doy)
+
+IV_mds_df %>% 
+  ggplot(aes(X1, X2, colour = pop)) + 
+  #facet_wrap(season~.) + 
+  geom_point(size = 3) + 
+  labs(x = "",
+       y = "", 
+       title = "Clade - IV") + 
+  scale_color_manual(values = pop_cols)  + 
+  theme_matt_facets()
+
+
+S_inds = which(tonsa_samples$Clade == "S")
+S_samples = filter(tonsa_samples, Clade == "S")
+S_matrix = ind_dist_matrix[S_inds, S_inds]
+S_mds = cmdscale(as.dist(S_matrix))
+S_mds_df = data.frame(S_mds) %>% 
+  bind_cols(S_samples) %>% 
+  select(-collection_date, -site, -run, -warming_tol, -doy)
+
+S_mds_df %>% 
+  ggplot(aes(X1, X2, colour = pop)) + 
+  #facet_wrap(season~.) + 
+  geom_point(size = 3) + 
+  labs(x = "",
+       y = "", 
+       title = "Clade - S") + 
+  scale_color_manual(values = pop_cols)  + 
+  theme_matt_facets()
+
+X_inds = which(tonsa_samples$Clade == "X" & tonsa_samples$sample != "FH_peak_1_10")
+X_samples = filter(tonsa_samples, Clade == "X", sample != "FH_peak_1_10")
+X_matrix = ind_dist_matrix[X_inds, X_inds]
+X_mds = cmdscale(as.dist(X_matrix))
+X_mds_df = data.frame(X_mds) %>% 
+  bind_cols(X_samples) %>% 
+  select(-collection_date, -site, -run, -warming_tol, -doy)
+
+X_mds_df %>% 
+  ggplot(aes(X1, X2, colour = pop)) + 
+  #facet_wrap(season~.) + 
+  geom_point(size = 3) + 
+  labs(x = "",
+       y = "", 
+       title = "Clade - X") + 
+  scale_color_manual(values = pop_cols)  + 
+  theme_matt_facets()
+```
+
+
 
 ## Misc. Details
 

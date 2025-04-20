@@ -36,7 +36,7 @@ temp_profiles = read.csv(file = "Output/Output_data/temp_profiles.csv") %>%
 
 kl_winter = read.csv(file = "Raw_data/outside_sources/key_largo_winter.csv") %>% 
   filter(bopyrid == "no") %>% 
-  select(-bopyrid) %>% 
+  dplyr::select(-bopyrid) %>% 
   mutate(warming_tol = ctmax - collection_temp,
          collection_date = as.character(as.Date(collection_date, "%m/%d/%y")),
          exp_date = as.character(as.Date(exp_date, "%m/%d/%y")))
@@ -85,7 +85,7 @@ ramp_record = read.csv(file = "Output/Output_data/ramp_record.csv")
 #   write.csv("Output/Output_data/collection_summary.csv")
 
 temp_summaries = full_data %>% 
-  select(site, season, collection_temp) %>% 
+  dplyr::select(site, season, collection_temp) %>% 
   distinct() %>% 
   pivot_wider(id_cols = c("site"),
               names_from = season, 
@@ -95,7 +95,7 @@ temp_summaries = full_data %>%
   mutate(season_mean = mean(c(early, peak, late), na.rm = T)) %>% 
   ungroup() %>% 
   mutate(cent_season = scale(season_mean, center = T, scale = F)[,1]) %>% 
-  select(site, region, lat, long, early, peak, late, season_mean, cent_season)
+  dplyr::select(site, region, lat, long, early, peak, late, season_mean, cent_season)
 
 ######## Sequencing data
 read_data = read.csv("Raw_data/molecular/read_metrics.csv") %>% 
@@ -213,6 +213,21 @@ clade_summary = read.csv(file = "Output/Output_data/COI_clades_summary.csv") %>%
   mutate(population = fct_relevel(population, "MR", "FH", "MD", "GW", "CT", "ME", "TK", "RW"), 
          season = fct_relevel(season, "early", "peak", "late"), 
          sample = fct_reorder2(sample, .y = population, .x = season, .desc = F))
+
+tonsa_samples = read.table("Raw_data/molecular/angsd_dists/bam_list.txt") %>% 
+  separate(V1, into = c("drop", "file"), sep = "/") %>% 
+  separate("file", into = c("sample", "drop2"), sep = "_dd") %>% 
+  dplyr::select(sample) %>% 
+  separate(sample, into = c("pop", "season", "replicate", "tube"), sep = "_") %>% 
+  mutate(tube = as.numeric(tube), 
+         replicate = as.numeric(replicate)) %>% 
+  left_join(filter(clade_ctmax, Clade != "A_hudsonica"), join_by("pop", "season", "replicate", "tube")) %>% 
+  ungroup() %>% 
+  mutate(season = fct_relevel(season, "early", "peak", "late"),
+         pop = fct_relevel(pop, "FH", "MR", "MD", "GW", "CT", "ME", "TK", "RW"))
+
+ind_dist_matrix <- as.matrix(read.table("Raw_data/molecular/angsd_dists/snp_call.ibsMat"))
+
 
 # clade_matches = read.csv(file = "Output/Output_data/clade_matches.csv") %>% 
 #   mutate(population = fct_relevel(population, "MR", "FH", "MD", "GW", "CT", "ME", "TK", "RW"), 
