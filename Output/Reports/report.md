@@ -1292,14 +1292,16 @@ tonsa_inds = which(all_samples$Clade != "A_hudsonica")
 tonsa_samples = filter(all_samples, Clade != "A_hudsonica")
 tonsa_matrix = pcangsd_matrix[tonsa_inds, tonsa_inds]
 tonsa_eigs = data.frame(eigen(tonsa_matrix)$vectors[,1:2])
+pc1_var = round((eigen(tonsa_matrix)$values[1] / sum(eigen(tonsa_matrix)$values)) * 100, digits = 2)
+pc2_var = round((eigen(tonsa_matrix)$values[2] / sum(eigen(tonsa_matrix)$values)) * 100, digits = 2)
 tonsa_pca_df = tonsa_eigs %>% 
   bind_cols(tonsa_samples) %>% 
   select(-collection_date, -site, -run, -warming_tol, -doy)
 
-ggplot(tonsa_pca_df, aes(X1, X2, colour = Clade)) + 
+ggplot(tonsa_pca_df, aes(x = X1, y = X2, colour = Clade)) + 
   geom_point(size = 3) + 
-  labs(x = "",
-       y = "") + 
+  labs(x = paste0("PC1 (", pc1_var, "%)", sep = ""),
+       y = paste0("PC2 (", pc2_var, "%)", sep = "")) + 
   scale_colour_manual(values = c("F" = "#b8cfff",
                                  "IV" = "#fc4e91",
                                  "S" = "#4b751c",
@@ -1308,22 +1310,32 @@ ggplot(tonsa_pca_df, aes(X1, X2, colour = Clade)) +
   theme(legend.position = "right")
 ```
 
-<img src="../Figures/markdown/all-mds-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/all-pca-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
+f_inds = which(all_samples$Clade == "F")
+f_samples = filter(all_samples, Clade == "F")
+f_matrix = pcangsd_matrix[f_inds, f_inds]
+f_eigs = data.frame(eigen(f_matrix)$vectors[,1:2])
+f_pc1_var = round((eigen(f_matrix)$values[1] / sum(eigen(f_matrix)$values)) * 100, digits = 2)
+f_pc2_var = round((eigen(f_matrix)$values[2] / sum(eigen(f_matrix)$values)) * 100, digits = 2)
+f_pca_df = f_eigs %>% 
+  bind_cols(f_samples) %>% 
+  select(-collection_date, -site, -run, -warming_tol, -doy)
+
 f_pca_df %>% 
-  ggplot(aes(X1, X2, colour = pop)) + 
+  ggplot(aes(x = X1, y = X2, colour = pop)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
-  labs(x = "",
-       y = "", 
+  labs(x = paste0("PC1 (", f_pc1_var, "%)", sep = ""),
+       y = paste0("PC2 (", f_pc2_var, "%)", sep = ""),
        title = "Clade - F") + 
   scale_color_manual(values = pop_cols)  + 
   theme_matt_facets()
 ```
 
-<img src="../Figures/markdown/clade-mds-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/clade-pca-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
@@ -1333,22 +1345,24 @@ x_inds = which(all_samples$Clade == "X")
 x_samples = filter(all_samples, Clade == "X")
 x_matrix = pcangsd_matrix[x_inds, x_inds]
 x_eigs = data.frame(eigen(x_matrix)$vectors[,1:2])
+x_pc1_var = round((eigen(x_matrix)$values[1] / sum(eigen(x_matrix)$values)) * 100, digits = 2)
+x_pc2_var = round((eigen(x_matrix)$values[2] / sum(eigen(x_matrix)$values)) * 100, digits = 2)
 x_pca_df = x_eigs %>% 
   bind_cols(x_samples) %>% 
   select(-collection_date, -site, -run, -warming_tol, -doy)
 
 x_pca_df %>% 
-  ggplot(aes(X1, X2, colour = pop)) + 
+  ggplot(aes(x = X1, y= X2, colour = pop)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
-  labs(x = "",
-       y = "", 
+  labs(x = paste0("PC1 (", x_pc1_var, "%)", sep = ""),
+       y = paste0("PC2 (", x_pc2_var, "%)", sep = ""),
        title = "Clade - X") + 
   scale_color_manual(values = pop_cols)  + 
   theme_matt_facets()
 ```
 
-<img src="../Figures/markdown/clade-mds-2.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/clade-pca-2.png" style="display: block; margin: auto;" />
 
 ``` r
 
@@ -1358,22 +1372,24 @@ s_inds = which(all_samples$Clade == "S")
 s_samples = filter(all_samples, Clade == "S")
 s_matrix = pcangsd_matrix[s_inds, s_inds]
 s_eigs = data.frame(eigen(s_matrix)$vectors[,1:2])
+s_pc1_var = round((eigen(s_matrix)$values[1] / sum(eigen(s_matrix)$values)) * 100, digits = 2)
+s_pc2_var = round((eigen(s_matrix)$values[2] / sum(eigen(s_matrix)$values)) * 100, digits = 2)
 s_pca_df = s_eigs %>% 
   bind_cols(s_samples) %>% 
   select(-collection_date, -site, -run, -warming_tol, -doy)
 
 s_pca_df %>% 
-  ggplot(aes(X1, X2, colour = pop)) + 
+  ggplot(aes(x = X1,y = X2, colour = pop)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
-  labs(x = "",
-       y = "", 
+  labs(x = paste0("PC1 (", s_pc1_var, "%)", sep = ""),
+       y = paste0("PC2 (", s_pc2_var, "%)", sep = ""),
        title = "Clade - S") + 
   scale_color_manual(values = pop_cols)  + 
   theme_matt_facets()
 ```
 
-<img src="../Figures/markdown/clade-mds-3.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/clade-pca-3.png" style="display: block; margin: auto;" />
 
 ``` r
 
@@ -1383,22 +1399,24 @@ IV_inds = which(all_samples$Clade == "IV")
 IV_samples = filter(all_samples, Clade == "IV")
 IV_matrix = pcangsd_matrix[IV_inds, IV_inds]
 IV_eigs = data.frame(eigen(IV_matrix)$vectors[,1:2])
+IV_pc1_var = round((eigen(IV_matrix)$values[1] / sum(eigen(IV_matrix)$values)) * 100, digits = 2)
+IV_pc2_var = round((eigen(IV_matrix)$values[2] / sum(eigen(IV_matrix)$values)) * 100, digits = 2)
 IV_pca_df = IV_eigs %>% 
   bind_cols(IV_samples) %>% 
   select(-collection_date, -site, -run, -warming_tol, -doy)
 
 IV_pca_df %>% 
-  ggplot(aes(X1, X2, colour = pop)) + 
+  ggplot(aes(x = X1,y = X2, colour = pop)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
-  labs(x = "",
-       y = "", 
+  labs(x = paste0("PC1 (", IV_pc1_var, "%)", sep = ""),
+       y = paste0("PC2 (", IV_pc2_var, "%)", sep = ""), 
        title = "Clade - IV") + 
   scale_color_manual(values = pop_cols)  + 
   theme_matt_facets()
 ```
 
-<img src="../Figures/markdown/clade-mds-4.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/clade-pca-4.png" style="display: block; margin: auto;" />
 
 ## Misc. Details
 
