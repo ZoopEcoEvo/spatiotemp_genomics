@@ -1045,28 +1045,6 @@ ggplot(clade_summary, aes(x = individual, y = n, fill = Clade)) +
 These COI clades were then merged with the CTmax and body size data set to examine clade-specific patterns of divergence. By plotting CTmax and size against the collection temperature we can see that these clades appear to be physiologically differentiated. Clades F and S tend to have higher CTmax, even when collected at the same temperatures as Clades X and IV. Size is more variable, with varying degrees of temperature sensitivity across the clades. Overall, however, Clade F tends to be smaller than Clades S and X. Clade IV tended to be the largest. 
 
 ```{r fig.width=11, fig.height=6}
-clade_assignments = clade_summary %>% 
-  group_by(sample) %>% 
-  filter(n == max(n))
-
-clade_ctmax = full_data %>% 
-  dplyr::select(-exp_date, -days_in_lab, -rank, -time, -ramp_rate, -ind_id, -region, -long) %>% 
-  mutate(pop = case_when(
-    site == "Key Largo" ~ "KL",
-    site == "Manatee River" ~ "MR",
-    site == "Ft. Hamer" ~ "FH",
-    site == "Tyler Cove" ~ "MD",
-    site == "Ganey's Wharf" ~ "GW",
-    site == "Esker Point" ~ "CT",
-    site == "Sawyer Park" ~ "ME",
-    site == "St. Thomas de Kent Wharf" ~ "TK",
-    site == "Ritchie Wharf" ~ "RW"
-  ), 
-  sample = paste(pop, "_", season, "_", replicate, "_", 0, tube, sep = ""),
-  sample = str_replace_all(sample, pattern = "010", "10")) %>% 
-  full_join(dplyr::select(clade_assignments, sample, Clade)) %>% 
-  drop_na(Clade)
-
 clade_ctmax_plot = ggplot(clade_ctmax, aes(x = collection_temp, y = ctmax, colour = Clade)) + 
   geom_point(size = 2, alpha = 0.5) + 
   geom_smooth(method = "lm", linewidth = 2) + 
@@ -1270,38 +1248,31 @@ ggplot(clade_prop, aes(x = collection_temp, y = prop, colour = Clade)) +
 ### PCA
 
 ```{r all-mds, fig.width=6, fig.height=4.5}
-all_mds <- cmdscale(as.dist(ind_dist_matrix))
-all_mds_df = data.frame(all_mds) %>% 
+tonsa_inds = which(all_samples$Clade != "A_hudsonica")
+tonsa_samples = filter(all_samples, Clade != "A_hudsonica")
+tonsa_matrix = pcangsd_matrix[tonsa_inds, tonsa_inds]
+tonsa_eigs = data.frame(eigen(tonsa_matrix)$vectors[,1:2])
+tonsa_pca_df = tonsa_eigs %>% 
   bind_cols(tonsa_samples) %>% 
   select(-collection_date, -site, -run, -warming_tol, -doy)
 
-
-all_mds_df %>% 
-  drop_na(Clade) %>% 
-ggplot(aes(X1, X2, colour = Clade)) + 
-  #facet_wrap(season~.) + 
+ggplot(tonsa_pca_df, aes(X1, X2, colour = Clade)) + 
   geom_point(size = 3) + 
   labs(x = "",
        y = "") + 
   scale_colour_manual(values = c("F" = "#b8cfff",
-                               "IV" = "#fc4e91",
-                               "S" = "#4b751c",
-                               "X" = "#ed9e0c")) + 
-  theme_matt_facets()
+                                 "IV" = "#fc4e91",
+                                 "S" = "#4b751c",
+                                 "X" = "#ed9e0c")) + 
+  theme_matt() + 
+  theme(legend.position = "right")
+
 ```
 
 
 ```{r clade-mds, fig.width=6, fig.height=4.5}
 
-f_inds = which(tonsa_samples$Clade == "F")
-f_samples = filter(tonsa_samples, Clade == "F")
-f_matrix = ind_dist_matrix[f_inds, f_inds]
-f_mds = cmdscale(as.dist(f_matrix))
-f_mds_df = data.frame(f_mds) %>% 
-  bind_cols(f_samples) %>% 
-  select(-collection_date, -site, -run, -warming_tol, -doy)
-
-f_mds_df %>% 
+f_pca_df %>% 
   ggplot(aes(X1, X2, colour = pop)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
@@ -1311,35 +1282,37 @@ f_mds_df %>%
   scale_color_manual(values = pop_cols)  + 
   theme_matt_facets()
 
+#########
 
-IV_inds = which(tonsa_samples$Clade == "IV")
-IV_samples = filter(tonsa_samples, Clade == "IV")
-IV_matrix = ind_dist_matrix[IV_inds, IV_inds]
-IV_mds = cmdscale(as.dist(IV_matrix))
-IV_mds_df = data.frame(IV_mds) %>% 
-  bind_cols(IV_samples) %>% 
+x_inds = which(all_samples$Clade == "X")
+x_samples = filter(all_samples, Clade == "X")
+x_matrix = pcangsd_matrix[x_inds, x_inds]
+x_eigs = data.frame(eigen(x_matrix)$vectors[,1:2])
+x_pca_df = x_eigs %>% 
+  bind_cols(x_samples) %>% 
   select(-collection_date, -site, -run, -warming_tol, -doy)
 
-IV_mds_df %>% 
+x_pca_df %>% 
   ggplot(aes(X1, X2, colour = pop)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
   labs(x = "",
        y = "", 
-       title = "Clade - IV") + 
+       title = "Clade - X") + 
   scale_color_manual(values = pop_cols)  + 
   theme_matt_facets()
 
+#########
 
-S_inds = which(tonsa_samples$Clade == "S")
-S_samples = filter(tonsa_samples, Clade == "S")
-S_matrix = ind_dist_matrix[S_inds, S_inds]
-S_mds = cmdscale(as.dist(S_matrix))
-S_mds_df = data.frame(S_mds) %>% 
-  bind_cols(S_samples) %>% 
+s_inds = which(all_samples$Clade == "S")
+s_samples = filter(all_samples, Clade == "S")
+s_matrix = pcangsd_matrix[s_inds, s_inds]
+s_eigs = data.frame(eigen(s_matrix)$vectors[,1:2])
+s_pca_df = s_eigs %>% 
+  bind_cols(s_samples) %>% 
   select(-collection_date, -site, -run, -warming_tol, -doy)
 
-S_mds_df %>% 
+s_pca_df %>% 
   ggplot(aes(X1, X2, colour = pop)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
@@ -1349,21 +1322,23 @@ S_mds_df %>%
   scale_color_manual(values = pop_cols)  + 
   theme_matt_facets()
 
-X_inds = which(tonsa_samples$Clade == "X" & tonsa_samples$sample != "FH_peak_1_10")
-X_samples = filter(tonsa_samples, Clade == "X", sample != "FH_peak_1_10")
-X_matrix = ind_dist_matrix[X_inds, X_inds]
-X_mds = cmdscale(as.dist(X_matrix))
-X_mds_df = data.frame(X_mds) %>% 
-  bind_cols(X_samples) %>% 
+#########
+
+IV_inds = which(all_samples$Clade == "IV")
+IV_samples = filter(all_samples, Clade == "IV")
+IV_matrix = pcangsd_matrix[IV_inds, IV_inds]
+IV_eigs = data.frame(eigen(IV_matrix)$vectors[,1:2])
+IV_pca_df = IV_eigs %>% 
+  bind_cols(IV_samples) %>% 
   select(-collection_date, -site, -run, -warming_tol, -doy)
 
-X_mds_df %>% 
+IV_pca_df %>% 
   ggplot(aes(X1, X2, colour = pop)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
   labs(x = "",
        y = "", 
-       title = "Clade - X") + 
+       title = "Clade - IV") + 
   scale_color_manual(values = pop_cols)  + 
   theme_matt_facets()
 ```

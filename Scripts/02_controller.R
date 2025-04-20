@@ -214,20 +214,53 @@ clade_summary = read.csv(file = "Output/Output_data/COI_clades_summary.csv") %>%
          season = fct_relevel(season, "early", "peak", "late"), 
          sample = fct_reorder2(sample, .y = population, .x = season, .desc = F))
 
-tonsa_samples = read.table("Raw_data/molecular/angsd_dists/bam_list.txt") %>% 
+clade_assignments = clade_summary %>% 
+  group_by(sample) %>% 
+  filter(n == max(n))
+
+clade_ctmax = full_data %>% 
+  dplyr::select(-exp_date, -days_in_lab, -rank, -time, -ramp_rate, -ind_id, -region, -long) %>% 
+  mutate(pop = case_when(
+    site == "Key Largo" ~ "KL",
+    site == "Manatee River" ~ "MR",
+    site == "Ft. Hamer" ~ "FH",
+    site == "Tyler Cove" ~ "MD",
+    site == "Ganey's Wharf" ~ "GW",
+    site == "Esker Point" ~ "CT",
+    site == "Sawyer Park" ~ "ME",
+    site == "St. Thomas de Kent Wharf" ~ "TK",
+    site == "Ritchie Wharf" ~ "RW"
+  ), 
+  sample = paste(pop, "_", season, "_", replicate, "_", 0, tube, sep = ""),
+  sample = str_replace_all(sample, pattern = "010", "10")) %>% 
+  full_join(dplyr::select(clade_assignments, sample, Clade)) %>% 
+  drop_na(Clade)
+
+# tonsa_samples = read.table("Raw_data/molecular/angsd_dists/bam_list.txt") %>% 
+#   separate(V1, into = c("drop", "file"), sep = "/") %>% 
+#   separate("file", into = c("sample", "drop2"), sep = "_dd") %>% 
+#   dplyr::select(sample) %>% 
+#   separate(sample, into = c("pop", "season", "replicate", "tube"), sep = "_") %>% 
+#   mutate(tube = as.numeric(tube), 
+#          replicate = as.numeric(replicate)) %>% 
+#   left_join(filter(clade_ctmax, Clade != "A_hudsonica"), join_by("pop", "season", "replicate", "tube")) %>% 
+#   ungroup() %>% 
+#   mutate(season = fct_relevel(season, "early", "peak", "late"),
+#          pop = fct_relevel(pop, "FH", "MR", "MD", "GW", "CT", "ME", "TK", "RW"))
+
+all_samples = read.table("Raw_data/molecular/pcangsd/bams_w_hudsonica.txt") %>% 
   separate(V1, into = c("drop", "file"), sep = "/") %>% 
   separate("file", into = c("sample", "drop2"), sep = "_dd") %>% 
   dplyr::select(sample) %>% 
   separate(sample, into = c("pop", "season", "replicate", "tube"), sep = "_") %>% 
   mutate(tube = as.numeric(tube), 
          replicate = as.numeric(replicate)) %>% 
-  left_join(filter(clade_ctmax, Clade != "A_hudsonica"), join_by("pop", "season", "replicate", "tube")) %>% 
+  left_join(clade_ctmax, join_by("pop", "season", "replicate", "tube")) %>% 
   ungroup() %>% 
   mutate(season = fct_relevel(season, "early", "peak", "late"),
          pop = fct_relevel(pop, "FH", "MR", "MD", "GW", "CT", "ME", "TK", "RW"))
 
-ind_dist_matrix <- as.matrix(read.table("Raw_data/molecular/angsd_dists/snp_call.ibsMat"))
-
+pcangsd_matrix = as.matrix(read.table("Raw_data/molecular/pcangsd/with_hudsonica.cov"))
 
 # clade_matches = read.csv(file = "Output/Output_data/clade_matches.csv") %>% 
 #   mutate(population = fct_relevel(population, "MR", "FH", "MD", "GW", "CT", "ME", "TK", "RW"), 
