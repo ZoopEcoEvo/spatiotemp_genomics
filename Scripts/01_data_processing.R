@@ -1,6 +1,15 @@
-### TO DO ###
+################
+## Site Temps ##
+################
 
-###
+if(process_site_temps == T){
+  source(file = "Scripts/00_site_temps.R")
+}
+
+################
+## Phenotypic ##
+################
+
 # This script cycles through the time, temperature, and length data files collected for each individual replicate
 # and combines them to estimate thermal limits (as CTmax)
 
@@ -102,3 +111,206 @@ if(length(new_runs) > 0){ # If there are new data files to process...
     write.table(x = ramp_record, file = "Output/Output_data/ramp_record.csv",  sep = ",", row.names = F, col.names =F,  append = T)
   }
 }
+
+###############
+## Molecular ##
+###############
+
+### Processing Clades
+
+if(process_clades == T){
+  
+  ref_clades = read_tsv("raw_data/molecular/reference_clade_labels.txt",  show_col_types = FALSE) %>% distinct()
+  
+  clade_matches = data.frame()
+  no_matches = c()
+  
+  for(i in dir("Raw_data/molecular/clade_matches/")){
+    
+    blast_results = read.csv(file = paste0("Raw_data/molecular/clade_matches/", i, collapse = ""),
+                             col.names = c("read", "ref", "pident", "length", "mismatch", "gapopen", 
+                                           "qstart", "qend", "sstart", "send", "evalue", "bitscore")) 
+    
+    clade_counts = blast_results %>% 
+      group_by(read) %>% 
+      filter(evalue == min(evalue)) %>% 
+      ungroup() %>% 
+      filter(length > 100) %>% 
+      filter(pident > 95) %>% 
+      left_join(ref_clades, join_by(ref == label)) %>%  
+      mutate("sample" = str_split_fixed(i, pattern = ".csv", n = 2)[,1], 
+             "population" = str_split_fixed(sample, pattern = "_", n = 4)[,1], 
+             "season" = str_split_fixed(sample, pattern = "_", n = 4)[,2], 
+             "rep" = as.numeric(str_split_fixed(sample, pattern = "_", n = 4)[,3]), 
+             "tube" = str_split_fixed(sample, pattern = "_", n = 4)[,4])
+    
+    if(dim(clade_counts)[1] == 0){
+      no_matches = c(no_matches, str_split_fixed(i, pattern = ".csv", n = 2)[,1])
+    }else{
+      clade_matches = bind_rows(clade_matches, clade_counts)
+    }
+  }
+  
+  clade_matches = clade_matches %>% 
+    ungroup() %>% 
+    mutate(Clade = case_when(
+      Clade == "I" ~ "A_hudsonica",
+      .default = Clade
+    ))
+  
+  write.table(clade_matches, file = "Output/Output_data/clade_matches.csv", 
+              sep = ",", row.names = F, col.names = !file.exists("Output/Output_data/clade_matches.csv"), 
+              append = T)
+  
+  best_matches = clade_matches %>% 
+    group_by(sample) %>% 
+    filter(length == max(length)) %>% 
+    filter(evalue == min(evalue)) %>% 
+    select(sample, population, season, rep, tube, Clade) %>% 
+    distinct()
+  
+  write.table(best_matches, file = "Output/Output_data/best_matches.csv", 
+              sep = ",", row.names = F, col.names = !file.exists("Output/Output_data/best_matches.csv"), 
+              append = T)
+}
+
+### Reads in post-alignment metrics, including genome size, mean coverage, and the percent represented at 1x and 5x coverage
+sample_coverage = data.frame()
+for(i in dir("Raw_data/molecular/coverage_metrics/")){
+  
+  sample = str_split_1(i, pattern = "_wgs_")[1]
+  
+  sample_data = read.delim(file = paste0("Raw_data/molecular/coverage_metrics/", i, collapse = ""), 
+                           comment.char = "#", nrows = 1) %>% 
+    mutate("sample" = sample) %>% 
+    select(sample, GENOME_TERRITORY, MEAN_COVERAGE, SD_COVERAGE, PCT_1X, PCT_5X)
+  
+  sample_coverage = bind_rows(sample_coverage, sample_data)
+}
+
+sample_coverage %>% 
+  janitor::clean_names() %>% 
+  write.csv(file = "Output/Output_data/sample_coverage.csv")
+
+
+
+### Bringing the different data sources together 
+# Takes all the CTmax data and adds in info about the number of reads, clade assignments, and genome coverage
+# Filters out individuals to be excluded, that are missing a clade assignment, and A. hudsonica individuals
+
+if(process_all_data == T){
+  kl_winter = read.csv(file = "Raw_data/outside_sources/key_largo_winter.csv") %>% 
+    filter(bopyrid == "no") %>% 
+    dplyr::select(-bopyrid) %>% 
+    mutate(warming_tol = ctmax - collection_temp,
+           collection_date = as.character(as.Date(collection_date, "%m/%d/%y")),
+           exp_date = as.character(as.Date(exp_date, "%m/%d/%y")))
+  
+  all_data = read.csv(file = "Output/Output_data/full_data.csv") %>%  
+    bind_rows(kl_winter) %>% 
+    mutate(doy = lubridate::yday(collection_date),
+           ind_id = str_replace_all(paste(site, season, replicate, tube, sep = "_"), pattern = " ", replacement = "_")) %>% 
+    inner_join(site_data, by = c("site")) %>% 
+    mutate(site = fct_reorder(site, lat),
+           season = fct_relevel(season, "early", "peak", "late"),
+           warming_tol = ctmax - collection_temp) %>%  
+    arrange(site) 
+  
+  excluded_inds = c(
+    "Esker_Point_early_2_3",
+    "Manatee_River_peak_2_6",
+    "Manatee_River_peak_2_7",
+    "Tyler_Cove_peak_2_2",
+    "Sawyer_Park_peak_1_4",
+    "St._Thomas_de_Kent_Wharf_late_1_3",
+    "Ft._Hamer_late_2_3"
+  )
+  
+  read_data = read.csv("Raw_data/molecular/read_metrics.csv") %>% 
+    filter(sample_id != "unmatched") %>% 
+    arrange(templates) %>% 
+    mutate("site" = str_split_fixed(sample_id, pattern = "_", n = 2)[,1], 
+           site = case_when(
+             site == "KL" ~ "Key Largo",
+             site == "MR" ~ "Manatee River",
+             site == "FH" ~ "Ft. Hamer",
+             site == "MD" ~ "Tyler Cove",
+             site == "GW" ~ "Ganey's Wharf",
+             site == "CT" ~ "Esker Point",
+             site == "ME" ~ "Sawyer Park",
+             site == "TK" ~ "St. Thomas de Kent Wharf",
+             site == "RW" ~ "Ritchie Wharf"),
+           "season" = str_split_fixed(sample_id, pattern = "_", n = 3)[,2], 
+           "replicate" = str_split_fixed(sample_id, pattern = "_", n = 4)[,3],
+           "tube" = str_split_fixed(sample_id, pattern = "_", n = 4)[,4],
+           replicate = as.integer(replicate),
+           tube = as.integer(tube))
+  
+  clade_summary = read.csv(file = "Output/Output_data/COI_clades_summary.csv") %>% 
+    mutate(population = fct_relevel(population, "MR", "FH", "MD", "GW", "CT", "ME", "TK", "RW"), 
+           season = fct_relevel(season, "early", "peak", "late"), 
+           sample = fct_reorder2(sample, .y = population, .x = season, .desc = F))
+  
+  clade_assignments = clade_summary %>% 
+    group_by(sample) %>% 
+    filter(n == max(n)) %>% 
+    mutate(tube = parse_number(str_split_fixed(individual, pattern = "_", n = 2)[2]),
+           replicate = parse_number(str_split_fixed(individual, pattern = "_", n = 2)[1]),
+           season = str_split_fixed(sample, pattern = "_", n = 4)[2])
+  
+  sample_coverage = read.csv(file = "Output/Output_data/sample_coverage.csv") %>% 
+    select(-X)
+  
+  all_data %>%  
+    select(-days_in_lab, -run, -time, -ramp_rate) %>% 
+    mutate(site_code = case_when(
+      site == "Key Largo" ~ "KL",
+      site == "Manatee River" ~ "MR",
+      site == "Ft. Hamer" ~ "FH",
+      site == "Tyler Cove" ~ "MD",
+      site == "Ganey's Wharf" ~ "GW",
+      site == "Esker Point" ~ "CT",
+      site == "Sawyer Park" ~ "ME",
+      site == "St. Thomas de Kent Wharf" ~ "TK",
+      site == "Ritchie Wharf" ~ "RW")) %>% 
+    full_join(read_data) %>%  
+    full_join(select(ungroup(clade_assignments), -sample, -individual, "clade" = Clade, "num_clade_matches" = n, "site_code" = population, tube, replicate, season)) %>% 
+    full_join(select(sample_coverage, "sample_id" = sample, mean_coverage, sd_coverage, pct_1x, pct_5x)) %>% 
+    filter(!(ind_id %in% excluded_inds | clade == "A_hudsonica" | is.na(clade))) %>% 
+    write.csv(file = "Output/Output_data/joined_data.csv", row.names = F)
+}
+
+# sample_map = readxl::read_excel(path = "Molecular/twist_map.xlsx") %>% 
+#   select(Sample_Name, Sample_Id, Sample_Barcode, "Well" = well) # %>% 
+# # write.csv("Molecular/sample_map.csv", row.names = F)
+# 
+# sequence_comp = sample_map %>% 
+#   select(Sample_Name) %>% 
+#   filter(!Sample_Name %in% c("ME_late_1_02", "ME_late_1_03", "ME_late_1_04", "ME_late_1_05", "ME_late_1_06",
+#                              "ME_late_1_07", "ME_late_1_08", "ME_late_1_09", "ME_late_1_10")) %>% 
+#   separate_wider_delim(Sample_Name, delim = "_", names = c("site", "season", "run", "tube")) %>% 
+#   group_by(site, season) %>%  
+#   summarise("seq_n" = n()) 
+# 
+# data_comp = all_data %>%  
+#   filter(site != "Key Largo") %>% 
+#   select(site, season, run, tube) %>%  
+#   mutate(site = case_when(
+#     site == "Manatee River" ~ "MR", 
+#     site == "Ft. Hamer" ~ "FH", 
+#     site == "Tyler Cove" ~ "MD", 
+#     site == "Ganey's Wharf" ~ "GW", 
+#     site == "Esker Point" ~ "CT", 
+#     site == "Sawyer Park" ~ "ME", 
+#     site == "St. Thomas de Kent Wharf" ~ "TK", 
+#     site == "Ritchie Wharf" ~ "RW", 
+#   )) %>% 
+#   group_by(site, season) %>%  
+#   summarise("data_n" = n())
+# 
+# comp_data = inner_join(sequence_comp, data_comp) 
+# 
+# comp_data %>% 
+#   ggplot(aes(x = data_n, y = seq_n)) +  
+#   geom_point() + 
+#   geom_abline(intercept = 0, slope = 1)
