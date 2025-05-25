@@ -9,9 +9,11 @@ library(tidyverse)
 process_all_data = F #Runs data analysis 
 process_site_temps = F #Compiles continuous temperature data for the sites
 process_clades = F #Runs the script to read in clade matches and compile the summary files (takes a long time)
-make_report = T #Runs project summary
+make_report = F #Runs project summary
 molecular_report = F
-knit_manuscript = F #Compiles manuscript draft
+knit_pheno_manuscript = T #Compiles manuscript draft
+knit_genome_manuscript = F #Compiles manuscript draft
+
 
 ############################
 ### Read in the RAW data ###
@@ -311,8 +313,18 @@ if(molecular_report == T){
 ### Read in the PROCESSED data ###
 ##################################
 
-if(knit_manuscript == T){
-  render(input = "Manuscript/manuscript_name.Rmd", #Input the path to your .Rmd file here
+if(knit_pheno_manuscript == T){
+  render(input = "Manuscript/Sasaki_Pespeni_Phenotype.Rmd", #Input the path to your .Rmd file here
+         output_file = paste("dev_draft_", Sys.Date(), sep = ""), #Name your file here; as it is, this line will create reports named with the date
+         #NOTE: Any file with the dev_ prefix in the Drafts directory will be ignored. Remove "dev_" if you want to include draft files in the GitHub repo
+         output_dir = "Output/Drafts/", #Set the path to the desired output directory here
+         output_format = "all",
+         clean = T)
+}
+
+
+if(knit_genome_manuscript == T){
+  render(input = "Manuscript/Sasaki_Pespeni_LCWG.Rmd", #Input the path to your .Rmd file here
          output_file = paste("dev_draft_", Sys.Date(), sep = ""), #Name your file here; as it is, this line will create reports named with the date
          #NOTE: Any file with the dev_ prefix in the Drafts directory will be ignored. Remove "dev_" if you want to include draft files in the GitHub repo
          output_dir = "Output/Drafts/", #Set the path to the desired output directory here

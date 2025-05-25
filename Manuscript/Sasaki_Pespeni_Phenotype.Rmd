@@ -7,20 +7,17 @@ output:
     citation_package: natbib
   word_document: 
     reference_docx: doc_template.docx
-title: "TITLE"
+title: "Intraspecific Variation Amplifies Spatial and Temporal Patterns in Vulnerability to Warming"
 author:
-  - name: Author 1
-    affiliation: Place 1
+  - name: Matthew Sasaki
+    affiliation: University of Massachusetts Lowell
     location: 
-  - name: Author 2
-    affiliation: Place 2
-    location: 
-  - name: Author 3
-    affiliation: Place 3
+  - name: Melissa Pespeni
+    affiliation: University of Vermont
     location: 
 abstract: "ABSTRACT HERE."
 keywords: "keyword1, keyword2, keyword3"
-contact: "**Correspondance**: ___" 
+contact: "**Correspondance**: Matthew_Sasaki@uml.edu" 
 current: "This preprint is current as of `r format(Sys.time(), '%B %d, %Y')`"
 repo: "**Code**: ___"
 bibliography: references.bib
@@ -51,9 +48,30 @@ if(knitr::is_latex_output()){
 
 # Methods
 
+## Phenotypic Measurements
+
+## Library Prep and Sequencing
+
+## Clade Assignment
+
 ## Statistical Analysis
 
+## Role of Intraspecific Variation 
+
 # Results
+
+## Environmental Data
+
+## COI Clade Distributions
+
+## Body Size 
+
+## Thermal Limits 
+
+## Warming Tolerance
+
+## Intraspecific Patterns 
+
 
 ```{r, figure, echo = F}
 #| fig.cap = "CAPTION HERE."
