@@ -1222,25 +1222,19 @@ ggplot(clade_prop, aes(x = collection_temp, y = prop, colour = clade)) +
   theme(legend.position = "none")
 ```
 
-```{r}
-knitr::knit_exit()
-```
-
-
 ### PCA
 
 ```{r all-pca, fig.width=8, fig.height=6.5}
-tonsa_inds = which(all_samples$clade != "A_hudsonica")
-tonsa_samples = filter(all_samples, clade != "A_hudsonica")
-tonsa_matrix = pcangsd_matrix[tonsa_inds, tonsa_inds]
+### TEMPORARY UNTIL ANALYSES RE-RUN WITH BAM LIST THAT HAS CORRECT EXCLUSIONS
+tonsa_samples = inventory %>% filter(phenotype == "yes", hudsonica == "no", site_code != "KL") %>% arrange(site_code, season, replicate, tube) 
+
 tonsa_eigs = data.frame(eigen(tonsa_matrix)$vectors[,1:2])
 pc1_var = round((eigen(tonsa_matrix)$values[1] / sum(eigen(tonsa_matrix)$values)) * 100, digits = 2)
 pc2_var = round((eigen(tonsa_matrix)$values[2] / sum(eigen(tonsa_matrix)$values)) * 100, digits = 2)
 tonsa_pca_df = tonsa_eigs %>% 
-  bind_cols(tonsa_samples) %>% 
-  select(-collection_date, -site, -run, -warming_tol, -doy)
+  bind_cols(tonsa_samples)
 
-ggplot(tonsa_pca_df, aes(x = X1, y = X2, colour = Clade)) + 
+ggplot(tonsa_pca_df, aes(x = X1, y = X2, colour = clade)) + 
   geom_point(size = 5) + 
   labs(x = paste0("PC1 (", pc1_var, "%)", sep = ""),
        y = paste0("PC2 (", pc2_var, "%)", sep = "")) + 
@@ -1256,18 +1250,17 @@ ggplot(tonsa_pca_df, aes(x = X1, y = X2, colour = Clade)) +
 
 ```{r clade-pca, fig.width=8, fig.height=6.5}
 
-f_inds = which(all_samples$Clade == "F")
-f_samples = filter(all_samples, Clade == "F")
-f_matrix = pcangsd_matrix[f_inds, f_inds]
+f_inds = which(tonsa_samples$clade == "F")
+f_samples = filter(tonsa_samples, clade == "F")
+f_matrix = tonsa_matrix[f_inds, f_inds]
 f_eigs = data.frame(eigen(f_matrix)$vectors[,1:2])
 f_pc1_var = round((eigen(f_matrix)$values[1] / sum(eigen(f_matrix)$values)) * 100, digits = 2)
 f_pc2_var = round((eigen(f_matrix)$values[2] / sum(eigen(f_matrix)$values)) * 100, digits = 2)
 f_pca_df = f_eigs %>% 
-  bind_cols(f_samples) %>% 
-  select(-collection_date, -site, -run, -warming_tol, -doy)
+  bind_cols(f_samples)
 
 f_pca_df %>% 
-  ggplot(aes(x = X1, y = X2, colour = pop)) + 
+  ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
   labs(x = paste0("PC1 (", f_pc1_var, "%)", sep = ""),
@@ -1278,18 +1271,17 @@ f_pca_df %>%
 
 #########
 
-x_inds = which(all_samples$Clade == "X")
-x_samples = filter(all_samples, Clade == "X")
-x_matrix = pcangsd_matrix[x_inds, x_inds]
+x_inds = which(tonsa_samples$clade == "X")
+x_samples = filter(tonsa_samples, clade == "X")
+x_matrix = tonsa_matrix[x_inds, x_inds]
 x_eigs = data.frame(eigen(x_matrix)$vectors[,1:2])
 x_pc1_var = round((eigen(x_matrix)$values[1] / sum(eigen(x_matrix)$values)) * 100, digits = 2)
 x_pc2_var = round((eigen(x_matrix)$values[2] / sum(eigen(x_matrix)$values)) * 100, digits = 2)
 x_pca_df = x_eigs %>% 
-  bind_cols(x_samples) %>% 
-  select(-collection_date, -site, -run, -warming_tol, -doy)
+  bind_cols(x_samples) 
 
 x_pca_df %>% 
-  ggplot(aes(x = X1, y= X2, colour = pop)) + 
+  ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
   labs(x = paste0("PC1 (", x_pc1_var, "%)", sep = ""),
@@ -1300,18 +1292,17 @@ x_pca_df %>%
 
 #########
 
-s_inds = which(all_samples$Clade == "S")
-s_samples = filter(all_samples, Clade == "S")
-s_matrix = pcangsd_matrix[s_inds, s_inds]
+s_inds = which(tonsa_samples$clade == "S")
+s_samples = filter(tonsa_samples, clade == "S")
+s_matrix = tonsa_matrix[s_inds, s_inds]
 s_eigs = data.frame(eigen(s_matrix)$vectors[,1:2])
 s_pc1_var = round((eigen(s_matrix)$values[1] / sum(eigen(s_matrix)$values)) * 100, digits = 2)
 s_pc2_var = round((eigen(s_matrix)$values[2] / sum(eigen(s_matrix)$values)) * 100, digits = 2)
 s_pca_df = s_eigs %>% 
-  bind_cols(s_samples) %>% 
-  select(-collection_date, -site, -run, -warming_tol, -doy)
+  bind_cols(s_samples)
 
 s_pca_df %>% 
-  ggplot(aes(x = X1,y = X2, colour = pop)) + 
+  ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
   labs(x = paste0("PC1 (", s_pc1_var, "%)", sep = ""),
@@ -1322,18 +1313,17 @@ s_pca_df %>%
 
 #########
 
-IV_inds = which(all_samples$Clade == "IV")
-IV_samples = filter(all_samples, Clade == "IV")
-IV_matrix = pcangsd_matrix[IV_inds, IV_inds]
+IV_inds = which(tonsa_samples$clade == "IV")
+IV_samples = filter(tonsa_samples, clade == "IV")
+IV_matrix = tonsa_matrix[IV_inds, IV_inds]
 IV_eigs = data.frame(eigen(IV_matrix)$vectors[,1:2])
 IV_pc1_var = round((eigen(IV_matrix)$values[1] / sum(eigen(IV_matrix)$values)) * 100, digits = 2)
 IV_pc2_var = round((eigen(IV_matrix)$values[2] / sum(eigen(IV_matrix)$values)) * 100, digits = 2)
 IV_pca_df = IV_eigs %>% 
-  bind_cols(IV_samples) %>% 
-  select(-collection_date, -site, -run, -warming_tol, -doy)
+  bind_cols(IV_samples) 
 
 IV_pca_df %>% 
-  ggplot(aes(x = X1,y = X2, colour = pop)) + 
+  ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
   labs(x = paste0("PC1 (", IV_pc1_var, "%)", sep = ""),
@@ -1346,23 +1336,6 @@ IV_pca_df %>%
 
 
 ## Misc. Details
-
-```{r temp-record-plot, fig.width=6, fig.height=6}
-ggplot(temp_record, aes(x = minute_passed, y = temp_C, group = factor(run))) + 
-  geom_abline(slope = 0.3, intercept = mean(temp_record[temp_record$minute_interval == 0, 8])) + 
-  geom_abline(slope = 0.1, intercept = mean(temp_record[temp_record$minute_interval == 0, 8])) + 
-  geom_line(linewidth = 0.2, alpha = 0.8) + 
-  geom_point(data = full_data, 
-             aes(x = time, y = ctmax + 0.4),
-             size = 2,
-             shape = 25) +
-  labs(x = "Time passed (minutes)",
-       y = "Temperature (degrees C)",
-       fill = "Trial Number") + 
-  guides(colour = "none") + 
-  theme_matt(base_size = 16) + 
-  theme(legend.position = "right")
-```
 
 ```{r ramp-record-plot, fig.width=6, fig.height=6}
 ramp_record2 = ramp_record %>% 
@@ -1382,7 +1355,7 @@ ggplot(ramp_record2, aes(x = minute_interval, y = mean_ramp)) +
 ```
 
 ```{r rep-comp, fig.height=12, fig.width=8}
-full_data %>% 
+join_data %>% 
   drop_na(replicate) %>%  
   ggplot(aes(x = factor(replicate), y = ctmax, group = site)) + 
   facet_grid(site~season, scales = "free_y") + 
@@ -1397,7 +1370,7 @@ full_data %>%
 
 ```{r}
 
-early_peak = full_data %>% 
+early_peak = join_data %>% 
   filter(season %in% c("early", "peak")) %>% 
   mutate(season = if_else(season == "early", "one", "two")) %>% 
   group_by(site) %>% 
@@ -1422,7 +1395,7 @@ early_peak = full_data %>%
   mutate(season = "early_to_peak") %>%  
   drop_na()
 
-peak_late = full_data %>% 
+peak_late = join_data %>% 
   filter(season %in% c("peak", "late")) %>% 
   mutate(season = if_else(season == "peak", "one", "two")) %>% 
   group_by(site) %>% 
@@ -1464,7 +1437,7 @@ ggplot(generations, aes(x = lat, y = gens, colour = site, shape = season)) +
 ```
 
 ```{r rank-sims, fig.width=18, fig.height=8}
-obs_ranks = ggplot(full_data, aes(x = rank)) + 
+obs_ranks = ggplot(join_data, aes(x = rank)) + 
   facet_wrap(tube~.) + 
   geom_histogram(binwidth = 1) + 
   scale_x_continuous(breaks = c(2,4,6,8,10)) + 
@@ -1472,7 +1445,7 @@ obs_ranks = ggplot(full_data, aes(x = rank)) +
   theme_matt_facets()
 
 sim_data = data.frame()
-for(i in 1:max(full_data$run)){
+for(i in 1:max(join_data$replicate)){
   rep_data = data.frame("tube" = sample(c(1:10), size = 10, replace = F), 
                         "rank" = c(1:10),
                         "rep" = i) %>% 

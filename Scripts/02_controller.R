@@ -1,3 +1,7 @@
+#### To Do 
+# Update the model structure - remove the site stuff from random effects and replace with replicate
+
+
 # Load in required packages
 library(rmarkdown)
 library(merTools)
@@ -57,7 +61,7 @@ temp_summaries = join_data %>%
 
 ######## Sequencing data
 
-pcangsd_matrix = as.matrix(read.table("Raw_data/molecular/pcangsd/with_hudsonica.cov"))
+tonsa_matrix = as.matrix(read.table("Raw_data/molecular/pcangsd/tonsa_only.cov"))
 
 if(make_report == T){
   render(input = "Output/Reports/report.Rmd", #Input the path to your .Rmd file here

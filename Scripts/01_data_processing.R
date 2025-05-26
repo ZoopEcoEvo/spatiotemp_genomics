@@ -204,7 +204,8 @@ if(process_all_data == T){
     dplyr::select(-bopyrid) %>% 
     mutate(warming_tol = ctmax - collection_temp,
            collection_date = as.character(as.Date(collection_date, "%m/%d/%y")),
-           exp_date = as.character(as.Date(exp_date, "%m/%d/%y")))
+           exp_date = as.character(as.Date(exp_date, "%m/%d/%y")),
+           replicate = run)
   
   all_data = read.csv(file = "Output/Output_data/full_data.csv") %>%  
     bind_rows(kl_winter) %>% 
@@ -229,22 +230,23 @@ if(process_all_data == T){
   read_data = read.csv("Raw_data/molecular/read_metrics.csv") %>% 
     filter(sample_id != "unmatched") %>% 
     arrange(templates) %>% 
-    mutate("site" = str_split_fixed(sample_id, pattern = "_", n = 2)[,1], 
+    mutate("site_code" = str_split_fixed(sample_id, pattern = "_", n = 2)[,1], 
            site = case_when(
-             site == "KL" ~ "Key Largo",
-             site == "MR" ~ "Manatee River",
-             site == "FH" ~ "Ft. Hamer",
-             site == "MD" ~ "Tyler Cove",
-             site == "GW" ~ "Ganey's Wharf",
-             site == "CT" ~ "Esker Point",
-             site == "ME" ~ "Sawyer Park",
-             site == "TK" ~ "St. Thomas de Kent Wharf",
-             site == "RW" ~ "Ritchie Wharf"),
+             site_code == "KL" ~ "Key Largo",
+             site_code == "MR" ~ "Manatee River",
+             site_code == "FH" ~ "Ft. Hamer",
+             site_code == "MD" ~ "Tyler Cove",
+             site_code == "GW" ~ "Ganey's Wharf",
+             site_code == "CT" ~ "Esker Point",
+             site_code == "ME" ~ "Sawyer Park",
+             site_code == "TK" ~ "St. Thomas de Kent Wharf",
+             site_code == "RW" ~ "Ritchie Wharf"),
            "season" = str_split_fixed(sample_id, pattern = "_", n = 3)[,2], 
            "replicate" = str_split_fixed(sample_id, pattern = "_", n = 4)[,3],
            "tube" = str_split_fixed(sample_id, pattern = "_", n = 4)[,4],
            replicate = as.integer(replicate),
-           tube = as.integer(tube))
+           tube = as.integer(tube)) %>% 
+    select(-sample_id)
   
   clade_summary = read.csv(file = "Output/Output_data/COI_clades_summary.csv") %>% 
     mutate(population = fct_relevel(population, "MR", "FH", "MD", "GW", "CT", "ME", "TK", "RW"), 
@@ -259,9 +261,13 @@ if(process_all_data == T){
            season = str_split_fixed(sample, pattern = "_", n = 4)[2])
   
   sample_coverage = read.csv(file = "Output/Output_data/sample_coverage.csv") %>% 
-    select(-X)
+    select(-X) %>% 
+    mutate(site_code = str_split_fixed(sample, pattern = "_", n = 4)[,1],
+           season = str_split_fixed(sample, pattern = "_", n = 4)[,2],
+           replicate = parse_number(str_split_fixed(sample, pattern = "_", n = 4)[,3]),
+           tube = parse_number(str_split_fixed(sample, pattern = "_", n = 4)[,4]))
   
-  all_data %>%  
+  join_data = all_data %>%  
     select(-days_in_lab, -run, -time, -ramp_rate) %>% 
     mutate(site_code = case_when(
       site == "Key Largo" ~ "KL",
@@ -273,11 +279,79 @@ if(process_all_data == T){
       site == "Sawyer Park" ~ "ME",
       site == "St. Thomas de Kent Wharf" ~ "TK",
       site == "Ritchie Wharf" ~ "RW")) %>% 
-    full_join(read_data) %>%  
+    full_join(read_data) %>%
     full_join(select(ungroup(clade_assignments), -sample, -individual, "clade" = Clade, "num_clade_matches" = n, "site_code" = population, tube, replicate, season)) %>% 
-    full_join(select(sample_coverage, "sample_id" = sample, mean_coverage, sd_coverage, pct_1x, pct_5x)) %>% 
-    filter(!(ind_id %in% excluded_inds | clade == "A_hudsonica" | is.na(clade))) %>% 
-    write.csv(file = "Output/Output_data/joined_data.csv", row.names = F)
+    full_join(select(sample_coverage, site_code, season, replicate, tube, mean_coverage, sd_coverage, pct_1x, pct_5x))
+    
+  bam_list = read.table("Raw_data/molecular/bam_list.txt") %>% 
+    mutate(sample = str_split_fixed(V1, pattern = "/", n = 2)[,2],
+           sample = str_split_fixed(sample, pattern = "_dd_", n = 2)[,1]) %>% 
+    select(sample) %>% 
+    mutate(site_code = str_split_fixed(sample, pattern = "_", n = 4)[,1],
+           season = str_split_fixed(sample, pattern = "_", n = 4)[,2],
+           replicate = parse_number(str_split_fixed(sample, pattern = "_", n = 4)[,3]),
+           tube = parse_number(str_split_fixed(sample, pattern = "_", n = 4)[,4]), 
+           "bam" = "yes")
+  
+  excluded = data.frame(
+    site_code = c("CT", "MR", "MR", "MD", "ME", "TK", "FH"),
+    season = c("early", "peak", "peak", "peak", "peak", "late", "late"),
+    replicate = c(2, 2, 2, 2, 1, 1, 2), 
+    tube = c(3, 6, 7, 2, 4, 3, 3), 
+    exclude = "yes")
+  
+  inventory = all_data %>% 
+    mutate(phenotype = "yes",
+           site_code = case_when(
+             site == "Key Largo" ~ "KL",
+             site == "Manatee River" ~ "MR",
+             site == "Ft. Hamer" ~ "FH",
+             site == "Tyler Cove" ~ "MD",
+             site == "Ganey's Wharf" ~ "GW",
+             site == "Esker Point" ~ "CT",
+             site == "Sawyer Park" ~ "ME",
+             site == "St. Thomas de Kent Wharf" ~ "TK",
+             site == "Ritchie Wharf" ~ "RW")) %>% 
+    select(site, site_code, season, replicate, tube, phenotype) %>% 
+    mutate(phenotype = if_else(phenotype == "<NA>", "no", "yes")) %>% 
+    full_join(select(read_data, site, site_code, season, replicate, tube, "reads" = templates)) %>% 
+    mutate(reads = if_else(is.na(reads), "no", "yes")) %>% 
+    full_join(select(ungroup(clade_assignments), "site_code" = population, season, replicate, tube, "clade" = Clade)) %>% 
+    mutate(hudsonica = if_else(clade == "A_hudsonica", "yes", "no"),
+           hudsonica = if_else(is.na(hudsonica), "no", hudsonica),
+           clade_id = if_else(is.na(clade), "no", "yes")) %>% 
+    full_join(select(sample_coverage, site_code, season, replicate, tube, "coverage" = pct_1x)) %>% 
+    mutate(coverage = if_else(is.na(coverage), "no", "yes")) %>% 
+    full_join(select(join_data, site, site_code, season, replicate, tube, "joined" = ctmax)) %>% 
+    mutate(joined = if_else(is.na(joined), "no", "yes")) %>% 
+    full_join(select(bam_list, site_code, season, replicate, tube, bam)) %>% 
+    mutate(bam = if_else(is.na(bam), "no", "yes")) %>% 
+    full_join(excluded) %>% 
+    mutate(exclude = if_else(is.na(exclude), "no", "yes"), 
+           exclude = if_else(hudsonica == "yes", "yes", exclude)) %>% 
+    drop_na(replicate)
+  
+  dim(inventory)
+  length(which(inventory$phenotype == "yes"))
+  length(which(inventory$exclude == "yes"))
+  length(which(inventory$hudsonica == "yes"))
+  length(which(inventory$reads == "yes"))
+  length(which(inventory$clade == "yes"))
+  length(which(inventory$coverage == "yes"))
+  length(which(inventory$joined == "yes"))
+  length(which(inventory$bam == "yes"))
+  length(which(inventory$phenotype == "yes" & inventory$site_code != "KL"))
+  length(which(inventory$joined == "no" & inventory$bam == "yes"))
+  
+  inventory %>% group_by(site_code, season) %>% count() %>%  pivot_wider(names_from = season, values_from = n)
+  
+  inventory %>% filter(joined == "no")
+  
+  ### This is the subset that should be used for the PCAs? 
+  inventory %>% filter(bam == "yes", phenotype == "yes", exclude == "no", site_code != "KL") %>% arrange(site_code, season, replicate, tube) %>% dim()
+  
+  write.csv(inventory, file = "Output/Output_data/sample_inventory.csv", row.names = F)
+  write.csv(join_data, file = "Output/Output_data/joined_data.csv", row.names = F)
 }
 
 # sample_map = readxl::read_excel(path = "Molecular/twist_map.xlsx") %>% 
