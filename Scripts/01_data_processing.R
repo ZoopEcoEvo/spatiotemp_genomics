@@ -174,25 +174,6 @@ if(process_clades == T){
               append = T)
 }
 
-### Reads in post-alignment metrics, including genome size, mean coverage, and the percent represented at 1x and 5x coverage
-sample_coverage = data.frame()
-for(i in dir("Raw_data/molecular/coverage_metrics/")){
-  
-  sample = str_split_1(i, pattern = "_wgs_")[1]
-  
-  sample_data = read.delim(file = paste0("Raw_data/molecular/coverage_metrics/", i, collapse = ""), 
-                           comment.char = "#", nrows = 1) %>% 
-    mutate("sample" = sample) %>% 
-    select(sample, GENOME_TERRITORY, MEAN_COVERAGE, SD_COVERAGE, PCT_1X, PCT_5X)
-  
-  sample_coverage = bind_rows(sample_coverage, sample_data)
-}
-
-sample_coverage %>% 
-  janitor::clean_names() %>% 
-  write.csv(file = "Output/Output_data/sample_coverage.csv")
-
-
 
 ### Bringing the different data sources together 
 # Takes all the CTmax data and adds in info about the number of reads, clade assignments, and genome coverage
@@ -208,7 +189,7 @@ if(process_all_data == T){
            replicate = run)
   
   all_data = read.csv(file = "Output/Output_data/full_data.csv") %>%  
-    bind_rows(kl_winter) %>% 
+    #bind_rows(kl_winter) %>% 
     mutate(doy = lubridate::yday(collection_date),
            ind_id = str_replace_all(paste(site, season, replicate, tube, sep = "_"), pattern = " ", replacement = "_")) %>% 
     inner_join(site_data, by = c("site")) %>% 
@@ -260,6 +241,40 @@ if(process_all_data == T){
            replicate = parse_number(str_split_fixed(individual, pattern = "_", n = 2)[1]),
            season = str_split_fixed(sample, pattern = "_", n = 4)[2])
   
+  ### Reads in post-alignment metrics, including genome size, mean coverage, and the percent represented at 1x and 5x coverage
+  sample_coverage = data.frame()
+  sample_mapping = data.frame()
+  for(i in dir("Raw_data/molecular/coverage_metrics/")){
+    
+    if(str_detect(i, pattern = "_wgs_")){
+      sample = str_split_1(i, pattern = "_wgs_")[1]
+      
+      sample_data = read.delim(file = paste0("Raw_data/molecular/coverage_metrics/", i, collapse = ""), 
+                               comment.char = "#", nrows = 1) %>% 
+        mutate("sample" = sample) %>% 
+        select(sample, GENOME_TERRITORY, MEAN_COVERAGE, SD_COVERAGE, PCT_1X, PCT_5X) %>% 
+        janitor::clean_names()
+      
+      sample_coverage = bind_rows(sample_coverage, sample_data)
+      
+    }else{
+      sample = str_split_1(i, pattern = "_map_")[1]
+      
+      sample_data = read.delim(file = paste0("Raw_data/molecular/coverage_metrics/", i, collapse = ""), 
+                               comment.char = "#", nrows = 3) %>% 
+        filter(CATEGORY == "PAIR") %>% 
+        mutate("sample" = sample) %>% 
+        select(sample, TOTAL_READS, PF_HQ_ALIGNED_READS) %>% 
+        janitor::clean_names()
+      
+      sample_mapping = bind_rows(sample_mapping, sample_data) 
+    }
+  }
+  
+  sample_coverage %>% 
+    full_join(sample_mapping, by = c("sample")) %>% 
+    write.csv(file = "Output/Output_data/sample_coverage.csv")
+  
   sample_coverage = read.csv(file = "Output/Output_data/sample_coverage.csv") %>% 
     select(-X) %>% 
     mutate(site_code = str_split_fixed(sample, pattern = "_", n = 4)[,1],
@@ -280,8 +295,10 @@ if(process_all_data == T){
       site == "St. Thomas de Kent Wharf" ~ "TK",
       site == "Ritchie Wharf" ~ "RW")) %>% 
     full_join(read_data) %>%
+    mutate(templates = templates * 2) %>% 
     full_join(select(ungroup(clade_assignments), -sample, -individual, "clade" = Clade, "num_clade_matches" = n, "site_code" = population, tube, replicate, season)) %>% 
-    full_join(select(sample_coverage, site_code, season, replicate, tube, mean_coverage, sd_coverage, pct_1x, pct_5x))
+    full_join(select(sample_coverage, site_code, season, replicate, tube, mean_coverage, sd_coverage, pct_1x, pct_5x, total_reads, pf_hq_aligned_reads)) %>% 
+    mutate(pct_aligned = pf_hq_aligned_reads / templates)
     
   bam_list = read.table("Raw_data/molecular/bam_list.txt") %>% 
     mutate(sample = str_split_fixed(V1, pattern = "/", n = 2)[,2],

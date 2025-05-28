@@ -691,7 +691,7 @@ pop_size = join_data %>%
   #             colour = "grey60", 
   #             se = F,
   #             linewidth = 2) + 
-  geom_smooth(data = full_data, 
+  geom_smooth(data = join_data, 
               aes(x = size, y = ctmax, group = site), 
               colour = "grey20", method = "lm", se = F) + 
   geom_point(size = 1.3, alpha = 0.3) + 
@@ -927,37 +927,16 @@ ggplot(trait_ranges, aes(x = season, y = size_var, colour = site)) +
 
 While plasticity appears to play a large role in the response of *Acartia tonsa* populations to seasonality, a growing number of studies have also uncovered patterns in allele frequency indicating of rapid adaptive responses to seasonality. Our data set of seasonal samples across a large latitudinal gradient enables a comparison of these fine scale temporal patterns with the larger latitudinal patterns in allele frequency to determine whether the same alleles driving rapid seasonal adaptation are in play over larger spatial (and longer temporal) scales.
 
-After phenotyping, each individual was preserved in 95% ethanol. Individual DNA libraries were prepared using Twist Bio 96-plex prep kits, then sequenced on two lanes of an Illumina NovaSeq X Plus 25B by Novogene. Reads were de-multiplexed first to the plate level, and then to the sample level. The number of reads per sample varied, as shown below. 
+After phenotyping, each individual was preserved in 95% ethanol. Individual DNA libraries were prepared using Twist Bio 96-plex prep kits, then sequenced on two lanes of an Illumina NovaSeq X Plus 25B by Novogene. Reads were de-multiplexed first to the plate level, and then to the sample level.  
 
 ```{r overall-read-counts, fig.width=6, fig.height=6}
-read_data  %>% 
-  mutate(site = fct_relevel(site, "Manatee River", "Ft. Hamer", 
-                            "Tyler Cove", "Ganey's Wharf", "Esker Point", 
-                            "Sawyer Park", "St. Thomas de Kent Wharf", "Ritchie Wharf"),
-         season = fct_relevel(season, "early", "peak", "late"),
-         reads_millions = templates / 1000000) %>% 
-  ggplot(aes(reads_millions))+ 
-  geom_histogram(binwidth = 2) + 
+join_data %>% 
+  arrange(site_code, season, replicate, tube) %>% 
+  ggplot(aes(x = site_code, y = templates)) + 
+  geom_boxplot() + 
   theme_matt()
-```
 
-The sample read counts are shown below separated out by site and season. 
 
-```{r site-season-read-counts, fig.width=9, fig.height=14}
-read_data %>% 
-  mutate(site = fct_relevel(site, "Manatee River", "Ft. Hamer", 
-                            "Tyler Cove", "Ganey's Wharf", "Esker Point", 
-                            "Sawyer Park", "St. Thomas de Kent Wharf", "Ritchie Wharf"),
-         season = fct_relevel(season, "early", "peak", "late"),
-         reads_millions = templates / 1000000) %>% 
-  ggplot(aes(reads_millions, fill = site)) + 
-  facet_grid(site~season) + 
-  geom_histogram(binwidth = 10) + 
-  scale_fill_manual(values = site_cols) +
-  scale_y_continuous(breaks = c(0, 5, 10)) + 
-  scale_x_continuous(breaks = c(0, 40)) + 
-    theme_matt_facets() + 
-  theme(legend.position = "none")
 ```
 
 While the number of reads recovered for each individual varies, there is no clear relationship between read counts and size or CTmax. 
@@ -985,6 +964,21 @@ read.model = lm(data = pheno_read_comps,
 knitr::kable(car::Anova(read.model))
 
 ```
+
+```{r}
+join_data %>% 
+  ggplot(aes(x = site_code, y = pct_1x)) + 
+  geom_boxplot() + 
+  theme_matt()
+
+join_data %>% 
+  ggplot(aes(x = site_code, y = pct_aligned)) + 
+  geom_boxplot() + 
+  theme_matt()
+```
+
+
+## Clade IDs
 
 *Acartia tonsa* is well known to comprise multiple, deeply diverged clades. To determine the clade composition of our sample set, we skimmed COI sequences from the low-coverage data. 
 
@@ -1021,10 +1015,28 @@ ggplot(clade_summary, aes(x = individual, y = n, fill = Clade)) +
         axis.text.x = element_text(angle = 290, hjust = 0, vjust = 0.5))
 ```
 
+These clades are deeply diverged, which affects the alignment and final coverage of the genome data. 
+
+```{r}
+join_data %>% 
+  drop_na(clade) %>% 
+  ggplot(aes(x = clade, y = pct_1x)) + 
+  geom_boxplot() + 
+  theme_matt()
+
+join_data %>% 
+  drop_na(clade) %>%
+  ggplot(aes(x = clade, y = pct_aligned)) + 
+  geom_boxplot() + 
+  theme_matt()
+```
+
 These COI clades were then merged with the CTmax and body size data set to examine clade-specific patterns of divergence. By plotting CTmax and size against the collection temperature we can see that these clades appear to be physiologically differentiated. Clades F and S tend to have higher CTmax, even when collected at the same temperatures as Clades X and IV. Size is more variable, with varying degrees of temperature sensitivity across the clades. Overall, however, Clade F tends to be smaller than Clades S and X. Clade IV tended to be the largest. 
 
 ```{r fig.width=11, fig.height=6}
-clade_ctmax_plot = ggplot(join_data, aes(x = collection_temp, y = ctmax, colour = clade)) + 
+clade_ctmax_plot = join_data %>% 
+  drop_na(clade) %>% 
+  ggplot(aes(x = collection_temp, y = ctmax, colour = clade)) + 
   geom_point(size = 2, alpha = 0.5) + 
   geom_smooth(method = "lm", linewidth = 2) + 
   labs(x = "Collection Temp. (°C)", 
@@ -1035,7 +1047,9 @@ clade_ctmax_plot = ggplot(join_data, aes(x = collection_temp, y = ctmax, colour 
                                "X" = "#A6761D")) + 
   theme_matt()
 
-clade_size_plot = ggplot(join_data, aes(x = collection_temp, y = size, colour = clade)) + 
+clade_size_plot =  join_data %>% 
+  drop_na(clade) %>% 
+  ggplot(aes(x = collection_temp, y = size, colour = clade)) + 
   geom_point(size = 2, alpha = 0.5) + 
   geom_smooth(method = "lm", linewidth = 2) + 
     labs(x = "Collection Temp. (°C)", 
@@ -1066,140 +1080,13 @@ ggarrange(clade_ctmax_plot, clade_size_plot, nrow = 1, common.legend = T, legend
 
 ```
 
-These differences in physiology correspond to the distributional patterns for each clade - shown below are logistic regressions of clade presence against latitude or collection temperature. 
-
-```{r fig.width=12, fig.height=6}
-clade_occurence = join_data %>% 
-  select(site, season, clade, collection_temp, lat) %>% 
-  group_by(site, season, collection_temp, lat) %>% 
-  count(clade) %>% 
-  ungroup() %>% 
-  complete(nesting(site, season, collection_temp, lat), clade, fill = list(n = 0)) %>%  
-  mutate(n = if_else(n == 0, 0, 1), 
-         num_season = case_when(
-           season == "early" ~ 1,
-           season == "peak" ~ 2,
-           season == "late" ~ 3))
-
-lat_clade_plot = ggplot(clade_occurence, aes(x = lat, y = n, colour = clade)) + 
-  facet_wrap(clade~.) + 
-  geom_point(size = 3, 
-             position = position_jitter(width = 0, height = 0.02)) + 
-  geom_smooth(method = "glm", 
-    method.args = list(family = "binomial"), 
-    se = T, 
-    linewidth = 3) + 
-  labs(x = "Latitude", 
-       y = "Presence") + 
-  scale_y_continuous(breaks = c(0,1)) + 
-  scale_colour_manual(values = c("A_hudsonica" = "#1B9E99",
-                               "A_lilljeborgi" = "#D95F02",
-                               "F" = "#7570B3",
-                               "IV" = "#E7298A",
-                               "out_group" = "#666666",
-                               "S" = "#66A61E",
-                               "SB" = "#E6AB02",
-                               "X" = "#A6761D"),
-                    na.value = "black") + 
-  theme_matt_facets() + 
-  theme(legend.position = "none")
-
-temp_clade_plot = ggplot(clade_occurence, aes(x = collection_temp, y = n, colour = clade)) + 
-  facet_wrap(clade~.) + 
-  geom_point(size = 3, 
-             position = position_jitter(width = 0, height = 0.02)) + 
-  geom_smooth(method = "glm", 
-    method.args = list(family = "binomial"), 
-    se = T, 
-    linewidth = 3) + 
-  labs(x = "Collection Temp. (°C)", 
-       y = "Presence") + 
-  scale_y_continuous(breaks = c(0,1)) + 
-  scale_colour_manual(values = c("A_hudsonica" = "#1B9E99",
-                               "A_lilljeborgi" = "#D95F02",
-                               "F" = "#7570B3",
-                               "IV" = "#E7298A",
-                               "out_group" = "#666666",
-                               "S" = "#66A61E",
-                               "SB" = "#E6AB02",
-                               "X" = "#A6761D"),
-                    na.value = "black") + 
-  theme_matt_facets() + 
-  theme(legend.position = "none")
-
-ggarrange(lat_clade_plot, temp_clade_plot)
-
-```
-
-These relationships are refined a bit when switching to quasi-binomial regressions for the clades' proportional abundance (what proportion of individuals in each collection were assigned to a clade). 
-
-```{r fig.width=12, fig.height=6}
-clade_prop = join_data %>% 
-  select(site, season, clade, collection_temp, lat) %>% 
-  group_by(site, season, collection_temp, lat) %>% 
-  count(clade) %>% 
-  ungroup(collection_temp, lat) %>% 
-  mutate("prop" = n / sum(n)) %>% 
-  ungroup() %>% 
-  complete(nesting(site, season, collection_temp, lat), clade, fill = list(prop = 0, n = 0)) %>%  
-  mutate(n = if_else(n == 0, 0, 1), 
-         num_season = case_when(
-           season == "early" ~ 1,
-           season == "peak" ~ 2,
-           season == "late" ~ 3))
-
-
-lat_clade_prop_plot = ggplot(clade_prop, aes(x = lat, y = prop, colour = clade)) + 
-  facet_wrap(clade~.) + 
-  geom_point(size = 3) + 
-  geom_smooth(method = "glm", 
-    method.args = list(family = "quasibinomial"), 
-    se = T, 
-    linewidth = 3) + 
-  labs(x = "Latitude", 
-       y = "Sample Proportion") + 
-  scale_y_continuous(breaks = c(0,1)) + 
-  scale_colour_manual(values = c("A_hudsonica" = "#1B9E99",
-                               "A_lilljeborgi" = "#D95F02",
-                               "F" = "#7570B3",
-                               "IV" = "#E7298A",
-                               "out_group" = "#666666",
-                               "S" = "#66A61E",
-                               "SB" = "#E6AB02",
-                               "X" = "#A6761D"),
-                    na.value = "black") + 
-  theme_matt_facets() + 
-  theme(legend.position = "none")
-
-temp_clade_prop_plot = ggplot(clade_prop, aes(x = collection_temp, y = prop, colour = clade)) + 
-  facet_wrap(clade~.) + 
-  geom_point(size = 3) + 
-  geom_smooth(method = "glm", 
-    method.args = list(family = "quasibinomial"), 
-    se = T, 
-    linewidth = 3) + 
-  labs(x = "Collection Temp. (°C)", 
-       y = "Sample Proportion") + 
-  scale_y_continuous(breaks = c(0,1)) + 
-  scale_colour_manual(values = c("A_hudsonica" = "#1B9E99",
-                               "A_lilljeborgi" = "#D95F02",
-                               "F" = "#7570B3",
-                               "IV" = "#E7298A",
-                               "out_group" = "#666666",
-                               "S" = "#66A61E",
-                               "SB" = "#E6AB02",
-                               "X" = "#A6761D"),
-                    na.value = "black") + 
-  theme_matt_facets() + 
-  theme(legend.position = "none")
-
-ggarrange(lat_clade_prop_plot, temp_clade_prop_plot)
-```
-
-Using a Loess smoother (span = 2), highlights how the proportional abundance of the clades is affected by temperature in different ways. Clade F occurs in high proportion at high temperature, Clade IV occurs in high proportions at low temperatures, while Clade X occurs in high proportions at intermediate temperatures. Clade S generally occurs in low proportions, with a few exceptions.  
+These differences in physiology correspond to the distributional patterns for each clade. Using a Loess smoother (span = 2) highlights how the proportional abundance of the clades is affected by temperature in different ways. Clade F occurs in high proportion at high temperature, Clade IV occurs in high proportions at low temperatures, while Clade X occurs in high proportions at intermediate temperatures. Clade S generally occurs in low proportions, with a few exceptions.  
 
 ```{r fig.width=8, fig.height=8}
-ggplot(clade_prop, aes(x = collection_temp, y = prop, colour = clade)) + 
+clade_prop %>% 
+  filter(clade != "A_hudsonica") %>% 
+  drop_na(clade) %>% 
+  ggplot(aes(x = collection_temp, y = prop, colour = clade)) + 
   facet_wrap(clade~.) + 
   geom_point(size = 3) + 
   geom_smooth(span = 2,

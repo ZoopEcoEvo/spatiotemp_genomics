@@ -41,7 +41,8 @@ all_data = read.csv(file = "Output/Output_data/full_data.csv") %>%
               dplyr::select(-bopyrid))
 
 join_data = read.csv(file = "Output/Output_data/joined_data.csv") %>% 
-  mutate(site = fct_reorder(site, lat),
+  mutate(lat = if_else(site_code == "ME", 43.90698, lat),
+    site = fct_reorder(site, lat),
          season = fct_relevel(season, "early", "peak", "late"),
          site_code = fct_relevel(site_code, "FH", "MR", "MD", "GW", "CT", "ME", "TK", "RW"))
 
