@@ -14,7 +14,6 @@ process_all_data = F #Runs data analysis
 process_site_temps = F #Compiles continuous temperature data for the sites
 process_clades = F #Processes clade data
 make_report = T #Runs project summary
-molecular_report = F
 knit_pheno_manuscript = F #Compiles manuscript draft
 knit_genome_manuscript = F #Compiles manuscript draft
 
@@ -46,6 +45,8 @@ join_data = read.csv(file = "Output/Output_data/joined_data.csv") %>%
          season = fct_relevel(season, "early", "peak", "late"),
          site_code = fct_relevel(site_code, "FH", "MR", "MD", "GW", "CT", "ME", "TK", "RW"))
 
+inventory = read.csv(file = "Output/Output_data/sample_inventory.csv")
+
 temp_summaries = join_data %>% 
   dplyr::select(site, season, collection_temp) %>% 
   distinct() %>% 
@@ -64,6 +65,8 @@ temp_summaries = join_data %>%
 
 tonsa_matrix = as.matrix(read.table("Raw_data/molecular/pcangsd/tonsa_only.cov"))
 
+clade_summary = read.csv(file = "Output/Output_data/COI_clades_summary.csv")
+
 if(make_report == T){
   render(input = "Output/Reports/report.Rmd", #Input the path to your .Rmd file here
          #output_file = "report", #Name your file here if you want it to have a different name; leave off the .html, .md, etc. - it will add the correct one automatically
@@ -71,14 +74,6 @@ if(make_report == T){
   
 }
 
-if(molecular_report == T){
-  st_curve = readxl::read_excel(path = "Molecular/method_test/extraction_nanodrop.xlsx")
-  
-  render(input = "Output/Reports/mol_report.Rmd", #Input the path to your .Rmd file here
-         #output_file = "report", #Name your file here if you want it to have a different name; leave off the .html, .md, etc. - it will add the correct one automatically
-         output_format = "all")
-  
-}
 
 ##################################
 ### Read in the PROCESSED data ###
