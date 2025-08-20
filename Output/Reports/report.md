@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2025-08-18
+2025-08-20
 
 - [Main Message](#main-message)
 - [Site Characteristics](#site-characteristics)
@@ -711,15 +711,16 @@ in the Northern populations.
 ``` r
 pop_effs = REsim(ctmax.model) %>% 
   dplyr::select("site" = groupID, term, mean, sd) %>% 
-  filter(term == "(Intercept)") %>% 
+  pivot_wider(names_from = term, values_from = c(mean, sd)) %>%  
+  janitor::clean_names() %>% 
   inner_join(temp_summaries, by = c("site")) %>% 
   mutate(site = fct_reorder(site, lat))
 
 #plotREsim(REsim(ctmax.model))  # plot the interval estimates
 
-pop_effs_plot = ggplot(pop_effs, aes(x = lat, y = mean, colour = site)) + 
+pop_effs_plot = ggplot(pop_effs, aes(x = lat, y = site_mean, colour = site)) + 
   geom_hline(yintercept = 0, colour = "grey") +
-  geom_errorbar(aes(ymin = mean - 1.96 * sd, ymax = mean + 1.96 * sd),
+  geom_errorbar(aes(ymin = site_mean - sd_intercept, ymax = site_mean + sd_intercept),
                 width = 0.5, linewidth = 1) + 
   geom_point(size = 3) + 
   scale_colour_manual(values = site_cols) + 
@@ -728,7 +729,7 @@ pop_effs_plot = ggplot(pop_effs, aes(x = lat, y = mean, colour = site)) +
   theme_matt() + 
   theme(legend.position = "right")
 
-pop_clim_plot = ggplot(pop_effs, aes(x = site_mean, y = mean)) + 
+pop_clim_plot = ggplot(pop_effs, aes(x = site_mean, y = mean_intercept)) + 
   #geom_abline(slope = 1, intercept = -19) + 
   geom_smooth(method = "lm", colour = "black") +
   geom_point(aes(colour = site), size = 4) + 
@@ -754,12 +755,8 @@ populations (e.g. food availability, environmental variation, pathogens,
 etc.).
 
 ``` r
-coefficients(ctmax.model)$site %>%
-  janitor::clean_names() %>%
-  rownames_to_column(var = "site") %>%
-  inner_join(site_data) %>% 
-  mutate(site = fct_reorder(site, lat)) %>% 
-  ggplot(aes(x = temp_cent, y = site)) +
+
+ggplot(pop_effs, aes(x = mean_temp_cent, y = site)) +
   geom_point(aes(colour = site),
              size = 5) +
   scale_colour_manual(values = site_cols) +
@@ -778,7 +775,7 @@ calculated for each collection separately.
 
 ``` r
 trait_ranges = join_data %>% 
-  group_by(site, clade, season, collection_temp, collection_salinity, doy, lat) %>% 
+  group_by(site, season, collection_temp, collection_salinity, doy, lat) %>% 
   summarise(mean_ctmax = mean(ctmax),
             ctmax_range = max(ctmax) - min(ctmax),
             ctmax_var = var(ctmax),
@@ -849,7 +846,6 @@ samples, and then increased again in the late sample. For some sites
 
 ``` r
 ggplot(trait_ranges, aes(x = season, y = ctmax_var, colour = site)) + 
-  facet_wrap(clade~.) + 
   geom_line(aes(group = site), 
             linewidth = 1.5) + 
   geom_point(size = 3) + 
@@ -870,7 +866,6 @@ the Esker Point sample, which saw the opposite trend.
 
 ``` r
 ggplot(trait_ranges, aes(x = season, y = size_var, colour = site)) + 
-  facet_wrap(clade~.) + 
   geom_line(aes(group = site), 
             linewidth = 1.5) + 
   geom_point(size = 3) + 
@@ -1146,7 +1141,7 @@ clade_prop %>%
 
 ``` r
 ### TEMPORARY UNTIL ANALYSES RE-RUN WITH BAM LIST THAT HAS CORRECT EXCLUSIONS
-tonsa_samples = inventory %>% filter(phenotype == "yes", hudsonica == "no", site_code != "KL") %>% arrange(site_code, season, replicate, tube) 
+tonsa_samples = inventory %>% filter(phenotype == "yes", hudsonica == "no", site_code != "KL", exclude == "no") %>% arrange(site_code, season, replicate, tube) 
 
 tonsa_eigs = data.frame(eigen(tonsa_matrix)$vectors[,1:2])
 pc1_var = round((eigen(tonsa_matrix)$values[1] / sum(eigen(tonsa_matrix)$values)) * 100, digits = 2)
@@ -1155,7 +1150,7 @@ tonsa_pca_df = tonsa_eigs %>%
   bind_cols(tonsa_samples)
 
 ggplot(tonsa_pca_df, aes(x = X1, y = X2, colour = clade)) + 
-  geom_point(size = 5) + 
+  geom_point(size = 5, alpha = 0.7) + 
   labs(x = paste0("PC1 (", pc1_var, "%)", sep = ""),
        y = paste0("PC2 (", pc2_var, "%)", sep = "")) + 
   scale_colour_manual(values = c("F" = "#b8cfff",
@@ -1179,7 +1174,7 @@ f_pc2_var = round((eigen(f_matrix)$values[2] / sum(eigen(f_matrix)$values)) * 10
 f_pca_df = f_eigs %>% 
   bind_cols(f_samples)
 
-f_pca_df %>% 
+f_pca_plot = f_pca_df %>% 
   ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
@@ -1188,11 +1183,6 @@ f_pca_df %>%
        title = "Clade - F") + 
   scale_color_manual(values = pop_cols)  + 
   theme_matt_facets()
-```
-
-<img src="../Figures/markdown/clade-pca-1.png" style="display: block; margin: auto;" />
-
-``` r
 
 #########
 
@@ -1205,7 +1195,7 @@ x_pc2_var = round((eigen(x_matrix)$values[2] / sum(eigen(x_matrix)$values)) * 10
 x_pca_df = x_eigs %>% 
   bind_cols(x_samples) 
 
-x_pca_df %>% 
+x_pca_plot = x_pca_df %>% 
   ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
@@ -1214,11 +1204,7 @@ x_pca_df %>%
        title = "Clade - X") + 
   scale_color_manual(values = pop_cols)  + 
   theme_matt_facets()
-```
 
-<img src="../Figures/markdown/clade-pca-2.png" style="display: block; margin: auto;" />
-
-``` r
 
 #########
 
@@ -1231,7 +1217,7 @@ s_pc2_var = round((eigen(s_matrix)$values[2] / sum(eigen(s_matrix)$values)) * 10
 s_pca_df = s_eigs %>% 
   bind_cols(s_samples)
 
-s_pca_df %>% 
+s_pca_plot = s_pca_df %>% 
   ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
@@ -1240,11 +1226,6 @@ s_pca_df %>%
        title = "Clade - S") + 
   scale_color_manual(values = pop_cols)  + 
   theme_matt_facets()
-```
-
-<img src="../Figures/markdown/clade-pca-3.png" style="display: block; margin: auto;" />
-
-``` r
 
 #########
 
@@ -1257,7 +1238,7 @@ IV_pc2_var = round((eigen(IV_matrix)$values[2] / sum(eigen(IV_matrix)$values)) *
 IV_pca_df = IV_eigs %>% 
   bind_cols(IV_samples) 
 
-IV_pca_df %>% 
+IV_pca_plot = IV_pca_df %>% 
   ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
@@ -1266,9 +1247,11 @@ IV_pca_df %>%
        title = "Clade - IV") + 
   scale_color_manual(values = pop_cols)  + 
   theme_matt_facets()
+
+ggarrange(f_pca_plot, x_pca_plot, s_pca_plot, IV_pca_plot, common.legend = T, legend = "right")
 ```
 
-<img src="../Figures/markdown/clade-pca-4.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/clade-pca-1.png" style="display: block; margin: auto;" />
 
 ## Misc. Details
 

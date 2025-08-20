@@ -63,7 +63,7 @@ temp_summaries = join_data %>%
 
 ######## Sequencing data
 
-tonsa_matrix = as.matrix(read.table("Raw_data/molecular/pcangsd/tonsa_only.cov"))
+tonsa_matrix = as.matrix(read.table("Raw_data/molecular/pcangsd/tonsa_exclusions.cov"))
 
 clade_summary = read.csv(file = "Output/Output_data/COI_clades_summary.csv")
 

@@ -809,7 +809,7 @@ pop_effs_plot = ggplot(pop_effs, aes(x = lat, y = site_mean, colour = site)) +
   theme_matt() + 
   theme(legend.position = "right")
 
-pop_clim_plot = ggplot(pop_effs, aes(x = site_mean, y = mean)) + 
+pop_clim_plot = ggplot(pop_effs, aes(x = site_mean, y = mean_intercept)) + 
   #geom_abline(slope = 1, intercept = -19) + 
   geom_smooth(method = "lm", colour = "black") +
   geom_point(aes(colour = site), size = 4) + 
@@ -825,12 +825,8 @@ ggarrange(pop_effs_plot, pop_clim_plot, common.legend = T, legend = "bottom")
 Finally, shown below are the estimated random slopes for each site. These represent the effects of collection temperature on CTmax for each site. Interestingly, these estimates diverge from the results of previous common garden experiments, which showed the strongest plasticity in high latitude sites. Here, acclimation appears to peak in mid-latitudes, and decrease at both high and low latitude sites. This suggests factors may constrain acclimation capacity in natural populations (e.g. food availability, environmental variation, pathogens, etc.).    
 
 ```{r site-arr-plot, fig.width=6, fig.height=4}
-coefficients(ctmax.model)$site %>%
-  janitor::clean_names() %>%
-  rownames_to_column(var = "site") %>%
-  inner_join(site_data) %>% 
-  mutate(site = fct_reorder(site, lat)) %>% 
-  ggplot(aes(x = temp_cent, y = site)) +
+
+ggplot(pop_effs, aes(x = mean_temp_cent, y = site)) +
   geom_point(aes(colour = site),
              size = 5) +
   scale_colour_manual(values = site_cols) +
@@ -846,7 +842,7 @@ Shown below is the trait variation (ranges) for each site. Ranges are calculated
 
 ```{r trait-range-plot, fig.width=12, fig.height=4.5}
 trait_ranges = join_data %>% 
-  group_by(site, clade, season, collection_temp, collection_salinity, doy, lat) %>% 
+  group_by(site, season, collection_temp, collection_salinity, doy, lat) %>% 
   summarise(mean_ctmax = mean(ctmax),
             ctmax_range = max(ctmax) - min(ctmax),
             ctmax_var = var(ctmax),
@@ -899,7 +895,6 @@ Shown below is the seasonal progression of variance in CTmax for each site. For 
 
 ```{r season-var}
 ggplot(trait_ranges, aes(x = season, y = ctmax_var, colour = site)) + 
-  facet_wrap(clade~.) + 
   geom_line(aes(group = site), 
             linewidth = 1.5) + 
   geom_point(size = 3) + 
@@ -915,7 +910,6 @@ Shown below is the seasonal progression of variance in body size. A similar patt
 
 ```{r}
 ggplot(trait_ranges, aes(x = season, y = size_var, colour = site)) + 
-  facet_wrap(clade~.) + 
   geom_line(aes(group = site), 
             linewidth = 1.5) + 
   geom_point(size = 3) + 
@@ -939,7 +933,6 @@ join_data %>%
   ggplot(aes(x = site_code, y = templates)) + 
   geom_boxplot() + 
   theme_matt()
-
 
 ```
 
@@ -1129,7 +1122,7 @@ clade_prop %>%
 
 ```{r all-pca, fig.width=8, fig.height=6.5}
 ### TEMPORARY UNTIL ANALYSES RE-RUN WITH BAM LIST THAT HAS CORRECT EXCLUSIONS
-tonsa_samples = inventory %>% filter(phenotype == "yes", hudsonica == "no", site_code != "KL") %>% arrange(site_code, season, replicate, tube) 
+tonsa_samples = inventory %>% filter(phenotype == "yes", hudsonica == "no", site_code != "KL", exclude == "no") %>% arrange(site_code, season, replicate, tube) 
 
 tonsa_eigs = data.frame(eigen(tonsa_matrix)$vectors[,1:2])
 pc1_var = round((eigen(tonsa_matrix)$values[1] / sum(eigen(tonsa_matrix)$values)) * 100, digits = 2)
@@ -1138,7 +1131,7 @@ tonsa_pca_df = tonsa_eigs %>%
   bind_cols(tonsa_samples)
 
 ggplot(tonsa_pca_df, aes(x = X1, y = X2, colour = clade)) + 
-  geom_point(size = 5) + 
+  geom_point(size = 5, alpha = 0.7) + 
   labs(x = paste0("PC1 (", pc1_var, "%)", sep = ""),
        y = paste0("PC2 (", pc2_var, "%)", sep = "")) + 
   scale_colour_manual(values = c("F" = "#b8cfff",
@@ -1151,7 +1144,7 @@ ggplot(tonsa_pca_df, aes(x = X1, y = X2, colour = clade)) +
 ```
 
 
-```{r clade-pca, fig.width=8, fig.height=6.5}
+```{r clade-pca, fig.width=12, fig.height=12}
 
 f_inds = which(tonsa_samples$clade == "F")
 f_samples = filter(tonsa_samples, clade == "F")
@@ -1162,7 +1155,7 @@ f_pc2_var = round((eigen(f_matrix)$values[2] / sum(eigen(f_matrix)$values)) * 10
 f_pca_df = f_eigs %>% 
   bind_cols(f_samples)
 
-f_pca_df %>% 
+f_pca_plot = f_pca_df %>% 
   ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
@@ -1183,7 +1176,7 @@ x_pc2_var = round((eigen(x_matrix)$values[2] / sum(eigen(x_matrix)$values)) * 10
 x_pca_df = x_eigs %>% 
   bind_cols(x_samples) 
 
-x_pca_df %>% 
+x_pca_plot = x_pca_df %>% 
   ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
@@ -1192,6 +1185,7 @@ x_pca_df %>%
        title = "Clade - X") + 
   scale_color_manual(values = pop_cols)  + 
   theme_matt_facets()
+
 
 #########
 
@@ -1204,7 +1198,7 @@ s_pc2_var = round((eigen(s_matrix)$values[2] / sum(eigen(s_matrix)$values)) * 10
 s_pca_df = s_eigs %>% 
   bind_cols(s_samples)
 
-s_pca_df %>% 
+s_pca_plot = s_pca_df %>% 
   ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
@@ -1225,7 +1219,7 @@ IV_pc2_var = round((eigen(IV_matrix)$values[2] / sum(eigen(IV_matrix)$values)) *
 IV_pca_df = IV_eigs %>% 
   bind_cols(IV_samples) 
 
-IV_pca_df %>% 
+IV_pca_plot = IV_pca_df %>% 
   ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
@@ -1234,6 +1228,9 @@ IV_pca_df %>%
        title = "Clade - IV") + 
   scale_color_manual(values = pop_cols)  + 
   theme_matt_facets()
+
+ggarrange(f_pca_plot, x_pca_plot, s_pca_plot, IV_pca_plot, common.legend = T, legend = "right")
+
 ```
 
 
