@@ -77,7 +77,7 @@ Ft. Hamer,FH,peak,1,6,yes,yes,F,no,yes,yes,yes,yes,no
 Ft. Hamer,FH,peak,1,7,yes,yes,F,no,yes,yes,yes,yes,no
 Ft. Hamer,FH,peak,1,8,yes,yes,F,no,yes,yes,yes,yes,no
 Ft. Hamer,FH,peak,1,9,yes,yes,F,no,yes,yes,yes,yes,no
-Ft. Hamer,FH,peak,1,10,yes,yes,X,no,yes,yes,yes,yes,no
+Ft. Hamer,FH,peak,1,10,yes,yes,X,no,yes,yes,yes,yes,yes
 Ft. Hamer,FH,peak,2,1,yes,yes,F,no,yes,yes,yes,yes,no
 Ft. Hamer,FH,peak,2,2,yes,yes,F,no,yes,yes,yes,yes,no
 Ft. Hamer,FH,peak,2,3,yes,yes,F,no,yes,yes,yes,yes,no
@@ -229,7 +229,7 @@ Ganey's Wharf,GW,late,2,8,yes,yes,F,no,yes,yes,yes,yes,no
 Ganey's Wharf,GW,late,2,9,yes,yes,S,no,yes,yes,yes,yes,no
 Ganey's Wharf,GW,late,2,10,yes,yes,F,no,yes,yes,yes,yes,no
 Esker Point,CT,early,1,1,yes,yes,X,no,yes,yes,yes,no,yes
-Esker Point,CT,early,1,2,yes,yes,S,no,yes,yes,yes,yes,no
+Esker Point,CT,early,1,2,yes,yes,S,no,yes,yes,yes,yes,yes
 Esker Point,CT,early,1,3,yes,yes,IV,no,yes,yes,yes,yes,no
 Esker Point,CT,early,1,4,yes,yes,X,no,yes,yes,yes,yes,no
 Esker Point,CT,early,1,5,yes,yes,IV,no,yes,yes,yes,yes,no
@@ -243,7 +243,7 @@ Esker Point,CT,early,2,2,yes,yes,X,no,yes,yes,yes,yes,no
 Esker Point,CT,early,2,3,yes,yes,A_hudsonica,yes,yes,yes,yes,no,yes
 Esker Point,CT,early,2,4,yes,yes,F,no,yes,yes,yes,yes,no
 Esker Point,CT,early,2,5,yes,yes,S,no,yes,yes,yes,yes,no
-Esker Point,CT,early,2,6,yes,yes,X,no,yes,yes,yes,yes,no
+Esker Point,CT,early,2,6,yes,yes,X,no,yes,yes,yes,yes,yes
 Esker Point,CT,early,2,7,yes,yes,S,no,yes,yes,yes,yes,no
 Esker Point,CT,early,2,8,yes,yes,S,no,yes,yes,yes,yes,no
 Esker Point,CT,early,2,9,yes,yes,F,no,yes,yes,yes,yes,no
@@ -297,16 +297,16 @@ Sawyer Park,ME,early,1,7,yes,yes,X,no,yes,yes,yes,yes,no
 Sawyer Park,ME,early,1,8,yes,yes,IV,no,yes,yes,yes,yes,no
 Sawyer Park,ME,early,1,9,yes,yes,F,no,yes,yes,yes,yes,no
 Sawyer Park,ME,early,1,10,yes,yes,F,no,yes,yes,yes,no,yes
-Sawyer Park,ME,early,2,1,yes,yes,X,no,yes,yes,yes,yes,no
+Sawyer Park,ME,early,2,1,yes,yes,X,no,yes,yes,yes,yes,yes
 Sawyer Park,ME,early,2,2,yes,yes,NA,no,no,yes,yes,no,yes
 Sawyer Park,ME,early,2,3,yes,yes,X,no,yes,yes,yes,yes,no
 Sawyer Park,ME,early,2,4,yes,yes,NA,no,no,yes,yes,no,yes
-Sawyer Park,ME,early,2,5,yes,yes,X,no,yes,yes,yes,yes,no
+Sawyer Park,ME,early,2,5,yes,yes,X,no,yes,yes,yes,yes,yes
 Sawyer Park,ME,early,2,6,yes,yes,F,no,yes,yes,yes,no,yes
 Sawyer Park,ME,early,2,7,yes,yes,X,no,yes,yes,yes,yes,no
 Sawyer Park,ME,early,2,8,yes,yes,X,no,yes,yes,yes,yes,no
 Sawyer Park,ME,early,2,9,yes,yes,NA,no,no,yes,yes,no,yes
-Sawyer Park,ME,early,2,10,yes,yes,S,no,yes,yes,yes,yes,no
+Sawyer Park,ME,early,2,10,yes,yes,S,no,yes,yes,yes,yes,yes
 Sawyer Park,ME,peak,1,1,yes,yes,X,no,yes,yes,yes,yes,no
 Sawyer Park,ME,peak,1,2,yes,yes,X,no,yes,yes,yes,yes,no
 Sawyer Park,ME,peak,1,3,yes,yes,X,no,yes,yes,yes,yes,no

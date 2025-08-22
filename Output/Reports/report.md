@@ -13,7 +13,7 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
 - [Trait Variability](#trait-variability)
 - [Low-Coverage Whole Genome
   Sequencing](#low-coverage-whole-genome-sequencing)
-- [Clade IDs](#clade-ids)
+  - [Clade IDs](#clade-ids)
   - [PCA](#pca)
 - [Misc. Details](#misc-details)
 
@@ -960,7 +960,7 @@ join_data %>%
 
 <img src="../Figures/markdown/unnamed-chunk-5-2.png" style="display: block; margin: auto;" />
 
-## Clade IDs
+### Clade IDs
 
 *Acartia tonsa* is well known to comprise multiple, deeply diverged
 clades. To determine the clade composition of our sample set, we skimmed
@@ -1196,6 +1196,7 @@ x_pca_df = x_eigs %>%
   bind_cols(x_samples) 
 
 x_pca_plot = x_pca_df %>% 
+  filter(X1 < -0.085) %>% 
   ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
@@ -1205,6 +1206,8 @@ x_pca_plot = x_pca_df %>%
   scale_color_manual(values = pop_cols)  + 
   theme_matt_facets()
 
+#Outliers
+#x_pca_df %>% filter(X1 > -0.085) 
 
 #########
 
@@ -1218,14 +1221,18 @@ s_pca_df = s_eigs %>%
   bind_cols(s_samples)
 
 s_pca_plot = s_pca_df %>% 
+  filter(X1 < -0.08) %>% 
   ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
-  #facet_wrap(season~.) + 
   geom_point(size = 3) + 
   labs(x = paste0("PC1 (", s_pc1_var, "%)", sep = ""),
        y = paste0("PC2 (", s_pc2_var, "%)", sep = ""),
        title = "Clade - S") + 
   scale_color_manual(values = pop_cols)  + 
   theme_matt_facets()
+
+
+#Outliers
+#s_pca_df %>% filter(X1 > -0.08) 
 
 #########
 

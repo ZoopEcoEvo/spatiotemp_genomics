@@ -65,7 +65,17 @@ temp_summaries = join_data %>%
 
 tonsa_matrix = as.matrix(read.table("Raw_data/molecular/pcangsd/tonsa_exclusions.cov"))
 
-clade_summary = read.csv(file = "Output/Output_data/COI_clades_summary.csv")
+clade_summary = read.csv(file = "Output/Output_data/COI_clades_summary.csv") %>% 
+  mutate(population = fct_relevel(population, "FH", "MR", "MD", "GW", "CT", "ME", "TK", "RW"))
+
+bam_list = read.csv(file = "Raw_data/molecular/bam_list.txt", header = F) %>% 
+  mutate(sample = str_remove_all(V1, pattern = "bam_files/"),
+         sample = str_remove_all(sample, pattern = "_dd_clip.bam"), 
+         site_code = str_split_fixed(sample, pattern = "_", n = 2)[,1],
+         season = str_split_fixed(sample, pattern = "_", n = 3)[,2],
+         replicate = as.numeric(str_split_fixed(sample, pattern = "_", n = 4)[,3]),
+         tube = as.numeric(str_split_fixed(sample, pattern = "_", n = 4)[,4])) %>% 
+  left_join(select(join_data, site_code, season, replicate, tube, clade), by = c("site_code", "season", "replicate", "tube"))
 
 if(make_report == T){
   render(input = "Output/Reports/report.Rmd", #Input the path to your .Rmd file here
