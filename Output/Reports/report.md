@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2025-08-20
+2025-08-23
 
 - [Main Message](#main-message)
 - [Site Characteristics](#site-characteristics)
@@ -1141,13 +1141,13 @@ clade_prop %>%
 
 ``` r
 ### TEMPORARY UNTIL ANALYSES RE-RUN WITH BAM LIST THAT HAS CORRECT EXCLUSIONS
-tonsa_samples = inventory %>% filter(phenotype == "yes", hudsonica == "no", site_code != "KL", exclude == "no") %>% arrange(site_code, season, replicate, tube) 
+tonsa_samples = inventory %>% filter(phenotype == "yes", hudsonica == "no", site_code != "KL", exclude == "no") %>% arrange(site_code, season, replicate, tube)
 
 tonsa_eigs = data.frame(eigen(tonsa_matrix)$vectors[,1:2])
 pc1_var = round((eigen(tonsa_matrix)$values[1] / sum(eigen(tonsa_matrix)$values)) * 100, digits = 2)
 pc2_var = round((eigen(tonsa_matrix)$values[2] / sum(eigen(tonsa_matrix)$values)) * 100, digits = 2)
 tonsa_pca_df = tonsa_eigs %>% 
-  bind_cols(tonsa_samples)
+  bind_cols(bam_list)
 
 ggplot(tonsa_pca_df, aes(x = X1, y = X2, colour = clade)) + 
   geom_point(size = 5, alpha = 0.7) + 
@@ -1165,8 +1165,8 @@ ggplot(tonsa_pca_df, aes(x = X1, y = X2, colour = clade)) +
 
 ``` r
 
-f_inds = which(tonsa_samples$clade == "F")
-f_samples = filter(tonsa_samples, clade == "F")
+f_inds = which(tonsa_pca_df$clade == "F")
+f_samples = filter(tonsa_pca_df, clade == "F") %>% select(-X1, -X2)
 f_matrix = tonsa_matrix[f_inds, f_inds]
 f_eigs = data.frame(eigen(f_matrix)$vectors[,1:2])
 f_pc1_var = round((eigen(f_matrix)$values[1] / sum(eigen(f_matrix)$values)) * 100, digits = 2)
@@ -1186,8 +1186,8 @@ f_pca_plot = f_pca_df %>%
 
 #########
 
-x_inds = which(tonsa_samples$clade == "X")
-x_samples = filter(tonsa_samples, clade == "X")
+x_inds = which(tonsa_pca_df$clade == "X")
+x_samples = filter(tonsa_pca_df, clade == "X") %>% select(-X1, -X2)
 x_matrix = tonsa_matrix[x_inds, x_inds]
 x_eigs = data.frame(eigen(x_matrix)$vectors[,1:2])
 x_pc1_var = round((eigen(x_matrix)$values[1] / sum(eigen(x_matrix)$values)) * 100, digits = 2)
@@ -1196,7 +1196,7 @@ x_pca_df = x_eigs %>%
   bind_cols(x_samples) 
 
 x_pca_plot = x_pca_df %>% 
-  filter(X1 < -0.085) %>% 
+  # filter(X1 < -0.05) %>% 
   ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
@@ -1207,12 +1207,12 @@ x_pca_plot = x_pca_df %>%
   theme_matt_facets()
 
 #Outliers
-#x_pca_df %>% filter(X1 > -0.085) 
+#x_pca_df %>% filter(X1 > -0.05) 
 
 #########
 
-s_inds = which(tonsa_samples$clade == "S")
-s_samples = filter(tonsa_samples, clade == "S")
+s_inds = which(tonsa_pca_df$clade == "S")
+s_samples = filter(tonsa_pca_df, clade == "S") %>% select(-X1, -X2)
 s_matrix = tonsa_matrix[s_inds, s_inds]
 s_eigs = data.frame(eigen(s_matrix)$vectors[,1:2])
 s_pc1_var = round((eigen(s_matrix)$values[1] / sum(eigen(s_matrix)$values)) * 100, digits = 2)
@@ -1221,7 +1221,7 @@ s_pca_df = s_eigs %>%
   bind_cols(s_samples)
 
 s_pca_plot = s_pca_df %>% 
-  filter(X1 < -0.08) %>% 
+  filter(X2 < 0.2) %>% 
   ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   geom_point(size = 3) + 
   labs(x = paste0("PC1 (", s_pc1_var, "%)", sep = ""),
@@ -1232,12 +1232,14 @@ s_pca_plot = s_pca_df %>%
 
 
 #Outliers
-#s_pca_df %>% filter(X1 > -0.08) 
+s_pca_df %>% filter(X2 > 0.2)
+## [1] X1        X2        V1        sample    site_code season    replicate tube      clade    
+## <0 rows> (or 0-length row.names)
 
 #########
 
-IV_inds = which(tonsa_samples$clade == "IV")
-IV_samples = filter(tonsa_samples, clade == "IV")
+IV_inds = which(tonsa_pca_df$clade == "IV")
+IV_samples = filter(tonsa_pca_df, clade == "IV") %>% select(-X1, -X2)
 IV_matrix = tonsa_matrix[IV_inds, IV_inds]
 IV_eigs = data.frame(eigen(IV_matrix)$vectors[,1:2])
 IV_pc1_var = round((eigen(IV_matrix)$values[1] / sum(eigen(IV_matrix)$values)) * 100, digits = 2)

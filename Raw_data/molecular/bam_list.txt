@@ -1,4 +1,3 @@
-bam_files/CT_early_1_02_dd_clip.bam
 bam_files/CT_early_1_03_dd_clip.bam
 bam_files/CT_early_1_04_dd_clip.bam
 bam_files/CT_early_1_05_dd_clip.bam
@@ -83,7 +82,6 @@ bam_files/FH_peak_1_06_dd_clip.bam
 bam_files/FH_peak_1_07_dd_clip.bam
 bam_files/FH_peak_1_08_dd_clip.bam
 bam_files/FH_peak_1_09_dd_clip.bam
-bam_files/FH_peak_1_10_dd_clip.bam
 bam_files/FH_peak_2_01_dd_clip.bam
 bam_files/FH_peak_2_02_dd_clip.bam
 bam_files/FH_peak_2_03_dd_clip.bam
@@ -225,7 +223,6 @@ bam_files/ME_early_1_09_dd_clip.bam
 bam_files/ME_early_2_1_dd_clip.bam
 bam_files/ME_early_2_3_dd_clip.bam
 bam_files/ME_early_2_5_dd_clip.bam
-bam_files/ME_early_2_07_dd_clip.bam
 bam_files/ME_early_2_08_dd_clip.bam
 bam_files/ME_early_2_10_dd_clip.bam
 bam_files/ME_late_1_01_dd_clip.bam

@@ -1,0 +1,17 @@
+PCAngsd v1.36.1
+Time: 23/08/2025 15:43:26
+Directory: /scratch/workspace/matthew_sasaki_uml_edu-Aton_lcwg
+Options:
+	--beagle results/angsd_tonsa_exclusions/geno_lik.beagle.gz
+	--threads 100
+	--out results/pcangsd/tonsa_exclusions
+	--selection
+
+Loaded 8937166 sites and 397 samples.
+Number of sites after MAF filtering (0.05): 8937162
+
+PCAngsd did not converge using 5 eigenvectors!
+Saved covariance matrix as results/pcangsd/tonsa_exclusions.cov
+Saved test statistics as results/pcangsd/tonsa_exclusions.selection
+
+Total elapsed time: 63m54s

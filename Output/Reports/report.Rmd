@@ -1177,7 +1177,7 @@ x_pca_df = x_eigs %>%
   bind_cols(x_samples) 
 
 x_pca_plot = x_pca_df %>% 
-  # filter(X1 < -0.085) %>% 
+  # filter(X1 < -0.05) %>% 
   ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
@@ -1188,7 +1188,7 @@ x_pca_plot = x_pca_df %>%
   theme_matt_facets()
 
 #Outliers
-#x_pca_df %>% filter(X1 > -0.085) 
+#x_pca_df %>% filter(X1 > -0.05) 
 
 #########
 
@@ -1202,7 +1202,7 @@ s_pca_df = s_eigs %>%
   bind_cols(s_samples)
 
 s_pca_plot = s_pca_df %>% 
-  #filter(X1 < -0.08, X2 > -0.2) %>% 
+  #filter(X2 < 0.2) %>% 
   ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   geom_point(size = 3) + 
   labs(x = paste0("PC1 (", s_pc1_var, "%)", sep = ""),
@@ -1213,12 +1213,12 @@ s_pca_plot = s_pca_df %>%
 
 
 #Outliers
-s_pca_df %>% filter(X2 > 0.2)
+#s_pca_df %>% filter(X2 > 0.2)
 
 #########
 
 IV_inds = which(tonsa_pca_df$clade == "IV")
-IV_samples = filter(tonsa_pca_df, clade == "IV")
+IV_samples = filter(tonsa_pca_df, clade == "IV") %>% select(-X1, -X2)
 IV_matrix = tonsa_matrix[IV_inds, IV_inds]
 IV_eigs = data.frame(eigen(IV_matrix)$vectors[,1:2])
 IV_pc1_var = round((eigen(IV_matrix)$values[1] / sum(eigen(IV_matrix)$values)) * 100, digits = 2)
