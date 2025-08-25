@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2025-08-23
+2025-08-24
 
 - [Main Message](#main-message)
 - [Site Characteristics](#site-characteristics)
@@ -709,18 +709,27 @@ previously, there is a general latitudinal trend in thermal limits
 in the Northern populations.
 
 ``` r
+site_max = temp_profiles %>% 
+  ungroup() %>% 
+  group_by(region) %>% 
+  summarize(mean = mean(temp_c),
+            max = max(temp_c),
+            min = min(temp_c)) %>% 
+  mutate(region = str_replace_all(region, "Chesapeake", "Maryland"))
+
 pop_effs = REsim(ctmax.model) %>% 
   dplyr::select("site" = groupID, term, mean, sd) %>% 
   pivot_wider(names_from = term, values_from = c(mean, sd)) %>%  
   janitor::clean_names() %>% 
-  inner_join(temp_summaries, by = c("site")) %>% 
+  inner_join(temp_summaries, by = c("site")) %>% #site_mean is the average temperature recorded during collection
+  left_join(site_max, by = c("region")) %>% 
   mutate(site = fct_reorder(site, lat))
 
 #plotREsim(REsim(ctmax.model))  # plot the interval estimates
 
-pop_effs_plot = ggplot(pop_effs, aes(x = lat, y = site_mean, colour = site)) + 
+pop_effs_plot = ggplot(pop_effs, aes(x = lat, y = mean_intercept, colour = site)) + 
   geom_hline(yintercept = 0, colour = "grey") +
-  geom_errorbar(aes(ymin = site_mean - sd_intercept, ymax = site_mean + sd_intercept),
+  geom_errorbar(aes(ymin = mean_intercept - sd_intercept, ymax = mean_intercept + sd_intercept),
                 width = 0.5, linewidth = 1) + 
   geom_point(size = 3) + 
   scale_colour_manual(values = site_cols) + 
@@ -775,7 +784,9 @@ calculated for each collection separately.
 
 ``` r
 trait_ranges = join_data %>% 
-  group_by(site, season, collection_temp, collection_salinity, doy, lat) %>% 
+  drop_na(clade) %>% 
+  filter(clade != "A_hudsonica") %>% 
+  group_by(site, season, clade, collection_temp, collection_salinity, doy, lat) %>% 
   summarise(mean_ctmax = mean(ctmax),
             ctmax_range = max(ctmax) - min(ctmax),
             ctmax_var = var(ctmax),
@@ -786,7 +797,8 @@ trait_ranges = join_data %>%
          prop_size_range = size_range / mean_size)
 
 ctmax_range_temp = ggplot(trait_ranges, aes(x = collection_temp, y = ctmax_range)) + 
-  geom_smooth(method = "lm", colour = "black") + 
+  facet_wrap(clade~.) + 
+  geom_smooth(method = "lm", colour = "black", se = F) + 
   geom_point(aes(colour = site), 
              size = 3) + 
   scale_colour_manual(values = site_cols) + 
@@ -796,7 +808,10 @@ ctmax_range_temp = ggplot(trait_ranges, aes(x = collection_temp, y = ctmax_range
   theme(legend.position = "right")
 
 ctmax_var_temp = ggplot(trait_ranges, aes(x = collection_temp, y = ctmax_var, colour = site)) + 
-  geom_point(size = 3) + 
+  facet_wrap(clade~.) + 
+  geom_smooth(method = "lm", colour = "black", se = F) + 
+  geom_point(aes(colour = site), 
+             size = 3) + 
   scale_colour_manual(values = site_cols) + 
   labs(y = "CTmax Range (°C)",
        x = "Collection Temp. (°C)") +
@@ -804,17 +819,23 @@ ctmax_var_temp = ggplot(trait_ranges, aes(x = collection_temp, y = ctmax_var, co
   theme(legend.position = "right")
 
 size_range_temp = ggplot(trait_ranges, aes(x = collection_temp, y = size_range, colour = site)) + 
-  geom_point(size = 3) + 
+  facet_wrap(clade~.) + 
+  geom_smooth(method = "lm", colour = "black", se = F) + 
+  geom_point(aes(colour = site), 
+             size = 3) + 
   scale_colour_manual(values = site_cols) + 
-  labs(y = "Size Range (mm)",
+  labs(y = "CTmax Range (°C)",
        x = "Collection Temp. (°C)") +
   theme_matt() + 
   theme(legend.position = "right")
 
 size_var_temp = ggplot(trait_ranges, aes(x = collection_temp, y = size_var, colour = site)) + 
-  geom_point(size = 3) + 
+  facet_wrap(clade~.) + 
+  geom_smooth(method = "lm", colour = "black", se = F) + 
+  geom_point(aes(colour = site), 
+             size = 3) + 
   scale_colour_manual(values = site_cols) + 
-  labs(y = "Size Range (mm)",
+  labs(y = "CTmax Range (°C)",
        x = "Collection Temp. (°C)") +
   theme_matt() + 
   theme(legend.position = "right")
@@ -838,46 +859,6 @@ period, we will assume that selection was weak before the early samples.
 If the early onset of high temperatures filtered out vulnerable
 genotypes prior to our sampling, the results will be a conservative
 estimate of the effects of selection on trait variance.
-
-Shown below is the seasonal progression of variance in CTmax for each
-site. For many sites, variance decreased between the early and peak
-samples, and then increased again in the late sample. For some sites
-(e.g. Esker Point), this increase in the late sample was substantial.
-
-``` r
-ggplot(trait_ranges, aes(x = season, y = ctmax_var, colour = site)) + 
-  geom_line(aes(group = site), 
-            linewidth = 1.5) + 
-  geom_point(size = 3) + 
-  scale_colour_manual(values = site_cols) + 
-  labs(y = "CTmax Variance",
-       x = "Season") +
-  theme_matt() + 
-  theme(legend.position = "right", 
-        legend.title.align = 0.125)
-```
-
-<img src="../Figures/markdown/season-var-1.png" style="display: block; margin: auto;" />
-
-Shown below is the seasonal progression of variance in body size. A
-similar pattern of decreasing variance in peak samples relative to early
-and late samples is again seen for many sites. The obvious exception is
-the Esker Point sample, which saw the opposite trend.
-
-``` r
-ggplot(trait_ranges, aes(x = season, y = size_var, colour = site)) + 
-  geom_line(aes(group = site), 
-            linewidth = 1.5) + 
-  geom_point(size = 3) + 
-  scale_colour_manual(values = site_cols) + 
-  labs(y = "CTmax Variance",
-       x = "Season") +
-  theme_matt() + 
-  theme(legend.position = "right", 
-        legend.title.align = 0.125)
-```
-
-<img src="../Figures/markdown/unnamed-chunk-3-1.png" style="display: block; margin: auto;" />
 
 ## Low-Coverage Whole Genome Sequencing
 
@@ -925,7 +906,7 @@ reads_ctmax_plot = ggplot(join_data, aes(x = ctmax, y = pf_hq_aligned_reads)) +
 ggarrange(reads_size_plot, reads_ctmax_plot, nrow = 1)
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-3-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
@@ -948,7 +929,7 @@ join_data %>%
   theme_matt()
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-5-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
@@ -958,7 +939,7 @@ join_data %>%
   theme_matt()
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-5-2.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-4-2.png" style="display: block; margin: auto;" />
 
 ### Clade IDs
 
@@ -979,19 +960,17 @@ COI sequences from the low-coverage data.
 #          sample = fct_reorder2(sample, .y = population, .x = season, .desc = F))
 #   #write.csv(file = "Output/Output_data/COI_clades_summary.csv", row.names = F)
 
+clade_cols = c("A_hudsonica" = "#DDBBCA",
+               "F" = "#5076A5",
+               "IV" = "#FFB647",
+               "S" = "#81BCC5",
+               "X" = "#EE5E59")
+
 ggplot(clade_summary, aes(x = individual, y = n, fill = Clade)) + 
   facet_grid(population~season) + 
   geom_bar(stat = "identity", position = "fill") + 
   scale_y_continuous(breaks = c(0, 0.5, 1)) + 
-  scale_fill_manual(values = c("A_hudsonica" = "#1B9E99",
-                               "A_lilljeborgi" = "#D95F02",
-                               "F" = "#7570B3",
-                               "IV" = "#E7298A",
-                               "out_group" = "#666666",
-                               "S" = "#66A61E",
-                               "SB" = "#E6AB02",
-                               "X" = "#A6761D"),
-                    na.value = "black") + 
+  scale_fill_manual(values = clade_cols) + 
   labs(x = "Individual", 
        y = "Proportion") + 
   theme_bw(base_size = 18) + 
@@ -999,7 +978,7 @@ ggplot(clade_summary, aes(x = individual, y = n, fill = Clade)) +
         axis.text.x = element_text(angle = 290, hjust = 0, vjust = 0.5))
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-6-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-5-1.png" style="display: block; margin: auto;" />
 
 These clades are deeply diverged, which affects the alignment and final
 coverage of the genome data.
@@ -1012,7 +991,7 @@ join_data %>%
   theme_matt()
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-7-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-6-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
@@ -1023,7 +1002,7 @@ join_data %>%
   theme_matt()
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-7-2.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-6-2.png" style="display: block; margin: auto;" />
 
 These COI clades were then merged with the CTmax and body size data set
 to examine clade-specific patterns of divergence. By plotting CTmax and
@@ -1037,34 +1016,32 @@ smaller than Clades S and X. Clade IV tended to be the largest.
 ``` r
 clade_ctmax_plot = join_data %>% 
   drop_na(clade) %>% 
+  filter(clade != "A_hudsonica") %>% 
   ggplot(aes(x = collection_temp, y = ctmax, colour = clade)) + 
-  geom_point(size = 2, alpha = 0.5) + 
-  geom_smooth(method = "lm", linewidth = 2) + 
+  geom_point(size = 2, alpha = 0.3) + 
+  geom_smooth(method = "lm", linewidth = 2.5) + 
   labs(x = "Collection Temp. (°C)", 
        y = "CTmax (°C)") + 
-  scale_colour_manual(values = c("F" = "#7570B3",
-                               "IV" = "#E7298A",
-                               "S" = "#66A61E",
-                               "X" = "#A6761D")) + 
-  theme_matt()
+  scale_colour_manual(values = clade_cols) + 
+  theme_matt() + 
+  theme(legend.position = "none")
 
 clade_size_plot =  join_data %>% 
   drop_na(clade) %>% 
+  filter(clade != "A_hudsonica") %>% 
   ggplot(aes(x = collection_temp, y = size, colour = clade)) + 
-  geom_point(size = 2, alpha = 0.5) + 
-  geom_smooth(method = "lm", linewidth = 2) + 
+  geom_point(size = 2, alpha = 0.3) + 
+  geom_smooth(method = "lm", linewidth = 2.5) + 
     labs(x = "Collection Temp. (°C)", 
        y = "Prosome Length (mm)") + 
-  scale_colour_manual(values = c("F" = "#7570B3",
-                               "IV" = "#E7298A",
-                               "S" = "#66A61E",
-                               "X" = "#A6761D")) + 
-  theme_matt()
+  scale_colour_manual(values = clade_cols) + 
+  theme_matt() + 
+  theme(legend.position = "none")
 
-ggarrange(clade_ctmax_plot, clade_size_plot, nrow = 1, common.legend = T, legend = "bottom")
+ggarrange(clade_ctmax_plot, clade_size_plot, nrow = 1, common.legend = T, legend = "right")
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-8-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-7-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
@@ -1084,6 +1061,20 @@ ggarrange(clade_ctmax_plot, clade_size_plot, nrow = 1, common.legend = T, legend
 #                     na.value = "black") + 
 #   theme_matt_facets()
 ```
+
+``` r
+universal_resids %>%  
+  drop_na(clade) %>% 
+  filter(clade != "A_hudsonica") %>% 
+  ggplot(aes(x = size_resids, y = ctmax_resids, colour = clade)) + 
+  facet_wrap(clade~.) + 
+  geom_point(alpha = 0.3) + 
+  geom_smooth(method = "lm", linewidth = 2.5) + 
+  scale_color_manual(values = clade_cols) + 
+  theme_matt_facets()
+```
+
+<img src="../Figures/markdown/unnamed-chunk-8-1.png" style="display: block; margin: auto;" />
 
 These differences in physiology correspond to the distributional
 patterns for each clade. Using a Loess smoother (span = 2) highlights
@@ -1114,7 +1105,7 @@ clade_prop %>%
   drop_na(clade) %>% 
   ggplot(aes(x = collection_temp, y = prop, colour = clade)) + 
   facet_wrap(clade~.) + 
-  geom_point(size = 3) + 
+  geom_point(size = 3, alpha = 0.5) + 
   geom_smooth(span = 2,
     se = T, 
     linewidth = 3) + 
@@ -1122,15 +1113,7 @@ clade_prop %>%
        y = "Proportion") + 
   coord_cartesian(ylim = c(0,1)) + 
   scale_y_continuous(breaks = c(0,1)) + 
-  scale_colour_manual(values = c("A_hudsonica" = "#1B9E99",
-                               "A_lilljeborgi" = "#D95F02",
-                               "F" = "#7570B3",
-                               "IV" = "#E7298A",
-                               "out_group" = "#666666",
-                               "S" = "#66A61E",
-                               "SB" = "#E6AB02",
-                               "X" = "#A6761D"),
-                    na.value = "black") + 
+  scale_colour_manual(values = clade_cols) + 
   theme_matt_facets() + 
   theme(legend.position = "none")
 ```
@@ -1140,9 +1123,6 @@ clade_prop %>%
 ### PCA
 
 ``` r
-### TEMPORARY UNTIL ANALYSES RE-RUN WITH BAM LIST THAT HAS CORRECT EXCLUSIONS
-tonsa_samples = inventory %>% filter(phenotype == "yes", hudsonica == "no", site_code != "KL", exclude == "no") %>% arrange(site_code, season, replicate, tube)
-
 tonsa_eigs = data.frame(eigen(tonsa_matrix)$vectors[,1:2])
 pc1_var = round((eigen(tonsa_matrix)$values[1] / sum(eigen(tonsa_matrix)$values)) * 100, digits = 2)
 pc2_var = round((eigen(tonsa_matrix)$values[2] / sum(eigen(tonsa_matrix)$values)) * 100, digits = 2)
@@ -1150,13 +1130,10 @@ tonsa_pca_df = tonsa_eigs %>%
   bind_cols(bam_list)
 
 ggplot(tonsa_pca_df, aes(x = X1, y = X2, colour = clade)) + 
-  geom_point(size = 5, alpha = 0.7) + 
+  geom_point(size = 5) + 
   labs(x = paste0("PC1 (", pc1_var, "%)", sep = ""),
        y = paste0("PC2 (", pc2_var, "%)", sep = "")) + 
-  scale_colour_manual(values = c("F" = "#b8cfff",
-                                 "IV" = "#fc4e91",
-                                 "S" = "#4b751c",
-                                 "X" = "#ed9e0c")) + 
+  scale_colour_manual(values = clade_cols) + 
   theme_matt() + 
   theme(legend.position = "right")
 ```
@@ -1221,8 +1198,9 @@ s_pca_df = s_eigs %>%
   bind_cols(s_samples)
 
 s_pca_plot = s_pca_df %>% 
-  filter(X2 < 0.2) %>% 
+  #filter(X2 < 0.2) %>% 
   ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
+  #facet_wrap(season~.) + 
   geom_point(size = 3) + 
   labs(x = paste0("PC1 (", s_pc1_var, "%)", sep = ""),
        y = paste0("PC2 (", s_pc2_var, "%)", sep = ""),
@@ -1232,9 +1210,7 @@ s_pca_plot = s_pca_df %>%
 
 
 #Outliers
-s_pca_df %>% filter(X2 > 0.2)
-## [1] X1        X2        V1        sample    site_code season    replicate tube      clade    
-## <0 rows> (or 0-length row.names)
+#s_pca_df %>% filter(X2 > 0.2)
 
 #########
 
