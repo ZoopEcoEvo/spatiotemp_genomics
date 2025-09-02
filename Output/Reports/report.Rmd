@@ -107,6 +107,12 @@ pop_cols = c("KL" = "indianred4",
               "RW" = "steelblue4")
 
 
+clade_cols = c("A_hudsonica" = "#DDBBCA",
+               "F" = "#5076A5",
+               "IV" = "#FFB647",
+               "S" = "#81BCC5",
+               "X" = "#EE5E59")
+
 ```
 
 ## Main Message
@@ -982,11 +988,6 @@ join_data %>%
 #          sample = fct_reorder2(sample, .y = population, .x = season, .desc = F))
 #   #write.csv(file = "Output/Output_data/COI_clades_summary.csv", row.names = F)
 
-clade_cols = c("A_hudsonica" = "#DDBBCA",
-               "F" = "#5076A5",
-               "IV" = "#FFB647",
-               "S" = "#81BCC5",
-               "X" = "#EE5E59")
 
 ggplot(clade_summary, aes(x = individual, y = n, fill = Clade)) + 
   facet_grid(population~season) + 
@@ -1165,7 +1166,7 @@ x_pca_df = x_eigs %>%
   bind_cols(x_samples) 
 
 x_pca_plot = x_pca_df %>% 
-  # filter(X1 < -0.05) %>% 
+  #filter(X1 < -0.082) %>% 
   ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
@@ -1176,7 +1177,7 @@ x_pca_plot = x_pca_df %>%
   theme_matt_facets()
 
 #Outliers
-#x_pca_df %>% filter(X1 > -0.05) 
+#x_pca_df %>% filter(X1 > -0.085) 
 
 #########
 
@@ -1190,7 +1191,7 @@ s_pca_df = s_eigs %>%
   bind_cols(s_samples)
 
 s_pca_plot = s_pca_df %>% 
-  #filter(X2 < 0.2) %>% 
+  #filter(X1 < -0.114, X2 > -0.0015, X2< 0.004) %>% 
   ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
@@ -1202,7 +1203,7 @@ s_pca_plot = s_pca_df %>%
 
 
 #Outliers
-#s_pca_df %>% filter(X2 > 0.2)
+#s_pca_df %>% filter(!(X1 < -0.114 & X2 > -0.0015 & X2< 0.004))
 
 #########
 
@@ -1216,6 +1217,7 @@ IV_pca_df = IV_eigs %>%
   bind_cols(IV_samples) 
 
 IV_pca_plot = IV_pca_df %>% 
+  #filter(X1< -0.1) %>% 
   ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
@@ -1224,6 +1226,10 @@ IV_pca_plot = IV_pca_df %>%
        title = "Clade - IV") + 
   scale_color_manual(values = pop_cols)  + 
   theme_matt_facets()
+
+#Outliers
+#IV_pca_df %>% filter(!(X1< -0.1 & X2))
+
 
 ggarrange(f_pca_plot, x_pca_plot, s_pca_plot, IV_pca_plot, common.legend = T, legend = "right")
 
