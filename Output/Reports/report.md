@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2025-08-24
+2025-09-07
 
 - [Main Message](#main-message)
 - [Site Characteristics](#site-characteristics)
@@ -15,6 +15,7 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
   Sequencing](#low-coverage-whole-genome-sequencing)
   - [Clade IDs](#clade-ids)
   - [PCA](#pca)
+  - [Selection Scans](#selection-scans)
 - [Misc. Details](#misc-details)
 
 ## Main Message
@@ -960,11 +961,6 @@ COI sequences from the low-coverage data.
 #          sample = fct_reorder2(sample, .y = population, .x = season, .desc = F))
 #   #write.csv(file = "Output/Output_data/COI_clades_summary.csv", row.names = F)
 
-clade_cols = c("A_hudsonica" = "#DDBBCA",
-               "F" = "#5076A5",
-               "IV" = "#FFB647",
-               "S" = "#81BCC5",
-               "X" = "#EE5E59")
 
 ggplot(clade_summary, aes(x = individual, y = n, fill = Clade)) + 
   facet_grid(population~season) + 
@@ -1173,7 +1169,7 @@ x_pca_df = x_eigs %>%
   bind_cols(x_samples) 
 
 x_pca_plot = x_pca_df %>% 
-  # filter(X1 < -0.05) %>% 
+  #filter(X1 < -0.082) %>% 
   ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
@@ -1184,7 +1180,7 @@ x_pca_plot = x_pca_df %>%
   theme_matt_facets()
 
 #Outliers
-#x_pca_df %>% filter(X1 > -0.05) 
+#x_pca_df %>% filter(X1 > -0.085) 
 
 #########
 
@@ -1198,7 +1194,7 @@ s_pca_df = s_eigs %>%
   bind_cols(s_samples)
 
 s_pca_plot = s_pca_df %>% 
-  #filter(X2 < 0.2) %>% 
+  #filter(X1 < -0.114, X2 > -0.0015, X2< 0.004) %>% 
   ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
@@ -1210,7 +1206,7 @@ s_pca_plot = s_pca_df %>%
 
 
 #Outliers
-#s_pca_df %>% filter(X2 > 0.2)
+#s_pca_df %>% filter(!(X1 < -0.114 & X2 > -0.0015 & X2< 0.004))
 
 #########
 
@@ -1224,6 +1220,7 @@ IV_pca_df = IV_eigs %>%
   bind_cols(IV_samples) 
 
 IV_pca_plot = IV_pca_df %>% 
+  #filter(X1< -0.1) %>% 
   ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   #facet_wrap(season~.) + 
   geom_point(size = 3) + 
@@ -1233,10 +1230,24 @@ IV_pca_plot = IV_pca_df %>%
   scale_color_manual(values = pop_cols)  + 
   theme_matt_facets()
 
+#Outliers
+#IV_pca_df %>% filter(!(X1< -0.1 & X2))
+
+
 ggarrange(f_pca_plot, x_pca_plot, s_pca_plot, IV_pca_plot, common.legend = T, legend = "right")
 ```
 
 <img src="../Figures/markdown/clade-pca-1.png" style="display: block; margin: auto;" />
+
+### Selection Scans
+
+``` r
+
+# D <- as.matrix(read.table("Raw_data/molecular/clade_pcangsd/clade_IV.selection")) # Reads PC-based selection statistics
+# p <- pchisq(D[,1], 1, lower.tail=FALSE)
+# 
+# plot(-log10(p))
+```
 
 ## Misc. Details
 

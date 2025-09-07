@@ -80,17 +80,17 @@ bam_list = read.csv(file = "Raw_data/molecular/bam_list.txt", header = F) %>%
   group_by(sample) %>% 
   mutate(beagle_ind = paste0("Ind", row - 1, collapse = "")) %>% 
   select(-row)
-
-for(c in unique(bam_list$clade)){
-  clade_list = bam_list %>% 
-    ungroup() %>% 
-    filter(clade == c) %>% 
-    select(beagle_ind)
-  
-  list_name = paste("Raw_data/molecular/beagle_inds/clade_", c, "_inds.txt", sep = "")
-  
-  write.table(clade_list, file = list_name, row.names = F, col.names = F, quote = F)
-}
+# 
+# for(c in unique(bam_list$clade)){
+#   clade_list = bam_list %>% 
+#     ungroup() %>% 
+#     filter(clade == c) %>% 
+#     select(beagle_ind)
+#   
+#   list_name = paste("Raw_data/molecular/beagle_inds/clade_", c, "_inds.txt", sep = "")
+#   
+#   write.table(clade_list, file = list_name, row.names = F, col.names = F, quote = F)
+# }
 
 if(make_report == T){
   render(input = "Output/Reports/report.Rmd", #Input the path to your .Rmd file here

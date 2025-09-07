@@ -1235,6 +1235,17 @@ ggarrange(f_pca_plot, x_pca_plot, s_pca_plot, IV_pca_plot, common.legend = T, le
 
 ```
 
+### Selection Scans 
+
+```{r}
+
+# D <- as.matrix(read.table("Raw_data/molecular/clade_pcangsd/clade_IV.selection")) # Reads PC-based selection statistics
+# p <- pchisq(D[,1], 1, lower.tail=FALSE)
+# 
+# plot(-log10(p))
+
+```
+
 
 
 ## Misc. Details
