@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2025-09-07
+2025-09-15
 
 - [Main Message](#main-message)
 - [Site Characteristics](#site-characteristics)

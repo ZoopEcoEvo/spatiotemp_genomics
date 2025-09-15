@@ -1,6 +1,4 @@
 #### To Do 
-# Update the model structure - remove the site stuff from random effects and replace with replicate
-
 
 # Load in required packages
 library(rmarkdown)
