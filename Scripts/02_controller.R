@@ -37,11 +37,29 @@ all_data = read.csv(file = "Output/Output_data/full_data.csv") %>%
               filter(bopyrid == "no") %>% 
               dplyr::select(-bopyrid))
 
+# Which individuals need to be removed for low-confidence matches? 
+
+# clade_summary %>%  
+#   group_by(sample) %>% 
+#   filter(max(prop) < 0.85) %>% 
+#   filter(prop == max(prop)) 
+
+### Low Confidence Matches
+# FH_peak_1_10 (50.6% match top clade)
+# ME_early_2_07 (54.2% match top clade)
+# RW_early_2_09 (68.8% match top clade)
+
 join_data = read.csv(file = "Output/Output_data/joined_data.csv") %>% 
   mutate(lat = if_else(site_code == "ME", 43.90698, lat),
     site = fct_reorder(site, lat),
          season = fct_relevel(season, "early", "peak", "late"),
-         site_code = fct_relevel(site_code, "FH", "MR", "MD", "GW", "CT", "ME", "TK", "RW"))
+         site_code = fct_relevel(site_code, "FH", "MR", "MD", "GW", "CT", "ME", "TK", "RW")) %>% 
+  mutate(clade = case_when( ### Manually removing the clade ID for the three individuals with low confidence estimates
+    site_code == "FH" & season == "peak" & replicate == 1 & tube == 10 ~ NA,
+    site_code == "ME" & season == "early" & replicate == 2 & tube == 7 ~ NA,
+    site_code == "RW" & season == "early" & replicate == 2 & tube == 9 ~ NA,
+    .default = clade
+  ))
 
 inventory = read.csv(file = "Output/Output_data/sample_inventory.csv")
 
@@ -64,7 +82,11 @@ temp_summaries = join_data %>%
 tonsa_matrix = as.matrix(read.table("Raw_data/molecular/pcangsd/tonsa_exclusions.cov"))
 
 clade_summary = read.csv(file = "Output/Output_data/COI_clades_summary.csv") %>% 
-  mutate(population = fct_relevel(population, "FH", "MR", "MD", "GW", "CT", "ME", "TK", "RW"))
+  mutate(population = fct_relevel(population, "FH", "MR", "MD", "GW", "CT", "ME", "TK", "RW"),
+         season = fct_relevel(season, "early", "peak", "late")) %>% 
+  group_by(sample) %>% 
+  mutate(prop = n / sum(n)) %>% 
+  ungroup()
 
 bam_list = read.csv(file = "Raw_data/molecular/bam_list.txt", header = F) %>% 
   mutate(sample = str_remove_all(V1, pattern = "bam_files/"),

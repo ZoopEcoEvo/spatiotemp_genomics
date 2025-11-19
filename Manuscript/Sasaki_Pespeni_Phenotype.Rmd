@@ -48,7 +48,9 @@ if(knitr::is_latex_output()){
 
 # Methods
 
-## Phenotypic Measurements
+## Field Collections and Phenotypic Measurements
+
+## Warming Tolerance
 
 ## Library Prep and Sequencing
 
@@ -56,21 +58,53 @@ if(knitr::is_latex_output()){
 
 ## Statistical Analysis
 
-## Role of Intraspecific Variation 
+linear mixed effects model: CTmax ~ body size, temperature, and clade with random effect of tube and a random effect of site along with random slope for collection temperature
+
+Marginal mean and temperature trend for each clade 
 
 # Results
 
 ## Environmental Data
 
+Figure 1: Map of sites (A) and collection temperatures (B)
+
+Supp. Fig. 1: Continuous temperature profiles for the regions
+
+Supp. Fig. 2: Collection temperature seasonality against latitude (A) and maximum collection temperature (B)
+
 ## COI Clade Distributions
+Figure X: Clade plot (summarizes the clade x season x site patterns; just the 'high confidence' estimates - No hudsonica and only tonsa individuals where at least 85% of the reads matched to a single clade)
 
-## Body Size 
+Supp. Fig. X: Individual clade prop plot (shows the proportion of reads for each individual that matched to the different clades)
 
-## Thermal Limits 
+## Seasonal phenotypic patterns
+Supp. Fig. X: Temperature ramping records
 
-## Warming Tolerance
+Figure X: CTmax vs. season (A) and size vs. season (B) for each site
 
-## Intraspecific Patterns 
+Supp. Fig. X: CTmax vs. season for each site, with collection temperature included (ctmax-ind-pops-season)
+
+
+## Clade-specific patterns
+
+Figure X: CTmax and body size vs. collection temperature, separated by clade
+
+Supp. Fig. X: CTmax vs. collection temperature, separated by clade and faceted for each site to show the concordance in the pattern across locations
+
+Figure X: Clade marginal means (i.e. genetic variation in thermal limit) and the marginal trend (i.e. combined effect of local adaptation and plasticity)
+
+Figure X: Clade proportions in each sample vs. collection temp.
+
+Supp. Fig. X: Contour plot, faceted by clade, showing the scaled density of each clade across the temperature x salinity space. Individual occurences across this space are included as jittered points to show the distribution and abundance of records. 
+
+# Discussion 
+
+## Study Summary 
+
+## Space-for-time 
+
+## Relevance of intraspecific variation (plasticity, local adaptation, cryptic variation like clades)
+
 
 
 ```{r, figure, echo = F}

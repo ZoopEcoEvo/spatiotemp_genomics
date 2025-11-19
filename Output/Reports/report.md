@@ -1,21 +1,23 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2025-09-15
+2025-11-16
 
 - [Main Message](#main-message)
 - [Site Characteristics](#site-characteristics)
 - [Phenotypic Measurements](#phenotypic-measurements)
   - [Critical Thermal Limits](#critical-thermal-limits)
-  - [Warming tolerance](#warming-tolerance)
   - [Body Size](#body-size)
-  - [Salinity Pair Comparisons](#salinity-pair-comparisons)
+  - [Warming tolerance](#warming-tolerance)
 - [Trait Correlations](#trait-correlations)
+- [Statistical Analysis](#statistical-analysis)
 - [Trait Variability](#trait-variability)
 - [Low-Coverage Whole Genome
   Sequencing](#low-coverage-whole-genome-sequencing)
   - [Clade IDs](#clade-ids)
+  - [Clade-specific Physiology](#clade-specific-physiology)
   - [PCA](#pca)
   - [Selection Scans](#selection-scans)
+- [Salinity Comparisons](#salinity-comparisons)
 - [Misc. Details](#misc-details)
 
 ## Main Message
@@ -25,8 +27,13 @@ distributed across a large latitudinal gradient, we highlight the
 importance of intra-specific variation for predicting vulnerability to
 climate change. Indeed, across the entire spatiotemporal framework
 examined here, we observed an ~12°C range in thermal limits. Both
-spatial and temporal variation in thermal limits is essential for robust
-predictions.
+spatial and temporal variations in thermal limits are essential for
+robust predictions. Also highlighted in this study are the major
+differences in thermal limits between the various cryptic lineages of
+*Acartia tonsa*. The broad (and sometimes overlapping) distrbutions of
+these clades provide a unique opportunity to compare replicate
+spatiotemporal patterns in adaptation against a relatively similar
+genetic background.
 
 ## Site Characteristics
 
@@ -46,7 +53,8 @@ from 10°C to 36°C.
 ``` r
 coords = site_data %>%
   dplyr::select(site, long, lat) %>%
-  distinct()
+  distinct() %>% 
+  filter(site != "Key Largo")
 
 site_map = map_data("world") %>% 
   filter(region %in% c("USA", "Canada")) %>% 
@@ -79,14 +87,14 @@ ggarrange(site_map, site_temp_plot, common.legend = T, legend = "bottom")
 
 Collections aimed to obtain copepods near the onset of peak
 temperatures, after peak temperatures, and then after temperatures
-cooled during the Fall. To put the temperature data we measured into
-this larger seasonal context, we examined continuous temperature records
-for each site. Continuous data is not available for all sites, however,
-so here we’ve pieced together daily temperature values from either local
-temperature sensors (sites in Florida and the Chesapeake) and high
-resolution satellite temperature data (Connecticut, Maine, and the
-Canadian sites). This satellite data comes from the NOAA 1/4° Daily
-Optimum Interpolation Sea Surface Temperature (OISST).
+cooled during the Fall. To put the collections into this larger seasonal
+context, we examined continuous temperature records for each site.
+Continuous data is not available for all sites, however, so here we’ve
+pieced together daily temperature values from either local temperature
+sensors (sites in Florida and the Chesapeake) and high resolution
+satellite temperature data (Connecticut, Maine, and the Canadian sites).
+This satellite data comes from the NOAA 1/4° Daily Optimum Interpolation
+Sea Surface Temperature (OISST).
 
 These temperature profiles are shown below, with the temperatures
 measured during the time of collection included for comparison While
@@ -154,81 +162,6 @@ site_data %>%
 | St. Thomas de Kent Wharf | New Brunswick | 46.44761 | -64.63692 |
 |      Ritchie Wharf       | New Brunswick | 47.00481 | -65.56291 |
 
-Nested within each of the three regions (South, Central, and Northern
-regions) are pairs of low and high salinity sites:
-
-``` r
-data.frame("Region" = c("South", "Central", "North"),
-           "Low Salinity" = c("Ft. Hamer", "Ganey's Wharf", "Ritchie Wharf"),
-           "High Salinity" = c("Manatee River", "Tyler Cove", "St. Thomas de Kent Wharf")) %>% 
-  knitr::kable(align = "c")
-```
-
-| Region  | Low.Salinity  |      High.Salinity       |
-|:-------:|:-------------:|:------------------------:|
-|  South  |   Ft. Hamer   |      Manatee River       |
-| Central | Ganey’s Wharf |        Tyler Cove        |
-|  North  | Ritchie Wharf | St. Thomas de Kent Wharf |
-
- 
-
-There are fairly well-established divergences between high salinity and
-low salinity populations of *Acartia tonsa*. These sets of
-geographically proximate sites potentially provide independent
-comparisons of the effects of seasonality across salinity gradients.
-Shown here are the collection conditions for these pairs of sites.
-Temperature was typically similar across the pairs within each
-collection, while salinity differences were fairly stable across
-collections.
-
-``` r
-season_cols = c("early" = "grey75", 
-                "peak" = "grey50", 
-                "late" = "grey25")
-
-sal_regions = data.frame(region = rep(c("South", "Central", "North"), each = 2), 
-                         site = c("Ft. Hamer", "Manatee River", 
-                                  "Ganey's Wharf", "Tyler Cove", 
-                                  "Ritchie Wharf", "St. Thomas de Kent Wharf"),
-                         salinity = c("low", "high"))
-
-sal_comps = join_data %>% 
-  filter(site %in% sal_regions$site) %>% 
-  inner_join(sal_regions, by = c("site")) %>% 
-  select( region = region.y, site, salinity, season, doy, collection_temp, collection_salinity,
-          size, ctmax, warming_tol) %>% 
-  mutate(salinity = fct_relevel(salinity, "low", "high"),
-         region = fct_relevel(region, "South", "Central", "North"))
-
-sal_comp_temps = sal_comps %>%  
-  select(salinity, season, region, collection_temp, collection_salinity) %>% 
-  distinct() %>% 
-  ggplot(aes(x = salinity, y = collection_temp, colour = season, group = season)) + 
-  facet_wrap(region~.) + 
-  geom_line(linewidth = 1.5) + 
-  geom_point(size = 4) + 
-  scale_colour_manual(values = season_cols) + 
-  labs(y = "Collection Temp. (°C)",
-       x = "") + 
-  theme_matt_facets(base_size = 14)
-
-sal_comp_sal = sal_comps %>%  
-  select(salinity, season, region, collection_temp, collection_salinity) %>% 
-  distinct() %>% 
-  ggplot(aes(x = salinity, y = collection_salinity, colour = season, group = season)) + 
-  facet_wrap(region~.) + 
-  geom_line(linewidth = 1.5) + 
-  geom_point(size = 4) + 
-  scale_colour_manual(values = season_cols) + 
-  labs(y = "Collection Salinity (psu)",
-       x = "Salinity") + 
-  theme_matt_facets(base_size = 14)
-
-ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "right")
-```
-
-<img src="../Figures/markdown/season-sal-comps-1.png" style="display: block; margin: auto;" />
-
 The latitudinal gradient covers a wide range of seasonality. Shown below
 is the temperature range. While based on collection temperatures, and
 therefore an underestimate of the total seasonal range of temperatures,
@@ -251,6 +184,30 @@ site_temps %>%
 
 <img src="../Figures/markdown/lat-temp-range-plot-1.png" style="display: block; margin: auto;" />
 
+There was a general increase in the collection temperature range at
+warmer sites. This provides an opportunity to disentangle some of the
+traditionally proposed hypotheses about thermal adaptation
+(macrophysiological gradients often include stable and warm environments
+contrasted with cooler, more variable environment).
+
+``` r
+site_temps %>% 
+  group_by(site, lat) %>%  
+  summarise(
+    max_temp = max(collection_temp),
+    temp_range = max(collection_temp) - min(collection_temp)) %>%  
+  ggplot(aes(x = max_temp, y = temp_range)) + 
+  geom_point(aes(colour = site),
+             size = 3) + 
+  scale_color_manual(values = site_cols) + 
+  labs(x = "Max. Collection Temp. (°C)", 
+       y = "Collection Temp. Range (°C)") + 
+  theme_matt() + 
+  theme(legend.position = "right")
+```
+
+<img src="../Figures/markdown/unnamed-chunk-2-1.png" style="display: block; margin: auto;" />
+
 ## Phenotypic Measurements
 
 ### Critical Thermal Limits
@@ -261,12 +218,13 @@ ethanol. We excluded data for individuals that were either later
 classified as males or juveniles, that we were unable to assign to a
 clade, or that were identified as individuals from a closely related
 species (*Acartia hudsonica*). With these individuals excluded, the full
-data set contains 436 phenotyped and clade-identified individuals.
+data set contains 436 adult females with CTmax and body size
+measurements, and clade identifications.
 
 Critical thermal maxima (CTmax) was measured using a custom setup. The
 method uses a standard dynamic ramping assay to determine the maximum
 temperature individuals could sustain normal functioning. This differs
-from lethal temperatures, and indeed, all individuals observed recovered
+from lethal temperatures, and indeed, all individuals recovered
 following the assay.
 
 Individuals were rested for one hour after collection before the assay.
@@ -274,10 +232,11 @@ During the assay, copepods were held in artificial seawater, composed of
 bottled spring water and Instant Ocean salt mix adjusted to match
 collection salinities. During the assay, several ‘control’ individuals
 were maintained in this solution at ambient temperatures without the
-temperature ramp to ensure that there was no background mortality. When
-sorting individuals from the plankton tow contents, they were held in a
-50:50 mix of 60 um filtered water from the collection site and
-artificial seawater as an additional acclimation step.
+temperature ramp to ensure that there was no background changes in
+behavior or mortality. When sorting individuals from the plankton tow
+contents, they were held in a 50:50 mix of 60 um filtered water from the
+collection site and artificial seawater as an additional acclimation
+step.
 
 Sample sizes varied slightly across experiments, but generally ~20
 individuals were measured per season at each site. The major exceptions
@@ -289,11 +248,7 @@ samples were dominated by *Acartia hudsonica*. Thermal limits were
 measured for all *A. tonsa* individuals recovered. No samples were
 collected from Key Largo for this project, as *Acartia tonsa* wasn’t
 present in the water during the peak season, likely due to a recent
-extreme heat event. Thermal limits from a separate project that examined
-thermal limits at this site (collected February 2023; Sasaki et
-al. 2023) are included as a point of comparison. Body size values were
-not measured for these Key Largo copepods, nor were copepods
-individually preserved after the experiments.
+extreme heat event.
 
 ``` r
 join_data %>%  
@@ -324,11 +279,14 @@ mean values for each collection.
 
 ``` r
 mean_ctmax = join_data %>% 
+  filter(clade!="A_hudsonica") %>% 
   group_by(site, season, doy, collection_temp) %>% 
   summarize(mean_ctmax = mean(ctmax),
             median_ctmax = median(ctmax))
 
-ctmax_plot = ggplot(join_data, aes(x = season, y = ctmax, colour = site)) + 
+ctmax_plot = join_data %>% 
+  filter(clade!="A_hudsonica") %>% 
+  ggplot(aes(x = season, y = ctmax, colour = site)) + 
   geom_line(data = mean_ctmax, 
             aes(y = mean_ctmax, group = site),
             position = position_dodge(width = 0.4),
@@ -346,11 +304,51 @@ ctmax_plot = ggplot(join_data, aes(x = season, y = ctmax, colour = site)) +
   theme_matt() + 
   theme(legend.position = "right", 
         legend.title.align = 0.125)
-
-ctmax_plot
 ```
 
-<img src="../Figures/markdown/seasonal-ct-max-1.png" style="display: block; margin: auto;" />
+### Body Size
+
+Following the CTmax assay, individuals were photographed for body size
+measurements. Prosome lengths were measured from these photographs using
+a scale micrometer and the software ImageJ. These measurements are shown
+below. As before, large points indicate the mean body size. While less
+cohesive than CTmax, a general trend of increasing body size with
+latitude and time of year can be seen.
+
+``` r
+mean_size = join_data %>% 
+  filter(clade != "A_hudsonica") %>% 
+  group_by(site, season, doy, collection_temp) %>% 
+  summarize(mean_size = mean(size),
+            median_size = median(size))
+
+size_plot = join_data %>% 
+  filter(clade != "A_hudsonica") %>% 
+  ggplot(aes(x = season, y = size, colour = site)) + 
+  geom_line(data = mean_size, 
+            aes(y = mean_size, group = site),
+            position = position_dodge(width = 0.4),
+            linewidth = 1) + 
+  geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
+                                             dodge.width = 0.4),
+             alpha = 0.3) + 
+  geom_point(data = mean_size, 
+             aes(y = mean_size),
+             position = position_dodge(width = 0.4),
+             size = 4) + 
+  scale_colour_manual(values = site_cols) + 
+  labs(y = "Prosome Length (mm)",
+       x = "Season") +
+  theme_matt() + 
+  theme(legend.position = "right", 
+        legend.title.align = 0.125)
+```
+
+``` r
+ggarrange(ctmax_plot, size_plot, common.legend = T, legend = "right")
+```
+
+<img src="../Figures/markdown/size-and-ctmax-season-1.png" style="display: block; margin: auto;" />
 
 ### Warming tolerance
 
@@ -363,6 +361,7 @@ limits, suggesting greater vulnerability.
 
 ``` r
 mean_wt = join_data %>% 
+  filter(clade!="A_hudsonica") %>% 
   group_by(site, season) %>% 
   summarize(mean_wt = mean(warming_tol),
             median_wt = median(warming_tol))
@@ -389,116 +388,6 @@ ggplot(join_data, aes(x = season, y = warming_tol, colour = site)) +
 
 <img src="../Figures/markdown/seasonal-warming-tol-1.png" style="display: block; margin: auto;" />
 
-### Body Size
-
-Following the CTmax assay, individuals were photographed for body size
-measurements. Prosome lengths were measured from these photographs using
-a scale micrometer and the software ImageJ. These measurements are shown
-below. As before, large points indicate the mean body size. While less
-cohesive than CTmax, a general trend of increasing body size with
-latitude and time of year can be seen.
-
-``` r
-mean_size = join_data %>% 
-  group_by(site, season, doy, collection_temp) %>% 
-  summarize(mean_size = mean(size),
-            median_size = median(size))
-
-ggplot(join_data, aes(x = season, y = size, colour = site)) + 
-  geom_line(data = mean_size, 
-            aes(y = mean_size, group = site),
-            position = position_dodge(width = 0.4),
-            linewidth = 1) + 
-  geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
-                                             dodge.width = 0.4),
-             alpha = 0.3) + 
-  geom_point(data = mean_size, 
-             aes(y = mean_size),
-             position = position_dodge(width = 0.4),
-             size = 4) + 
-  scale_colour_manual(values = site_cols) + 
-  labs(y = "Prosome Length (mm)",
-       x = "Season") +
-  theme_matt() + 
-  theme(legend.position = "right", 
-        legend.title.align = 0.125)
-```
-
-<img src="../Figures/markdown/seasonal-body-size-1.png" style="display: block; margin: auto;" />
-
-### Salinity Pair Comparisons
-
-The three pairs of cross-salinity comparisons do show evidence for
-fine-scale trait divergence, although there was no consistent pattern in
-the direction or magnitude of differences. CTmax was similar across
-sites in the Southern and Central pairs. In the Northern pair, CTmax
-tended to be slightly lower for individuals from the low salinity site.
-Size was more variable between the paired sites. In the South,
-individuals from the low salinity site were consistently smaller than
-individuals from the high salinity site, despite experiencing similar
-temperatures. By contrast, in the Central pair individuals from the low
-salinity site tended to be slightly larger than those from the high
-salinity site, although the magnitude of this difference this varied
-seasonally. In the Northern pair, individuals from the low salinity site
-were slightly larger than individuals from the high salinity site during
-the early and peak season collections, but there was an abrupt reversal
-of this pattern during the late collection, when individuals from the
-high salinity site were much larger than individuals from the low
-salinity site.
-
-We will return to potential mechanisms behind divergence between these
-geographically proximate but environmentally separated sites later in
-this report.
-
-``` r
-sal_means = sal_comps %>% 
-  group_by(region, site, salinity, season) %>% 
-  summarize(mean_ctmax = mean(ctmax),
-            mean_size = median(size))
-
-sal_comp_ctmax_plot = sal_comps %>% 
-  ggplot(aes(x = salinity, y = ctmax, colour = season, group = season)) + 
-  facet_wrap(region~.) + 
-    geom_line(data = sal_means, 
-            aes(y = mean_ctmax, group = season),
-            position = position_dodge(width = 0.4),
-            linewidth = 1) + 
-  geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
-                                             dodge.width = 0.4),
-             alpha = 0.3) + 
-  geom_point(data = sal_means, 
-             aes(y = mean_ctmax),
-             position = position_dodge(width = 0.4),
-             size = 4) + 
-  scale_colour_manual(values = season_cols) + 
-  labs(y = "CTmax (°C)",
-       x = "") + 
-  theme_matt_facets(base_size = 14)
-
-sal_comp_size_plot = sal_comps %>% 
-  ggplot(aes(x = salinity, y = size, colour = season, group = season)) + 
-  facet_wrap(region~.) + 
-    geom_line(data = sal_means, 
-            aes(y = mean_size, group = season),
-            position = position_dodge(width = 0.4),
-            linewidth = 1) + 
-  geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
-                                             dodge.width = 0.4),
-             alpha = 0.3) + 
-  geom_point(data = sal_means, 
-             aes(y = mean_size),
-             position = position_dodge(width = 0.4),
-             size = 4) + 
-  scale_colour_manual(values = season_cols) + 
-  labs(y = "Prosome Length (mm)",
-       x = "") + 
-  theme_matt_facets(base_size = 14)
-
-ggarrange(sal_comp_ctmax_plot, sal_comp_size_plot, nrow = 2, common.legend = T, legend = "right")
-```
-
-<img src="../Figures/markdown/sal-pair-traits-1.png" style="display: block; margin: auto;" />
-
 ## Trait Correlations
 
 Regardless of the underlying mechanism (genetic differentiation or
@@ -514,7 +403,9 @@ continue to vary as water temperature changes. This is indirect evidence
 for the importance of rapid acclimation in the observed patterns.
 
 ``` r
-ctmax_temp_plot = ggplot(join_data, aes(x = collection_temp, y = ctmax)) + 
+ctmax_temp_plot = join_data %>% 
+  filter(clade != "A_hudsonica") %>% 
+  ggplot(aes(x = collection_temp, y = ctmax)) + 
   geom_smooth(method = "lm", se = T,
               linewidth = 2, 
               colour = "grey") + 
@@ -526,7 +417,9 @@ ctmax_temp_plot = ggplot(join_data, aes(x = collection_temp, y = ctmax)) +
   theme_matt() + 
   theme(legend.position = "none")
 
-size_temp_plot = ggplot(join_data, aes(x = collection_temp, y = size)) + 
+size_temp_plot = join_data %>% 
+  filter(clade != "A_hudsonica") %>% 
+  ggplot(aes(x = collection_temp, y = size)) + 
   geom_smooth(method = "lm", se = T,
               linewidth = 2, 
               colour = "grey") + 
@@ -538,7 +431,9 @@ size_temp_plot = ggplot(join_data, aes(x = collection_temp, y = size)) +
   theme_matt() + 
   theme(legend.position = "right")
 
-wt_temp_plot = ggplot(join_data, aes(x = collection_temp, y = warming_tol)) + 
+wt_temp_plot = join_data %>% 
+  filter(clade != "A_hudsonica") %>% 
+  ggplot(aes(x = collection_temp, y = warming_tol)) + 
   geom_smooth(method = "lm", se = T,
               linewidth = 2, 
               colour = "grey") + 
@@ -569,6 +464,7 @@ temperature variation.
 
 ``` r
 universal_size = join_data %>% 
+  filter(clade != "A_hudsonica") %>% 
   ggplot(aes(x = size, y = ctmax)) + 
   # geom_smooth(data = filter(full_data, ctmax > 31), 
   #             aes(x = size, y = ctmax),
@@ -589,6 +485,7 @@ universal_size = join_data %>%
         axis.title.x = element_blank())
 
 pop_size = join_data %>% 
+  filter(clade != "A_hudsonica") %>% 
   ggplot(aes(x = size, y = ctmax, colour = site, group = season)) + 
   facet_wrap(site~.) + 
   # geom_smooth(data = filter(full_data, ctmax > 31), 
@@ -615,89 +512,20 @@ ggarrange(universal_size, pop_size, common.legend = T, legend = "none", nrow = 2
 
 <img src="../Figures/markdown/ctmax-vs-size-1.png" style="display: block; margin: auto;" />
 
-If there is a true mechanistic relationship between body size and
-thermal limits, we would expect to see this relationship emerge
-**within** populations, or even individual collections. Shown below is
-the relationship between CTmax and size residuals, acquired from
-regressions of these traits against collection temperature. This
-substantially reduces the strength of the apparent relationship, but
-there is still a slightly negative overall relationship, spanning both
-across-population, within-population, and even within-collection scales
-(see the Sawyer Park collections, for example).
-
-``` r
-filtered_data = join_data %>% 
-  ungroup() %>% 
-  drop_na(size, ctmax) %>% 
-  mutate(temp_cent = scale(collection_temp, scale = F)[,1],
-         size_cent = scale(size, scale = F)[,1],
-         sal_cent = scale(collection_salinity, scale = F)[,1],
-         sal_type = if_else(collection_salinity > 15, "High", "Low"))
-
-ctmax_temp.model = lm(ctmax ~ collection_temp + site, data = filtered_data)
-ctmax_resids = residuals(ctmax_temp.model)
-
-size_temp.model = lm(size ~ collection_temp + site, data = filtered_data)
-size_resids = residuals(size_temp.model)
-
-universal_resids = filtered_data %>% 
-  mutate(ctmax_resids = ctmax_resids,
-         size_resids = size_resids) 
-
-all_resids = ggplot(universal_resids, aes(x = size_resids, y = ctmax_resids)) + 
-  # geom_smooth(data = filter(full_data, ctmax > 31), 
-  #             aes(x = size, y = ctmax),
-  #             method = "lm", 
-  #             colour = "grey60", 
-  #             se = F,
-  #             linewidth = 2) + 
-  geom_smooth(method = "lm", se = T,
-              linewidth = 2,
-              colour = "grey70") + 
-  geom_point(aes(colour = site),
-             size = 2, alpha = 0.7) + 
-  scale_colour_manual(values = site_cols) + 
-  labs(y = "CTmax Residuals",
-       x = "") +
-  theme_matt(base_size = 14) + 
-  theme(legend.position = "right",
-        axis.title.x = element_blank())
-
-pop_resids = ggplot(universal_resids, aes(x = size_resids, y = ctmax_resids, colour = site, group = season)) + 
-  facet_wrap(site~.) + 
-  # geom_smooth(data = filter(full_data, ctmax > 31), 
-  #             aes(x = size, y = ctmax),
-  #             method = "lm", 
-  #             colour = "grey60", 
-  #             se = F,
-  #             linewidth = 2) + 
-  geom_smooth(aes(x = size_resids, y = ctmax_resids, group = site), 
-              colour = "grey20", method = "lm", se = F) + 
-  geom_point(size = 1.3, alpha = 0.3) + 
-  geom_smooth(method = "lm", se = F,
-              linewidth = 1) + 
-  scale_colour_manual(values = site_cols) + 
-  labs(y = "CTmax Residuals",
-       x = "Prosome Length Residuals") +
-  theme_matt(base_size = 14) + 
-  theme(legend.position = "right")
-
-ggarrange(all_resids, pop_resids, common.legend = T, legend = "none", nrow = 2)
-```
-
-<img src="../Figures/markdown/ctmax-vs-size-resids-1.png" style="display: block; margin: auto;" />
+## Statistical Analysis
 
 To more formally test the relationships between CTmax, collection
 temperature, and size, we used a linear mixed effects model, structured
-as `ctmax ~ collection temp. x clade ID + (1 + collection temp.|site)`.
-This examines the effects of temperature and size on CTmax, along with
-differences between the salinity groupings. Collection temperature was
+as `ctmax ~ clade * temp_cent + size + (1 + temp_cent|site) + (1|tube)`.
+This examines the effects of clade, temperature and size on CTmax, along
+with clade-specific effects of temperature. Collection temperature was
 centered before model fitting. The model also includes random intercepts
-for each site and random slopes for collection temperature (i.e. -
-variation in the acclimation capacity of CTmax at each site).
+for each site and the tube number (the position of each individual
+within the water bath during the CTmax assay).
 
 Both collection temperature and clade ID, along with the interaction,
-had a significant effect on CTmax.
+had a significant effect on CTmax. These results are further examined in
+the clade-specific physiological patterns section.
 
 By extracting the conditional mode for the random effects, we can also
 examine how thermal limits vary across sites beyond the influence of
@@ -735,7 +563,7 @@ pop_effs_plot = ggplot(pop_effs, aes(x = lat, y = mean_intercept, colour = site)
   geom_point(size = 3) + 
   scale_colour_manual(values = site_cols) + 
   labs(x = "Latitude", 
-       y = "Population Effect") + 
+       y = "Site Effect") + 
   theme_matt() + 
   theme(legend.position = "right")
 
@@ -745,7 +573,7 @@ pop_clim_plot = ggplot(pop_effs, aes(x = site_mean, y = mean_intercept)) +
   geom_point(aes(colour = site), size = 4) + 
   scale_colour_manual(values = site_cols) + 
   labs(x = "Mean Season Temp.", 
-       y = "Population Effect") + 
+       y = "Site Effect") + 
   theme_matt() + 
   theme(legend.position = "right")
 
@@ -767,6 +595,7 @@ etc.).
 ``` r
 
 ggplot(pop_effs, aes(x = mean_temp_cent, y = site)) +
+  geom_vline(xintercept = 0) + 
   geom_point(aes(colour = site),
              size = 5) +
   scale_colour_manual(values = site_cols) +
@@ -814,7 +643,7 @@ ctmax_var_temp = ggplot(trait_ranges, aes(x = collection_temp, y = ctmax_var, co
   geom_point(aes(colour = site), 
              size = 3) + 
   scale_colour_manual(values = site_cols) + 
-  labs(y = "CTmax Range (°C)",
+  labs(y = "CTmax Variance",
        x = "Collection Temp. (°C)") +
   theme_matt() + 
   theme(legend.position = "right")
@@ -825,7 +654,7 @@ size_range_temp = ggplot(trait_ranges, aes(x = collection_temp, y = size_range, 
   geom_point(aes(colour = site), 
              size = 3) + 
   scale_colour_manual(values = site_cols) + 
-  labs(y = "CTmax Range (°C)",
+  labs(y = "Size Range (mm)",
        x = "Collection Temp. (°C)") +
   theme_matt() + 
   theme(legend.position = "right")
@@ -836,12 +665,12 @@ size_var_temp = ggplot(trait_ranges, aes(x = collection_temp, y = size_var, colo
   geom_point(aes(colour = site), 
              size = 3) + 
   scale_colour_manual(values = site_cols) + 
-  labs(y = "CTmax Range (°C)",
+  labs(y = "Size Variance",
        x = "Collection Temp. (°C)") +
   theme_matt() + 
   theme(legend.position = "right")
 
-ggarrange(ctmax_range_temp, size_range_temp, common.legend = T, legend = "right")
+ggarrange(ctmax_var_temp, size_var_temp, common.legend = T, legend = "right")
 ```
 
 <img src="../Figures/markdown/trait-range-plot-1.png" style="display: block; margin: auto;" />
@@ -907,7 +736,7 @@ reads_ctmax_plot = ggplot(join_data, aes(x = ctmax, y = pf_hq_aligned_reads)) +
 ggarrange(reads_size_plot, reads_ctmax_plot, nrow = 1)
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-3-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
@@ -930,7 +759,7 @@ join_data %>%
   theme_matt()
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-5-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
@@ -940,7 +769,7 @@ join_data %>%
   theme_matt()
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-4-2.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-5-2.png" style="display: block; margin: auto;" />
 
 ### Clade IDs
 
@@ -961,8 +790,14 @@ COI sequences from the low-coverage data.
 #          sample = fct_reorder2(sample, .y = population, .x = season, .desc = F))
 #   #write.csv(file = "Output/Output_data/COI_clades_summary.csv", row.names = F)
 
+# clade_summary %>% 
+#   group_by(sample) %>% 
+#   filter(prop == max(prop)) %>% 
+#   ggplot(aes(x = prop)) +
+#   geom_histogram()
 
-ggplot(clade_summary, aes(x = individual, y = n, fill = Clade)) + 
+clade_summary %>%  
+  ggplot(aes(x = individual, y = n, fill = Clade)) + 
   facet_grid(population~season) + 
   geom_bar(stat = "identity", position = "fill") + 
   scale_y_continuous(breaks = c(0, 0.5, 1)) + 
@@ -974,7 +809,24 @@ ggplot(clade_summary, aes(x = individual, y = n, fill = Clade)) +
         axis.text.x = element_text(angle = 290, hjust = 0, vjust = 0.5))
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-5-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/ind-clade-summary-1.png" style="display: block; margin: auto;" />
+
+``` r
+
+clade_summary %>%  
+  filter(Clade != "A_hudsonica" & prop > 0.85) %>%  
+  group_by(sample) %>% 
+  filter(prop == max(prop)) %>% 
+  ggplot(aes(x = season, fill = Clade)) + 
+  facet_wrap(population~., ncol = 2) + 
+  geom_bar() + 
+  scale_fill_manual(values = clade_cols) + 
+  labs(x = "Season", 
+       y = "Count") + 
+  theme_matt_facets(base_size = 18)
+```
+
+<img src="../Figures/markdown/clade-props-1.png" style="display: block; margin: auto;" />
 
 These clades are deeply diverged, which affects the alignment and final
 coverage of the genome data.
@@ -999,6 +851,8 @@ join_data %>%
 ```
 
 <img src="../Figures/markdown/unnamed-chunk-6-2.png" style="display: block; margin: auto;" />
+
+### Clade-specific Physiology
 
 These COI clades were then merged with the CTmax and body size data set
 to examine clade-specific patterns of divergence. By plotting CTmax and
@@ -1028,7 +882,7 @@ clade_size_plot =  join_data %>%
   ggplot(aes(x = collection_temp, y = size, colour = clade)) + 
   geom_point(size = 2, alpha = 0.3) + 
   geom_smooth(method = "lm", linewidth = 2.5) + 
-    labs(x = "Collection Temp. (°C)", 
+  labs(x = "Collection Temp. (°C)", 
        y = "Prosome Length (mm)") + 
   scale_colour_manual(values = clade_cols) + 
   theme_matt() + 
@@ -1059,18 +913,68 @@ ggarrange(clade_ctmax_plot, clade_size_plot, nrow = 1, common.legend = T, legend
 ```
 
 ``` r
-universal_resids %>%  
-  drop_na(clade) %>% 
-  filter(clade != "A_hudsonica") %>% 
-  ggplot(aes(x = size_resids, y = ctmax_resids, colour = clade)) + 
-  facet_wrap(clade~.) + 
-  geom_point(alpha = 0.3) + 
-  geom_smooth(method = "lm", linewidth = 2.5) + 
-  scale_color_manual(values = clade_cols) + 
-  theme_matt_facets()
+
+emmeans::emmeans(ctmax.model, specs = "clade", weights = "show.levels") %>% 
+  data.frame() %>%  
+  mutate(clade = fct_relevel(clade, "F", "S", "X", "IV"))  %>% 
+  ggplot(aes(x = clade, y = emmean, colour = clade)) +
+  geom_errorbar(aes(ymin = emmean - SE, ymax = emmean + SE),
+                width = 0.3, linewidth = 2) + 
+  geom_point(size = 8) + 
+  labs(x = "Marginal Mean CTmax (°C)",
+       y = "Clade") + 
+  scale_colour_manual(values = clade_cols) + 
+  theme_matt() + 
+  theme(legend.position = "none")
+```
+
+<img src="../Figures/markdown/clade-marg-mean-1.png" style="display: block; margin: auto;" />
+
+``` r
+emmeans::emmeans(ctmax.model, specs = "clade", weights = "show.levels") %>% pairs() %>%  plot() + 
+  geom_vline(xintercept = 0) + 
+  theme_matt()
 ```
 
 <img src="../Figures/markdown/unnamed-chunk-8-1.png" style="display: block; margin: auto;" />
+
+``` r
+
+emmeans::emtrends(ctmax.model, var = "temp_cent", specs = "clade") %>% 
+  data.frame() %>%  
+  mutate(clade = fct_relevel(clade, "F", "S", "X", "IV"))  %>% 
+  ggplot(aes(x = clade, y = temp_cent.trend, colour = clade)) +
+  geom_errorbar(aes(ymin = temp_cent.trend - SE, ymax = temp_cent.trend + SE),
+                width = 0.3, linewidth = 2) + 
+  geom_point(size = 8) + 
+  labs(x = "Marginal Mean CTmax (°C)",
+       y = "Clade") + 
+  scale_colour_manual(values = clade_cols) + 
+  theme_matt() + 
+  theme(legend.position = "none")
+```
+
+<img src="../Figures/markdown/clade-marg-trend-1.png" style="display: block; margin: auto;" />
+
+``` r
+emmeans::emtrends(ctmax.model, var = "temp_cent", specs = "clade") %>% pairs()
+##  contrast estimate     SE    df t.ratio p.value
+##  F - IV   -0.08301 0.0452  70.6  -1.838  0.2643
+##  F - S     0.03371 0.0248 357.9   1.361  0.5246
+##  F - X     0.02397 0.0468  39.2   0.512  0.9557
+##  IV - S    0.11673 0.0441 122.7   2.644  0.0452
+##  IV - X    0.10698 0.0445 278.5   2.406  0.0783
+##  S - X    -0.00974 0.0476  65.3  -0.205  0.9969
+## 
+## Degrees-of-freedom method: kenward-roger 
+## P value adjustment: tukey method for comparing a family of 4 estimates
+```
+
+The general result here is that Clade F appears to be more thermally
+tolerant than Clades S and X, which in turn are more thermally tolerant
+than Clade IV. Clade IV does however, appear to exibit stronger
+plasticity than the other clades (although this pattern is only
+marginally significant in two of the comparisons; IV-S and IV-X)
 
 These differences in physiology correspond to the distributional
 patterns for each clade. Using a Loess smoother (span = 2) highlights
@@ -1082,14 +986,15 @@ Clade S generally occurs in low proportions, with a few exceptions.
 
 ``` r
 clade_prop = join_data %>% 
+  filter(clade != "A_hudsonica") %>% 
   drop_na(clade) %>% 
-  select(site, season, clade, collection_temp, lat) %>% 
-  group_by(site, season, collection_temp, lat) %>% 
+  select(site, season, clade, collection_temp,collection_salinity, lat) %>% 
+  group_by(site, season, collection_temp, collection_salinity, lat) %>% 
   count(clade) %>% 
-  ungroup(collection_temp, lat) %>% 
+  ungroup(collection_temp, collection_salinity, lat) %>% 
   mutate("prop" = n / sum(n)) %>% 
   ungroup() %>% 
-  complete(nesting(site, season, collection_temp, lat), clade, fill = list(prop = 0, n = 0)) %>%  
+  complete(nesting(site, season, collection_temp, collection_salinity, lat), clade, fill = list(prop = 0, n = 0)) %>%  
   mutate(n = if_else(n == 0, 0, 1), 
          num_season = case_when(
            season == "early" ~ 1,
@@ -1097,12 +1002,13 @@ clade_prop = join_data %>%
            season == "late" ~ 3))
 
 clade_prop %>% 
-  filter(clade != "A_hudsonica") %>% 
-  drop_na(clade) %>% 
   ggplot(aes(x = collection_temp, y = prop, colour = clade)) + 
   facet_wrap(clade~.) + 
   geom_point(size = 3, alpha = 0.5) + 
-  geom_smooth(span = 2,
+  geom_smooth(
+    method = 'loess',
+    formula = 'y ~ x',
+    span = 2,
     se = T, 
     linewidth = 3) + 
   labs(x = "Collection Temp. (°C)", 
@@ -1114,7 +1020,25 @@ clade_prop %>%
   theme(legend.position = "none")
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-9-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-10-1.png" style="display: block; margin: auto;" />
+
+``` r
+
+join_data %>% 
+  drop_na(clade) %>% 
+  filter(clade != "A_hudsonica") %>% 
+  ggplot(aes(y = collection_temp, x = collection_salinity)) +
+  facet_wrap(clade~.) + 
+  geom_density_2d_filled(contour_var = "ndensity",
+                         h = 25) +   
+  geom_point(colour = "white", size = 0.7, alpha = 0.5,
+             position = position_jitter(width = 0.5, height = 0.5)) + 
+  labs(x = "Collection Salinity", 
+       y = "Collection Temperature") + 
+  theme_matt_facets()
+```
+
+<img src="../Figures/markdown/unnamed-chunk-11-1.png" style="display: block; margin: auto;" />
 
 ### PCA
 
@@ -1249,6 +1173,154 @@ ggarrange(f_pca_plot, x_pca_plot, s_pca_plot, IV_pca_plot, common.legend = T, le
 # plot(-log10(p))
 ```
 
+## Salinity Comparisons
+
+Nested within each of the three regions (South, Central, and Northern
+regions) are pairs of low and high salinity sites:
+
+``` r
+data.frame("Region" = c("South", "Central", "North"),
+           "Low Salinity" = c("Ft. Hamer", "Ganey's Wharf", "Ritchie Wharf"),
+           "High Salinity" = c("Manatee River", "Tyler Cove", "St. Thomas de Kent Wharf")) %>% 
+  knitr::kable(align = "c")
+```
+
+| Region  | Low.Salinity  |      High.Salinity       |
+|:-------:|:-------------:|:------------------------:|
+|  South  |   Ft. Hamer   |      Manatee River       |
+| Central | Ganey’s Wharf |        Tyler Cove        |
+|  North  | Ritchie Wharf | St. Thomas de Kent Wharf |
+
+ 
+
+There are fairly well-established divergences between high salinity and
+low salinity populations of *Acartia tonsa*. These sets of
+geographically proximate sites potentially provide independent
+comparisons of the effects of seasonality across salinity gradients.
+Shown here are the collection conditions for these pairs of sites.
+Temperature was typically similar across the pairs within each
+collection, while salinity differences were fairly stable across
+collections.
+
+``` r
+season_cols = c("early" = "grey75", 
+                "peak" = "grey50", 
+                "late" = "grey25")
+
+sal_regions = data.frame(region = rep(c("South", "Central", "North"), each = 2), 
+                         site = c("Ft. Hamer", "Manatee River", 
+                                  "Ganey's Wharf", "Tyler Cove", 
+                                  "Ritchie Wharf", "St. Thomas de Kent Wharf"),
+                         salinity = c("low", "high"))
+
+sal_comps = join_data %>% 
+  filter(site %in% sal_regions$site) %>% 
+  inner_join(sal_regions, by = c("site")) %>% 
+  select( region = region.y, site, salinity, season, doy, collection_temp, collection_salinity,
+          size, ctmax, warming_tol) %>% 
+  mutate(salinity = fct_relevel(salinity, "low", "high"),
+         region = fct_relevel(region, "South", "Central", "North"))
+
+sal_comp_temps = sal_comps %>%  
+  select(salinity, season, region, collection_temp, collection_salinity) %>% 
+  distinct() %>% 
+  ggplot(aes(x = salinity, y = collection_temp, colour = season, group = season)) + 
+  facet_wrap(region~.) + 
+  geom_line(linewidth = 1.5) + 
+  geom_point(size = 4) + 
+  scale_colour_manual(values = season_cols) + 
+  labs(y = "Collection Temp. (°C)",
+       x = "") + 
+  theme_matt_facets(base_size = 14)
+
+sal_comp_sal = sal_comps %>%  
+  select(salinity, season, region, collection_temp, collection_salinity) %>% 
+  distinct() %>% 
+  ggplot(aes(x = salinity, y = collection_salinity, colour = season, group = season)) + 
+  facet_wrap(region~.) + 
+  geom_line(linewidth = 1.5) + 
+  geom_point(size = 4) + 
+  scale_colour_manual(values = season_cols) + 
+  labs(y = "Collection Salinity (psu)",
+       x = "Salinity") + 
+  theme_matt_facets(base_size = 14)
+
+ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "right")
+```
+
+<img src="../Figures/markdown/season-sal-comps-1.png" style="display: block; margin: auto;" />
+
+The three pairs of cross-salinity comparisons do show evidence for
+fine-scale trait divergence, although there was no consistent pattern in
+the direction or magnitude of differences. CTmax was similar across
+sites in the Southern and Central pairs. In the Northern pair, CTmax
+tended to be slightly lower for individuals from the low salinity site.
+Size was more variable between the paired sites. In the South,
+individuals from the low salinity site were consistently smaller than
+individuals from the high salinity site, despite experiencing similar
+temperatures. By contrast, in the Central pair individuals from the low
+salinity site tended to be slightly larger than those from the high
+salinity site, although the magnitude of this difference this varied
+seasonally. In the Northern pair, individuals from the low salinity site
+were slightly larger than individuals from the high salinity site during
+the early and peak season collections, but there was an abrupt reversal
+of this pattern during the late collection, when individuals from the
+high salinity site were much larger than individuals from the low
+salinity site.
+
+We will return to potential mechanisms behind divergence between these
+geographically proximate but environmentally separated sites later in
+this report.
+
+``` r
+sal_means = sal_comps %>% 
+  group_by(region, site, salinity, season) %>% 
+  summarize(mean_ctmax = mean(ctmax),
+            mean_size = median(size))
+
+sal_comp_ctmax_plot = sal_comps %>% 
+  ggplot(aes(x = salinity, y = ctmax, colour = season, group = season)) + 
+  facet_wrap(region~.) + 
+  geom_line(data = sal_means, 
+            aes(y = mean_ctmax, group = season),
+            position = position_dodge(width = 0.4),
+            linewidth = 1) + 
+  geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
+                                             dodge.width = 0.4),
+             alpha = 0.3) + 
+  geom_point(data = sal_means, 
+             aes(y = mean_ctmax),
+             position = position_dodge(width = 0.4),
+             size = 4) + 
+  scale_colour_manual(values = season_cols) + 
+  labs(y = "CTmax (°C)",
+       x = "") + 
+  theme_matt_facets(base_size = 14)
+
+sal_comp_size_plot = sal_comps %>% 
+  ggplot(aes(x = salinity, y = size, colour = season, group = season)) + 
+  facet_wrap(region~.) + 
+  geom_line(data = sal_means, 
+            aes(y = mean_size, group = season),
+            position = position_dodge(width = 0.4),
+            linewidth = 1) + 
+  geom_point(position = position_jitterdodge(jitter.width = 0.1, jitter.height = 0,
+                                             dodge.width = 0.4),
+             alpha = 0.3) + 
+  geom_point(data = sal_means, 
+             aes(y = mean_size),
+             position = position_dodge(width = 0.4),
+             size = 4) + 
+  scale_colour_manual(values = season_cols) + 
+  labs(y = "Prosome Length (mm)",
+       x = "") + 
+  theme_matt_facets(base_size = 14)
+
+ggarrange(sal_comp_ctmax_plot, sal_comp_size_plot, nrow = 2, common.legend = T, legend = "right")
+```
+
+<img src="../Figures/markdown/sal-pair-traits-1.png" style="display: block; margin: auto;" />
+
 ## Misc. Details
 
 ``` r
@@ -1335,7 +1407,7 @@ peak_late = join_data %>%
               values_from = c(ctmax, size)) %>% 
   mutate(season = "peak_to_late") %>%  
   drop_na()
-  
+
 
 generations = bind_rows(early_peak, peak_late) %>% 
   mutate("gen_time" = 5490*(avg_temp + 1)^-2.05,
