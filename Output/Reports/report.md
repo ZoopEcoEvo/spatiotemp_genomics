@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2025-11-16
+2025-11-20
 
 - [Main Message](#main-message)
 - [Site Characteristics](#site-characteristics)
@@ -16,7 +16,6 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
   - [Clade IDs](#clade-ids)
   - [Clade-specific Physiology](#clade-specific-physiology)
   - [PCA](#pca)
-  - [Selection Scans](#selection-scans)
 - [Salinity Comparisons](#salinity-comparisons)
 - [Misc. Details](#misc-details)
 
@@ -206,7 +205,7 @@ site_temps %>%
   theme(legend.position = "right")
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-2-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/max-temp-vs-range-1.png" style="display: block; margin: auto;" />
 
 ## Phenotypic Measurements
 
@@ -736,7 +735,7 @@ reads_ctmax_plot = ggplot(join_data, aes(x = ctmax, y = pf_hq_aligned_reads)) +
 ggarrange(reads_size_plot, reads_ctmax_plot, nrow = 1)
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/read-exp-factors-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
@@ -759,7 +758,7 @@ join_data %>%
   theme_matt()
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-5-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/site-coverage-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
@@ -769,7 +768,7 @@ join_data %>%
   theme_matt()
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-5-2.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/site-coverage-2.png" style="display: block; margin: auto;" />
 
 ### Clade IDs
 
@@ -839,7 +838,7 @@ join_data %>%
   theme_matt()
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-6-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/clade-coverage-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
@@ -850,7 +849,7 @@ join_data %>%
   theme_matt()
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-6-2.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/clade-coverage-2.png" style="display: block; margin: auto;" />
 
 ### Clade-specific Physiology
 
@@ -891,7 +890,7 @@ clade_size_plot =  join_data %>%
 ggarrange(clade_ctmax_plot, clade_size_plot, nrow = 1, common.legend = T, legend = "right")
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-7-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/clade-trait-regs-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
@@ -914,61 +913,76 @@ ggarrange(clade_ctmax_plot, clade_size_plot, nrow = 1, common.legend = T, legend
 
 ``` r
 
-emmeans::emmeans(ctmax.model, specs = "clade", weights = "show.levels") %>% 
+ctmax_contrast_plot = emmeans::emmeans(ctmax.model, specs = "clade") %>% 
   data.frame() %>%  
   mutate(clade = fct_relevel(clade, "F", "S", "X", "IV"))  %>% 
   ggplot(aes(x = clade, y = emmean, colour = clade)) +
   geom_errorbar(aes(ymin = emmean - SE, ymax = emmean + SE),
                 width = 0.3, linewidth = 2) + 
   geom_point(size = 8) + 
-  labs(x = "Marginal Mean CTmax (°C)",
-       y = "Clade") + 
+  labs(y = "Marginal Mean CTmax (°C)",
+       x = "Clade") + 
   scale_colour_manual(values = clade_cols) + 
   theme_matt() + 
   theme(legend.position = "none")
 ```
 
-<img src="../Figures/markdown/clade-marg-mean-1.png" style="display: block; margin: auto;" />
-
 ``` r
-emmeans::emmeans(ctmax.model, specs = "clade", weights = "show.levels") %>% pairs() %>%  plot() + 
+emmeans::emmeans(ctmax.model, specs = "clade") %>% pairs() %>%  plot() + 
   geom_vline(xintercept = 0) + 
+  labs(x = "Difference in CTmax (°C)",
+       y = "Clade Contrast") + 
   theme_matt()
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-8-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/clade-ctmax-contrasts-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
-emmeans::emtrends(ctmax.model, var = "temp_cent", specs = "clade") %>% 
+plast_contrast_plot = emmeans::emtrends(ctmax.model, var = "temp_cent", specs = "clade") %>% 
   data.frame() %>%  
   mutate(clade = fct_relevel(clade, "F", "S", "X", "IV"))  %>% 
   ggplot(aes(x = clade, y = temp_cent.trend, colour = clade)) +
   geom_errorbar(aes(ymin = temp_cent.trend - SE, ymax = temp_cent.trend + SE),
                 width = 0.3, linewidth = 2) + 
   geom_point(size = 8) + 
-  labs(x = "Marginal Mean CTmax (°C)",
-       y = "Clade") + 
+  labs(y = "Marginal CTmax Trend (°C/°C)",
+       x = "Clade") + 
   scale_colour_manual(values = clade_cols) + 
   theme_matt() + 
   theme(legend.position = "none")
 ```
 
-<img src="../Figures/markdown/clade-marg-trend-1.png" style="display: block; margin: auto;" />
+``` r
+
+ggarrange(ctmax_contrast_plot, plast_contrast_plot)
+```
+
+<img src="../Figures/markdown/clade-contrast-plots-1.png" style="display: block; margin: auto;" />
 
 ``` r
-emmeans::emtrends(ctmax.model, var = "temp_cent", specs = "clade") %>% pairs()
-##  contrast estimate     SE    df t.ratio p.value
-##  F - IV   -0.08301 0.0452  70.6  -1.838  0.2643
-##  F - S     0.03371 0.0248 357.9   1.361  0.5246
-##  F - X     0.02397 0.0468  39.2   0.512  0.9557
-##  IV - S    0.11673 0.0441 122.7   2.644  0.0452
-##  IV - X    0.10698 0.0445 278.5   2.406  0.0783
-##  S - X    -0.00974 0.0476  65.3  -0.205  0.9969
-## 
-## Degrees-of-freedom method: kenward-roger 
-## P value adjustment: tukey method for comparing a family of 4 estimates
+emmeans::emtrends(ctmax.model, var = "temp_cent", specs = "clade") %>% pairs() %>% plot()
 ```
+
+<img src="../Figures/markdown/clade-plast-contrast-1.png" style="display: block; margin: auto;" />
+
+``` r
+
+join_data %>% 
+  drop_na(clade) %>% 
+  filter(clade != "A_hudsonica") %>% 
+  ggplot(aes(x = collection_temp, y = ctmax, colour = clade)) + 
+  facet_wrap(site~.) + 
+  geom_point(size = 2, alpha = 0.3) + 
+  geom_smooth(method = "lm", linewidth = 2.5) + 
+  labs(x = "Collection Temp. (°C)", 
+       y = "CTmax (°C)") + 
+  scale_colour_manual(values = clade_cols) + 
+  theme_matt() + 
+  theme(legend.position = "none")
+```
+
+<img src="../Figures/markdown/clade-trait-regs-pops-1.png" style="display: block; margin: auto;" />
 
 The general result here is that Clade F appears to be more thermally
 tolerant than Clades S and X, which in turn are more thermally tolerant
@@ -1020,7 +1034,7 @@ clade_prop %>%
   theme(legend.position = "none")
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-10-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/clade-hab-patterns-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
@@ -1038,7 +1052,7 @@ join_data %>%
   theme_matt_facets()
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-11-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/clade-contours-1.png" style="display: block; margin: auto;" />
 
 ### PCA
 
@@ -1081,7 +1095,7 @@ f_pca_plot = f_pca_df %>%
   scale_color_manual(values = pop_cols)  + 
   theme_matt_facets()
 
-#########
+######### Clade X
 
 x_inds = which(tonsa_pca_df$clade == "X")
 x_samples = filter(tonsa_pca_df, clade == "X") %>% select(-X1, -X2)
@@ -1106,7 +1120,7 @@ x_pca_plot = x_pca_df %>%
 #Outliers
 #x_pca_df %>% filter(X1 > -0.085) 
 
-#########
+######### Clade S
 
 s_inds = which(tonsa_pca_df$clade == "S")
 s_samples = filter(tonsa_pca_df, clade == "S") %>% select(-X1, -X2)
@@ -1132,7 +1146,7 @@ s_pca_plot = s_pca_df %>%
 #Outliers
 #s_pca_df %>% filter(!(X1 < -0.114 & X2 > -0.0015 & X2< 0.004))
 
-#########
+######### Clade IV
 
 IV_inds = which(tonsa_pca_df$clade == "IV")
 IV_samples = filter(tonsa_pca_df, clade == "IV") %>% select(-X1, -X2)
@@ -1162,16 +1176,6 @@ ggarrange(f_pca_plot, x_pca_plot, s_pca_plot, IV_pca_plot, common.legend = T, le
 ```
 
 <img src="../Figures/markdown/clade-pca-1.png" style="display: block; margin: auto;" />
-
-### Selection Scans
-
-``` r
-
-# D <- as.matrix(read.table("Raw_data/molecular/clade_pcangsd/clade_IV.selection")) # Reads PC-based selection statistics
-# p <- pchisq(D[,1], 1, lower.tail=FALSE)
-# 
-# plot(-log10(p))
-```
 
 ## Salinity Comparisons
 

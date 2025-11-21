@@ -66,36 +66,62 @@ Marginal mean and temperature trend for each clade
 
 ## Environmental Data
 
-Figure 1: Map of sites (A) and collection temperatures (B)
+Table 1: Site Data 
+```{r, table, echo = F}
 
-Supp. Fig. 1: Continuous temperature profiles for the regions
+site_data %>%  
+  arrange(lat) %>%  
+  select("Site" = site, "Region" = region, "Lat" = lat, "Long" = long) %>% 
+  knitr::kable(align = "c",
+               caption = "Locations of each collection site.")
 
-Supp. Fig. 2: Collection temperature seasonality against latitude (A) and maximum collection temperature (B)
+```
+
+
+```{r, figure1, echo = F, out.width = "400px"}
+#| fig.cap = "Map of sites (A) and collection temperatures recorded during each collection (B)"
+
+knitr::include_graphics("../Output/Figures/markdown/site-chars-1.png") #Use this when filling in figures from analysis 
+```
 
 ## COI Clade Distributions
-Figure X: Clade plot (summarizes the clade x season x site patterns; just the 'high confidence' estimates - No hudsonica and only tonsa individuals where at least 85% of the reads matched to a single clade)
 
-Supp. Fig. X: Individual clade prop plot (shows the proportion of reads for each individual that matched to the different clades)
+```{r, figure2, echo = F, out.width = "250px"}
+#| fig.cap = "The distribution of clade identities at each site throughout the seasons. This plot includes just the 'high confidence' estimates - individuals identified as A. hudsonica were excluded, as were any individuals where less than 85% of the reads matched to any single clade)"
+
+knitr::include_graphics("../Output/Figures/markdown/clade-props-1.png") #Use this when filling in figures from analysis 
+```
+
 
 ## Seasonal phenotypic patterns
-Supp. Fig. X: Temperature ramping records
 
-Figure X: CTmax vs. season (A) and size vs. season (B) for each site
+```{r, figure3, echo = F, out.width = "400px"}
+#| fig.cap = "CTmax vs. season (A) and size vs. season (B) for each site"
 
-Supp. Fig. X: CTmax vs. season for each site, with collection temperature included (ctmax-ind-pops-season)
-
+knitr::include_graphics("../Output/Figures/markdown/size-and-ctmax-season-1.png") #Use this when filling in figures from analysis 
+```
 
 ## Clade-specific patterns
 
-Figure X: CTmax and body size vs. collection temperature, separated by clade
+```{r, figure4, echo = F, out.width = "400px"}
+#| fig.cap = "CTmax and body size vs. collection temperature, separated by clade."
 
-Supp. Fig. X: CTmax vs. collection temperature, separated by clade and faceted for each site to show the concordance in the pattern across locations
+knitr::include_graphics("../Output/Figures/markdown/clade-trait-regs-1.png") #Use this when filling in figures from analysis 
+```
 
-Figure X: Clade marginal means (i.e. genetic variation in thermal limit) and the marginal trend (i.e. combined effect of local adaptation and plasticity)
+```{r, figure5, echo = F, out.width = "400px"}
+#| fig.cap = "Clade marginal means (i.e. genetic variation in thermal limit) and the marginal trend (i.e. combined effect of local adaptation and plasticity)."
 
-Figure X: Clade proportions in each sample vs. collection temp.
+knitr::include_graphics("../Output/Figures/markdown/clade-contrast-plots-1.png") #Use this when filling in figures from analysis 
 
-Supp. Fig. X: Contour plot, faceted by clade, showing the scaled density of each clade across the temperature x salinity space. Individual occurences across this space are included as jittered points to show the distribution and abundance of records. 
+```
+
+```{r, figure6, echo = F, out.width = "200px"}
+#| fig.cap = "Clade proportions in each sample vs. collection temp."
+
+knitr::include_graphics("../Output/Figures/markdown/clade-hab-patterns-1.png") #Use this when filling in figures from analysis 
+```
+
 
 # Discussion 
 
@@ -106,20 +132,6 @@ Supp. Fig. X: Contour plot, faceted by clade, showing the scaled density of each
 ## Relevance of intraspecific variation (plasticity, local adaptation, cryptic variation like clades)
 
 
-
-```{r, figure, echo = F}
-#| fig.cap = "CAPTION HERE."
-
-plot(1)
-#knitr::include_graphics("../Output/Figures/_PATH_") #Use this when filling in figures from analysis 
-```
-
-```{r, table, echo = F}
-knitr::kable(x = 1, #Replace 1 with whatever object you want included as a table
-      digits = 3, align = "c",
-      caption = "CAPTION HERE")
-```
-
 # Discussion
 
 \newpage
@@ -129,9 +141,47 @@ knitr::kable(x = 1, #Replace 1 with whatever object you want included as a table
 ```
 # Supplementary Material
 
-```{r supp-fig-1, echo = F}
-#| fig.cap = "CAPTION HERE."
+```{r supp-fig-1, echo = F, out.width = "450px"}
+#| fig.cap = "Continuous temperature profiles for the regions."
 
-plot(1)
-#knitr::include_graphics("../Output/Figures/_PATH_") #Use this when filling in figures from analysis 
+knitr::include_graphics("../Output/Figures/markdown/continuous-temps-1.png") #Use this when filling in figures from analysis 
+```
+
+
+```{r supp-fig-2, echo = F, out.width = "450px"}
+#| fig.cap = "Collection temperature seasonality against latitude."
+
+knitr::include_graphics("../Output/Figures/markdown/lat-temp-range-plot-1.png")
+```
+
+
+```{r supp-fig-3, echo = F, out.width = "450px"}
+#| fig.cap = "Individual clade prop plot (shows the proportion of reads for each individual that matched to the different clades)"
+
+knitr::include_graphics("../Output/Figures/markdown/ind-clade-summary-1.png") #Use this when filling in figures from analysis 
+```
+
+```{r supp-fig-4, echo = F, out.width = "450px"}
+#| fig.cap = "Temperature ramping records."
+
+knitr::include_graphics("../Output/Figures/markdown/ramp-record-plot-1.png") #Use this when filling in figures from analysis 
+```
+
+```{r supp-fig-5, echo = F, out.width = "450px"}
+#| fig.cap = "CTmax across seasons for each site, with collection temperature included."
+
+knitr::include_graphics("../Output/Figures/markdown/ctmax-ind-pops-season-1.png") #Use this when filling in figures from analysis 
+```
+
+
+```{r supp-fig-6, echo = F, out.width = "450px"}
+#| fig.cap = "CTmax vs. collection temperature, separated by clade and faceted for each site to show the concordance in the pattern across locations."
+
+knitr::include_graphics("../Output/Figures/markdown/clade-trait-regs-pops-1.png") #Use this when filling in figures from analysis 
+```
+
+```{r supp-fig-7, echo = F, out.width = "450px"}
+#| fig.cap = "Contour plot, faceted by clade, showing the scaled density of each clade across the temperature x salinity space. Individual occurences across this space are included as jittered points to show the distribution and abundance of records. "
+
+knitr::include_graphics("../Output/Figures/markdown/clade-contours-1.png") #Use this when filling in figures from analysis 
 ```

@@ -229,7 +229,7 @@ site_temps %>%
 
 There was a general increase in the collection temperature range at warmer sites. This provides an opportunity to disentangle some of the traditionally proposed hypotheses about thermal adaptation (macrophysiological gradients often include stable and warm environments contrasted with cooler, more variable environment).
 
-```{r}
+```{r max-temp-vs-range, fig.width=8, fig.height=5}
 site_temps %>% 
   group_by(site, lat) %>%  
   summarise(
@@ -823,7 +823,7 @@ join_data %>%
 
 While the number of reads aligned for each individual varies, there is no clear relationship between the number of aligned reads and individual size or CTmax. 
 
-```{r}
+```{r read-exp-factors}
 
 reads_size_plot = ggplot(join_data, aes(x = size, y = pf_hq_aligned_reads)) + 
   geom_smooth() + 
@@ -844,7 +844,7 @@ knitr::kable(car::Anova(read.model))
 
 ```
 
-```{r}
+```{r site-coverage}
 join_data %>% 
   ggplot(aes(x = site_code, y = pct_1x)) + 
   geom_boxplot() + 
@@ -912,7 +912,7 @@ clade_summary %>%
 
 These clades are deeply diverged, which affects the alignment and final coverage of the genome data. 
 
-```{r}
+```{r clade-coverage}
 join_data %>% 
   drop_na(clade) %>% 
   ggplot(aes(x = clade, y = pct_1x)) + 
@@ -930,7 +930,7 @@ join_data %>%
 
 These COI clades were then merged with the CTmax and body size data set to examine clade-specific patterns of divergence. By plotting CTmax and size against the collection temperature we can see that these clades appear to be physiologically differentiated. Clades F and S tend to have higher CTmax, even when collected at the same temperatures as Clades X and IV. Size is more variable, with varying degrees of temperature sensitivity across the clades. Overall, however, Clade F tends to be smaller than Clades S and X. Clade IV tended to be the largest. 
 
-```{r fig.width=11, fig.height=6}
+```{r clade-trait-regs, fig.width=11, fig.height=6}
 clade_ctmax_plot = join_data %>% 
   drop_na(clade) %>% 
   filter(clade != "A_hudsonica") %>% 
@@ -978,49 +978,57 @@ ggarrange(clade_ctmax_plot, clade_size_plot, nrow = 1, common.legend = T, legend
 
 ```{r clade-marg-mean, fig.width=6, fig.height=6}
 
-emmeans::emmeans(ctmax.model, specs = "clade") %>% 
+ctmax_contrast_plot = emmeans::emmeans(ctmax.model, specs = "clade") %>% 
   data.frame() %>%  
   mutate(clade = fct_relevel(clade, "F", "S", "X", "IV"))  %>% 
   ggplot(aes(x = clade, y = emmean, colour = clade)) +
   geom_errorbar(aes(ymin = emmean - SE, ymax = emmean + SE),
                 width = 0.3, linewidth = 2) + 
   geom_point(size = 8) + 
-  labs(x = "Marginal Mean CTmax (°C)",
-       y = "Clade") + 
+  labs(y = "Marginal Mean CTmax (°C)",
+       x = "Clade") + 
   scale_colour_manual(values = clade_cols) + 
   theme_matt() + 
   theme(legend.position = "none")
 
 ```
 
-```{r}
+```{r clade-ctmax-contrasts, fig.width=7, fig.height=5}
 emmeans::emmeans(ctmax.model, specs = "clade") %>% pairs() %>%  plot() + 
   geom_vline(xintercept = 0) + 
+  labs(x = "Difference in CTmax (°C)",
+       y = "Clade Contrast") + 
   theme_matt()
 ```
 
 ```{r clade-marg-trend, fig.width=6, fig.height=6}
 
-emmeans::emtrends(ctmax.model, var = "temp_cent", specs = "clade") %>% 
+plast_contrast_plot = emmeans::emtrends(ctmax.model, var = "temp_cent", specs = "clade") %>% 
   data.frame() %>%  
   mutate(clade = fct_relevel(clade, "F", "S", "X", "IV"))  %>% 
   ggplot(aes(x = clade, y = temp_cent.trend, colour = clade)) +
   geom_errorbar(aes(ymin = temp_cent.trend - SE, ymax = temp_cent.trend + SE),
                 width = 0.3, linewidth = 2) + 
   geom_point(size = 8) + 
-  labs(x = "Marginal Mean CTmax (°C)",
-       y = "Clade") + 
+  labs(y = "Marginal CTmax Trend (°C/°C)",
+       x = "Clade") + 
   scale_colour_manual(values = clade_cols) + 
   theme_matt() + 
   theme(legend.position = "none")
 
 ```
 
-```{r}
-emmeans::emtrends(ctmax.model, var = "temp_cent", specs = "clade") %>% pairs()
+```{r clade-contrast-plots, fig.width=12, fig.height=6}
+
+ggarrange(ctmax_contrast_plot, plast_contrast_plot)
+
 ```
 
-```{r}
+```{r clade-plast-contrast}
+emmeans::emtrends(ctmax.model, var = "temp_cent", specs = "clade") %>% pairs() %>% plot()
+```
+
+```{r clade-trait-regs-pops}
 
 join_data %>% 
   drop_na(clade) %>% 
@@ -1042,7 +1050,7 @@ The general result here is that Clade F appears to be more thermally tolerant th
 
 These differences in physiology correspond to the distributional patterns for each clade. Using a Loess smoother (span = 2) highlights how the proportional abundance of the clades is affected by temperature in different ways. Clade F occurs in high proportion at high temperature, Clade IV occurs in high proportions at low temperatures, while Clade X occurs in high proportions at intermediate temperatures. Clade S generally occurs in low proportions, with a few exceptions.  
 
-```{r fig.width=8, fig.height=8}
+```{r clade-hab-patterns, fig.width=8, fig.height=8}
 clade_prop = join_data %>% 
   filter(clade != "A_hudsonica") %>% 
   drop_na(clade) %>% 
@@ -1078,7 +1086,7 @@ clade_prop %>%
   theme(legend.position = "none")
 ```
 
-```{r}
+```{r clade-contours, fig.width=8, fig.height=7}
 
 join_data %>% 
   drop_na(clade) %>% 
@@ -1138,7 +1146,7 @@ f_pca_plot = f_pca_df %>%
   scale_color_manual(values = pop_cols)  + 
   theme_matt_facets()
 
-#########
+######### Clade X
 
 x_inds = which(tonsa_pca_df$clade == "X")
 x_samples = filter(tonsa_pca_df, clade == "X") %>% select(-X1, -X2)
@@ -1163,7 +1171,7 @@ x_pca_plot = x_pca_df %>%
 #Outliers
 #x_pca_df %>% filter(X1 > -0.085) 
 
-#########
+######### Clade S
 
 s_inds = which(tonsa_pca_df$clade == "S")
 s_samples = filter(tonsa_pca_df, clade == "S") %>% select(-X1, -X2)
@@ -1189,7 +1197,7 @@ s_pca_plot = s_pca_df %>%
 #Outliers
 #s_pca_df %>% filter(!(X1 < -0.114 & X2 > -0.0015 & X2< 0.004))
 
-#########
+######### Clade IV
 
 IV_inds = which(tonsa_pca_df$clade == "IV")
 IV_samples = filter(tonsa_pca_df, clade == "IV") %>% select(-X1, -X2)
@@ -1216,17 +1224,6 @@ IV_pca_plot = IV_pca_df %>%
 
 
 ggarrange(f_pca_plot, x_pca_plot, s_pca_plot, IV_pca_plot, common.legend = T, legend = "right")
-
-```
-
-### Selection Scans 
-
-```{r}
-
-# D <- as.matrix(read.table("Raw_data/molecular/clade_pcangsd/clade_IV.selection")) # Reads PC-based selection statistics
-# p <- pchisq(D[,1], 1, lower.tail=FALSE)
-# 
-# plot(-log10(p))
 
 ```
 
