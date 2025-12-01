@@ -7,7 +7,7 @@ output:
     citation_package: natbib
   word_document: 
     reference_docx: doc_template.docx
-title: "Intraspecific Variation Amplifies Spatial and Temporal Patterns in Vulnerability to Warming"
+title: "Cryptic genetic variation and acclimation both shape vulnerability to warming in a widespread coastal copepod"
 author:
   - name: Matthew Sasaki
     affiliation: University of Massachusetts Lowell
@@ -127,9 +127,11 @@ knitr::include_graphics("../Output/Figures/markdown/clade-hab-patterns-1.png") #
 
 ## Study Summary 
 
-## Space-for-time 
 
-## Relevance of intraspecific variation (plasticity, local adaptation, cryptic variation like clades)
+## Relevance of intraspecific variation (plasticity, local adaptation, cryptic variation)
+
+
+## Space-for-time 
 
 
 # Discussion
