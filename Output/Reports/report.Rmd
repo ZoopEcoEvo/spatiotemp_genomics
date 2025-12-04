@@ -1453,7 +1453,7 @@ for(i in 1:dim(pred_samples)[1]){
 
 The warming tolerance distributions for each region and the three different scenarios are shown below. 
 
-```{r}
+```{r peak-season-wt}
 
 current_mean_ctmax_plot = ggplot(mean_ctmax_profiles, aes(x = pred_wt, y = region, fill = region)) + 
   geom_vline(xintercept = 0) + 
@@ -1595,7 +1595,7 @@ for(i in 1:dim(pred_samples)[1]){
 
 Unsurprisingly warming decreases the predicted warming tolerance. Similar patterns are observed as in the comparison between the initial three scenarios - predicted warming tolerance under warming is lowest in Florida and highest in the high latitude regions. Similarly, including clade-level variation and acclimation increases warming tolerance in the lower latitude regions and decreases it in the higher latitude regions.
 
-```{r}
+```{r peak-season-wt-plus-warming, fig.width=8, fig.height=12}
 
 warming_mean_ctmax_profiles = mean_ctmax_profiles %>% 
   mutate(temp_c = temp_c + 4, 
@@ -1617,7 +1617,7 @@ warming_mean_ctmax_plot = mean_ctmax_profiles %>%
   xlim(-5, 40)  + 
   labs(x = "Predicted Warming Tolerance (°C)", 
        y = "Region", 
-       title = "Overall Means") + 
+       title = "Scenario 1 - Fixed CTmax") + 
   theme_matt() + 
   theme(legend.position = "none")
 
@@ -1635,7 +1635,7 @@ warming_clade_mean_plot = clade_mean_populations %>%
   xlim(-5, 40)  + 
   labs(x = "Predicted Warming Tolerance (°C)", 
        y = "Region", 
-       title = "Clade Means") + 
+       title = "Scenario 2 - Clade Means") + 
   theme_matt() + 
   theme(legend.position = "none")
 
@@ -1654,7 +1654,7 @@ warming_full_pred_plot = full_pred_populations %>%
   xlim(-5, 40)  + 
   labs(x = "Predicted Warming Tolerance (°C)", 
        y = "Region", 
-       title = "Full Prediction") + 
+       title = "Scenario 3 - Full Prediction") + 
   theme_matt() + 
   theme(legend.position = "none")
 
@@ -1666,7 +1666,7 @@ ggarrange(warming_mean_ctmax_plot, warming_clade_mean_plot, warming_full_pred_pl
 
 To simplify the comparisons, here we subset the data to just August and September (the warmest months and the season typically associated with the highest abundance of A. tonsa). 
 
-```{r}
+```{r wt-range-scenarios, fig.width=8, fig.height=8}
 
 peak_comps = bind_rows(mean_ctmax_profiles %>% 
   mutate(warming = "no") %>% 
@@ -1708,15 +1708,18 @@ Changes were slight between the scenarios, with the same relative patterns betwe
 
 ```{r}
 
-peak_comps %>%  
+range_changes = peak_comps %>%  
   filter(warming == "no") %>% 
   ungroup() %>% 
   group_by(warming, comparison) %>% 
   summarise(wt_range = max(mean_wt) - min(mean_wt)) %>% 
   mutate(percent_decrease = 100 * (1 - (wt_range / wt_range[1]))) %>% 
   ungroup() %>% 
-  select("Comparison" = comparison, "WT Range" = wt_range, "% Decrease" = percent_decrease) %>% 
-  knitr::kable(digits = 2)
+  select("Comparison" = comparison, "WT Range" = wt_range, "% Decrease" = percent_decrease)
+ 
+#write.csv(range_changes, file = "Output/Output_data/range_changes.csv", row.names = F)
+
+knitr::kable(range_changes, digits = 2)
 
 ```
 

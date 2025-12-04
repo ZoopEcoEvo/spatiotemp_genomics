@@ -112,6 +112,9 @@ bam_list = read.csv(file = "Raw_data/molecular/bam_list.txt", header = F) %>%
 #   write.table(clade_list, file = list_name, row.names = F, col.names = F, quote = F)
 # }
 
+range_changes = read.csv(file = "Output/Output_data/range_changes.csv") %>% 
+  select("Scenario" = Comparison, "WT Range" = WT.Range, "% Decrease" = X..Decrease)
+
 if(make_report == T){
   render(input = "Output/Reports/report.Rmd", #Input the path to your .Rmd file here
          #output_file = "report", #Name your file here if you want it to have a different name; leave off the .html, .md, etc. - it will add the correct one automatically

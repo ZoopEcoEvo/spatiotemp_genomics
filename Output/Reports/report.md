@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2025-11-20
+2025-12-04
 
 - [Main Message](#main-message)
 - [Site Characteristics](#site-characteristics)
@@ -16,6 +16,13 @@ Comparing seasonal and latitudinal patterns in thermal adaptation
   - [Clade IDs](#clade-ids)
   - [Clade-specific Physiology](#clade-specific-physiology)
   - [PCA](#pca)
+- [Partitioning Vulnerability](#partitioning-vulnerability)
+  - [Scenario 1 (Fixed CTmax)](#scenario-1-fixed-ctmax)
+  - [Scenario 2 (Clade-level
+    variation)](#scenario-2-clade-level-variation)
+  - [Scenario 3 (Clade variation and
+    acclimation/adaptation)](#scenario-3-clade-variation-and-acclimationadaptation)
+  - [Comparing Scenarios](#comparing-scenarios)
 - [Salinity Comparisons](#salinity-comparisons)
 - [Misc. Details](#misc-details)
 
@@ -1176,6 +1183,552 @@ ggarrange(f_pca_plot, x_pca_plot, s_pca_plot, IV_pca_plot, common.legend = T, le
 ```
 
 <img src="../Figures/markdown/clade-pca-1.png" style="display: block; margin: auto;" />
+
+## Partitioning Vulnerability
+
+Our study examines spatial and temporal variation in upper thermal
+limits for field-acclimated individuals. Given the short generation time
+of these copepods, our results likely reflect the combined influence of
+phenotypic plasticity (acclimation to the changes in temperature), local
+adaptation (variation amongst the sites), and genetic variation between
+the clades.
+
+The four clades, while morphologically difficult to differentiate, have
+distinct geographic distributions and physiological tolerances. The
+inclusion of this clade-level variation decreases the slope of the CTmax
+vs. temperature regression. Ignoring this source of variation would lead
+to an overestimated capacity for *A. tonsa* to respond to warming
+(either through acclimation or via gene flow and evolutionary rescue).
+
+``` r
+join_data %>% 
+  drop_na(clade) %>% 
+  filter(clade != "A_hudsonica") %>% 
+  ggplot(aes(x = collection_temp, y = ctmax, colour = clade)) + 
+  geom_point(size = 2, alpha = 0.3) + 
+  geom_smooth(method = "lm", linewidth = 2.5) + 
+  geom_smooth(data = filter(join_data, clade != "A_hudsonica"),
+              method = "lm", linewidth = 2.5, 
+              colour = "black") + 
+  labs(x = "Collection Temp. (°C)", 
+       y = "CTmax (°C)") + 
+  scale_colour_manual(values = clade_cols) + 
+  theme_matt() + 
+  theme(legend.position = "none")
+```
+
+<img src="../Figures/markdown/clade-trait-lat-1.png" style="display: block; margin: auto;" />
+
+We illustrate the effects of these different levels of variation by
+calculating warming tolerance for each collection (site x collection
+temperature combination) under three different scenarios.
+
+### Scenario 1 (Fixed CTmax)
+
+Warming tolerance was calculated using the average CTmax from the peak
+season collections (across all sites and individuals regardless of
+clade). This essentially assumes a fixed CTmax that is constant across
+the geographic range examined.
+
+``` r
+illus_data = join_data %>% 
+  drop_na(clade) %>% 
+  filter(clade != "A_hudsonica")
+
+peak_mean = illus_data %>% 
+  filter(season == "peak") %>% 
+  summarise(mean = mean(ctmax))
+
+mean_ctmax = peak_mean$mean[1]
+
+mean_ctmax_profiles = temp_profiles %>% 
+  group_by(region, doy) %>% 
+  mutate("pred_wt" = mean_ctmax - temp_c) %>% 
+  mutate(comparison = "Mean CTmax") %>%  
+  ungroup() %>% 
+  mutate(region = fct_relevel(region, "Florida", "Chesapeake", "Connecticut",
+                              "Maine", "Shediac", "Miramichi"))
+```
+
+### Scenario 2 (Clade-level variation)
+
+Here, the same approach is taken but for each clade separately. The
+average CTmax from the peak season for each clade was used as a fixed
+CTmax value when calculating warming tolerance.
+
+``` r
+
+clade_peak_mean = illus_data %>% 
+  filter(season == "peak") %>% 
+  group_by(clade) %>% 
+  summarise(mean = mean(ctmax))
+
+
+clade_mean_profiles = temp_profiles %>% 
+  group_by(region, doy) %>% 
+  mutate("F_wt" = clade_peak_mean$mean[1] - temp_c,
+         "IV_wt" = clade_peak_mean$mean[2] - temp_c,
+         "S_wt" = clade_peak_mean$mean[3] - temp_c,
+         "X_wt" = clade_peak_mean$mean[4] - temp_c) %>% 
+  ungroup() %>% 
+  pivot_longer(cols = c(F_wt, IV_wt, S_wt, X_wt), 
+               names_to = "clade", 
+               values_to = "pred_wt") %>% 
+  mutate(clade = str_split_fixed(clade, pattern = "_", n = 2)[,1]) %>% 
+  mutate(comparison = "Clade") %>% 
+  ungroup() %>% 
+  mutate(region = fct_relevel(region, "Florida", "Chesapeake", "Connecticut",
+                              "Maine", "Shediac", "Miramichi"))
+
+ggplot(clade_mean_profiles, aes(x = pred_wt, y = region, fill = region)) + 
+  facet_wrap(clade~.) + 
+  geom_vline(xintercept = 0) + 
+  ggridges::geom_density_ridges(stat = "binline", bins = floor(max(clade_mean_profiles$pred_wt))) + 
+  scale_fill_manual(values = region_cols) +
+  theme_matt() + 
+  theme(legend.position = "none")
+```
+
+<img src="../Figures/markdown/unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
+
+### Scenario 3 (Clade variation and acclimation/adaptation)
+
+Here CTmax is predicted based on the continuous temperature data and a
+model of CTmax as a function of the interaction between collection
+temperature and clade. The predicted CTmax values fall within the range
+of CTmax values observed in the field.
+
+``` r
+
+pred.model = lm(data = illus_data, ctmax ~ collection_temp * clade)
+
+pred_data = temp_profiles %>% 
+  group_by(region, doy) %>% 
+  mutate("F_wt" = clade_peak_mean$mean[1] - temp_c,
+         "IV_wt" = clade_peak_mean$mean[2] - temp_c,
+         "S_wt" = clade_peak_mean$mean[3] - temp_c,
+         "X_wt" = clade_peak_mean$mean[4] - temp_c) %>% 
+  ungroup() %>% 
+  pivot_longer(cols = c(F_wt, IV_wt, S_wt, X_wt), 
+               names_to = "clade", 
+               values_to = "pred_wt") %>% 
+  mutate(clade = str_split_fixed(clade, pattern = "_", n = 2)[,1]) %>%  
+  select(region, doy, date, "collection_temp" = temp_c, clade)
+
+
+pred_data$pred_ctmax = predict(pred.model, newdata = pred_data)
+
+full_pred_profiles = pred_data %>% 
+  mutate(pred_wt = pred_ctmax - collection_temp) %>% 
+  select(region, doy, date, "temp_c" = collection_temp, -pred_ctmax, clade, pred_wt) %>% 
+  mutate(comparison = "Clade + Coll. Temp.") %>% 
+  ungroup() %>% 
+  mutate(region = fct_relevel(region, "Florida", "Chesapeake", "Connecticut",
+                              "Maine", "Shediac", "Miramichi"))
+
+ggplot(full_pred_profiles, aes(x = pred_wt, y = region, fill = region)) + 
+  facet_wrap(clade~.) + 
+  geom_vline(xintercept = 0) + 
+  ggridges::geom_density_ridges(stat = "binline", bins = floor(max(full_pred_profiles$pred_wt))) + 
+  scale_fill_manual(values = region_cols) +
+  theme_matt() + 
+  theme(legend.position = "none")
+```
+
+<img src="../Figures/markdown/unnamed-chunk-5-1.png" style="display: block; margin: auto;" />
+
+### Comparing Scenarios
+
+There is strong geographic variation in the distributions of these
+clades. It does not, for example, make sense to examine warming
+tolerance of Clade X individuals in Florida, as this clade was not
+collected from lower latitudes. To incorporate this distribution
+information, simulated populations were re-assembled reflecting the
+proportional clade composition within each region (calculated across the
+entire set of collections).
+
+``` r
+# First step is to generate a population of 100 individuals for each region reflecting the number of individuals in each clade 
+
+pred_samples = illus_data %>%  
+  mutate(region = case_when(
+    site_code %in% c("MR", "FH") ~ "Florida",
+    site_code %in% c("GW", "MD") ~ "Chesapeake",
+    site_code == "CT" ~ "Connecticut",
+    site_code == "ME" ~ "Maine",
+    site_code == "TK" ~ "Shediac",
+    site_code == "RW" ~ "Miramichi"
+  )) %>% 
+  group_by(region) %>%  
+  count(clade) %>%
+  ungroup() %>% 
+  complete(region, clade, fill = list(n = 0)) %>% 
+  group_by(region) %>% 
+  mutate(total = sum(n)) %>% 
+  group_by(region, clade) %>% 
+  mutate(prop = n / total, 
+         sample_size = round(prop * 100)) %>% 
+  ungroup() %>% 
+  mutate(region = fct_relevel(region, "Florida", "Chesapeake","Connecticut", "Maine", "Shediac", "Miramichi"))
+
+ggplot(pred_samples, aes(x = region, y = prop, fill = clade)) + 
+  geom_bar(stat = "identity") + 
+  scale_fill_manual(values = clade_cols) + 
+  labs(x = "Region", 
+       y = "Proportion") + 
+  theme_matt() + 
+  theme(legend.position = "right")
+```
+
+<img src="../Figures/markdown/region-clade-props-1.png" style="display: block; margin: auto;" />
+
+Warming tolerance profiles for each clade were added in these
+proportions to generation populations of 100 individuals.
+
+``` r
+clade_mean_populations = data.frame()
+for(i in 1:dim(pred_samples)[1]){
+  
+  sub_region = pred_samples$region[i]
+  sub_clade = pred_samples$clade[i]
+  sample_size = pred_samples$sample_size[i]
+  
+  sub_data = clade_mean_profiles %>%  
+    filter(region == sub_region,
+           clade == sub_clade)
+  
+  #print(c(sub_region, sub_clade))
+  
+  new_df <- map(seq_len(sample_size),~sub_data) %>% 
+    bind_rows() %>%  
+    mutate("warming" = "no")
+  
+  clade_mean_populations = bind_rows(clade_mean_populations, new_df)
+  
+}
+
+full_pred_populations = data.frame()
+for(i in 1:dim(pred_samples)[1]){
+  
+  sub_region = pred_samples$region[i]
+  sub_clade = pred_samples$clade[i]
+  sample_size = pred_samples$sample_size[i]
+  
+  sub_data = full_pred_profiles %>%  
+    filter(region == sub_region,
+           clade == sub_clade)
+  
+  #print(c(sub_region, sub_clade))
+  
+  new_df <- map(seq_len(sample_size),~sub_data) %>% 
+    bind_rows() %>%  
+    mutate("warming" = "no")
+  
+  full_pred_populations = bind_rows(full_pred_populations, new_df)
+  
+}
+
+
+### Next to do: Add a 'warming' profile (continous data + 4°C?) and re-predict vulnerability
+
+### Show as histogram ridges with different alphas? Or different shades of the ssame region colors
+```
+
+The warming tolerance distributions for each region and the three
+different scenarios are shown below.
+
+``` r
+
+current_mean_ctmax_plot = ggplot(mean_ctmax_profiles, aes(x = pred_wt, y = region, fill = region)) + 
+  geom_vline(xintercept = 0) + 
+  geom_vline(xintercept = c(5, 15, 25, 35), colour = "grey") + 
+  ggridges::geom_density_ridges(stat = "binline", bins = floor(max(mean_ctmax_profiles$pred_wt))) + 
+  xlim(-5,40) + 
+  labs(x = "Predicted Warming Tolerance (°C)", 
+       y = "Region", 
+       title = "Overall Mean") + 
+  scale_fill_manual(values = region_cols) +
+  theme_matt() + 
+  theme(legend.position = "none")
+
+
+current_clade_mean_plot = ggplot(clade_mean_populations, aes(x = pred_wt, y = region, fill = region)) + 
+  geom_vline(xintercept = 0) + 
+  geom_vline(xintercept = c(5, 15, 25, 35), colour = "grey") + 
+  ggridges::geom_density_ridges(stat = "binline", bins = floor(max(clade_mean_populations$pred_wt))) + 
+  xlim(-5, 40) + 
+  labs(x = "Predicted Warming Tolerance (°C)", 
+       y = "Region", 
+       title = "Clade Means") + 
+  scale_fill_manual(values = region_cols) +
+  theme_matt() + 
+  theme(legend.position = "none")
+
+
+current_full_pred_plot = ggplot(full_pred_populations, aes(x = pred_wt, y = region, fill = region)) + 
+  geom_vline(xintercept = 0) + 
+  geom_vline(xintercept = c(5, 15, 25, 35), colour = "grey") + 
+  ggridges::geom_density_ridges(stat = "binline", bins = floor(max(full_pred_populations$pred_wt))) + 
+  scale_fill_manual(values = region_cols) +
+  xlim(-5, 40)  + 
+  labs(x = "Predicted Warming Tolerance (°C)", 
+       y = "Region", 
+       title = "Full Prediction") + 
+  theme_matt() + 
+  theme(legend.position = "none")
+
+ggarrange(current_mean_ctmax_plot, current_clade_mean_plot, current_full_pred_plot, 
+          nrow = 3, labels = "AUTO")
+```
+
+<img src="../Figures/markdown/peak-season-wt-1.png" style="display: block; margin: auto;" />
+
+Overall, differences were fairly minor, with slight increases in
+predicted warming tolerance in low latitude regions and slight decreases
+in higher latitude regions.
+
+We also examined potential effects of warming (a +4°C increase in
+temperature). These predictions assume clade composition does not change
+over time and that warming is constant throughout the year.
+
+``` r
+
+warming_clade_mean_profiles = temp_profiles %>% 
+  mutate(temp_c = temp_c + 4) %>% 
+  group_by(region, doy) %>% 
+  mutate("F_wt" = clade_peak_mean$mean[1] - temp_c,
+         "IV_wt" = clade_peak_mean$mean[2] - temp_c,
+         "S_wt" = clade_peak_mean$mean[3] - temp_c,
+         "X_wt" = clade_peak_mean$mean[4] - temp_c) %>% 
+  ungroup() %>% 
+  pivot_longer(cols = c(F_wt, IV_wt, S_wt, X_wt), 
+               names_to = "clade", 
+               values_to = "pred_wt") %>% 
+  mutate(clade = str_split_fixed(clade, pattern = "_", n = 2)[,1]) %>% 
+  mutate(comparison = "Clade") %>% 
+  ungroup() %>% 
+  mutate(region = fct_relevel(region, "Florida", "Chesapeake", "Connecticut",
+                              "Maine", "Shediac", "Miramichi"))
+
+warming_clade_mean_populations = data.frame()
+for(i in 1:dim(pred_samples)[1]){
+  
+  sub_region = pred_samples$region[i]
+  sub_clade = pred_samples$clade[i]
+  sample_size = pred_samples$sample_size[i]
+  
+  sub_data = warming_clade_mean_profiles %>%  
+    filter(region == sub_region,
+           clade == sub_clade)
+  
+  #print(c(sub_region, sub_clade))
+  
+  new_df <- map(seq_len(sample_size),~sub_data) %>% 
+    bind_rows() %>%  
+    mutate("warming" = "yes")
+  
+  warming_clade_mean_populations = bind_rows(warming_clade_mean_populations, new_df)
+  
+}
+
+
+warming_pred_data = temp_profiles %>% 
+  mutate(temp_c = temp_c + 4) %>% 
+  group_by(region, doy) %>% 
+  mutate("F_wt" = clade_peak_mean$mean[1] - temp_c,
+         "IV_wt" = clade_peak_mean$mean[2] - temp_c,
+         "S_wt" = clade_peak_mean$mean[3] - temp_c,
+         "X_wt" = clade_peak_mean$mean[4] - temp_c) %>% 
+  ungroup() %>% 
+  pivot_longer(cols = c(F_wt, IV_wt, S_wt, X_wt), 
+               names_to = "clade", 
+               values_to = "pred_wt") %>% 
+  mutate(clade = str_split_fixed(clade, pattern = "_", n = 2)[,1]) %>%  
+  select(region, doy, date, "collection_temp" = temp_c, clade)
+
+
+warming_pred_data$pred_ctmax = predict(pred.model, newdata = warming_pred_data)
+
+warming_full_pred_profiles = warming_pred_data %>% 
+  mutate(pred_wt = pred_ctmax - collection_temp) %>% 
+  select(region, doy, date, "temp_c" = collection_temp, -pred_ctmax, clade, pred_wt) %>% 
+  mutate(comparison = "Clade + Coll. Temp.") %>% 
+  ungroup() %>% 
+  mutate(region = fct_relevel(region, "Florida", "Chesapeake", "Connecticut",
+                              "Maine", "Shediac", "Miramichi"))
+
+
+warming_full_pred_populations = data.frame()
+for(i in 1:dim(pred_samples)[1]){
+  
+  sub_region = pred_samples$region[i]
+  sub_clade = pred_samples$clade[i]
+  sample_size = pred_samples$sample_size[i]
+  
+  sub_data = warming_full_pred_profiles %>%  
+    filter(region == sub_region,
+           clade == sub_clade)
+  
+  #print(c(sub_region, sub_clade))
+  
+  new_df <- map(seq_len(sample_size),~sub_data) %>% 
+    bind_rows() %>%  
+    mutate("warming" = "yes")
+  
+  warming_full_pred_populations = bind_rows(warming_full_pred_populations, new_df)
+  
+}
+
+### Show as histogram ridges with different alphas? Or different shades of the ssame region colors
+```
+
+Unsurprisingly warming decreases the predicted warming tolerance.
+Similar patterns are observed as in the comparison between the initial
+three scenarios - predicted warming tolerance under warming is lowest in
+Florida and highest in the high latitude regions. Similarly, including
+clade-level variation and acclimation increases warming tolerance in the
+lower latitude regions and decreases it in the higher latitude regions.
+
+``` r
+
+warming_mean_ctmax_profiles = mean_ctmax_profiles %>% 
+  mutate(temp_c = temp_c + 4, 
+         pred_wt = pred_wt - 4, 
+         warming = "yes")
+
+ 
+warming_mean_ctmax_plot = mean_ctmax_profiles %>% 
+  mutate(warming = "no") %>% 
+  bind_rows(warming_mean_ctmax_profiles) %>% 
+    mutate(warming = fct_relevel(warming, "yes", "no")) %>% 
+  ggplot(aes(x = pred_wt, y = region, fill = region, alpha = warming)) + 
+  geom_vline(xintercept = 0) + 
+  geom_vline(xintercept = c(5, 15, 25, 35), colour = "grey") + 
+  ggridges::geom_density_ridges(stat = "binline", 
+                                scale = 0.95,
+                                bins = 40) + 
+  scale_fill_manual(values = region_cols) +
+  xlim(-5, 40)  + 
+  labs(x = "Predicted Warming Tolerance (°C)", 
+       y = "Region", 
+       title = "Scenario 1 - Fixed CTmax") + 
+  theme_matt() + 
+  theme(legend.position = "none")
+
+
+warming_clade_mean_plot = clade_mean_populations %>% 
+  bind_rows(warming_clade_mean_populations) %>%  
+  mutate(warming = fct_relevel(warming, "yes", "no")) %>% 
+  ggplot(aes(x = pred_wt, y = region, fill = region, alpha = warming)) + 
+  geom_vline(xintercept = 0) + 
+  geom_vline(xintercept = c(5, 15, 25, 35), colour = "grey") + 
+  ggridges::geom_density_ridges(stat = "binline", 
+                                scale = 0.95,
+                                bins = 40) + 
+  scale_fill_manual(values = region_cols) +
+  xlim(-5, 40)  + 
+  labs(x = "Predicted Warming Tolerance (°C)", 
+       y = "Region", 
+       title = "Scenario 2 - Clade Means") + 
+  theme_matt() + 
+  theme(legend.position = "none")
+
+
+
+warming_full_pred_plot = full_pred_populations %>% 
+  bind_rows(warming_full_pred_populations) %>%  
+  mutate(warming = fct_relevel(warming, "yes", "no")) %>% 
+  ggplot(aes(x = pred_wt, y = region, fill = region, alpha = warming)) + 
+  geom_vline(xintercept = 0) + 
+  geom_vline(xintercept = c(5, 15, 25, 35), colour = "grey") + 
+  ggridges::geom_density_ridges(stat = "binline", 
+                                scale = 0.95,
+                                bins = 40) + 
+  scale_fill_manual(values = region_cols) +
+  xlim(-5, 40)  + 
+  labs(x = "Predicted Warming Tolerance (°C)", 
+       y = "Region", 
+       title = "Scenario 3 - Full Prediction") + 
+  theme_matt() + 
+  theme(legend.position = "none")
+
+
+ggarrange(warming_mean_ctmax_plot, warming_clade_mean_plot, warming_full_pred_plot, 
+          nrow = 3, labels = "AUTO")
+```
+
+<img src="../Figures/markdown/peak-season-wt-plus-warming-1.png" style="display: block; margin: auto;" />
+
+To simplify the comparisons, here we subset the data to just August and
+September (the warmest months and the season typically associated with
+the highest abundance of A. tonsa).
+
+``` r
+
+peak_comps = bind_rows(mean_ctmax_profiles %>% 
+  mutate(warming = "no") %>% 
+  bind_rows(warming_mean_ctmax_profiles),
+clade_mean_populations, 
+warming_clade_mean_populations, 
+full_pred_populations, 
+warming_full_pred_populations) %>% 
+  mutate("month" = month(date)) %>% 
+  filter(month %in% c(8,9)) %>%  
+  group_by(region, comparison, warming) %>% 
+  summarise(mean_wt = mean(pred_wt),
+            min_wt = min(pred_wt),
+            max_wt = max(pred_wt)) %>% 
+  ungroup() %>% 
+  mutate(comparison = fct_relevel(comparison, "Mean CTmax", "Clade", "Clade + Coll. Temp."))
+
+ggplot(peak_comps, aes(x = comparison, y = mean_wt, colour = warming, group = warming))+ 
+  facet_wrap(region~., 
+             nrow = 3) +
+  geom_hline(yintercept = 0) + 
+  geom_point(size = 3,
+             position = position_dodge(width = 0.3)) + 
+  geom_errorbar(aes(ymin = min_wt, ymax = max_wt),
+                position = position_dodge(width = 0.3),
+                width = 0.1, linewidth = 1) + 
+  geom_line(linewidth = 1.5,
+            position = position_dodge(width = 0.3)) + 
+  scale_colour_manual(values = c("no" = "darkslategray", 
+                                 "yes" = "darksalmon")) + 
+  labs(x = "", 
+       y = "Warming Tolerance (°C)") + 
+  theme_matt_facets() + 
+  theme(axis.text.x = element_text(angle = 300, hjust = 0, vjust = 0.5))
+```
+
+<img src="../Figures/markdown/wt-range-scenarios-1.png" style="display: block; margin: auto;" />
+
+Changes were slight between the scenarios, with the same relative
+patterns between the current and warming scenarios. Compared to the
+fixed CTmax estimate, incorporating both genetic diversity and
+acclimation reduced the range of warming tolerance estimates across the
+samples by ~30%.
+
+``` r
+
+range_changes = peak_comps %>%  
+  filter(warming == "no") %>% 
+  ungroup() %>% 
+  group_by(warming, comparison) %>% 
+  summarise(wt_range = max(mean_wt) - min(mean_wt)) %>% 
+  mutate(percent_decrease = 100 * (1 - (wt_range / wt_range[1]))) %>% 
+  ungroup() %>% 
+  select("Comparison" = comparison, "WT Range" = wt_range, "% Decrease" = percent_decrease)
+ 
+#write.csv(range_changes, file = "Output/Output_data/range_changes.csv", row.names = F)
+
+knitr::kable(range_changes, digits = 2)
+```
+
+| Comparison          | WT Range | % Decrease |
+|:--------------------|---------:|-----------:|
+| Mean CTmax          |    12.82 |       0.00 |
+| Clade               |     9.37 |      26.91 |
+| Clade + Coll. Temp. |     8.92 |      30.39 |
 
 ## Salinity Comparisons
 

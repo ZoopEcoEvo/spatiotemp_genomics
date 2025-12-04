@@ -46,11 +46,18 @@ if(knitr::is_latex_output()){
 
 # Introduction
 
+Organismal responses to climate change and predicting vulnerability   
+
+The need for incorporating intraspecific variation (genetic variation and acclimation)
+
+Hypotheses: Strong variation in response to temperature over both spatial and temporal scales; Incorporating variation and acclimation will reduce estimates of vulnerability in low latitude populations will increasing estimates of vulnerability in high latitude populations.  
+
 # Methods
 
-## Field Collections and Phenotypic Measurements
+## Field Collections,  Phenotypic Measurements, and Warming Tolerance
 
-## Warming Tolerance
+
+In addition to the water temperature measurements made during the collections, we also obtained continuous temperature data. In situ data was available from nearby locations for several of the sites (the Florida and Chesapeake sites)
 
 ## Library Prep and Sequencing
 
@@ -62,11 +69,15 @@ linear mixed effects model: CTmax ~ body size, temperature, and clade with rando
 
 Marginal mean and temperature trend for each clade 
 
+## Estimating the effects of genetic variation and acclimation
+
+
 # Results
 
 ## Environmental Data
 
-Table 1: Site Data 
+Collections spanned the latitudinal gradient, with strong seasonal variation in temperature at all eight sites (Supp. Figure 2)
+
 ```{r, table, echo = F}
 
 site_data %>%  
@@ -121,6 +132,22 @@ knitr::include_graphics("../Output/Figures/markdown/clade-contrast-plots-1.png")
 
 knitr::include_graphics("../Output/Figures/markdown/clade-hab-patterns-1.png") #Use this when filling in figures from analysis 
 ```
+
+## Estimated effects of genetic variation and acclimation
+
+```{r, figure7, echo = F, out.width = "200px"}
+#| fig.cap = "Warming tolerance during the peak season for each region, estimated under three scenarios; 1) a fixed CTmax value across the entire range, 2) fixed CTmax estimates for each individual clade, and 3) clade-specific CTmax and temperature acclimation." 
+
+knitr::include_graphics("../Output/Figures/markdown/peak-season-wt-plus-warming-1.png") #Use this when filling in figures from analysis 
+```
+
+```{r}
+
+knitr::kable(range_changes, digits = 2,
+             align = "c",
+               caption = "The range in mean warming tolerance during the peak season is shown for each of the three scenarios, along with the percent decrease in range relative to the fixed CTmax scenario.")
+```
+
 
 
 # Discussion 
@@ -186,4 +213,10 @@ knitr::include_graphics("../Output/Figures/markdown/clade-trait-regs-pops-1.png"
 #| fig.cap = "Contour plot, faceted by clade, showing the scaled density of each clade across the temperature x salinity space. Individual occurences across this space are included as jittered points to show the distribution and abundance of records. "
 
 knitr::include_graphics("../Output/Figures/markdown/clade-contours-1.png") #Use this when filling in figures from analysis 
+```
+
+```{r supp-fig-8, echo = F, out.width = "450px"}
+#| fig.cap = "Observed proportions of the different clades in each region, as used in the simulated populations."
+
+knitr::include_graphics("../Output/Figures/markdown/region-clade-props-1.png") #Use this when filling in figures from analysis 
 ```
