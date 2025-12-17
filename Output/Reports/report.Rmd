@@ -129,13 +129,6 @@ By assaying thermal limits several times per year in natural populations distrib
 
 ## Site Characteristics
 
-```{r}
-site_temps = join_data %>% 
-  dplyr::select(site, lat, season, doy, collection_temp, collection_salinity) %>%  
-  distinct() %>% 
-  filter(doy > 100) 
-```
-
 Copepods were collected by surface tow from sites across the Western Atlantic at several times throughout the year. The sites are shown below along with surface temperatures and salinity were measured at the time of collection. Across the entire set of collections, temperature ranged from `r min(site_temps$collection_temp)`°C to `r max(site_temps$collection_temp)`°C.
 
 ```{r site-chars, fig.width=10, fig.height=6}
@@ -528,6 +521,25 @@ ggplot(join_data, aes(x = season, y = warming_tol, colour = site)) +
 Regardless of the underlying mechanism (genetic differentiation or phenotypic plasticity), we expect that collections from warmer waters should yield copepods with higher thermal limits and smaller body sizes. Our observations largely fit this expectation, with strong increases in CTmax at higher temperatures, and a general decrease in prosome lengths as temperature increased. There was a larger correlation between CTmax and temperature than size and temperature. There are myriad reasons this might be observed, but one potential is the potential for acclimation of thermal limits. Body size is fixed in the adult stage, while CTmax can continue to vary as water temperature changes. This is indirect evidence for the importance of rapid acclimation in the observed patterns. 
 
 ```{r temp-cors, fig.width=15, fig.height=6}
+
+# join_data %>% 
+#   filter(clade != "A_hudsonica") %>% 
+#   group_by(site, season, collection_temp) %>% 
+#   summarise(mean_ctmax = mean(ctmax), 
+#             se_ctmax = sd(ctmax) / sqrt(n())) %>% 
+#   ggplot(aes(x = collection_temp, y = mean_ctmax)) + 
+#   geom_smooth(method = "lm", se = T,
+#               linewidth = 2, 
+#               colour = "grey") + 
+#   geom_errorbar(aes(ymin = mean_ctmax - se_ctmax, ymax = mean_ctmax + se_ctmax, colour = site)) + 
+#   geom_point(aes(colour = site), 
+#              size = 3) + 
+#   scale_colour_manual(values = site_cols) + 
+#   labs(y = "CTmax (°C)",
+#        x = "Collection Temp. (°C)") +
+#   theme_matt() + 
+#   theme(legend.position = "none")
+
 ctmax_temp_plot = join_data %>% 
   filter(clade != "A_hudsonica") %>% 
   ggplot(aes(x = collection_temp, y = ctmax)) + 
@@ -902,6 +914,11 @@ clade_summary %>%
 
 
 ```{r clade-props, fig.width=6, fig.height=9}
+
+clade_summary %>%  
+  group_by(sample) %>% 
+  filter(prop == max(prop)) %>% 
+  filter(Clade == "A_hudsonica" | prop < 0.85)
 
 clade_summary %>%  
   filter(Clade != "A_hudsonica" & prop > 0.85) %>%  

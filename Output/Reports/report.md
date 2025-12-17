@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2025-12-04
+2025-12-17
 
 - [Main Message](#main-message)
 - [Site Characteristics](#site-characteristics)
@@ -42,13 +42,6 @@ spatiotemporal patterns in adaptation against a relatively similar
 genetic background.
 
 ## Site Characteristics
-
-``` r
-site_temps = join_data %>% 
-  dplyr::select(site, lat, season, doy, collection_temp, collection_salinity) %>%  
-  distinct() %>% 
-  filter(doy > 100) 
-```
 
 Copepods were collected by surface tow from sites across the Western
 Atlantic at several times throughout the year. The sites are shown below
@@ -409,6 +402,25 @@ continue to vary as water temperature changes. This is indirect evidence
 for the importance of rapid acclimation in the observed patterns.
 
 ``` r
+
+# join_data %>% 
+#   filter(clade != "A_hudsonica") %>% 
+#   group_by(site, season, collection_temp) %>% 
+#   summarise(mean_ctmax = mean(ctmax), 
+#             se_ctmax = sd(ctmax) / sqrt(n())) %>% 
+#   ggplot(aes(x = collection_temp, y = mean_ctmax)) + 
+#   geom_smooth(method = "lm", se = T,
+#               linewidth = 2, 
+#               colour = "grey") + 
+#   geom_errorbar(aes(ymin = mean_ctmax - se_ctmax, ymax = mean_ctmax + se_ctmax, colour = site)) + 
+#   geom_point(aes(colour = site), 
+#              size = 3) + 
+#   scale_colour_manual(values = site_cols) + 
+#   labs(y = "CTmax (°C)",
+#        x = "Collection Temp. (°C)") +
+#   theme_matt() + 
+#   theme(legend.position = "none")
+
 ctmax_temp_plot = join_data %>% 
   filter(clade != "A_hudsonica") %>% 
   ggplot(aes(x = collection_temp, y = ctmax)) + 
@@ -1289,7 +1301,7 @@ ggplot(clade_mean_profiles, aes(x = pred_wt, y = region, fill = region)) +
   theme(legend.position = "none")
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-3-1.png" style="display: block; margin: auto;" />
 
 ### Scenario 3 (Clade variation and acclimation/adaptation)
 
@@ -1335,7 +1347,7 @@ ggplot(full_pred_profiles, aes(x = pred_wt, y = region, fill = region)) +
   theme(legend.position = "none")
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-5-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/markdown/unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
 
 ### Comparing Scenarios
 

@@ -77,6 +77,11 @@ temp_summaries = join_data %>%
   mutate(cent_site_mean = scale(site_mean, center = T, scale = F)[,1]) %>% 
   dplyr::select(site, region, lat, long, early, peak, late, site_mean, cent_site_mean)
 
+site_temps = join_data %>% 
+  dplyr::select(site, lat, season, doy, collection_temp, collection_salinity) %>%  
+  distinct() %>% 
+  filter(doy > 100) 
+
 ######## Sequencing data
 
 tonsa_matrix = as.matrix(read.table("Raw_data/molecular/pcangsd/tonsa_exclusions.cov"))
