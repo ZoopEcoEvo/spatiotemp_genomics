@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2025-12-17
+2026-01-29
 
 - [Main Message](#main-message)
 - [Site Characteristics](#site-characteristics)
@@ -211,13 +211,13 @@ site_temps %>%
 
 ### Critical Thermal Limits
 
-A total of 456 individuals were examined. Critical thermal limits and
+A total of 427 individuals were examined. Critical thermal limits and
 body size measurements were made before individuals were preserved in
 ethanol. We excluded data for individuals that were either later
 classified as males or juveniles, that we were unable to assign to a
 clade, or that were identified as individuals from a closely related
 species (*Acartia hudsonica*). With these individuals excluded, the full
-data set contains 436 adult females with CTmax and body size
+data set contains 410 adult females with CTmax and body size
 measurements, and clade identifications.
 
 Critical thermal maxima (CTmax) was measured using a custom setup. The
@@ -263,14 +263,14 @@ join_data %>%
 
 | site                     | early | peak | late |
 |:-------------------------|------:|-----:|-----:|
-| Manatee River            |     0 |   20 |   20 |
-| Ft. Hamer                |     0 |   20 |   20 |
-| Tyler Cove               |    20 |   20 |   20 |
+| Manatee River            |     0 |   18 |   20 |
+| Ft. Hamer                |     0 |   19 |   19 |
+| Tyler Cove               |    20 |   19 |   20 |
 | Ganey’s Wharf            |    20 |   20 |   20 |
-| Esker Point              |    20 |   19 |   20 |
-| Sawyer Park              |    20 |   20 |   17 |
-| St. Thomas de Kent Wharf |    20 |   20 |   20 |
-| Ritchie Wharf            |    20 |   20 |   20 |
+| Esker Point              |    19 |   19 |   20 |
+| Sawyer Park              |    16 |   19 |    8 |
+| St. Thomas de Kent Wharf |    18 |   20 |   19 |
+| Ritchie Wharf            |    17 |   20 |   20 |
 
 Shown below are the measured CTmax values. Individual measurements are
 shown in small points for each collection. The large points indicate the
@@ -541,89 +541,69 @@ centered before model fitting. The model also includes random intercepts
 for each site and the tube number (the position of each individual
 within the water bath during the CTmax assay).
 
-Both collection temperature and clade ID, along with the interaction,
-had a significant effect on CTmax. These results are further examined in
-the clade-specific physiological patterns section.
-
-By extracting the conditional mode for the random effects, we can also
-examine how thermal limits vary across sites beyond the influence of
-collection temperatures and body sizes. Shown below are these
-“population” values (essentially, all else being equal, how would
-thermal limit vary across populations). We can see that, similar to
-what’s been observed in common garden experiments with *A. tonsa*
-previously, there is a general latitudinal trend in thermal limits
-(decreasing with increasing latitude). Divergence is particularly strong
-in the Northern populations.
-
 ``` r
-site_max = temp_profiles %>% 
-  ungroup() %>% 
-  group_by(region) %>% 
-  summarize(mean = mean(temp_c),
-            max = max(temp_c),
-            min = min(temp_c)) %>% 
-  mutate(region = str_replace_all(region, "Chesapeake", "Maryland"))
 
-pop_effs = REsim(ctmax.model) %>% 
-  dplyr::select("site" = groupID, term, mean, sd) %>% 
-  pivot_wider(names_from = term, values_from = c(mean, sd)) %>%  
-  janitor::clean_names() %>% 
-  inner_join(temp_summaries, by = c("site")) %>% #site_mean is the average temperature recorded during collection
-  left_join(site_max, by = c("region")) %>% 
-  mutate(site = fct_reorder(site, lat))
-
-#plotREsim(REsim(ctmax.model))  # plot the interval estimates
-
-pop_effs_plot = ggplot(pop_effs, aes(x = lat, y = mean_intercept, colour = site)) + 
-  geom_hline(yintercept = 0, colour = "grey") +
-  geom_errorbar(aes(ymin = mean_intercept - sd_intercept, ymax = mean_intercept + sd_intercept),
-                width = 0.5, linewidth = 1) + 
-  geom_point(size = 3) + 
-  scale_colour_manual(values = site_cols) + 
-  labs(x = "Latitude", 
-       y = "Site Effect") + 
-  theme_matt() + 
-  theme(legend.position = "right")
-
-pop_clim_plot = ggplot(pop_effs, aes(x = site_mean, y = mean_intercept)) + 
-  #geom_abline(slope = 1, intercept = -19) + 
-  geom_smooth(method = "lm", colour = "black") +
-  geom_point(aes(colour = site), size = 4) + 
-  scale_colour_manual(values = site_cols) + 
-  labs(x = "Mean Season Temp.", 
-       y = "Site Effect") + 
-  theme_matt() + 
-  theme(legend.position = "right")
-
-ggarrange(pop_effs_plot, pop_clim_plot, common.legend = T, legend = "bottom")
+# Both collection temperature and clade ID, along with the interaction, had a significant effect on CTmax. These results are further examined in the clade-specific physiological patterns section. 
+# 
+# By extracting the conditional mode for the random effects, we can also examine how thermal limits vary across sites beyond the influence of collection temperatures and body sizes. Shown below are these "population" values (essentially, all else being equal, how would thermal limit vary across populations). We can see that, similar to what's been observed in common garden experiments with *A. tonsa* previously, there is a general latitudinal trend in thermal limits (decreasing with increasing latitude). Divergence is particularly strong in the Northern populations.  
+# 
+# site_max = temp_profiles %>% 
+#   ungroup() %>% 
+#   group_by(region) %>% 
+#   summarize(mean = mean(temp_c),
+#             max = max(temp_c),
+#             min = min(temp_c)) %>% 
+#   mutate(region = str_replace_all(region, "Chesapeake", "Maryland"))
+# 
+# pop_effs = REsim(ctmax.model) %>% 
+#   dplyr::select("site" = groupID, term, mean, sd) %>% 
+#   pivot_wider(names_from = term, values_from = c(mean, sd)) %>%  
+#   janitor::clean_names() %>% 
+#   inner_join(temp_summaries, by = c("site")) %>% #site_mean is the average temperature recorded during collection
+#   left_join(site_max, by = c("region")) %>% 
+#   mutate(site = fct_reorder(site, lat))
+# 
+# #plotREsim(REsim(ctmax.model))  # plot the interval estimates
+# 
+# pop_effs_plot = ggplot(pop_effs, aes(x = lat, y = mean_intercept, colour = site)) + 
+#   geom_hline(yintercept = 0, colour = "grey") +
+#   geom_errorbar(aes(ymin = mean_intercept - sd_intercept, ymax = mean_intercept + sd_intercept),
+#                 width = 0.5, linewidth = 1) + 
+#   geom_point(size = 3) + 
+#   scale_colour_manual(values = site_cols) + 
+#   labs(x = "Latitude", 
+#        y = "Site Effect") + 
+#   theme_matt() + 
+#   theme(legend.position = "right")
+# 
+# pop_clim_plot = ggplot(pop_effs, aes(x = site_mean, y = mean_intercept)) + 
+#   #geom_abline(slope = 1, intercept = -19) + 
+#   geom_smooth(method = "lm", colour = "black") +
+#   geom_point(aes(colour = site), size = 4) + 
+#   scale_colour_manual(values = site_cols) + 
+#   labs(x = "Mean Season Temp.", 
+#        y = "Site Effect") + 
+#   theme_matt() + 
+#   theme(legend.position = "right")
+# 
+# ggarrange(pop_effs_plot, pop_clim_plot, common.legend = T, legend = "bottom")
 ```
-
-<img src="../Figures/markdown/pop-effs-plot-1.png" style="display: block; margin: auto;" />
-
-Finally, shown below are the estimated random slopes for each site.
-These represent the effects of collection temperature on CTmax for each
-site. Interestingly, these estimates diverge from the results of
-previous common garden experiments, which showed the strongest
-plasticity in high latitude sites. Here, acclimation appears to peak in
-mid-latitudes, and decrease at both high and low latitude sites. This
-suggests factors may constrain acclimation capacity in natural
-populations (e.g. food availability, environmental variation, pathogens,
-etc.).
 
 ``` r
 
-ggplot(pop_effs, aes(x = mean_temp_cent, y = site)) +
-  geom_vline(xintercept = 0) + 
-  geom_point(aes(colour = site),
-             size = 5) +
-  scale_colour_manual(values = site_cols) +
-  labs(x = "ARR") + 
-  theme_matt() +
-  theme(legend.position = "none",
-        axis.title.y = element_blank())
+# Finally, shown below are the estimated random slopes for each site. These represent the effects of collection temperature on CTmax for each site. Interestingly, these estimates diverge from the results of previous common garden experiments, which showed the strongest plasticity in high latitude sites. Here, acclimation appears to peak in mid-latitudes, and decrease at both high and low latitude sites. This suggests factors may constrain acclimation capacity in natural populations (e.g. food availability, environmental variation, pathogens, etc.).    
+# 
+# 
+# ggplot(pop_effs, aes(x = mean_temp_cent, y = site)) +
+#   geom_vline(xintercept = 0) + 
+#   geom_point(aes(colour = site),
+#              size = 5) +
+#   scale_colour_manual(values = site_cols) +
+#   labs(x = "ARR") + 
+#   theme_matt() +
+#   theme(legend.position = "none",
+#         axis.title.y = element_blank())
 ```
-
-<img src="../Figures/markdown/site-arr-plot-1.png" style="display: block; margin: auto;" />
 
 ## Trait Variability
 
@@ -766,9 +746,9 @@ knitr::kable(car::Anova(read.model))
 
 |           |       Sum Sq |  Df |   F value |   Pr(\>F) |
 |:----------|-------------:|----:|----------:|----------:|
-| size      | 5.103676e+14 |   1 | 1.1909556 | 0.2757566 |
-| ctmax     | 5.081386e+11 |   1 | 0.0011858 | 0.9725467 |
-| Residuals | 1.816994e+17 | 424 |        NA |        NA |
+| size      | 1.159239e+15 |   1 | 2.8302427 | 0.0932714 |
+| ctmax     | 3.376476e+13 |   1 | 0.0824355 | 0.7741698 |
+| Residuals | 1.667032e+17 | 407 |        NA |        NA |
 
 ``` r
 join_data %>% 
@@ -831,8 +811,13 @@ clade_summary %>%
 
 ``` r
 
+exclusions = clade_summary %>%
+  group_by(sample) %>%
+  filter(prop == max(prop)) %>%
+  filter(Clade == "A_hudsonica" | prop < 0.85)
+
 clade_summary %>%  
-  filter(Clade != "A_hudsonica" & prop > 0.85) %>%  
+  filter(!(sample %in% exclusions$sample)) %>%  
   group_by(sample) %>% 
   filter(prop == max(prop)) %>% 
   ggplot(aes(x = season, fill = Clade)) + 
@@ -884,7 +869,7 @@ smaller than Clades S and X. Clade IV tended to be the largest.
 ``` r
 clade_ctmax_plot = join_data %>% 
   drop_na(clade) %>% 
-  filter(clade != "A_hudsonica") %>% 
+  filter(clade != "A_hudsonica") %>%  
   ggplot(aes(x = collection_temp, y = ctmax, colour = clade)) + 
   geom_point(size = 2, alpha = 0.3) + 
   geom_smooth(method = "lm", linewidth = 2.5) + 
@@ -1060,10 +1045,11 @@ clade_prop %>%
 join_data %>% 
   drop_na(clade) %>% 
   filter(clade != "A_hudsonica") %>% 
+  select(collection_temp, collection_salinity, clade) %>% 
   ggplot(aes(y = collection_temp, x = collection_salinity)) +
   facet_wrap(clade~.) + 
   geom_density_2d_filled(contour_var = "ndensity",
-                         h = 25) +   
+                         h = c(25, 25)) +   
   geom_point(colour = "white", size = 0.7, alpha = 0.5,
              position = position_jitter(width = 0.5, height = 0.5)) + 
   labs(x = "Collection Salinity", 
@@ -1256,7 +1242,7 @@ mean_ctmax = peak_mean$mean[1]
 mean_ctmax_profiles = temp_profiles %>% 
   group_by(region, doy) %>% 
   mutate("pred_wt" = mean_ctmax - temp_c) %>% 
-  mutate(comparison = "Mean CTmax") %>%  
+  mutate(comparison = "Fixed CTmax") %>%  
   ungroup() %>% 
   mutate(region = fct_relevel(region, "Florida", "Chesapeake", "Connecticut",
                               "Maine", "Shediac", "Miramichi"))
@@ -1333,7 +1319,7 @@ pred_data$pred_ctmax = predict(pred.model, newdata = pred_data)
 full_pred_profiles = pred_data %>% 
   mutate(pred_wt = pred_ctmax - collection_temp) %>% 
   select(region, doy, date, "temp_c" = collection_temp, -pred_ctmax, clade, pred_wt) %>% 
-  mutate(comparison = "Clade + Coll. Temp.") %>% 
+  mutate(comparison = "Genetic Variation & Acclimation") %>% 
   ungroup() %>% 
   mutate(region = fct_relevel(region, "Florida", "Chesapeake", "Connecticut",
                               "Maine", "Shediac", "Miramichi"))
@@ -1439,11 +1425,6 @@ for(i in 1:dim(pred_samples)[1]){
   full_pred_populations = bind_rows(full_pred_populations, new_df)
   
 }
-
-
-### Next to do: Add a 'warming' profile (continous data + 4°C?) and re-predict vulnerability
-
-### Show as histogram ridges with different alphas? Or different shades of the ssame region colors
 ```
 
 The warming tolerance distributions for each region and the three
@@ -1564,7 +1545,7 @@ warming_pred_data$pred_ctmax = predict(pred.model, newdata = warming_pred_data)
 warming_full_pred_profiles = warming_pred_data %>% 
   mutate(pred_wt = pred_ctmax - collection_temp) %>% 
   select(region, doy, date, "temp_c" = collection_temp, -pred_ctmax, clade, pred_wt) %>% 
-  mutate(comparison = "Clade + Coll. Temp.") %>% 
+  mutate(comparison = "Genetic Variation & Acclimation") %>% 
   ungroup() %>% 
   mutate(region = fct_relevel(region, "Florida", "Chesapeake", "Connecticut",
                               "Maine", "Shediac", "Miramichi"))
@@ -1621,9 +1602,8 @@ warming_mean_ctmax_plot = mean_ctmax_profiles %>%
                                 bins = 40) + 
   scale_fill_manual(values = region_cols) +
   xlim(-5, 40)  + 
-  labs(x = "Predicted Warming Tolerance (°C)", 
-       y = "Region", 
-       title = "Scenario 1 - Fixed CTmax") + 
+  labs(x = "", 
+       y = "Region") + 
   theme_matt() + 
   theme(legend.position = "none")
 
@@ -1639,9 +1619,8 @@ warming_clade_mean_plot = clade_mean_populations %>%
                                 bins = 40) + 
   scale_fill_manual(values = region_cols) +
   xlim(-5, 40)  + 
-  labs(x = "Predicted Warming Tolerance (°C)", 
-       y = "Region", 
-       title = "Scenario 2 - Clade Means") + 
+  labs(x = "", 
+       y = "Region") + 
   theme_matt() + 
   theme(legend.position = "none")
 
@@ -1659,8 +1638,7 @@ warming_full_pred_plot = full_pred_populations %>%
   scale_fill_manual(values = region_cols) +
   xlim(-5, 40)  + 
   labs(x = "Predicted Warming Tolerance (°C)", 
-       y = "Region", 
-       title = "Scenario 3 - Full Prediction") + 
+       y = "Region") + 
   theme_matt() + 
   theme(legend.position = "none")
 
@@ -1677,6 +1655,20 @@ the highest abundance of A. tonsa).
 
 ``` r
 
+wt_comps = bind_rows(mean_ctmax_profiles %>% 
+  mutate(warming = "no") %>% 
+  bind_rows(warming_mean_ctmax_profiles),
+clade_mean_populations, 
+warming_clade_mean_populations, 
+full_pred_populations, 
+warming_full_pred_populations) %>% 
+  group_by(region, comparison, warming) %>% 
+  summarise(mean_wt = mean(pred_wt),
+            min_wt = min(pred_wt),
+            max_wt = max(pred_wt)) %>% 
+  ungroup() %>% 
+  mutate(comparison = fct_relevel(comparison, "Fixed CTmax", "Genetic Variation", "Genetic Variation & Acclimation"))
+
 peak_comps = bind_rows(mean_ctmax_profiles %>% 
   mutate(warming = "no") %>% 
   bind_rows(warming_mean_ctmax_profiles),
@@ -1691,7 +1683,7 @@ warming_full_pred_populations) %>%
             min_wt = min(pred_wt),
             max_wt = max(pred_wt)) %>% 
   ungroup() %>% 
-  mutate(comparison = fct_relevel(comparison, "Mean CTmax", "Clade", "Clade + Coll. Temp."))
+  mutate(comparison = fct_relevel(comparison, "Fixed CTmax", "Genetic Variation", "Genetic Variation & Acclimation"))
 
 ggplot(peak_comps, aes(x = comparison, y = mean_wt, colour = warming, group = warming))+ 
   facet_wrap(region~., 
@@ -1722,25 +1714,26 @@ samples by ~30%.
 
 ``` r
 
-range_changes = peak_comps %>%  
+range_changes = wt_comps %>%  
   filter(warming == "no") %>% 
   ungroup() %>% 
   group_by(warming, comparison) %>% 
-  summarise(wt_range = max(mean_wt) - min(mean_wt)) %>% 
+  summarise(wt_range = max(min_wt) - min(min_wt)) %>% 
   mutate(percent_decrease = 100 * (1 - (wt_range / wt_range[1]))) %>% 
   ungroup() %>% 
-  select("Comparison" = comparison, "WT Range" = wt_range, "% Decrease" = percent_decrease)
+  select("Comparison" = comparison, "WT Range" = wt_range, "% Decrease" = percent_decrease) %>% 
+  arrange(`% Decrease`)
  
 #write.csv(range_changes, file = "Output/Output_data/range_changes.csv", row.names = F)
 
 knitr::kable(range_changes, digits = 2)
 ```
 
-| Comparison          | WT Range | % Decrease |
-|:--------------------|---------:|-----------:|
-| Mean CTmax          |    12.82 |       0.00 |
-| Clade               |     9.37 |      26.91 |
-| Clade + Coll. Temp. |     8.92 |      30.39 |
+| Comparison                      | WT Range | % Decrease |
+|:--------------------------------|---------:|-----------:|
+| Fixed CTmax                     |    13.05 |       0.00 |
+| Clade                           |     9.84 |      24.62 |
+| Genetic Variation & Acclimation |     8.86 |      32.11 |
 
 ## Salinity Comparisons
 

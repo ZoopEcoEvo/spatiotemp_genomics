@@ -11,7 +11,7 @@ library(tidyverse)
 process_all_data = F #Runs data analysis 
 process_site_temps = F #Compiles continuous temperature data for the sites
 process_clades = F #Processes clade data
-make_report = T #Runs project summary
+make_report = F #Runs project summary
 knit_pheno_manuscript = F #Compiles manuscript draft
 knit_genome_manuscript = F #Compiles manuscript draft
 
@@ -32,13 +32,11 @@ temp_record = read.csv(file = "Output/Output_data/temp_record.csv")
 
 ramp_record = read.csv(file = "Output/Output_data/ramp_record.csv")
 
-all_data = read.csv(file = "Output/Output_data/full_data.csv") %>% 
-  bind_rows(read.csv(file = "Raw_data/outside_sources/key_largo_winter.csv") %>% 
-              filter(bopyrid == "no") %>% 
-              dplyr::select(-bopyrid))
+all_data = read.csv(file = "Output/Output_data/full_data.csv") 
 
-# Which individuals need to be removed for low-confidence matches? 
+# Which individuals need to be removed
 
+### Find low-confidence matches 
 # clade_summary %>%  
 #   group_by(sample) %>% 
 #   filter(max(prop) < 0.85) %>% 
@@ -48,6 +46,24 @@ all_data = read.csv(file = "Output/Output_data/full_data.csv") %>%
 # FH_peak_1_10 (50.6% match top clade)
 # ME_early_2_07 (54.2% match top clade)
 # RW_early_2_09 (68.8% match top clade)
+
+### Juveniles or abnormally low CTmax 
+# St._Thomas_de_Kent_Wharf_late_1_3
+# Ft._Hamer_late_2_3
+# Tyler_Cove_peak_2_2
+# Manatee_River_peak_2_7
+# Manatee_River_peak_2_6
+
+### Find hudsonica individuals
+# clade_summary %>%
+#   group_by(sample) %>%
+#   filter(max(prop) > 0.85) %>%
+#   filter(prop == max(prop)) %>% 
+#   filter(Clade == "A_hudsonica")
+
+### Phenotyped hudsonica individuals (only two in the `join_data` object)
+# CT_early_2_03
+# ME_peak_1_04
 
 join_data = read.csv(file = "Output/Output_data/joined_data.csv") %>% 
   mutate(lat = if_else(site_code == "ME", 43.90698, lat),
@@ -59,7 +75,14 @@ join_data = read.csv(file = "Output/Output_data/joined_data.csv") %>%
     site_code == "ME" & season == "early" & replicate == 2 & tube == 7 ~ NA,
     site_code == "RW" & season == "early" & replicate == 2 & tube == 9 ~ NA,
     .default = clade
-  ))
+  )) %>% 
+  drop_na(clade) %>% 
+  filter(clade != "A_hudsonica") %>% 
+  filter(!(ind_id %in% c("St._Thomas_de_Kent_Wharf_late_1_3",
+                       "Ft._Hamer_late_2_3", 
+                       "Tyler_Cove_peak_2_2", 
+                       "Manatee_River_peak_2_7", 
+                       "Manatee_River_peak_2_6"))) 
 
 inventory = read.csv(file = "Output/Output_data/sample_inventory.csv")
 
@@ -79,8 +102,7 @@ temp_summaries = join_data %>%
 
 site_temps = join_data %>% 
   dplyr::select(site, lat, season, doy, collection_temp, collection_salinity) %>%  
-  distinct() %>% 
-  filter(doy > 100) 
+  distinct() 
 
 ######## Sequencing data
 

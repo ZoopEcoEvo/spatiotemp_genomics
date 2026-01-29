@@ -7,7 +7,7 @@ output:
     citation_package: natbib
   word_document: 
     reference_docx: doc_template.docx
-title: "Cryptic genetic variation and acclimation can homogenize vulnerability to warming across species ranges"
+title: "Genetic variation and phenotypic plasticity homogenize vulnerability to warming across a species range"
 author:
   - name: Matthew Sasaki
     affiliation: University of Massachusetts Lowell
@@ -19,7 +19,7 @@ abstract: "ABSTRACT HERE."
 keywords: "keyword1, keyword2, keyword3"
 contact: "**Correspondance**: Matthew_Sasaki@uml.edu" 
 current: "This preprint is current as of `r format(Sys.time(), '%B %d, %Y')`"
-repo: "**Code**: ___"
+repo: "**Code**: https://github.com/ZoopEcoEvo/spatiotemp_genomics"
 bibliography: references.bib
 biblio-style: bib-style
 geometry: margin=1in
@@ -46,17 +46,13 @@ if(knitr::is_latex_output()){
 
 # Introduction
 
-Organismal responses to climate change and predicting vulnerability
-
-The need for incorporating intraspecific variation (genetic variation and acclimation)
-
-Hypotheses: Strong variation in response to temperature over both spatial and temporal scales; Incorporating variation and acclimation will reduce estimates of vulnerability in low latitude populations will increasing estimates of vulnerability in high latitude populations.
+Hypotheses: Strong variation in response to temperature over both spatial and temporal scales; Incorporating variation and acclimation will reduce estimates of vulnerability in low latitude populations while increasing estimates of vulnerability in high latitude populations.
 
 # Methods
 
-## Field Collections, Phenotypic Measurements, and Warming Tolerance
+## Field Collections and Phenotypic Measurements
 
-Copepods were collected by surface tow from eight sites across the Western Atlantic and Gulf of Mexico at several times throughout the year (Table 1). Water temperature and salinity were measured at the time of collection (Figure 1). To put the collections into this larger seasonal context, we also examined continuous temperature records for each site (Supp. Figure X). In situ data is not available for all sites, however, so we combined daily temperature values from either local temperature sensors (sites in Florida and the Chesapeake) and high resolution satellite temperature data (Connecticut, Maine, and the sites in New Brunswick, Canada; NOAA 1/4° Daily Optimum Interpolation Sea Surface Temperature data). Temperature data was aggregated to daily average temperatures. In general, the first sample from each site was collected just after the site reached the warmest period, while the final sample occurred after temperatures had cooled during the Fall (Supp. Figure X). The exception to that pattern is in Florida, where initial collections occurred after an extended period of high temperatures.
+Copepods were collected by surface tow from eight sites across the Western Atlantic and Gulf of Mexico at several times throughout the summer and fall of 2023 (Table 1). Water temperature and salinity was measured at the time of collection using a handheld thermometer and optical refractometer, respectively (Figure 1). To put the collections into a larger seasonal context, we also examined continuous temperature records for each site (Supp. Figure 1). In situ data is not available for all sites, however, so we combined daily temperature values from either local temperature sensors (sites in Florida and the Chesapeake) and high resolution satellite temperature data (Connecticut, Maine, and the sites in New Brunswick, Canada; NOAA 1/4° Daily Optimum Interpolation Sea Surface Temperature data). For all sites, temperature data was aggregated to daily average temperatures. In general, the first sample from each site was collected just after the site reached the warmest period, while the final sample occurred after temperatures had cooled during the Fall (Supp. Figure 1). The exception to that pattern is in Florida, where initial collections from both sites occurred after an extended period of high temperatures.
 
 ```{r, table1, echo = F}
 
@@ -68,109 +64,134 @@ site_data %>%
 
 ```
 
-Plankton samples were held in an insulated flask to maintain them at the temperature of collection. Within three hours of collection, mature Acartia tonsa females were sorted from the tow contents into a mixture of equal proportions 63-um filtered sea water and artificial seawater (bottled spring water adjusted to match collection salinity with InstantOcean). This ensured organisms were acclimated to the artificial seawater mixture before thermal limit experiments.
+Plankton samples were held in an insulated flask to maintain them at the temperature of collection. Within three hours of collection, mature *Acartia tonsa* females were sorted from the tow contents into a mixture of equal proportions 63-um filtered sea water and artificial seawater (bottled spring water adjusted to match collection salinity with InstantOcean) in order to acclimate animals to the artificial seawater mixture before thermal limit experiments.
 
 Critical thermal maximum (CTmax) was measured for individual copepods using a custom setup (REF), comprising a reservoir with heating element and water pump, a clear plexiglass water bath containing thirteen 50-ml flat bottom glass shell vials, and an arduino temperature logger. During the assay the heating element warms water in the reservoir, which is pumped through the water bath and then back into the reservoir. Copepods are placed individually into ten of the glass vials, which can be observed through the sides of the water bath. The remaining three vials contained small temperature sensors attached to the arduino temperature logger, which recorded water temperature within the vials every five seconds.
 
-To initiate the CTmax assay, copepods were transferred individually into the shell vials with 10 mL of artificial seawater. Vials were held in a water bath, adjusted to match the collection temperature. Several control individuals were maintained in this solution at ambient temperatures throughout each assay. There was no change in behavior or mortality in these control individuals for any of the collections. After a brief rest period at the collection temperature, the heating element was turned on, initiating the temperature ramp. Ramping rates started \~0.3°C/minute, and eventually slowed to \~0.1°C/minute (Supp. Fig. X). These values are typical for CTmax assays with copepods and other small invertebrates (REF). Copepods were continuously monitored until they no longer responded to gentle stimulus (water movement generated by slowly turning the vials in the water bath), indicating the individual had reached its CTmax. The temperature at that point in the assay was extracted from the continuous temperature record. This differs from lethal temperatures, and indeed, all individuals recovered following the assay.
+To initiate the CTmax assay, vials with 10 mL of the artificial seawater were placed in the water bath, which was adjusted to match the collection temperature. Copepods were then transferred individually into the shell vials. Several control individuals were maintained in shell vials with the artificial seawater solution at ambient temperatures throughout each assay. There was no change in behavior or mortality in these control individuals for any of the collections. After a brief rest period, the heating element was turned on, initiating the temperature ramp. Ramping rates started \~0.3°C/minute, and eventually slowed to \~0.1°C/minute (Supp. Fig. 2). These values are typical for CTmax assays with copepods and other small invertebrates (REF). Copepods were continuously monitored until they no longer responded to gentle stimulus (water movement generated by slowly turning the vials in the water bath), indicating the individual had reached its CTmax. The temperature at that point in the assay was extracted from the continuous temperature record. This differs from lethal temperatures, and indeed, all individuals recovered following the assay. Warming tolerance was calculated as the difference between individual CTmax values and the temperature measured at the time of collection (REF).
 
-Following the CTmax measurements, each individual was photographed for body size measurements using a camera attached to a small handheld microscope (Em1 600). Prosome lengths were measured in Fiji (REF) using accompanying images of a 1 mm scale bar. After photographing, each copepod was preserved individually in 95% ethanol. Samples were maintained at room temperature for several days while in the field, and then stored at -20°C upon returning to the laboratory.
+After the CTmax measurements, each individual was photographed for body size measurements using a camera attached to a small handheld microscope (Em1 600). Prosome lengths were measured in Fiji (REF) using accompanying images of a 1 mm scale bar. After photographing, each copepod was preserved individually in 95% ethanol. Samples were maintained at room temperature for several days while in the field, and then stored at -20°C upon returning to the laboratory.
 
 Sample sizes varied slightly across experiments, but generally \~20 individuals were measured per season at each site (two CTmax assays per collection). Only two collections (peak and late season) were obtained from Fort Hamer and Manatee River (the lowest latitude sites in the collections). The late season plankton tow from the site in Maine was dominated by the congeneric species *Acartia hudsonica*; thermal limits were measured for all *A. tonsa* individuals recovered, but sample sizes at this time point were reduced.
 
 ## Library Prep and Sequencing
 
-We extracted and purified DNA from each individual copepod using a modified magnetic bead-based protocol (Ali, Omar A., et al. "RAD capture (Rapture): flexible and efficient sequence-based genotyping." Genetics 202.2 (2016): 389-400.). Individual copepods were soaked in molecular grade water for 1 hour at room temperature and then added to the wells of a 96-well plate with 100 ul of digestion buffer (90.5 ul Liftons buffer, 7 ul of 20 mg/ml Proteinase K, and 2.5 ul 1 M DTT). The 96-well plate was kept on ice as digestion buffer and copepods were added. Samples were then incubated overnight at 55°C. After incubation 80 ul of hybridization buffer was added directly to each well (2.5 M NaCl, 20% PEG 8000, 0.025 M DTT) along with 20 ul of resuspended Ampure XP beads. Plates were briefly vortexed to mix the solution and then incubated at room temperature for five minutes. Plates were placed on a magnetic rack to clear the beads and then each well was aspirated. The supernatant was discarded and 150 ul of freshly prepared 80% ethanol was added to the well. Plates were removed from the magnetic rack and the beads resuspended. Two more ethanol washes were performed. After the final wash, the ethanol was aspirated and the beads were air dried for 11 minutes. Great care was taken during this step to remove all ethanol from the wells. 20 ul of low TE was added to each well. Beads were resuspended and then incubated at room temperature for five minutes. Well plates were placed back on the magnetic racks and the supernatant containing the extracted and purified DNA was transferred to a new 96-well plate.
+We extracted and purified DNA from each individual copepod using a modified magnetic bead-based protocol [@ali2015]. Individual copepods were soaked in molecular grade water for 1 hour at room temperature and then added to the wells of a 96-well plate with 100 ul of digestion buffer (90.5 ul Liftons buffer, 7 ul of 20 mg/ml Proteinase K, and 2.5 ul 1 M DTT). The 96-well plate was kept on ice as digestion buffer and copepods were added. Care was taken to ensure copepods were fully submerged in the buffer and then each well was sealed. Samples were then incubated overnight at 55°C. After incubation, 80 ul of hybridization buffer was added directly to each well (2.5 M NaCl, 20% PEG 8000, 0.025 M DTT) along with 20 ul of resuspended Ampure XP beads. Plates were briefly vortexed to mix the solution and then incubated at room temperature for five minutes. Plates were placed on a magnetic rack to clear the beads and then each well was aspirated. The supernatant was discarded and 150 ul of freshly prepared 80% ethanol was added to the well. Plates were removed from the magnetic rack and the beads resuspended. Two more ethanol washes were performed in this manner. After the final wash, the ethanol was aspirated and the beads were air dried for 11 minutes. 20 ul low TE was added to each well and beads were resuspended. Plates were incubated at room temperature for five minutes and then placed back on the magnetic racks. The supernatant containing the extracted and purified DNA was transferred to a new 96-well plate.
 
-Sequencing libraries were prepared using Twist BioScience 96-plex library prep kits following manufacturers instructions. Libraries were sequenced by Novogene (Sacramento, CA, USA) on two lanes of Illumina NovaSeq X Plus (150bp paired-end; 25B flowcell).
+Low-coverage whole genome sequencing libraries were prepared using Twist BioScience 96-plex library prep kits following manufacturer instructions. Libraries were sequenced by Novogene (Sacramento, CA, USA) on two lanes of Illumina NovaSeq X Plus (150bp paired-end; 25B flowcell).
 
 ## Clade Assignment
 
-Reads were demultiplexed with fqtk (REF) and then cleaned and trimmed with fastp (REF). Reads were then aligned against a curated collection of Cytochrome Oxidase I (COI) sequences for *Acartia tonsa* (REF). Sequence matches were filtered to just those with the minimum e-value, a length of more than 100 basepairs, and more than 95% identity. An individual was assigned to a clade if it comprised more than 85% of these high-quality sequence matches. Only three individuals failed to match to a clade.
+For the purposes of this study, the sequence data was used to assign each phenotyped individual to one of the cryptic clades commonly observed within *Acartia tonsa;* the remaining low-coverage whole genome analyses will be presented elsewhere. Reads were demultiplexed with *fqtk* (REF) and then cleaned and trimmed with *fastp* (REF). Reads were then aligned against a curated collection of Cytochrome Oxidase I (COI) sequences for *Acartia tonsa* [@figueroa2020]. Sequence matches were filtered to just those with the minimum e-value, a length of more than 100 basepairs, and more than 95% identity. An individual was assigned to a clade if more than 85% of these high-quality matches aligned to one clade.
 
 ## Statistical Analysis
 
-Thermal limits were filtered to include just data from individuals that could be verified as adult *A. tonsa* females with a high confidence clade assignment.
+Thermal limits were filtered to include just data from individuals that could be verified as adult *A. tonsa* females with a high confidence clade assignment. Under these conditions, 17 individuals were excluded from analyses (5 individuals were identified after measurements as late-stage juveniles; 10 individuals failed to match to a clade; 2 individuals were identified after experiments as *Acartia hudsonica*). After filtering, we were left with thermal limit measurements for `r dim(join_data)[1]` individuals, each assigned to one of the four cryptic clades.
 
-linear mixed effects model: CTmax \~ body size, temperature, and clade with random effect of tube and a random effect of site along with random slope for collection temperature
-
-Marginal mean and temperature trend for each clade
+We used a linear mixed effect model to examine variation in CTmax. Body size, temperature (centered but not scaled before analysis), and clade were included as fixed effects, along with the interaction between clade and temperature. Random effects were included for site (to account for non-thermal variation across latitude), tube (as a proxy for position within the water bath during the heat stress), and experimental replicate (to account for different amounts of time between collection and assay). Model performance was checked visually using the *performance* package (REF). We then extracted marginal mean CTmax and the temperature trend (i.e. the acclimation capacity of CTmax) for each clade using the *emmeans* package (REF).
 
 ## Estimating the effects of genetic variation and acclimation
+
+The filtered thermal limit data set was combined with the continuous temperature data for each region to illustrate how genetic variation and acclimation alter vulnerability to warming. For each of three scenarios, a daily warming tolerance value was calculated as the difference between predicted CTmax and the average daily temperature. Scenario 1 assumes a fixed CTmax value (i.e. there is no intraspecific variation in thermal limits). The average CTmax value across all sites during the peak season was used here in the calculation of warming tolerance. In this scenario, variation in warming tolerance within and across regions is entirely driven by variation in mean daily temeparture.
+
+Scenario 2 incorporates genetic variation (the four cryptic clades present in our samples). Here, the average CTmax value for each clade (again from just the peak season collections) was used to estimate warming tolerance. In order to incorporate geographic variation in clade composition, we constructed artificial populations of 100 individuals for each region. Daily warming tolerance values were calculated for each clade, and then populations constructed to reflect the proportional clade composition of each region based on our collections (Supp. Fig. 3). In this scenario, variation in warming tolerance within regions reflects seasonal changes in water temperature, while variation across regions will reflect both changes in water temperature and the changing relative abundance of the clades across the latitudinal gradient.
+
+Scenario 3 includes both genetic variation and acclimation capacity. Warming tolerance here was calculated using thermal limits predicted from a model of CTmax as a function of the interaction between collection temperature and clade, using average daily temperature as a proxy for the collection temperature. Artificial populations were constructed in the same manner as Scenario 2. We note that the widespread variation in thermal limits we observed across collection temperatures is likely attributable to both acclimation and genetic variation (i.e. rapid seasonal adaptation). It is, however, not possible to disentangle acclimation and rapid adaptation with the data we collected. For the purposes of these simulations, we assume that the majority of the genetic effects on thermal limits are accounted for by the across-clade variation, while the correlation with collection temperature reflects primarily the effects of acclimation.
+
+We repeated these warming tolerance calculations under 4°C of warming (uniformly applied across the seasons and regions). We assume no changes in relative clade composition, and no adaptation to changes in temperature. As such, only Scenario 3 included a mechanism for populations to adjust in response to warming (i.e. acclimation to the increase in temperatures). Given the inability to account for these other key factors, these warming scenarios are meant only to examine how the inclusion of genetic variation and acclimation may buffer populations against long-term temporal change in addition to the spatial variation in environmental conditions.
 
 # Results
 
 ## Environmental Data
 
-Collections spanned the latitudinal gradient. Across the entire set of collections, temperature ranged from `r min(site_temps$collection_temp)`°C to `r max(site_temps$collection_temp)`°C, with strong seasonal variation in temperature at all eight sites (Supp. Figure 2)
+Collections spanned the latitudinal gradient. Across the entire set of collections, temperature ranged from `r min(site_temps$collection_temp)`°C to `r max(site_temps$collection_temp)`°C, with strong seasonal variation in temperature at all eight sites (Supp. Figure 4).
 
 ```{r, figure1, echo = F, out.width = "400px"}
 #| fig.cap = "Map of sites (A) and collection temperatures recorded during each collection (B)"
 
-knitr::include_graphics("../Output/Figures/markdown/site-chars-1.png") #Use this when filling in figures from analysis 
+knitr::include_graphics("../Output/Figures/markdown/site-chars-1.png")  
 ```
 
-## COI Clade Distributions
-
-```{r, figure2, echo = F, out.width = "250px"}
-#| fig.cap = "The distribution of clade identities at each site throughout the seasons. This plot includes just the 'high confidence' estimates - individuals identified as A. hudsonica were excluded, as were any individuals where less than 85% of the reads matched to any single clade)"
-
-knitr::include_graphics("../Output/Figures/markdown/clade-props-1.png") #Use this when filling in figures from analysis 
-```
+\newpage
 
 ## Seasonal phenotypic patterns
 
-```{r, figure3, echo = F, out.width = "400px"}
+There was substantial variation in thermal limits and body sizes across both seasons (Figure 2). There was a general decrease in thermal limits across the seasons, with the highest thermal limits in the early or peak collections, followed by a marked decrease in the late collection. Patterns in body size were more variable. At several sites, body sizes increased across seasons. There were several sites, however, where body sizes peaked in one of the earlier collections.
+
+```{r, figure2, echo = F, out.width = "400px"}
 #| fig.cap = "CTmax vs. season (A) and size vs. season (B) for each site"
 
-knitr::include_graphics("../Output/Figures/markdown/size-and-ctmax-season-1.png") #Use this when filling in figures from analysis 
+knitr::include_graphics("../Output/Figures/markdown/size-and-ctmax-season-1.png")  
 ```
+
+\newpage
 
 ## Clade-specific patterns
 
-```{r, figure4, echo = F, out.width = "400px"}
-#| fig.cap = "CTmax and body size vs. collection temperature, separated by clade."
+There was substantial variation in the clade composition of the collections across both space and time (Fig. 3; Supp. Figure 5). Low latitude sites were dominated by the S and F clades, while the X and IV clades were more common in the higher latitude sites. At most sites, clade composition was fairly constant across seasons. There were, however, seasonal fluctuations at the sites in Connecticut and Maine. In both cases, the early collection contained individuals from all four clades. The peak season collection was made up primarily of clade S or X individuals, while the late season collection was mostly clade IV.
 
-knitr::include_graphics("../Output/Figures/markdown/clade-trait-regs-1.png") #Use this when filling in figures from analysis 
+```{r, figure3, echo = F, out.width = "250px"}
+#| fig.cap = "The distribution of clade identities at each site throughout the seasons. This plot includes just the 'high confidence' estimates - individuals identified as A. hudsonica were excluded, as were any individuals where less than 85% of the reads matched to any single clade)"
+
+knitr::include_graphics("../Output/Figures/markdown/clade-props-1.png")  
 ```
 
-```{r, figure5, echo = F, out.width = "400px"}
-#| fig.cap = "Clade marginal means (i.e. genetic variation in thermal limit) and the marginal trend (i.e. combined effect of local adaptation and plasticity)."
+\newpage
 
-knitr::include_graphics("../Output/Figures/markdown/clade-contrast-plots-1.png") #Use this when filling in figures from analysis 
+The seasonal shifts in the clade composition we observed at the sites in Connecticut and Maine largely match the broader spatial patterns in clade occurrence (Fig. 4). F clade individuals typically made up larger proportions of the collections at high temperatures. X clade individuals were found in higher proportions at intermediate temperatures. IV clade individuals were found in higher proportions at low collection temperatures. The pattern was less distinct for the S clade, which was found at high proportions during just few collections.
 
-```
-
-```{r, figure6, echo = F, out.width = "200px"}
+```{r, figure4, echo = F, out.width = "200px"}
 #| fig.cap = "Clade proportions in each sample vs. collection temp."
 
-knitr::include_graphics("../Output/Figures/markdown/clade-hab-patterns-1.png") #Use this when filling in figures from analysis 
+knitr::include_graphics("../Output/Figures/markdown/clade-hab-patterns-1.png")  
 ```
+
+\newpage
+
+As might be expected from these patterns in occurrence, the clades exhibited strong physiological differentiation (Fig. 5). The S and F clades tended to have higher CTmax values than the IV and X clades, regardless of collection temperatures (Fig. 5A). These differences were also reflected in the estimated marginal means from the linear mixed effects model (Fig. 6A). There was a slight increase in the estimated temperature sensitivity of thermal limits in clade IV individuals (i.e. a larger increase in CTmax per °C increase in acclimation temperature; Fig. 6B).
+
+Individuals in the IV clade tended to have the largest body sizes, while F clade individuals tended to be the smallest, again regardless of collection temperature (Fig. 5B) Individuals in the S and X clades had intermediate body sizes, with a noticeable difference in the temperature sensitivity, such that S clade individuals were larger at low temperatures but smaller at high temperatures than the X clade individuals.
+
+```{r, figure5, echo = F, out.width = "400px"}
+#| fig.cap = "CTmax and body size vs. collection temperature, separated by clade."
+
+knitr::include_graphics("../Output/Figures/markdown/clade-trait-regs-1.png")  
+```
+
+```{r, figure6, echo = F, out.width = "400px"}
+#| fig.cap = "Clade marginal means (i.e. genetic variation in thermal limit) and the marginal trend (i.e. combined effect of local adaptation and plasticity)."
+
+knitr::include_graphics("../Output/Figures/markdown/clade-contrast-plots-1.png")  
+
+```
+
+\newpage
 
 ## Estimated effects of genetic variation and acclimation
 
-```{r, figure7, echo = F, out.width = "200px"}
-#| fig.cap = "Warming tolerance during the peak season for each region, estimated under three scenarios; 1) a fixed CTmax value across the entire range, 2) fixed CTmax estimates for each individual clade, and 3) clade-specific CTmax and temperature acclimation." 
+There were strong latitudinal gradients in warming tolerance estimate for all three of the scenarios we examined (Fig. 7). When assuming fixed thermal limits (scenario 1; Fig. 7A), minimum warming tolerance across sites ranged \~13°C (from 2.7°C to 15.8°C). The incorporation of genetic variation (scenario 2; Fig. 7B) reduced this range to 9.8°C (an \~24% decrease; Table 2), driven by an increase in warming tolerance at low latitudes and a decrease in warming tolerance at high latitudes. Inclusion of both genetic variation and acclimation (scenario 3; Fig. 7C) reduced the range even further to 8.8°, an \~32% decrease relative to scenario 1 (Table 2).
 
-knitr::include_graphics("../Output/Figures/markdown/peak-season-wt-plus-warming-1.png") #Use this when filling in figures from analysis 
+```{r, figure7, echo = F, out.width = "200px"}
+#| fig.cap = "Warming tolerance during the peak season for each region, estimated under three scenarios; 1) a fixed CTmax value across the entire range, 2) fixed CTmax estimates for each individual clade, and 3) clade-specific CTmax and temperature acclimation. Current estimates of warming tolerance are shown in solid bars, with the estimates assuming a 4°C future warming shown with the lighter bars." 
+
+knitr::include_graphics("../Output/Figures/markdown/peak-season-wt-plus-warming-1.png")  
 ```
 
-```{r}
-
+```{r table2}
 knitr::kable(range_changes, digits = 2,
-             align = "c",
+             align = c("r", "c", "c"),
                caption = "The range in mean warming tolerance during the peak season is shown for each of the three scenarios, along with the percent decrease in range relative to the fixed CTmax scenario.")
 ```
 
-# Discussion
-
-## Study Summary
-
-## Relevance of intraspecific variation (plasticity, local adaptation, cryptic variation)
-
-## Space-for-time
+Warming tolerance decreased under future conditions (+4°C warming). While high latitude populations had minimum warming tolerance estimates \~10°C or higher, the populations in the low latitude Chesapeake and Florida regions had very low warming tolerance estimates. In the fixed thermal limit scenario, temperatures in the Florida region exceeded thermal limits, resulting in a negative warming tolerance estimate (Fig. 7A). Inclusion of genetic variation and acclimation of thermal limits provided some degree of buffering, increasing warming tolerance estimates in these low latitude regions to above zero.
 
 # Discussion
+
+Summary
+
+Intraspecific variation (spatial, temporal, plasticity and cryptic variation)
+
+Influence on space-for-time predictions? Stemkovski ecological acclimation paper?
 
 \newpage
 
@@ -181,47 +202,30 @@ knitr::kable(range_changes, digits = 2,
 ```{r supp-fig-1, echo = F, out.width = "450px"}
 #| fig.cap = "Continuous temperature profiles for the regions. These temperature profiles are shown with the temperatures measured during the time of collection included for comparison. While collection temperatures in Maine did not always match the recorded daily averages, across all sites the temperature records do give a general sense of the timing of seasonal maxima (and the proximity of collections to the seasonal maximum temperature). "
 
-knitr::include_graphics("../Output/Figures/markdown/continuous-temps-1.png") #Use this when filling in figures from analysis 
+knitr::include_graphics("../Output/Figures/markdown/continuous-temps-1.png")  
 ```
 
 ```{r supp-fig-2, echo = F, out.width = "450px"}
+#| fig.cap = "Recorded ramping rates from the CTmax assays."
+
+knitr::include_graphics("../Output/Figures/markdown/ramp-record-plot-1.png")  
+
+```
+
+```{r supp-fig-3, echo = F, out.width = "450px"}
+#| fig.cap = "Observed proportions of the different clades in each region, as used in the simulated populations."
+
+knitr::include_graphics("../Output/Figures/markdown/region-clade-props-1.png")  
+```
+
+```{r supp-fig-4, echo = F, out.width = "450px"}
 #| fig.cap = "Collection temperature seasonality against latitude."
 
 knitr::include_graphics("../Output/Figures/markdown/lat-temp-range-plot-1.png")
 ```
 
-```{r supp-fig-3, echo = F, out.width = "450px"}
+```{r supp-fig-5, echo = F, out.width = "450px"}
 #| fig.cap = "Individual clade prop plot (shows the proportion of reads for each individual that matched to the different clades)"
 
-knitr::include_graphics("../Output/Figures/markdown/ind-clade-summary-1.png") #Use this when filling in figures from analysis 
-```
-
-```{r supp-fig-4, echo = F, out.width = "450px"}
-#| fig.cap = "Temperature ramping records."
-
-knitr::include_graphics("../Output/Figures/markdown/ramp-record-plot-1.png") #Use this when filling in figures from analysis 
-```
-
-```{r supp-fig-5, echo = F, out.width = "450px"}
-#| fig.cap = "CTmax across seasons for each site, with collection temperature included."
-
-knitr::include_graphics("../Output/Figures/markdown/ctmax-ind-pops-season-1.png") #Use this when filling in figures from analysis 
-```
-
-```{r supp-fig-6, echo = F, out.width = "450px"}
-#| fig.cap = "CTmax vs. collection temperature, separated by clade and faceted for each site to show the concordance in the pattern across locations."
-
-knitr::include_graphics("../Output/Figures/markdown/clade-trait-regs-pops-1.png") #Use this when filling in figures from analysis 
-```
-
-```{r supp-fig-7, echo = F, out.width = "450px"}
-#| fig.cap = "Contour plot, faceted by clade, showing the scaled density of each clade across the temperature x salinity space. Individual occurences across this space are included as jittered points to show the distribution and abundance of records. "
-
-knitr::include_graphics("../Output/Figures/markdown/clade-contours-1.png") #Use this when filling in figures from analysis 
-```
-
-```{r supp-fig-8, echo = F, out.width = "450px"}
-#| fig.cap = "Observed proportions of the different clades in each region, as used in the simulated populations."
-
-knitr::include_graphics("../Output/Figures/markdown/region-clade-props-1.png") #Use this when filling in figures from analysis 
+knitr::include_graphics("../Output/Figures/markdown/ind-clade-summary-1.png")  
 ```

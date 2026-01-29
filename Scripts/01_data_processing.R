@@ -180,16 +180,8 @@ if(process_clades == T){
 # Filters out individuals to be excluded, that are missing a clade assignment, and A. hudsonica individuals
 
 if(process_all_data == T){
-  kl_winter = read.csv(file = "Raw_data/outside_sources/key_largo_winter.csv") %>% 
-    filter(bopyrid == "no") %>% 
-    dplyr::select(-bopyrid) %>% 
-    mutate(warming_tol = ctmax - collection_temp,
-           collection_date = as.character(as.Date(collection_date, "%m/%d/%y")),
-           exp_date = as.character(as.Date(exp_date, "%m/%d/%y")),
-           replicate = run)
-  
+
   all_data = read.csv(file = "Output/Output_data/full_data.csv") %>%  
-    #bind_rows(kl_winter) %>% 
     mutate(doy = lubridate::yday(collection_date),
            ind_id = str_replace_all(paste(site, season, replicate, tube, sep = "_"), pattern = " ", replacement = "_")) %>% 
     inner_join(site_data, by = c("site")) %>% 
@@ -207,6 +199,11 @@ if(process_all_data == T){
     "St._Thomas_de_Kent_Wharf_late_1_3",
     "Ft._Hamer_late_2_3"
   )
+  
+  all_data %>% 
+    mutate(ind_id = paste(str_replace_all(site, pattern = " ", replacement = "_"), 
+                          season, replicate, tube, sep = "_")) %>% 
+    filter(ind_id %in% excluded_inds)
   
   read_data = read.csv("Raw_data/molecular/read_metrics.csv") %>% 
     filter(sample_id != "unmatched") %>% 
@@ -294,10 +291,10 @@ if(process_all_data == T){
       site == "Sawyer Park" ~ "ME",
       site == "St. Thomas de Kent Wharf" ~ "TK",
       site == "Ritchie Wharf" ~ "RW")) %>% 
-    full_join(read_data) %>%
+    left_join(read_data) %>%
     mutate(templates = templates * 2) %>% 
-    full_join(select(ungroup(clade_assignments), -sample, -individual, "clade" = Clade, "num_clade_matches" = n, "site_code" = population, tube, replicate, season)) %>% 
-    full_join(select(sample_coverage, site_code, season, replicate, tube, mean_coverage, sd_coverage, pct_1x, pct_5x, total_reads, pf_hq_aligned_reads)) %>% 
+    left_join(select(ungroup(clade_assignments), -sample, -individual, "clade" = Clade, "num_clade_matches" = n, "site_code" = population, tube, replicate, season)) %>% 
+    left_join(select(sample_coverage, site_code, season, replicate, tube, mean_coverage, sd_coverage, pct_1x, pct_5x, total_reads, pf_hq_aligned_reads)) %>% 
     mutate(pct_aligned = pf_hq_aligned_reads / templates)
     
   bam_list = read.table("Raw_data/molecular/bam_list.txt") %>% 
@@ -353,7 +350,7 @@ if(process_all_data == T){
   length(which(inventory$exclude == "yes"))
   length(which(inventory$hudsonica == "yes"))
   length(which(inventory$reads == "yes"))
-  length(which(inventory$clade == "yes"))
+  length(which(inventory$clade_id == "yes"))
   length(which(inventory$coverage == "yes"))
   length(which(inventory$joined == "yes"))
   length(which(inventory$bam == "yes"))
