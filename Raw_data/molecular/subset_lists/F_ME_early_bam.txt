@@ -1,0 +1,3 @@
+bam_files/ME_early_1_09_dd_clip.bam
+bam_files/ME_early_1_10_dd_clip.bam
+bam_files/ME_early_2_6_dd_clip.bam

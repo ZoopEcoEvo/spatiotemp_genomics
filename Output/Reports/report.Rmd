@@ -1134,6 +1134,144 @@ join_data %>%
 
 ### PCA
 
+```{r}
+
+iv_eigs1 = data.frame(eigen(iv_matrix[])$vectors[,1:2])
+
+iv_pca_df1 = iv_eigs1 %>% 
+  bind_cols(filter(bam_list, clade == "IV"))
+
+ggplot(iv_pca_df1, aes(x = X1, y = X2, colour = site_code, shape = season)) + 
+  geom_point(size = 5) + 
+  scale_colour_manual(values = pop_cols) + 
+  theme_matt() + 
+  theme(legend.position = "right")
+
+iv_pca_exclude = iv_pca_df1 %>% 
+  filter(X2 > 0.5 | (site_code == "TK" & X1 < 0.13))
+
+iv_exc_positions = which(iv_pca_df1$sample %in% iv_pca_exclude$sample)
+
+iv_eigs = data.frame(eigen(iv_matrix[-iv_exc_positions, -iv_exc_positions])$vectors[,1:2])
+
+pc1_var = round((eigen(iv_matrix[-iv_exc_positions, -iv_exc_positions])$values[1] / sum(eigen(iv_matrix[-iv_exc_positions, -iv_exc_positions])$values)) * 100, digits = 2)
+pc2_var = round((eigen(iv_matrix[-iv_exc_positions, -iv_exc_positions])$values[2] / sum(eigen(iv_matrix[-iv_exc_positions, -iv_exc_positions])$values)) * 100, digits = 2)
+
+iv_pca_df = iv_eigs %>% 
+  bind_cols(filter(bam_list, clade == "IV" & !(sample %in% iv_pca_exclude$sample)))
+
+ggplot(iv_pca_df, aes(x = X1, y = X2, colour = site_code, shape = season)) + 
+  geom_point(size = 5) + 
+  labs(x = paste0("PC1 (", pc1_var, "%)", sep = ""),
+       y = paste0("PC2 (", pc2_var, "%)", sep = "")) + 
+  scale_colour_manual(values = pop_cols) + 
+  theme_matt() + 
+  theme(legend.position = "right")
+
+## Old individual cross-group: removed or better aligned? 
+```
+
+```{r}
+
+s_eigs1 = data.frame(eigen(s_matrix[])$vectors[,1:2])
+
+s_pca_df1 = s_eigs1 %>% 
+  bind_cols(filter(bam_list, clade == "S"))
+
+ggplot(s_pca_df1, aes(x = X1, y = X2, colour = site_code, shape = season)) + 
+  geom_point(size = 5) + 
+  labs(x = paste0("PC1 (", pc1_var, "%)", sep = ""),
+       y = paste0("PC2 (", pc2_var, "%)", sep = "")) + 
+  scale_colour_manual(values = pop_cols) + 
+  theme_matt() + 
+  theme(legend.position = "right")
+
+s_pca_exclude = s_pca_df1 %>% 
+  filter(X1 < 0.08 | X1 > 0.095)
+
+s_exc_positions = which(s_pca_df1$sample %in% s_pca_exclude$sample)
+
+
+s_eigs = data.frame(eigen(s_matrix[-s_exc_positions, -s_exc_positions])$vectors[,1:2])
+
+pc1_var = round((eigen(s_matrix[-s_exc_positions, -s_exc_positions])$values[1] / sum(eigen(s_matrix[-s_exc_positions, -s_exc_positions])$values)) * 100, digits = 2)
+pc2_var = round((eigen(s_matrix[-s_exc_positions, -s_exc_positions])$values[2] / sum(eigen(s_matrix[-s_exc_positions, -s_exc_positions])$values)) * 100, digits = 2)
+
+s_pca_df = s_eigs %>% 
+  bind_cols(filter(bam_list, clade == "S" & !(sample %in% s_pca_exclude$sample)))
+
+ggplot(s_pca_df, aes(x = X1, y = X2, colour = site_code, shape = season)) + 
+  geom_point(size = 5) + 
+  labs(x = paste0("PC1 (", pc1_var, "%)", sep = ""),
+       y = paste0("PC2 (", pc2_var, "%)", sep = "")) + 
+  scale_colour_manual(values = pop_cols) + 
+  theme_matt() + 
+  theme(legend.position = "right")
+
+```
+
+```{r}
+
+f_eigs = data.frame(eigen(f_matrix)$vectors[,1:2])
+
+pc1_var = round((eigen(f_matrix)$values[1] / sum(eigen(f_matrix)$values)) * 100, digits = 2)
+pc2_var = round((eigen(f_matrix)$values[2] / sum(eigen(f_matrix)$values)) * 100, digits = 2)
+
+f_pca_df = f_eigs %>% 
+  bind_cols(filter(bam_list, clade == "F"))
+
+ggplot(f_pca_df, aes(x = X1, y = X2, colour = site_code, shape = season)) + 
+  #facet_wrap(site_code~., scales = "free") + 
+  geom_point(size = 5) + 
+  labs(x = paste0("PC1 (", pc1_var, "%)", sep = ""),
+       y = paste0("PC2 (", pc2_var, "%)", sep = "")) + 
+  scale_colour_manual(values = pop_cols) + 
+  theme_matt() + 
+  theme(legend.position = "right")
+
+```
+
+
+```{r}
+
+
+x_eigs1 = data.frame(eigen(x_matrix[])$vectors[,1:2])
+
+x_pca_df1 = x_eigs1 %>% 
+  bind_cols(filter(bam_list, clade == "X"))
+
+ggplot(x_pca_df1, aes(x = X1, y = X2, colour = site_code, shape = season)) + 
+  geom_point(size = 5) + 
+  labs(x = paste0("PC1 (", pc1_var, "%)", sep = ""),
+       y = paste0("PC2 (", pc2_var, "%)", sep = "")) + 
+  scale_colour_manual(values = pop_cols) + 
+  theme_matt() + 
+  theme(legend.position = "right")
+
+x_pca_exclude = x_pca_df1 %>% 
+  filter(X2 > 0.25 | sample %in% c("TK_early_2_01","TK_early_1_04", "TK_peak_1_09"))
+
+x_exc_positions = which(x_pca_df1$sample %in% x_pca_exclude$sample)
+
+
+x_eigs = data.frame(eigen(x_matrix[-x_exc_positions, -x_exc_positions])$vectors[,1:2])
+
+pc1_var = round((eigen(x_matrix[-x_exc_positions, -x_exc_positions])$values[1] / sum(eigen(x_matrix[-x_exc_positions, -x_exc_positions])$values)) * 100, digits = 2)
+pc2_var = round((eigen(x_matrix[-x_exc_positions, -x_exc_positions])$values[2] / sum(eigen(x_matrix[-x_exc_positions, -x_exc_positions])$values)) * 100, digits = 2)
+
+x_pca_df = x_eigs %>% 
+  bind_cols(filter(bam_list, clade == "X" & !(sample %in% x_pca_exclude$sample)))
+
+ggplot(x_pca_df, aes(x = X1, y = X2, colour = site_code, shape = season)) + 
+  geom_point(size = 5) + 
+  labs(x = paste0("PC1 (", pc1_var, "%)", sep = ""),
+       y = paste0("PC2 (", pc2_var, "%)", sep = "")) + 
+  scale_colour_manual(values = pop_cols) + 
+  theme_matt() + 
+  theme(legend.position = "right")
+
+```
+
 ```{r all-pca, fig.width=8, fig.height=6.5}
 tonsa_eigs = data.frame(eigen(tonsa_matrix)$vectors[,1:2])
 pc1_var = round((eigen(tonsa_matrix)$values[1] / sum(eigen(tonsa_matrix)$values)) * 100, digits = 2)
@@ -1148,109 +1286,6 @@ ggplot(tonsa_pca_df, aes(x = X1, y = X2, colour = clade)) +
   scale_colour_manual(values = clade_cols) + 
   theme_matt() + 
   theme(legend.position = "right")
-
-```
-
-
-```{r clade-pca, fig.width=12, fig.height=12}
-
-f_inds = which(tonsa_pca_df$clade == "F")
-f_samples = filter(tonsa_pca_df, clade == "F") %>% select(-X1, -X2)
-f_matrix = tonsa_matrix[f_inds, f_inds]
-f_eigs = data.frame(eigen(f_matrix)$vectors[,1:2])
-f_pc1_var = round((eigen(f_matrix)$values[1] / sum(eigen(f_matrix)$values)) * 100, digits = 2)
-f_pc2_var = round((eigen(f_matrix)$values[2] / sum(eigen(f_matrix)$values)) * 100, digits = 2)
-f_pca_df = f_eigs %>% 
-  bind_cols(f_samples)
-
-f_pca_plot = f_pca_df %>% 
-  ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
-  #facet_wrap(season~.) + 
-  geom_point(size = 3) + 
-  labs(x = paste0("PC1 (", f_pc1_var, "%)", sep = ""),
-       y = paste0("PC2 (", f_pc2_var, "%)", sep = ""),
-       title = "Clade - F") + 
-  scale_color_manual(values = pop_cols)  + 
-  theme_matt_facets()
-
-######### Clade X
-
-x_inds = which(tonsa_pca_df$clade == "X")
-x_samples = filter(tonsa_pca_df, clade == "X") %>% select(-X1, -X2)
-x_matrix = tonsa_matrix[x_inds, x_inds]
-x_eigs = data.frame(eigen(x_matrix)$vectors[,1:2])
-x_pc1_var = round((eigen(x_matrix)$values[1] / sum(eigen(x_matrix)$values)) * 100, digits = 2)
-x_pc2_var = round((eigen(x_matrix)$values[2] / sum(eigen(x_matrix)$values)) * 100, digits = 2)
-x_pca_df = x_eigs %>% 
-  bind_cols(x_samples) 
-
-x_pca_plot = x_pca_df %>% 
-  #filter(X1 < -0.082) %>% 
-  ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
-  #facet_wrap(season~.) + 
-  geom_point(size = 3) + 
-  labs(x = paste0("PC1 (", x_pc1_var, "%)", sep = ""),
-       y = paste0("PC2 (", x_pc2_var, "%)", sep = ""),
-       title = "Clade - X") + 
-  scale_color_manual(values = pop_cols)  + 
-  theme_matt_facets()
-
-#Outliers
-#x_pca_df %>% filter(X1 > -0.085) 
-
-######### Clade S
-
-s_inds = which(tonsa_pca_df$clade == "S")
-s_samples = filter(tonsa_pca_df, clade == "S") %>% select(-X1, -X2)
-s_matrix = tonsa_matrix[s_inds, s_inds]
-s_eigs = data.frame(eigen(s_matrix)$vectors[,1:2])
-s_pc1_var = round((eigen(s_matrix)$values[1] / sum(eigen(s_matrix)$values)) * 100, digits = 2)
-s_pc2_var = round((eigen(s_matrix)$values[2] / sum(eigen(s_matrix)$values)) * 100, digits = 2)
-s_pca_df = s_eigs %>% 
-  bind_cols(s_samples)
-
-s_pca_plot = s_pca_df %>% 
-  #filter(X1 < -0.114, X2 > -0.0015, X2< 0.004) %>% 
-  ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
-  #facet_wrap(season~.) + 
-  geom_point(size = 3) + 
-  labs(x = paste0("PC1 (", s_pc1_var, "%)", sep = ""),
-       y = paste0("PC2 (", s_pc2_var, "%)", sep = ""),
-       title = "Clade - S") + 
-  scale_color_manual(values = pop_cols)  + 
-  theme_matt_facets()
-
-
-#Outliers
-#s_pca_df %>% filter(!(X1 < -0.114 & X2 > -0.0015 & X2< 0.004))
-
-######### Clade IV
-
-IV_inds = which(tonsa_pca_df$clade == "IV")
-IV_samples = filter(tonsa_pca_df, clade == "IV") %>% select(-X1, -X2)
-IV_matrix = tonsa_matrix[IV_inds, IV_inds]
-IV_eigs = data.frame(eigen(IV_matrix)$vectors[,1:2])
-IV_pc1_var = round((eigen(IV_matrix)$values[1] / sum(eigen(IV_matrix)$values)) * 100, digits = 2)
-IV_pc2_var = round((eigen(IV_matrix)$values[2] / sum(eigen(IV_matrix)$values)) * 100, digits = 2)
-IV_pca_df = IV_eigs %>% 
-  bind_cols(IV_samples) 
-
-IV_pca_plot = IV_pca_df %>% 
-  #filter(X1< -0.1) %>% 
-  ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
-  #facet_wrap(season~.) + 
-  geom_point(size = 3) + 
-  labs(x = paste0("PC1 (", IV_pc1_var, "%)", sep = ""),
-       y = paste0("PC2 (", IV_pc2_var, "%)", sep = ""), 
-       title = "Clade - IV") + 
-  scale_color_manual(values = pop_cols)  + 
-  theme_matt_facets()
-
-#Outliers
-#IV_pca_df %>% filter(!(X1< -0.1 & X2))
-
-
-ggarrange(f_pca_plot, x_pca_plot, s_pca_plot, IV_pca_plot, common.legend = T, legend = "right")
 
 ```
 

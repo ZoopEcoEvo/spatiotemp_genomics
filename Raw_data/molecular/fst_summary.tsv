@@ -1,0 +1,102 @@
+FILE	CLADE	SITE1	SEASON1	SITE2	SEASON2	COMPARISON	FST_weight	FST_unweight
+F_CT_early_vs_F_GW_early	F	CT	early	GW	early	spatial	0.090665	0.176889
+F_CT_early_vs_F_MD_early	F	CT	early	MD	early	spatial	0.074079	0.158363
+F_CT_early_vs_F_ME_early	F	CT	early	ME	early	spatial	0.125759	0.154180
+F_CT_early_vs_F_RW_early	F	CT	early	RW	early	spatial	0.376221	0.189765
+F_CT_early_vs_F_TK_early	F	CT	early	TK	early	spatial	0.517452	0.450293
+F_FH_late_vs_F_FH_peak	F	FH	late	FH	peak	seasonal		
+F_FH_late_vs_F_GW_late	F	FH	late	GW	late	spatial		
+F_FH_late_vs_F_MD_late	F	FH	late	MD	late	spatial	0.080172	0.213294
+F_FH_late_vs_F_MR_late	F	FH	late	MR	late	spatial		
+F_FH_late_vs_F_RW_late	F	FH	late	RW	late	spatial	0.301995	0.445628
+F_FH_peak_vs_F_GW_peak	F	FH	peak	GW	peak	spatial		
+F_FH_peak_vs_F_MR_peak	F	FH	peak	MR	peak	spatial		
+F_FH_peak_vs_F_RW_peak	F	FH	peak	RW	peak	spatial	0.420139	0.466127
+F_GW_early_vs_F_GW_late	F	GW	early	GW	late	seasonal	0.015293	0.013725
+F_GW_early_vs_F_GW_peak	F	GW	early	GW	peak	seasonal	0.012132	0.011507
+F_GW_early_vs_F_MD_early	F	GW	early	MD	early	spatial		
+F_GW_early_vs_F_ME_early	F	GW	early	ME	early	spatial	0.227767	0.216025
+F_GW_early_vs_F_RW_early	F	GW	early	RW	early	spatial	0.515077	0.227352
+F_GW_early_vs_F_TK_early	F	GW	early	TK	early	spatial	0.655153	0.495071
+F_GW_late_vs_F_GW_peak	F	GW	late	GW	peak	seasonal		
+F_GW_late_vs_F_MD_late	F	GW	late	MD	late	spatial	0.031484	0.034521
+F_GW_late_vs_F_MR_late	F	GW	late	MR	late	spatial	0.129114	0.386365
+F_GW_late_vs_F_RW_late	F	GW	late	RW	late	spatial	0.445132	0.521791
+F_GW_peak_vs_F_MR_peak	F	GW	peak	MR	peak	spatial		
+F_GW_peak_vs_F_RW_peak	F	GW	peak	RW	peak	spatial	0.557930	0.544272
+F_MD_early_vs_F_MD_late	F	MD	early	MD	late	seasonal	0.023815	0.021604
+F_MD_early_vs_F_ME_early	F	MD	early	ME	early	spatial	0.175232	0.195126
+F_MD_early_vs_F_RW_early	F	MD	early	RW	early	spatial	0.452506	0.210339
+F_MD_early_vs_F_TK_early	F	MD	early	TK	early	spatial	0.608030	0.471613
+F_MD_late_vs_F_MR_late	F	MD	late	MR	late	spatial	0.120852	0.355818
+F_MD_late_vs_F_RW_late	F	MD	late	RW	late	spatial	0.377303	0.507230
+F_ME_early_vs_F_RW_early	F	ME	early	RW	early	spatial	0.089097	0.107246
+F_ME_early_vs_F_TK_early	F	ME	early	TK	early	spatial	0.263601	0.305297
+F_MR_late_vs_F_MR_peak	F	MR	late	MR	peak	seasonal	0.015773	0.020409
+F_MR_late_vs_F_RW_late	F	MR	late	RW	late	spatial	0.230646	0.380895
+F_MR_peak_vs_F_RW_peak	F	MR	peak	RW	peak	spatial	0.264313	0.353080
+F_RW_early_vs_F_RW_late	F	RW	early	RW	late	seasonal	0.196077	0.175334
+F_RW_early_vs_F_RW_peak	F	RW	early	RW	peak	seasonal	0.288142	0.283223
+F_RW_early_vs_F_TK_early	F	RW	early	TK	early	spatial	0.254696	0.245652
+F_RW_late_vs_F_RW_peak	F	RW	late	RW	peak	seasonal	0.018706	-0.019517
+IV_CT_early_vs_IV_CT_late	IV	CT	early	CT	late	seasonal	0.055083	0.061929
+IV_CT_early_vs_IV_ME_early	IV	CT	early	ME	early	spatial	0.129073	0.124639
+IV_CT_early_vs_IV_TK_early	IV	CT	early	TK	early	spatial	0.105771	0.109875
+IV_CT_late_vs_IV_ME_late	IV	CT	late	ME	late	spatial	0.043087	0.047042
+IV_CT_late_vs_IV_RW_late	IV	CT	late	RW	late	spatial	0.043529	0.051334
+IV_CT_late_vs_IV_TK_late	IV	CT	late	TK	late	spatial	0.021871	0.033021
+IV_ME_early_vs_IV_ME_late	IV	ME	early	ME	late	seasonal	0.065618	0.081145
+IV_ME_early_vs_IV_ME_peak	IV	ME	early	ME	peak	seasonal	0.128208	0.189291
+IV_ME_early_vs_IV_TK_early	IV	ME	early	TK	early	spatial	0.104066	0.114499
+IV_ME_late_vs_IV_ME_peak	IV	ME	late	ME	peak	seasonal	0.031821	0.141046
+IV_ME_late_vs_IV_RW_late	IV	ME	late	RW	late	spatial	0.060190	0.067825
+IV_ME_late_vs_IV_TK_late	IV	ME	late	TK	late	spatial	0.045694	0.052125
+IV_ME_peak_vs_IV_RW_peak	IV	ME	peak	RW	peak	spatial	0.262222	0.191965
+IV_ME_peak_vs_IV_TK_peak	IV	ME	peak	TK	peak	spatial	0.262276	0.192843
+IV_RW_late_vs_IV_RW_peak	IV	RW	late	RW	peak	seasonal	0.130452	0.127286
+IV_RW_late_vs_IV_TK_late	IV	RW	late	TK	late	spatial	0.030579	0.032682
+IV_RW_peak_vs_IV_TK_peak	IV	RW	peak	TK	peak	spatial	0.217567	0.165348
+IV_TK_early_vs_IV_TK_late	IV	TK	early	TK	late	seasonal	0.040533	0.045747
+IV_TK_early_vs_IV_TK_peak	IV	TK	early	TK	peak	seasonal	0.131277	0.154410
+IV_TK_late_vs_IV_TK_peak	IV	TK	late	TK	peak	seasonal	0.056141	0.130031
+S_CT_early_vs_S_CT_late	S	CT	early	CT	late	seasonal	0.099936	0.120052
+S_CT_early_vs_S_CT_peak	S	CT	early	CT	peak	seasonal	0.047307	0.082388
+S_CT_early_vs_S_GW_early	S	CT	early	GW	early	spatial	0.192261	0.226898
+S_CT_early_vs_S_MD_early	S	CT	early	MD	early	spatial	0.102620	0.130808
+S_CT_early_vs_S_ME_early	S	CT	early	ME	early	spatial	0.199267	0.210989
+S_CT_late_vs_S_CT_peak	S	CT	late	CT	peak	seasonal	0.047549	0.056052
+S_CT_late_vs_S_GW_late	S	CT	late	GW	late	spatial	0.068105	0.082058
+S_CT_late_vs_S_MD_late	S	CT	late	MD	late	spatial	0.054388	0.068206
+S_CT_late_vs_S_MR_late	S	CT	late	MR	late	spatial	0.065583	0.091061
+S_CT_peak_vs_S_MD_peak	S	CT	peak	MD	peak	spatial	0.018812	0.026788
+S_GW_early_vs_S_GW_late	S	GW	early	GW	late	seasonal	0.068366	0.168420
+S_GW_early_vs_S_MD_early	S	GW	early	MD	early	spatial	0.100552	0.186648
+S_GW_early_vs_S_ME_early	S	GW	early	ME	early	spatial	0.266184	0.226331
+S_GW_late_vs_S_MD_late	S	GW	late	MD	late	spatial	0.027562	0.031365
+S_GW_late_vs_S_MR_late	S	GW	late	MR	late	spatial	0.047138	0.062259
+S_MD_early_vs_S_MD_late	S	MD	early	MD	late	seasonal	0.049247	0.054601
+S_MD_early_vs_S_MD_peak	S	MD	early	MD	peak	seasonal	0.049839	0.052089
+S_MD_early_vs_S_ME_early	S	MD	early	ME	early	spatial	0.111957	0.190573
+S_MD_late_vs_S_MD_peak	S	MD	late	MD	peak	seasonal	0.014132	0.015707
+S_MD_late_vs_S_MR_late	S	MD	late	MR	late	spatial	0.036940	0.049480
+X_CT_early_vs_X_CT_peak	X	CT	early	CT	peak	seasonal	0.064549	0.070777
+X_CT_early_vs_X_ME_early	X	CT	early	ME	early	spatial		
+X_CT_early_vs_X_RW_early	X	CT	early	RW	early	spatial		
+X_CT_early_vs_X_TK_early	X	CT	early	TK	early	spatial		
+X_CT_peak_vs_X_ME_peak	X	CT	peak	ME	peak	spatial	0.053166	0.050063
+X_CT_peak_vs_X_RW_peak	X	CT	peak	RW	peak	spatial	0.054855	0.051166
+X_CT_peak_vs_X_TK_peak	X	CT	peak	TK	peak	spatial		
+X_ME_early_vs_X_ME_late	X	ME	early	ME	late	seasonal	0.055354	0.063917
+X_ME_early_vs_X_ME_peak	X	ME	early	ME	peak	seasonal	0.020520	0.022537
+X_ME_early_vs_X_RW_early	X	ME	early	RW	early	spatial		
+X_ME_early_vs_X_TK_early	X	ME	early	TK	early	spatial		
+X_ME_late_vs_X_ME_peak	X	ME	late	ME	peak	seasonal	0.056184	0.057749
+X_ME_late_vs_X_RW_late	X	ME	late	RW	late	spatial	0.079773	0.096250
+X_ME_peak_vs_X_RW_peak	X	ME	peak	RW	peak	spatial		
+X_ME_peak_vs_X_TK_peak	X	ME	peak	TK	peak	spatial		
+X_RW_early_vs_X_RW_late	X	RW	early	RW	late	seasonal	0.015120	0.017357
+X_RW_early_vs_X_RW_peak	X	RW	early	RW	peak	seasonal		
+X_RW_early_vs_X_TK_early	X	RW	early	TK	early	spatial		
+X_RW_late_vs_X_RW_peak	X	RW	late	RW	peak	seasonal		
+X_RW_peak_vs_X_TK_peak	X	RW	peak	TK	peak	spatial		
+X_TK_early_vs_X_TK_peak	X	TK	early	TK	peak	seasonal		

@@ -1,0 +1,8 @@
+bam_files/MR_late_1_02_dd_clip.bam
+bam_files/MR_late_1_03_dd_clip.bam
+bam_files/MR_late_1_04_dd_clip.bam
+bam_files/MR_late_1_07_dd_clip.bam
+bam_files/MR_late_1_09_dd_clip.bam
+bam_files/MR_late_2_01_dd_clip.bam
+bam_files/MR_late_2_02_dd_clip.bam
+bam_files/MR_late_2_03_dd_clip.bam

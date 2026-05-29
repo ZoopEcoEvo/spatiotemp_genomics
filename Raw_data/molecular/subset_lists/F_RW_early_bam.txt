@@ -1,0 +1,1 @@
+bam_files/RW_early_2_05_dd_clip.bam

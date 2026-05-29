@@ -1,0 +1,6 @@
+bam_files/GW_late_1_02_dd_clip.bam
+bam_files/GW_late_1_08_dd_clip.bam
+bam_files/GW_late_1_09_dd_clip.bam
+bam_files/GW_late_1_10_dd_clip.bam
+bam_files/GW_late_2_02_dd_clip.bam
+bam_files/GW_late_2_09_dd_clip.bam

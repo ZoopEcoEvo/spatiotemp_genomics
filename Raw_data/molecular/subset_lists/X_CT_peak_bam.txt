@@ -1,0 +1,4 @@
+bam_files/CT_peak_1_08_dd_clip.bam
+bam_files/CT_peak_2_08_dd_clip.bam
+bam_files/CT_peak_2_09_dd_clip.bam
+bam_files/CT_peak_2_10_dd_clip.bam

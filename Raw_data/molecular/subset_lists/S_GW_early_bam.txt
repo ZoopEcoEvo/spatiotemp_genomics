@@ -1,0 +1,1 @@
+bam_files/GW_early_1_04_dd_clip.bam

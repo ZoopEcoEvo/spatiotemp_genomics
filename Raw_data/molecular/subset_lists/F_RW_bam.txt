@@ -1,0 +1,3 @@
+bam_files/RW_early_2_05_dd_clip.bam
+bam_files/RW_late_2_08_dd_clip.bam
+bam_files/RW_peak_2_07_dd_clip.bam
