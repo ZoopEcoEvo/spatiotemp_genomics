@@ -1147,8 +1147,13 @@ ggplot(iv_pca_df1, aes(x = X1, y = X2, colour = site_code, shape = season)) +
   theme_matt() + 
   theme(legend.position = "right")
 
+filter(iv_pca_df1, X2 > 0.4)
+
 iv_pca_exclude = iv_pca_df1 %>% 
-  filter(X2 > 0.5 | (site_code == "TK" & X1 < 0.13))
+  filter(sample %in% c("TK_peak_2_08", "RW_peak_2_09", 
+                       "ME_early_1_04", "TK_peak_2_10", 
+                       "TK_late_1_04", "TK_late_2_02", 
+                       "ME_late_1_01"))
 
 iv_exc_positions = which(iv_pca_df1$sample %in% iv_pca_exclude$sample)
 
@@ -1168,7 +1173,9 @@ ggplot(iv_pca_df, aes(x = X1, y = X2, colour = site_code, shape = season)) +
   theme_matt() + 
   theme(legend.position = "right")
 
-## Old individual cross-group: removed or better aligned? 
+
+#filter(iv_pca_df, X2 < -0.4 | site_code == "TK" & X2 < -0.1)
+
 ```
 
 ```{r}
@@ -1178,6 +1185,10 @@ s_eigs1 = data.frame(eigen(s_matrix[])$vectors[,1:2])
 s_pca_df1 = s_eigs1 %>% 
   bind_cols(filter(bam_list, clade == "S"))
 
+pc1_var = round((eigen(s_matrix)$values[1] / sum(eigen(s_matrix)$values)) * 100, digits = 2)
+pc2_var = round((eigen(s_matrix)$values[2] / sum(eigen(s_matrix)$values)) * 100, digits = 2)
+
+
 ggplot(s_pca_df1, aes(x = X1, y = X2, colour = site_code, shape = season)) + 
   geom_point(size = 5) + 
   labs(x = paste0("PC1 (", pc1_var, "%)", sep = ""),
@@ -1186,11 +1197,23 @@ ggplot(s_pca_df1, aes(x = X1, y = X2, colour = site_code, shape = season)) +
   theme_matt() + 
   theme(legend.position = "right")
 
+
 s_pca_exclude = s_pca_df1 %>% 
-  filter(X1 < 0.08 | X1 > 0.095)
+  filter(sample %in% c("ME_peak_2_08", "CT_peak_1_09", "TK_early_1_10", 
+                       "CT_peak_2_01", "MD_late_2_05", "CT_late_1_09", 
+                       "MD_peak_2_05", "MD_peak_2_01", "MD_peak_2_07", #
+                       "CT_early_2_07", "CT_early_2_08", "CT_late_1_04",
+                       "CT_peak_1_01", "CT_peak_1_02", "CT_peak_1_03", "CT_peak_1_05",
+                      "CT_peak_1_10", "CT_peak_2_04", "CT_peak_2_05",
+                      "MD_late_2_07", "MD_peak_1_09", "MD_peak_1_10", 
+                      "MD_peak_2_04", "MD_peak_2_06", "CT_early_1_02",
+                      "CT_early_2_05", "CT_peak_2_03", "CT_peak_2_06",
+                      "MD_peak_1_01", "MD_peak_1_04", "MD_peak_1_06",
+                      "MD_peak_1_08", "MD_peak_1_07", "MD_peak_1_08", 
+                      "MD_late_1_08", "MD_peak_2_09", "CT_peak_1_07",
+                      "MD_peak_2_10"))
 
 s_exc_positions = which(s_pca_df1$sample %in% s_pca_exclude$sample)
-
 
 s_eigs = data.frame(eigen(s_matrix[-s_exc_positions, -s_exc_positions])$vectors[,1:2])
 
@@ -1207,6 +1230,8 @@ ggplot(s_pca_df, aes(x = X1, y = X2, colour = site_code, shape = season)) +
   scale_colour_manual(values = pop_cols) + 
   theme_matt() + 
   theme(legend.position = "right")
+
+filter(s_pca_df, X2 < -0.4 | X2 > 0.4)
 
 ```
 
@@ -1234,7 +1259,6 @@ ggplot(f_pca_df, aes(x = X1, y = X2, colour = site_code, shape = season)) +
 
 ```{r}
 
-
 x_eigs1 = data.frame(eigen(x_matrix[])$vectors[,1:2])
 
 x_pca_df1 = x_eigs1 %>% 
@@ -1249,10 +1273,11 @@ ggplot(x_pca_df1, aes(x = X1, y = X2, colour = site_code, shape = season)) +
   theme(legend.position = "right")
 
 x_pca_exclude = x_pca_df1 %>% 
-  filter(X2 > 0.25 | sample %in% c("TK_early_2_01","TK_early_1_04", "TK_peak_1_09"))
+  filter(sample %in% c("ME_peak_2_10", "TK_early_2_04", "CT_early_1_01", "TK_early_2_01",
+                       "CT_early_2_06", "TK_early_1_04", "TK_peak_1_09", "TK_peak_2_09", 
+                       "TK_peak_2_07"))
 
 x_exc_positions = which(x_pca_df1$sample %in% x_pca_exclude$sample)
-
 
 x_eigs = data.frame(eigen(x_matrix[-x_exc_positions, -x_exc_positions])$vectors[,1:2])
 
@@ -1269,6 +1294,9 @@ ggplot(x_pca_df, aes(x = X1, y = X2, colour = site_code, shape = season)) +
   scale_colour_manual(values = pop_cols) + 
   theme_matt() + 
   theme(legend.position = "right")
+
+filter(x_pca_df, X2 > 0.25)
+
 
 ```
 

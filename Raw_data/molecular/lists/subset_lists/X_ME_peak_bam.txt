@@ -1,0 +1,16 @@
+bam_files/ME_peak_1_01_dd_clip.bam
+bam_files/ME_peak_1_02_dd_clip.bam
+bam_files/ME_peak_1_03_dd_clip.bam
+bam_files/ME_peak_1_05_dd_clip.bam
+bam_files/ME_peak_1_06_dd_clip.bam
+bam_files/ME_peak_1_07_dd_clip.bam
+bam_files/ME_peak_1_08_dd_clip.bam
+bam_files/ME_peak_1_10_dd_clip.bam
+bam_files/ME_peak_2_01_dd_clip.bam
+bam_files/ME_peak_2_02_dd_clip.bam
+bam_files/ME_peak_2_03_dd_clip.bam
+bam_files/ME_peak_2_04_dd_clip.bam
+bam_files/ME_peak_2_05_dd_clip.bam
+bam_files/ME_peak_2_06_dd_clip.bam
+bam_files/ME_peak_2_07_dd_clip.bam
+bam_files/ME_peak_2_09_dd_clip.bam

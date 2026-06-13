@@ -1,4 +1,0 @@
-bam_files/CT_early_2_07_dd_clip.bam
-bam_files/CT_early_2_08_dd_clip.bam
-bam_files/CT_early_1_02_dd_clip.bam
-bam_files/CT_early_2_05_dd_clip.bam

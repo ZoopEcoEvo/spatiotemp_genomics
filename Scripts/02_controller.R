@@ -126,72 +126,72 @@ bam_list = read.csv(file = "Raw_data/molecular/bam_list.txt", header = F) %>%
   mutate(beagle_ind = paste0("Ind", row - 1, collapse = "")) %>% 
   select(-row)
 
-# # Takes the bam list and subsets to clade, site, season, and site x season lists
-# for(c in unique(bam_list$clade)){
-#   # Subsets the list to just the clade (allows next steps to skip anything with no representatives)
-#   subset = bam_list %>%
-#     ungroup() %>%
-#     filter(clade == c)
-# 
-#   clade_list = subset %>%
-#     select(V1)
-# 
-#   write.table(clade_list, file = paste("Raw_data/molecular/subset_lists/", c, "_bam.txt", sep = ""),
-#               quote = F,
-#               col.names = F,
-#               row.names = F)
-# 
-#   ### Create lists for each season
-#   for(s in unique(subset$season)){
-#     season_list = subset %>%
-#       ungroup() %>%
-#       filter(season == s) %>%
-#       select(V1)
-# 
-#     write.table(season_list, file = paste("Raw_data/molecular/subset_lists/", c, "_",  s, "_bam.txt", sep = ""),
-#                 quote = F,
-#                 col.names = F,
-#                 row.names = F)
-#   }
-# 
-#   ### Create lists for each site AND site x season combos
-#   for(l in unique(subset$site_code)){
-#     site_subset = subset %>%
-#       ungroup() %>%
-#       filter(site_code == l)
-# 
-#     site_list = site_subset %>%
-#       select(V1)
-# 
-#     write.table(site_list, file = paste("Raw_data/molecular/subset_lists/", c, "_",  l, "_bam.txt", sep = ""),
-#                 quote = F,
-#                 col.names = F,
-#                 row.names = F)
-# 
-#     for(ss in unique(site_subset$season)){
-#       site_season_list = site_subset %>%
-#         ungroup() %>%
-#         filter(season == ss) %>%
-#         select(V1)
-# 
-#       write.table(site_season_list, file = paste("Raw_data/molecular/subset_lists/", c, "_",  l, "_", ss, "_bam.txt", sep = ""),
-#                   quote = F,
-#                   col.names = F,
-#                   row.names = F)
-#     }
-#   }
-# }
-# 
-# for(c in unique(bam_list$clade)){
-#   clade_list = bam_list %>%
-#     ungroup() %>%
-#     filter(clade == c) %>%
-#     select(beagle_ind)
-# 
-#   list_name = paste("Raw_data/molecular/beagle_inds/clade_", c, "_inds.txt", sep = "")
-# 
-#   write.table(clade_list, file = list_name, row.names = F, col.names = F, quote = F)
-# }
+# Takes the bam list and subsets to clade, site, season, and site x season lists
+for(c in unique(bam_list$clade)){
+  # Subsets the list to just the clade (allows next steps to skip anything with no representatives)
+  subset = bam_list %>%
+    ungroup() %>%
+    filter(clade == c)
+
+  clade_list = subset %>%
+    select(V1)
+
+  write.table(clade_list, file = paste("Raw_data/molecular/lists/clade_lists/", c, "_bam.txt", sep = ""),
+              quote = F,
+              col.names = F,
+              row.names = F)
+
+  ### Create lists for each season
+  for(s in unique(subset$season)){
+    season_list = subset %>%
+      ungroup() %>%
+      filter(season == s) %>%
+      select(V1)
+
+    write.table(season_list, file = paste("Raw_data/molecular/lists/season_lists/", c, "_",  s, "_bam.txt", sep = ""),
+                quote = F,
+                col.names = F,
+                row.names = F)
+  }
+
+  ### Create lists for each site AND site x season combos
+  for(l in unique(subset$site_code)){
+    site_subset = subset %>%
+      ungroup() %>%
+      filter(site_code == l)
+
+    site_list = site_subset %>%
+      select(V1)
+
+    write.table(site_list, file = paste("Raw_data/molecular/lists/site_lists/", c, "_",  l, "_bam.txt", sep = ""),
+                quote = F,
+                col.names = F,
+                row.names = F)
+
+    for(ss in unique(site_subset$season)){
+      site_season_list = site_subset %>%
+        ungroup() %>%
+        filter(season == ss) %>%
+        select(V1)
+
+      write.table(site_season_list, file = paste("Raw_data/molecular/lists/subset_lists/", c, "_",  l, "_", ss, "_bam.txt", sep = ""),
+                  quote = F,
+                  col.names = F,
+                  row.names = F)
+    }
+  }
+}
+
+for(c in unique(bam_list$clade)){
+  clade_list = bam_list %>%
+    ungroup() %>%
+    filter(clade == c) %>%
+    select(beagle_ind)
+
+  list_name = paste("Raw_data/molecular/beagle_inds/clade_", c, "_inds.txt", sep = "")
+
+  write.table(clade_list, file = list_name, row.names = F, col.names = F, quote = F)
+}
 
 range_changes = read.csv(file = "Output/Output_data/range_changes.csv") %>% 
   select("Scenario" = Comparison, "WT Range" = WT.Range, "% Decrease" = X..Decrease)
