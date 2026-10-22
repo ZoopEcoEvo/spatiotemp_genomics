@@ -196,7 +196,7 @@ for(c in unique(bam_list$clade)){
 range_changes = read.csv(file = "Output/Output_data/range_changes.csv") %>% 
   select("Scenario" = Comparison, "WT Range" = WT.Range, "% Decrease" = X..Decrease)
 
-fst_summary = read.table(file = "Raw_data/molecular/fst_summary.tsv", sep = "\t", header = T) %>%
+fst_summary = read.table(file = "Raw_data/molecular/fst/fst_summary.tsv", sep = "\t", header = T) %>%
   janitor::clean_names() %>% drop_na()
 
 collections = site_temps %>%

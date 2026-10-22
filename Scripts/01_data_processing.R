@@ -115,70 +115,34 @@ if(length(new_runs) > 0){ # If there are new data files to process...
 ###############
 ## Molecular ##
 ###############
-
-### Processing Clades
-
-if(process_clades == T){
-  
-  ref_clades = read_tsv("raw_data/molecular/reference_clade_labels.txt",  show_col_types = FALSE) %>% distinct()
-  
-  clade_matches = data.frame()
-  no_matches = c()
-  
-  for(i in dir("Raw_data/molecular/clade_matches/")){
-    
-    blast_results = read.csv(file = paste0("Raw_data/molecular/clade_matches/", i, collapse = ""),
-                             col.names = c("read", "ref", "pident", "length", "mismatch", "gapopen", 
-                                           "qstart", "qend", "sstart", "send", "evalue", "bitscore")) 
-    
-    clade_counts = blast_results %>% 
-      group_by(read) %>% 
-      filter(evalue == min(evalue)) %>% 
-      ungroup() %>% 
-      filter(length > 100) %>% 
-      filter(pident > 95) %>% 
-      left_join(ref_clades, join_by(ref == label)) %>%  
-      mutate("sample" = str_split_fixed(i, pattern = ".csv", n = 2)[,1], 
-             "population" = str_split_fixed(sample, pattern = "_", n = 4)[,1], 
-             "season" = str_split_fixed(sample, pattern = "_", n = 4)[,2], 
-             "rep" = as.numeric(str_split_fixed(sample, pattern = "_", n = 4)[,3]), 
-             "tube" = str_split_fixed(sample, pattern = "_", n = 4)[,4])
-    
-    if(dim(clade_counts)[1] == 0){
-      no_matches = c(no_matches, str_split_fixed(i, pattern = ".csv", n = 2)[,1])
-    }else{
-      clade_matches = bind_rows(clade_matches, clade_counts)
-    }
-  }
-  
-  clade_matches = clade_matches %>% 
-    ungroup() %>% 
-    mutate(Clade = case_when(
-      Clade == "I" ~ "A_hudsonica",
-      .default = Clade
-    ))
-  
-  write.table(clade_matches, file = "Output/Output_data/clade_matches.csv", 
-              sep = ",", row.names = F, col.names = !file.exists("Output/Output_data/clade_matches.csv"), 
-              append = T)
-  
-  best_matches = clade_matches %>% 
-    group_by(sample) %>% 
-    filter(length == max(length)) %>% 
-    filter(evalue == min(evalue)) %>% 
-    select(sample, population, season, rep, tube, Clade) %>% 
-    distinct()
-  
-  write.table(best_matches, file = "Output/Output_data/best_matches.csv", 
-              sep = ",", row.names = F, col.names = !file.exists("Output/Output_data/best_matches.csv"), 
-              append = T)
-}
+# Most analyses should be done on the cluster, with just processed data exported to local machine
 
 
-### Bringing the different data sources together 
-# Takes all the CTmax data and adds in info about the number of reads, clade assignments, and genome coverage
-# Filters out individuals to be excluded, that are missing a clade assignment, and A. hudsonica individuals
 
+
+
+
+###############
+## Synthesis ##
+###############
+# Combines trait and molecular data into one central data file 
+# Should indicate whether 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Previous versions (delete once workflow is re-done)
 if(process_all_data == T){
 
   all_data = read.csv(file = "Output/Output_data/full_data.csv") %>%  
