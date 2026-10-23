@@ -1,0 +1,6 @@
+sample_id,exclude_from,reason,source,date_added
+TK_late_1_03,phenotype,late-stage juvenile or abnormally low CTmax,old 02_controller.R (St._Thomas_de_Kent_Wharf_late_1_3),2026-10-22
+FH_late_2_03,phenotype,late-stage juvenile or abnormally low CTmax,old 02_controller.R (Ft._Hamer_late_2_3),2026-10-22
+MD_peak_2_02,phenotype,late-stage juvenile or abnormally low CTmax,old 02_controller.R (Tyler_Cove_peak_2_2),2026-10-22
+MR_peak_2_07,phenotype,late-stage juvenile or abnormally low CTmax,old 02_controller.R (Manatee_River_peak_2_7),2026-10-22
+MR_peak_2_06,phenotype,late-stage juvenile or abnormally low CTmax,old 02_controller.R (Manatee_River_peak_2_6),2026-10-22

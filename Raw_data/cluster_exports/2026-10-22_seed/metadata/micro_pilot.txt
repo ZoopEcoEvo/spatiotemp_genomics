@@ -1,0 +1,34 @@
+# Pilot set for stage_micro: up to 7 individuals per clade spread over sites/seasons
+# (highest read count per site x season), plus A. hudsonica and failed libraries as reference points.
+GW_early_2_10	# clade F, GW early
+MD_early_2_09	# clade F, MD early
+MR_late_2_08	# clade F, MR late
+CT_early_2_10	# clade F, CT early
+FH_late_2_07	# clade F, FH late
+ME_early_1_09	# clade F, ME early
+GW_late_2_10	# clade F, GW late
+ME_late_2_06	# clade IV, ME late
+TK_early_1_02	# clade IV, TK early
+CT_late_2_08	# clade IV, CT late
+RW_late_2_03	# clade IV, RW late
+ME_peak_1_09	# clade IV, ME peak
+TK_late_2_07	# clade IV, TK late
+ME_early_1_08	# clade IV, ME early
+CT_late_2_07	# clade S, CT late
+MD_peak_2_05	# clade S, MD peak
+GW_late_1_09	# clade S, GW late
+MR_late_2_02	# clade S, MR late
+ME_early_2_10	# clade S, ME early
+CT_early_1_02	# clade S, CT early
+MD_late_2_07	# clade S, MD late
+ME_peak_2_06	# clade X, ME peak
+TK_peak_2_05	# clade X, TK peak
+RW_peak_2_03	# clade X, RW peak
+CT_early_1_08	# clade X, CT early
+TK_early_1_04	# clade X, TK early
+ME_early_1_05	# clade X, ME early
+RW_late_2_07	# clade X, RW late
+CT_early_2_03	# A. hudsonica (reference point)
+ME_late_1_05	# A. hudsonica (reference point)
+FH_peak_1_10	# failed library (436,385 reads; reference point)
+RW_late_2_08	# failed library (212,808 reads; reference point)

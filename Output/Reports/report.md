@@ -1,6 +1,6 @@
 Comparing seasonal and latitudinal patterns in thermal adaptation
 ================
-2026-01-29
+2026-10-23
 
 - [Main Message](#main-message)
 - [Site Characteristics](#site-characteristics)
@@ -82,7 +82,7 @@ site_temp_plot = ggplot(site_temps, aes(x = doy, y = collection_temp, colour = s
 ggarrange(site_map, site_temp_plot, common.legend = T, legend = "bottom")
 ```
 
-<img src="../Figures/markdown/site-chars-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/site-chars-1.png" style="display: block; margin: auto;" />
 
 Collections aimed to obtain copepods near the onset of peak
 temperatures, after peak temperatures, and then after temperatures
@@ -138,14 +138,14 @@ ggplot(temp_profiles, aes(x = doy, y = temp_c)) +
         axis.text.x = element_text(angle = 320, hjust = 0, vjust = 0.5))
 ```
 
-<img src="../Figures/markdown/continuous-temps-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/continuous-temps-1.png" style="display: block; margin: auto;" />
 
 Exact locations for the sites are provided here:
 
 ``` r
 site_data %>%  
   arrange(lat) %>%  
-  select("Site" = site, "Region" = region, "Lat" = lat, "Long" = long) %>% 
+  dplyr::select("Site" = site, "Region" = region, "Lat" = lat, "Long" = long) %>% 
   knitr::kable(align = "c")
 ```
 
@@ -181,7 +181,7 @@ site_temps %>%
   theme(legend.position = "right")
 ```
 
-<img src="../Figures/markdown/lat-temp-range-plot-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/lat-temp-range-plot-1.png" style="display: block; margin: auto;" />
 
 There was a general increase in the collection temperature range at
 warmer sites. This provides an opportunity to disentangle some of the
@@ -205,7 +205,7 @@ site_temps %>%
   theme(legend.position = "right")
 ```
 
-<img src="../Figures/markdown/max-temp-vs-range-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/max-temp-vs-range-1.png" style="display: block; margin: auto;" />
 
 ## Phenotypic Measurements
 
@@ -217,7 +217,7 @@ ethanol. We excluded data for individuals that were either later
 classified as males or juveniles, that we were unable to assign to a
 clade, or that were identified as individuals from a closely related
 species (*Acartia hudsonica*). With these individuals excluded, the full
-data set contains 410 adult females with CTmax and body size
+data set contains 397 adult females with CTmax and body size
 measurements, and clade identifications.
 
 Critical thermal maxima (CTmax) was measured using a custom setup. The
@@ -257,7 +257,7 @@ join_data %>%
               names_from = season, 
               values_from = n, 
               values_fill = 0) %>% 
-  select(site, early, peak, late) %>% 
+  dplyr::select(site, early, peak, late) %>% 
   knitr::kable()
 ```
 
@@ -267,10 +267,10 @@ join_data %>%
 | Ft. Hamer                |     0 |   19 |   19 |
 | Tyler Cove               |    20 |   19 |   20 |
 | Ganey’s Wharf            |    20 |   20 |   20 |
-| Esker Point              |    19 |   19 |   20 |
-| Sawyer Park              |    16 |   19 |    8 |
-| St. Thomas de Kent Wharf |    18 |   20 |   19 |
-| Ritchie Wharf            |    17 |   20 |   20 |
+| Esker Point              |    18 |   19 |   20 |
+| Sawyer Park              |    14 |   17 |    8 |
+| St. Thomas de Kent Wharf |    15 |   19 |   19 |
+| Ritchie Wharf            |    16 |   18 |   19 |
 
 Shown below are the measured CTmax values. Individual measurements are
 shown in small points for each collection. The large points indicate the
@@ -347,7 +347,7 @@ size_plot = join_data %>%
 ggarrange(ctmax_plot, size_plot, common.legend = T, legend = "right")
 ```
 
-<img src="../Figures/markdown/size-and-ctmax-season-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/size-and-ctmax-season-1.png" style="display: block; margin: auto;" />
 
 ### Warming tolerance
 
@@ -385,7 +385,7 @@ ggplot(join_data, aes(x = season, y = warming_tol, colour = site)) +
         legend.title.align = 0.125)
 ```
 
-<img src="../Figures/markdown/seasonal-warming-tol-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/seasonal-warming-tol-1.png" style="display: block; margin: auto;" />
 
 ## Trait Correlations
 
@@ -466,7 +466,7 @@ wt_temp_plot = join_data %>%
 ggarrange(ctmax_temp_plot, wt_temp_plot, size_temp_plot, common.legend = T, legend = "bottom", nrow = 1)
 ```
 
-<img src="../Figures/markdown/temp-cors-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/temp-cors-1.png" style="display: block; margin: auto;" />
 
 The relationship between prosome length and CTmax is also of interest.
 Given that larger body sizes are associated with cold
@@ -528,7 +528,7 @@ pop_size = join_data %>%
 ggarrange(universal_size, pop_size, common.legend = T, legend = "none", nrow = 2)
 ```
 
-<img src="../Figures/markdown/ctmax-vs-size-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/ctmax-vs-size-1.png" style="display: block; margin: auto;" />
 
 ## Statistical Analysis
 
@@ -671,7 +671,7 @@ size_var_temp = ggplot(trait_ranges, aes(x = collection_temp, y = size_var, colo
 ggarrange(ctmax_var_temp, size_var_temp, common.legend = T, legend = "right")
 ```
 
-<img src="../Figures/markdown/trait-range-plot-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/trait-range-plot-1.png" style="display: block; margin: auto;" />
 
 Changes in trait variance may be indicative of phenotypic selection. If
 selection (as opposed to acclimation) are driving seasonal changes, we
@@ -703,157 +703,154 @@ After phenotyping, each individual was preserved in 95% ethanol.
 Individual DNA libraries were prepared using Twist Bio 96-plex prep
 kits, then sequenced on two lanes of an Illumina NovaSeq X Plus 25B by
 Novogene. Reads were de-multiplexed first to the plate level, and then
-to the sample level.
+to the sample level. Read processing, mapping and QC were done on the
+Unity cluster (Snakemake project `aton_lcwg`); the numbers below come
+from the exported QC tables (`results/00_qc/sample_summary.tsv`,
+`coverage_per_sample.tsv`) joined in `Scripts/03_sample_table.R`. Failed
+libraries (`library_failed`) are shown in grey.
 
 ``` r
-join_data %>% 
-  arrange(site_code, season, replicate, tube) %>% 
-  ggplot(aes(x = site_code, y = templates)) + 
-  geom_boxplot() + 
+sample_table %>% 
+  filter(sequenced) %>% 
+  ggplot(aes(x = site_code, y = raw_reads / 1e6)) + 
+  geom_boxplot(data = ~ filter(.x, !library_failed), outlier.shape = NA) + 
+  geom_jitter(aes(colour = library_failed), width = 0.15, height = 0, size = 1.5, alpha = 0.7) + 
+  scale_colour_manual(values = c("FALSE" = "grey20", "TRUE" = "grey70"), guide = "none") + 
+  scale_y_log10() + 
+  labs(x = "Site", y = "Reads (millions, log scale)") + 
   theme_matt()
 ```
 
-<img src="../Figures/markdown/overall-read-counts-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/overall-read-counts-1.png" style="display: block; margin: auto;" />
 
-While the number of reads aligned for each individual varies, there is
-no clear relationship between the number of aligned reads and individual
-size or CTmax.
+The number of reads per individual varies, but there is no clear
+relationship between sequencing depth and individual size or CTmax
+(phenotype analysis set only).
 
 ``` r
-
-reads_size_plot = ggplot(join_data, aes(x = size, y = pf_hq_aligned_reads)) + 
+reads_size_plot = ggplot(join_data, aes(x = size, y = raw_reads / 1e6)) + 
   geom_smooth() + 
   geom_point() + 
+  labs(x = "Prosome Length (mm)", y = "Reads (millions)") + 
   theme_matt()
 
-reads_ctmax_plot = ggplot(join_data, aes(x = ctmax, y = pf_hq_aligned_reads)) + 
+reads_ctmax_plot = ggplot(join_data, aes(x = ctmax, y = raw_reads / 1e6)) + 
   geom_smooth() + 
   geom_point() + 
+  labs(x = "CTmax (°C)", y = "Reads (millions)") + 
   theme_matt()
 
 ggarrange(reads_size_plot, reads_ctmax_plot, nrow = 1)
 ```
 
-<img src="../Figures/markdown/read-exp-factors-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/read-exp-factors-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
 read.model = lm(data = join_data, 
-                templates ~ size + ctmax)
+                raw_reads ~ size + ctmax)
 
 knitr::kable(car::Anova(read.model))
 ```
 
 |           |       Sum Sq |  Df |   F value |   Pr(\>F) |
 |:----------|-------------:|----:|----------:|----------:|
-| size      | 1.159239e+15 |   1 | 2.8302427 | 0.0932714 |
-| ctmax     | 3.376476e+13 |   1 | 0.0824355 | 0.7741698 |
-| Residuals | 1.667032e+17 | 407 |        NA |        NA |
+| size      | 9.988975e+14 |   1 | 2.7797642 | 0.0962568 |
+| ctmax     | 3.807035e+11 |   1 | 0.0010594 | 0.9740508 |
+| Residuals | 1.415824e+17 | 394 |        NA |        NA |
 
 ``` r
-join_data %>% 
-  ggplot(aes(x = site_code, y = pct_1x)) + 
+cov_site = sample_table %>% 
+  filter(sequenced, !library_failed) %>% 
+  ggplot(aes(x = site_code, y = breadth_ge1x)) + 
   geom_boxplot() + 
+  labs(x = "Site", y = "Genome breadth ≥1x") + 
   theme_matt()
+
+map_site = sample_table %>% 
+  filter(sequenced, !library_failed) %>% 
+  ggplot(aes(x = site_code, y = pct_mapped)) + 
+  geom_boxplot() + 
+  labs(x = "Site", y = "% reads mapped") + 
+  theme_matt()
+
+ggarrange(cov_site, map_site, nrow = 1)
 ```
 
-<img src="../Figures/markdown/site-coverage-1.png" style="display: block; margin: auto;" />
-
-``` r
-
-join_data %>% 
-  ggplot(aes(x = site_code, y = pct_aligned)) + 
-  geom_boxplot() + 
-  theme_matt()
-```
-
-<img src="../Figures/markdown/site-coverage-2.png" style="display: block; margin: auto;" />
+<img src="../Figures/site-coverage-1.png" style="display: block; margin: auto;" />
 
 ### Clade IDs
 
 *Acartia tonsa* is well known to comprise multiple, deeply diverged
-clades. To determine the clade composition of our sample set, we skimmed
-COI sequences from the low-coverage data.
+clades. Clade calls currently come from prior_coi (`prior_coi` = COI
+reads skimmed from the low-coverage data; `stage1` = final calls from
+the cluster, mitochondrial COI tree plus nuclear clustering). Calls from
+failed libraries are not used.
 
 ``` r
-# clade_matches %>% 
-#   group_by(sample) %>% 
-#   count(Clade) %>% 
-#   mutate(population = str_split_fixed(sample, pattern = "_", n = 4)[,1],
-#          season = str_split_fixed(sample, pattern = "_", n = 4)[,2],
-#          individual = str_split_fixed(sample, pattern = "_", n = 3)[,3])  %>% 
-#   ungroup() %>% 
-#   mutate(population = fct_relevel(population, "MR", "FH", "MD", "GW", "CT", "ME", "TK", "RW"), 
-#          season = fct_relevel(season, "early", "peak", "late"), 
-#          sample = fct_reorder2(sample, .y = population, .x = season, .desc = F))
-#   #write.csv(file = "Output/Output_data/COI_clades_summary.csv", row.names = F)
-
-# clade_summary %>% 
-#   group_by(sample) %>% 
-#   filter(prop == max(prop)) %>% 
-#   ggplot(aes(x = prop)) +
-#   geom_histogram()
-
-clade_summary %>%  
-  ggplot(aes(x = individual, y = n, fill = Clade)) + 
-  facet_grid(population~season) + 
-  geom_bar(stat = "identity", position = "fill") + 
-  scale_y_continuous(breaks = c(0, 0.5, 1)) + 
-  scale_fill_manual(values = clade_cols) + 
-  labs(x = "Individual", 
-       y = "Proportion") + 
+# One tile per sequenced individual. Once Stage 1 is exported, this can show the
+# per-clade COI read proportions (results/03_clades/mito/mito_read_split.tsv) instead.
+sample_table %>% 
+  filter(sequenced) %>% 
+  droplevels() %>% 
+  mutate(call = case_when(library_failed ~ "failed library",
+                          is.na(clade) ~ "no call",
+                          TRUE ~ clade),
+         call = factor(call, levels = c(names(clade_cols), "no call", "failed library"))) %>% 
+  ggplot(aes(x = factor(sprintf("%d_%02d", replicate, tube)), y = 1, fill = call)) + 
+  facet_grid(site_code ~ season) + 
+  geom_tile(colour = "white") + 
+  scale_fill_manual(values = c(clade_cols, "no call" = "grey85", "failed library" = "grey60")) + 
+  labs(x = "Individual (assay_tube)", y = NULL, fill = "Clade") + 
   theme_bw(base_size = 18) + 
   theme(panel.grid = element_blank(), 
-        axis.text.x = element_text(angle = 290, hjust = 0, vjust = 0.5))
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        axis.text.x = element_text(angle = 290, hjust = 0, vjust = 0.5, size = 8))
 ```
 
-<img src="../Figures/markdown/ind-clade-summary-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/ind-clade-summary-1.png" style="display: block; margin: auto;" />
 
 ``` r
-
-exclusions = clade_summary %>%
-  group_by(sample) %>%
-  filter(prop == max(prop)) %>%
-  filter(Clade == "A_hudsonica" | prop < 0.85)
-
-clade_summary %>%  
-  filter(!(sample %in% exclusions$sample)) %>%  
-  group_by(sample) %>% 
-  filter(prop == max(prop)) %>% 
-  ggplot(aes(x = season, fill = Clade)) + 
-  facet_wrap(population~., ncol = 2) + 
+sample_table %>%  
+  filter(sequenced, clade %in% names(clade_cols)) %>% 
+  droplevels() %>% 
+  ggplot(aes(x = season, fill = clade)) + 
+  facet_wrap(site_code ~ ., ncol = 2) + 
   geom_bar() + 
   scale_fill_manual(values = clade_cols) + 
   labs(x = "Season", 
-       y = "Count") + 
+       y = "Count", 
+       fill = "Clade") + 
   theme_matt_facets(base_size = 18)
 ```
 
-<img src="../Figures/markdown/clade-props-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/clade-props-1.png" style="display: block; margin: auto;" />
 
 These clades are deeply diverged, which affects the alignment and final
-coverage of the genome data.
+coverage of the genome data (clade X is closest to the reference
+genome).
 
 ``` r
-join_data %>% 
-  drop_na(clade) %>% 
-  ggplot(aes(x = clade, y = pct_1x)) + 
+cov_clade = sample_table %>% 
+  filter(sequenced, !library_failed, clade %in% names(clade_cols)) %>% 
+  ggplot(aes(x = clade, y = breadth_ge1x, fill = clade)) + 
   geom_boxplot() + 
+  scale_fill_manual(values = clade_cols, guide = "none") + 
+  labs(x = "Clade", y = "Genome breadth ≥1x") + 
   theme_matt()
+
+map_clade = sample_table %>% 
+  filter(sequenced, !library_failed, clade %in% names(clade_cols)) %>% 
+  ggplot(aes(x = clade, y = pct_mapped, fill = clade)) + 
+  geom_boxplot() + 
+  scale_fill_manual(values = clade_cols, guide = "none") + 
+  labs(x = "Clade", y = "% reads mapped") + 
+  theme_matt()
+
+ggarrange(cov_clade, map_clade, nrow = 1)
 ```
 
-<img src="../Figures/markdown/clade-coverage-1.png" style="display: block; margin: auto;" />
-
-``` r
-
-join_data %>% 
-  drop_na(clade) %>%
-  ggplot(aes(x = clade, y = pct_aligned)) + 
-  geom_boxplot() + 
-  theme_matt()
-```
-
-<img src="../Figures/markdown/clade-coverage-2.png" style="display: block; margin: auto;" />
+<img src="../Figures/clade-coverage-1.png" style="display: block; margin: auto;" />
 
 ### Clade-specific Physiology
 
@@ -894,7 +891,7 @@ clade_size_plot =  join_data %>%
 ggarrange(clade_ctmax_plot, clade_size_plot, nrow = 1, common.legend = T, legend = "right")
 ```
 
-<img src="../Figures/markdown/clade-trait-regs-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/clade-trait-regs-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
@@ -939,7 +936,7 @@ emmeans::emmeans(ctmax.model, specs = "clade") %>% pairs() %>%  plot() +
   theme_matt()
 ```
 
-<img src="../Figures/markdown/clade-ctmax-contrasts-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/clade-ctmax-contrasts-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
@@ -962,13 +959,13 @@ plast_contrast_plot = emmeans::emtrends(ctmax.model, var = "temp_cent", specs = 
 ggarrange(ctmax_contrast_plot, plast_contrast_plot)
 ```
 
-<img src="../Figures/markdown/clade-contrast-plots-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/clade-contrast-plots-1.png" style="display: block; margin: auto;" />
 
 ``` r
 emmeans::emtrends(ctmax.model, var = "temp_cent", specs = "clade") %>% pairs() %>% plot()
 ```
 
-<img src="../Figures/markdown/clade-plast-contrast-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/clade-plast-contrast-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
@@ -986,7 +983,7 @@ join_data %>%
   theme(legend.position = "none")
 ```
 
-<img src="../Figures/markdown/clade-trait-regs-pops-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/clade-trait-regs-pops-1.png" style="display: block; margin: auto;" />
 
 The general result here is that Clade F appears to be more thermally
 tolerant than Clades S and X, which in turn are more thermally tolerant
@@ -1006,7 +1003,7 @@ Clade S generally occurs in low proportions, with a few exceptions.
 clade_prop = join_data %>% 
   filter(clade != "A_hudsonica") %>% 
   drop_na(clade) %>% 
-  select(site, season, clade, collection_temp,collection_salinity, lat) %>% 
+  dplyr::select(site, season, clade, collection_temp,collection_salinity, lat) %>% 
   group_by(site, season, collection_temp, collection_salinity, lat) %>% 
   count(clade) %>% 
   ungroup(collection_temp, collection_salinity, lat) %>% 
@@ -1038,14 +1035,14 @@ clade_prop %>%
   theme(legend.position = "none")
 ```
 
-<img src="../Figures/markdown/clade-hab-patterns-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/clade-hab-patterns-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
 join_data %>% 
   drop_na(clade) %>% 
   filter(clade != "A_hudsonica") %>% 
-  select(collection_temp, collection_salinity, clade) %>% 
+  dplyr::select(collection_temp, collection_salinity, clade) %>% 
   ggplot(aes(y = collection_temp, x = collection_salinity)) +
   facet_wrap(clade~.) + 
   geom_density_2d_filled(contour_var = "ndensity",
@@ -1057,130 +1054,15 @@ join_data %>%
   theme_matt_facets()
 ```
 
-<img src="../Figures/markdown/clade-contours-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/clade-contours-1.png" style="display: block; margin: auto;" />
 
 ### PCA
 
-``` r
-tonsa_eigs = data.frame(eigen(tonsa_matrix)$vectors[,1:2])
-pc1_var = round((eigen(tonsa_matrix)$values[1] / sum(eigen(tonsa_matrix)$values)) * 100, digits = 2)
-pc2_var = round((eigen(tonsa_matrix)$values[2] / sum(eigen(tonsa_matrix)$values)) * 100, digits = 2)
-tonsa_pca_df = tonsa_eigs %>% 
-  bind_cols(bam_list)
-
-ggplot(tonsa_pca_df, aes(x = X1, y = X2, colour = clade)) + 
-  geom_point(size = 5) + 
-  labs(x = paste0("PC1 (", pc1_var, "%)", sep = ""),
-       y = paste0("PC2 (", pc2_var, "%)", sep = "")) + 
-  scale_colour_manual(values = clade_cols) + 
-  theme_matt() + 
-  theme(legend.position = "right")
-```
-
-<img src="../Figures/markdown/all-pca-1.png" style="display: block; margin: auto;" />
-
-``` r
-
-f_inds = which(tonsa_pca_df$clade == "F")
-f_samples = filter(tonsa_pca_df, clade == "F") %>% select(-X1, -X2)
-f_matrix = tonsa_matrix[f_inds, f_inds]
-f_eigs = data.frame(eigen(f_matrix)$vectors[,1:2])
-f_pc1_var = round((eigen(f_matrix)$values[1] / sum(eigen(f_matrix)$values)) * 100, digits = 2)
-f_pc2_var = round((eigen(f_matrix)$values[2] / sum(eigen(f_matrix)$values)) * 100, digits = 2)
-f_pca_df = f_eigs %>% 
-  bind_cols(f_samples)
-
-f_pca_plot = f_pca_df %>% 
-  ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
-  #facet_wrap(season~.) + 
-  geom_point(size = 3) + 
-  labs(x = paste0("PC1 (", f_pc1_var, "%)", sep = ""),
-       y = paste0("PC2 (", f_pc2_var, "%)", sep = ""),
-       title = "Clade - F") + 
-  scale_color_manual(values = pop_cols)  + 
-  theme_matt_facets()
-
-######### Clade X
-
-x_inds = which(tonsa_pca_df$clade == "X")
-x_samples = filter(tonsa_pca_df, clade == "X") %>% select(-X1, -X2)
-x_matrix = tonsa_matrix[x_inds, x_inds]
-x_eigs = data.frame(eigen(x_matrix)$vectors[,1:2])
-x_pc1_var = round((eigen(x_matrix)$values[1] / sum(eigen(x_matrix)$values)) * 100, digits = 2)
-x_pc2_var = round((eigen(x_matrix)$values[2] / sum(eigen(x_matrix)$values)) * 100, digits = 2)
-x_pca_df = x_eigs %>% 
-  bind_cols(x_samples) 
-
-x_pca_plot = x_pca_df %>% 
-  #filter(X1 < -0.082) %>% 
-  ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
-  #facet_wrap(season~.) + 
-  geom_point(size = 3) + 
-  labs(x = paste0("PC1 (", x_pc1_var, "%)", sep = ""),
-       y = paste0("PC2 (", x_pc2_var, "%)", sep = ""),
-       title = "Clade - X") + 
-  scale_color_manual(values = pop_cols)  + 
-  theme_matt_facets()
-
-#Outliers
-#x_pca_df %>% filter(X1 > -0.085) 
-
-######### Clade S
-
-s_inds = which(tonsa_pca_df$clade == "S")
-s_samples = filter(tonsa_pca_df, clade == "S") %>% select(-X1, -X2)
-s_matrix = tonsa_matrix[s_inds, s_inds]
-s_eigs = data.frame(eigen(s_matrix)$vectors[,1:2])
-s_pc1_var = round((eigen(s_matrix)$values[1] / sum(eigen(s_matrix)$values)) * 100, digits = 2)
-s_pc2_var = round((eigen(s_matrix)$values[2] / sum(eigen(s_matrix)$values)) * 100, digits = 2)
-s_pca_df = s_eigs %>% 
-  bind_cols(s_samples)
-
-s_pca_plot = s_pca_df %>% 
-  #filter(X1 < -0.114, X2 > -0.0015, X2< 0.004) %>% 
-  ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
-  #facet_wrap(season~.) + 
-  geom_point(size = 3) + 
-  labs(x = paste0("PC1 (", s_pc1_var, "%)", sep = ""),
-       y = paste0("PC2 (", s_pc2_var, "%)", sep = ""),
-       title = "Clade - S") + 
-  scale_color_manual(values = pop_cols)  + 
-  theme_matt_facets()
-
-
-#Outliers
-#s_pca_df %>% filter(!(X1 < -0.114 & X2 > -0.0015 & X2< 0.004))
-
-######### Clade IV
-
-IV_inds = which(tonsa_pca_df$clade == "IV")
-IV_samples = filter(tonsa_pca_df, clade == "IV") %>% select(-X1, -X2)
-IV_matrix = tonsa_matrix[IV_inds, IV_inds]
-IV_eigs = data.frame(eigen(IV_matrix)$vectors[,1:2])
-IV_pc1_var = round((eigen(IV_matrix)$values[1] / sum(eigen(IV_matrix)$values)) * 100, digits = 2)
-IV_pc2_var = round((eigen(IV_matrix)$values[2] / sum(eigen(IV_matrix)$values)) * 100, digits = 2)
-IV_pca_df = IV_eigs %>% 
-  bind_cols(IV_samples) 
-
-IV_pca_plot = IV_pca_df %>% 
-  #filter(X1< -0.1) %>% 
-  ggplot(aes(x = X1, y = X2, colour = site_code, shape = season)) + 
-  #facet_wrap(season~.) + 
-  geom_point(size = 3) + 
-  labs(x = paste0("PC1 (", IV_pc1_var, "%)", sep = ""),
-       y = paste0("PC2 (", IV_pc2_var, "%)", sep = ""), 
-       title = "Clade - IV") + 
-  scale_color_manual(values = pop_cols)  + 
-  theme_matt_facets()
-
-#Outliers
-#IV_pca_df %>% filter(!(X1< -0.1 & X2))
-
-
-ggarrange(f_pca_plot, x_pca_plot, s_pca_plot, IV_pca_plot, common.legend = T, legend = "right")
-```
-
-<img src="../Figures/markdown/clade-pca-1.png" style="display: block; margin: auto;" />
+Per-clade PCA (PCAngsd) and admixture (NGSadmix) come from Stage 1 of
+the cluster workflow (`results/04_structure/`). They will be read here
+from the cluster export once Stage 1 is done; the earlier exploratory
+PCA code (based on covariance matrices from before the Snakemake
+pipeline) is kept in `Output/Reports/legacy/report_pre_migration.Rmd`.
 
 ## Partitioning Vulnerability
 
@@ -1215,7 +1097,7 @@ join_data %>%
   theme(legend.position = "none")
 ```
 
-<img src="../Figures/markdown/clade-trait-lat-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/clade-trait-lat-1.png" style="display: block; margin: auto;" />
 
 We illustrate the effects of these different levels of variation by
 calculating warming tolerance for each collection (site x collection
@@ -1287,7 +1169,7 @@ ggplot(clade_mean_profiles, aes(x = pred_wt, y = region, fill = region)) +
   theme(legend.position = "none")
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-3-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/unnamed-chunk-3-1.png" style="display: block; margin: auto;" />
 
 ### Scenario 3 (Clade variation and acclimation/adaptation)
 
@@ -1311,14 +1193,14 @@ pred_data = temp_profiles %>%
                names_to = "clade", 
                values_to = "pred_wt") %>% 
   mutate(clade = str_split_fixed(clade, pattern = "_", n = 2)[,1]) %>%  
-  select(region, doy, date, "collection_temp" = temp_c, clade)
+  dplyr::select(region, doy, date, "collection_temp" = temp_c, clade)
 
 
 pred_data$pred_ctmax = predict(pred.model, newdata = pred_data)
 
 full_pred_profiles = pred_data %>% 
   mutate(pred_wt = pred_ctmax - collection_temp) %>% 
-  select(region, doy, date, "temp_c" = collection_temp, -pred_ctmax, clade, pred_wt) %>% 
+  dplyr::select(region, doy, date, "temp_c" = collection_temp, -pred_ctmax, clade, pred_wt) %>% 
   mutate(comparison = "Genetic Variation & Acclimation") %>% 
   ungroup() %>% 
   mutate(region = fct_relevel(region, "Florida", "Chesapeake", "Connecticut",
@@ -1333,7 +1215,7 @@ ggplot(full_pred_profiles, aes(x = pred_wt, y = region, fill = region)) +
   theme(legend.position = "none")
 ```
 
-<img src="../Figures/markdown/unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
 
 ### Comparing Scenarios
 
@@ -1378,7 +1260,7 @@ ggplot(pred_samples, aes(x = region, y = prop, fill = clade)) +
   theme(legend.position = "right")
 ```
 
-<img src="../Figures/markdown/region-clade-props-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/region-clade-props-1.png" style="display: block; margin: auto;" />
 
 Warming tolerance profiles for each clade were added in these
 proportions to generation populations of 100 individuals.
@@ -1474,7 +1356,7 @@ ggarrange(current_mean_ctmax_plot, current_clade_mean_plot, current_full_pred_pl
           nrow = 3, labels = "AUTO")
 ```
 
-<img src="../Figures/markdown/peak-season-wt-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/peak-season-wt-1.png" style="display: block; margin: auto;" />
 
 Overall, differences were fairly minor, with slight increases in
 predicted warming tolerance in low latitude regions and slight decreases
@@ -1537,14 +1419,14 @@ warming_pred_data = temp_profiles %>%
                names_to = "clade", 
                values_to = "pred_wt") %>% 
   mutate(clade = str_split_fixed(clade, pattern = "_", n = 2)[,1]) %>%  
-  select(region, doy, date, "collection_temp" = temp_c, clade)
+  dplyr::select(region, doy, date, "collection_temp" = temp_c, clade)
 
 
 warming_pred_data$pred_ctmax = predict(pred.model, newdata = warming_pred_data)
 
 warming_full_pred_profiles = warming_pred_data %>% 
   mutate(pred_wt = pred_ctmax - collection_temp) %>% 
-  select(region, doy, date, "temp_c" = collection_temp, -pred_ctmax, clade, pred_wt) %>% 
+  dplyr::select(region, doy, date, "temp_c" = collection_temp, -pred_ctmax, clade, pred_wt) %>% 
   mutate(comparison = "Genetic Variation & Acclimation") %>% 
   ungroup() %>% 
   mutate(region = fct_relevel(region, "Florida", "Chesapeake", "Connecticut",
@@ -1647,7 +1529,7 @@ ggarrange(warming_mean_ctmax_plot, warming_clade_mean_plot, warming_full_pred_pl
           nrow = 3, labels = "AUTO")
 ```
 
-<img src="../Figures/markdown/peak-season-wt-plus-warming-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/peak-season-wt-plus-warming-1.png" style="display: block; margin: auto;" />
 
 To simplify the comparisons, here we subset the data to just August and
 September (the warmest months and the season typically associated with
@@ -1704,7 +1586,7 @@ ggplot(peak_comps, aes(x = comparison, y = mean_wt, colour = warming, group = wa
   theme(axis.text.x = element_text(angle = 300, hjust = 0, vjust = 0.5))
 ```
 
-<img src="../Figures/markdown/wt-range-scenarios-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/wt-range-scenarios-1.png" style="display: block; margin: auto;" />
 
 Changes were slight between the scenarios, with the same relative
 patterns between the current and warming scenarios. Compared to the
@@ -1721,10 +1603,11 @@ range_changes = wt_comps %>%
   summarise(wt_range = max(min_wt) - min(min_wt)) %>% 
   mutate(percent_decrease = 100 * (1 - (wt_range / wt_range[1]))) %>% 
   ungroup() %>% 
-  select("Comparison" = comparison, "WT Range" = wt_range, "% Decrease" = percent_decrease) %>% 
+  dplyr::select("Comparison" = comparison, "WT Range" = wt_range, "% Decrease" = percent_decrease) %>% 
   arrange(`% Decrease`)
  
-#write.csv(range_changes, file = "Output/Output_data/range_changes.csv", row.names = F)
+# Saved for the phenotype manuscript (Table 2)
+write.csv(range_changes, file = here("Output", "Output_data", "range_changes.csv"), row.names = FALSE)
 
 knitr::kable(range_changes, digits = 2)
 ```
@@ -1732,8 +1615,8 @@ knitr::kable(range_changes, digits = 2)
 | Comparison                      | WT Range | % Decrease |
 |:--------------------------------|---------:|-----------:|
 | Fixed CTmax                     |    13.05 |       0.00 |
-| Clade                           |     9.84 |      24.62 |
-| Genetic Variation & Acclimation |     8.86 |      32.11 |
+| Clade                           |     9.72 |      25.53 |
+| Genetic Variation & Acclimation |     8.99 |      31.13 |
 
 ## Salinity Comparisons
 
@@ -1778,13 +1661,13 @@ sal_regions = data.frame(region = rep(c("South", "Central", "North"), each = 2),
 sal_comps = join_data %>% 
   filter(site %in% sal_regions$site) %>% 
   inner_join(sal_regions, by = c("site")) %>% 
-  select( region = region.y, site, salinity, season, doy, collection_temp, collection_salinity,
+  dplyr::select( region = region.y, site, salinity, season, doy, collection_temp, collection_salinity,
           size, ctmax, warming_tol) %>% 
   mutate(salinity = fct_relevel(salinity, "low", "high"),
          region = fct_relevel(region, "South", "Central", "North"))
 
 sal_comp_temps = sal_comps %>%  
-  select(salinity, season, region, collection_temp, collection_salinity) %>% 
+  dplyr::select(salinity, season, region, collection_temp, collection_salinity) %>% 
   distinct() %>% 
   ggplot(aes(x = salinity, y = collection_temp, colour = season, group = season)) + 
   facet_wrap(region~.) + 
@@ -1796,7 +1679,7 @@ sal_comp_temps = sal_comps %>%
   theme_matt_facets(base_size = 14)
 
 sal_comp_sal = sal_comps %>%  
-  select(salinity, season, region, collection_temp, collection_salinity) %>% 
+  dplyr::select(salinity, season, region, collection_temp, collection_salinity) %>% 
   distinct() %>% 
   ggplot(aes(x = salinity, y = collection_salinity, colour = season, group = season)) + 
   facet_wrap(region~.) + 
@@ -1810,7 +1693,7 @@ sal_comp_sal = sal_comps %>%
 ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "right")
 ```
 
-<img src="../Figures/markdown/season-sal-comps-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/season-sal-comps-1.png" style="display: block; margin: auto;" />
 
 The three pairs of cross-salinity comparisons do show evidence for
 fine-scale trait divergence, although there was no consistent pattern in
@@ -1881,7 +1764,7 @@ sal_comp_size_plot = sal_comps %>%
 ggarrange(sal_comp_ctmax_plot, sal_comp_size_plot, nrow = 2, common.legend = T, legend = "right")
 ```
 
-<img src="../Figures/markdown/sal-pair-traits-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/sal-pair-traits-1.png" style="display: block; margin: auto;" />
 
 ## Misc. Details
 
@@ -1902,7 +1785,7 @@ ggplot(ramp_record2, aes(x = minute_interval, y = mean_ramp)) +
   theme_matt(base_size = 16) 
 ```
 
-<img src="../Figures/markdown/ramp-record-plot-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/ramp-record-plot-1.png" style="display: block; margin: auto;" />
 
 ``` r
 join_data %>% 
@@ -1918,7 +1801,7 @@ join_data %>%
   theme_matt_facets()
 ```
 
-<img src="../Figures/markdown/rep-comp-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/rep-comp-1.png" style="display: block; margin: auto;" />
 
 ``` r
 
@@ -1931,7 +1814,7 @@ early_peak = join_data %>%
          temp_change = max(collection_temp) - min(collection_temp),
          avg_temp = (max(collection_temp) + min(collection_temp)) / 2,
          days_passed = max(doy) - min(doy)) %>% 
-  select(site, lat, season, 
+  dplyr::select(site, lat, season, 
          ctmax_sd_p, size_sd_p, 
          temp_change, avg_temp, days_passed, 
          ctmax, size) %>%
@@ -1956,7 +1839,7 @@ peak_late = join_data %>%
          temp_change = last(collection_temp) - first(collection_temp),
          avg_temp = (max(collection_temp) + min(collection_temp)) / 2,
          days_passed = max(doy) - min(doy)) %>% 
-  select(site, lat, season, ctmax_sd_p, size_sd_p, 
+  dplyr::select(site, lat, season, ctmax_sd_p, size_sd_p, 
          temp_change, avg_temp, days_passed, 
          ctmax, size) %>%
   group_by(site, lat, season, ctmax_sd_p, size_sd_p, 
@@ -1988,7 +1871,7 @@ ggplot(generations, aes(x = lat, y = gens, colour = site, shape = season)) +
   theme(legend.position = "right")
 ```
 
-<img src="../Figures/markdown/num-gens-plot-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/num-gens-plot-1.png" style="display: block; margin: auto;" />
 
 ``` r
 obs_ranks = ggplot(join_data, aes(x = rank)) + 
@@ -2020,4 +1903,4 @@ sim_ranks = ggplot(sim_data, aes(x = rank)) +
 ggarrange(obs_ranks, sim_ranks)
 ```
 
-<img src="../Figures/markdown/rank-sims-1.png" style="display: block; margin: auto;" />
+<img src="../Figures/rank-sims-1.png" style="display: block; margin: auto;" />

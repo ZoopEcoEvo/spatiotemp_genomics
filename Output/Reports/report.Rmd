@@ -16,109 +16,34 @@ output:
     toc_float: true
 ---
 
-```{r setup, include=T, message = F, warning = F, echo = F}
+```{r setup, include = FALSE}
+library(here)
+library(ggpubr)
+library(lme4)
+library(merTools)
+library(tidyverse) # last, so dplyr::select() masks MASS::select() (loaded by merTools)
+
+# Lab plotting themes (theme_matt(), theme_matt_facets()) and project palettes
+# (clade_cols, site_cols, pop_cols, region_cols, ...)
+source(here("Scripts", "themes.R"))
+source(here("Scripts", "palettes.R"))
+
+# Processed data: site_data, sample_table, all_data, join_data, temp_profiles,
+# temp_record, ramp_record, site_temps, temp_summaries, collections, range_changes
+source(here("Scripts", "load_data.R"))
 
 knitr::opts_chunk$set(
   echo = knitr::is_html_output(),
   fig.align = "center",
-  fig.path = "../Figures/markdown/",
+  # Figures are saved as Output/Figures/<chunk-label>-1.png (and .pdf),
+  # which is where the manuscripts look for them. Kept relative (to this
+  # file's folder) so image links in the GitHub .md version work.
+  fig.path = "../Figures/",
   dev = c("png", "pdf"),
   message = FALSE,
   warning = FALSE,
-  collapse = T
+  collapse = TRUE
 )
-
-theme_matt = function(base_size = 18,
-                      dark_text = "grey20"){
-  mid_text <-  monochromeR::generate_palette(dark_text, "go_lighter", n_colours = 5)[2]
-  light_text <-  monochromeR::generate_palette(dark_text, "go_lighter", n_colours = 5)[3]
-  
-  theme_pubr(base_family="sans") %+replace% 
-    theme(
-      panel.background  = element_rect(fill="transparent", colour=NA), 
-      plot.background = element_rect(fill="transparent", colour=NA), 
-      legend.background = element_rect(fill="transparent", colour=NA),
-      legend.key = element_rect(fill="transparent", colour=NA),
-      text = element_text(colour = mid_text, lineheight = 1.1),
-      title = element_text(size = base_size * 1.5,
-                           colour = dark_text),
-      axis.text = element_text(size = base_size,
-                               colour = mid_text),
-      axis.title.x = element_text(size = base_size * 1.2,
-                                  margin = unit(c(3, 0, 0, 0), "mm")),
-      axis.title.y = element_text(size = base_size * 1.2,
-                                  margin = unit(c(0, 5, 0, 0), "mm"), 
-                                  angle = 90),
-      legend.text = element_text(size=base_size * 0.9),
-      legend.title = element_text(size = base_size * 0.9, 
-                                  face = "bold"),
-      plot.margin = margin(0.25, 0.25, 0.25, 0.25,"cm")
-    )
-}
-
-theme_matt_facets = function(base_size = 18,
-                             dark_text = "grey20"){
-  mid_text <-  monochromeR::generate_palette(dark_text, "go_lighter", n_colours = 5)[2]
-  light_text <-  monochromeR::generate_palette(dark_text, "go_lighter", n_colours = 5)[3]
-  
-  theme_bw(base_family="sans") %+replace% 
-    theme(
-      panel.grid = element_blank(),
-      panel.background  = element_rect(fill="transparent", colour=NA), 
-      plot.background = element_rect(fill="transparent", colour=NA), 
-      legend.background = element_rect(fill="transparent", colour=NA),
-      legend.key = element_rect(fill="transparent", colour=NA),
-      text = element_text(colour = mid_text, lineheight = 1.1),
-      strip.text.x = element_text(size = base_size),
-      title = element_text(size = base_size * 1.5,
-                           colour = dark_text),
-      axis.text = element_text(size = base_size,
-                               colour = mid_text),
-      axis.title.x = element_text(size = base_size * 1.2,
-                                  margin = unit(c(3, 0, 0, 0), "mm")),
-      axis.title.y = element_text(size = base_size * 1.2,
-                                  margin = unit(c(0, 5, 0, 0), "mm"), 
-                                  angle = 90),
-      legend.text = element_text(size=base_size * 0.9),
-      legend.title = element_text(size = base_size * 0.9, 
-                                  face = "bold"),
-      plot.margin = margin(0.25, 0.25, 0.25, 0.25,"cm")
-    )
-}
-
-site_cols = c("Manatee River" = "coral", 
-              "Ft. Hamer" = "coral3",
-              "Tyler Cove" = "goldenrod1",
-              "Ganey's Wharf" = "darkgoldenrod3", 
-              "Esker Point" = "darkseagreen3",
-              "Sawyer Park" = "palegreen4", 
-              "St. Thomas de Kent Wharf" = "steelblue2",
-              "Ritchie Wharf" = "steelblue4")
-
-pop_cols = c("KL" = "indianred4", 
-             "MR" = "coral", 
-             "FH" = "coral3",
-             "MD" = "goldenrod1",
-             "GW" = "darkgoldenrod3", 
-             "CT" = "darkseagreen3",
-             "ME" = "palegreen4", 
-             "TK" = "steelblue2",
-             "RW" = "steelblue4")
-
-region_cols = c(
-  "Florida" = "coral", 
-  "Chesapeake" = "goldenrod1",
-  "Connecticut" = "darkseagreen3",
-  "Maine" = "palegreen4", 
-  "Shediac" = "steelblue2",
-  "Miramichi" = "steelblue4")
-
-clade_cols = c("A_hudsonica" = "#DDBBCA",
-               "IV" = "#5076A5",
-               "S" = "#FFB647",
-               "X" = "#81BCC5",
-               "F" = "#EE5E59")
-
 ```
 
 ## Main Message
@@ -206,7 +131,7 @@ Exact locations for the sites are provided here:
 ```{r site-table}
 site_data %>%  
   arrange(lat) %>%  
-  select("Site" = site, "Region" = region, "Lat" = lat, "Long" = long) %>% 
+  dplyr::select("Site" = site, "Region" = region, "Lat" = lat, "Long" = long) %>% 
   knitr::kable(align = "c")
 ```
 
@@ -264,7 +189,7 @@ join_data %>%
               names_from = season, 
               values_from = n, 
               values_fill = 0) %>% 
-  select(site, early, peak, late) %>% 
+  dplyr::select(site, early, peak, late) %>% 
   knitr::kable()
 ```
 
@@ -833,124 +758,122 @@ Changes in trait variance may be indicative of phenotypic selection. If selectio
 
 While plasticity appears to play a large role in the response of *Acartia tonsa* populations to seasonality, a growing number of studies have also uncovered patterns in allele frequency indicating of rapid adaptive responses to seasonality. Our data set of seasonal samples across a large latitudinal gradient enables a comparison of these fine scale temporal patterns with the larger latitudinal patterns in allele frequency to determine whether the same alleles driving rapid seasonal adaptation are in play over larger spatial (and longer temporal) scales.
 
-After phenotyping, each individual was preserved in 95% ethanol. Individual DNA libraries were prepared using Twist Bio 96-plex prep kits, then sequenced on two lanes of an Illumina NovaSeq X Plus 25B by Novogene. Reads were de-multiplexed first to the plate level, and then to the sample level.  
+After phenotyping, each individual was preserved in 95% ethanol. Individual DNA libraries were prepared using Twist Bio 96-plex prep kits, then sequenced on two lanes of an Illumina NovaSeq X Plus 25B by Novogene. Reads were de-multiplexed first to the plate level, and then to the sample level. Read processing, mapping and QC were done on the Unity cluster (Snakemake project `aton_lcwg`); the numbers below come from the exported QC tables (`results/00_qc/sample_summary.tsv`, `coverage_per_sample.tsv`) joined in `Scripts/03_sample_table.R`. Failed libraries (`library_failed`) are shown in grey.
 
-```{r overall-read-counts, fig.width=6, fig.height=6}
-join_data %>% 
-  arrange(site_code, season, replicate, tube) %>% 
-  ggplot(aes(x = site_code, y = templates)) + 
-  geom_boxplot() + 
+```{r overall-read-counts, fig.width=8, fig.height=5}
+sample_table %>% 
+  filter(sequenced) %>% 
+  ggplot(aes(x = site_code, y = raw_reads / 1e6)) + 
+  geom_boxplot(data = ~ filter(.x, !library_failed), outlier.shape = NA) + 
+  geom_jitter(aes(colour = library_failed), width = 0.15, height = 0, size = 1.5, alpha = 0.7) + 
+  scale_colour_manual(values = c("FALSE" = "grey20", "TRUE" = "grey70"), guide = "none") + 
+  scale_y_log10() + 
+  labs(x = "Site", y = "Reads (millions, log scale)") + 
   theme_matt()
 ```
 
-While the number of reads aligned for each individual varies, there is no clear relationship between the number of aligned reads and individual size or CTmax. 
+The number of reads per individual varies, but there is no clear relationship between sequencing depth and individual size or CTmax (phenotype analysis set only). 
 
-```{r read-exp-factors}
-
-reads_size_plot = ggplot(join_data, aes(x = size, y = pf_hq_aligned_reads)) + 
+```{r read-exp-factors, fig.width=10, fig.height=5}
+reads_size_plot = ggplot(join_data, aes(x = size, y = raw_reads / 1e6)) + 
   geom_smooth() + 
   geom_point() + 
+  labs(x = "Prosome Length (mm)", y = "Reads (millions)") + 
   theme_matt()
 
-reads_ctmax_plot = ggplot(join_data, aes(x = ctmax, y = pf_hq_aligned_reads)) + 
+reads_ctmax_plot = ggplot(join_data, aes(x = ctmax, y = raw_reads / 1e6)) + 
   geom_smooth() + 
   geom_point() + 
+  labs(x = "CTmax (°C)", y = "Reads (millions)") + 
   theme_matt()
 
 ggarrange(reads_size_plot, reads_ctmax_plot, nrow = 1)
 
 read.model = lm(data = join_data, 
-                templates ~ size + ctmax)
+                raw_reads ~ size + ctmax)
 
 knitr::kable(car::Anova(read.model))
-
 ```
 
-```{r site-coverage}
-join_data %>% 
-  ggplot(aes(x = site_code, y = pct_1x)) + 
+```{r site-coverage, fig.width=10, fig.height=5}
+cov_site = sample_table %>% 
+  filter(sequenced, !library_failed) %>% 
+  ggplot(aes(x = site_code, y = breadth_ge1x)) + 
   geom_boxplot() + 
+  labs(x = "Site", y = "Genome breadth ≥1x") + 
   theme_matt()
 
-join_data %>% 
-  ggplot(aes(x = site_code, y = pct_aligned)) + 
+map_site = sample_table %>% 
+  filter(sequenced, !library_failed) %>% 
+  ggplot(aes(x = site_code, y = pct_mapped)) + 
   geom_boxplot() + 
+  labs(x = "Site", y = "% reads mapped") + 
   theme_matt()
+
+ggarrange(cov_site, map_site, nrow = 1)
 ```
 
 
 ### Clade IDs
 
-*Acartia tonsa* is well known to comprise multiple, deeply diverged clades. To determine the clade composition of our sample set, we skimmed COI sequences from the low-coverage data. 
+*Acartia tonsa* is well known to comprise multiple, deeply diverged clades. Clade calls currently come from `r unique(na.omit(sample_table$clade_source))` (`prior_coi` = COI reads skimmed from the low-coverage data; `stage1` = final calls from the cluster, mitochondrial COI tree plus nuclear clustering). Calls from failed libraries are not used.
 
 ```{r ind-clade-summary, fig.width=15, fig.height=9}
-# clade_matches %>% 
-#   group_by(sample) %>% 
-#   count(Clade) %>% 
-#   mutate(population = str_split_fixed(sample, pattern = "_", n = 4)[,1],
-#          season = str_split_fixed(sample, pattern = "_", n = 4)[,2],
-#          individual = str_split_fixed(sample, pattern = "_", n = 3)[,3])  %>% 
-#   ungroup() %>% 
-#   mutate(population = fct_relevel(population, "MR", "FH", "MD", "GW", "CT", "ME", "TK", "RW"), 
-#          season = fct_relevel(season, "early", "peak", "late"), 
-#          sample = fct_reorder2(sample, .y = population, .x = season, .desc = F))
-#   #write.csv(file = "Output/Output_data/COI_clades_summary.csv", row.names = F)
-
-# clade_summary %>% 
-#   group_by(sample) %>% 
-#   filter(prop == max(prop)) %>% 
-#   ggplot(aes(x = prop)) +
-#   geom_histogram()
-
-clade_summary %>%  
-  ggplot(aes(x = individual, y = n, fill = Clade)) + 
-  facet_grid(population~season) + 
-  geom_bar(stat = "identity", position = "fill") + 
-  scale_y_continuous(breaks = c(0, 0.5, 1)) + 
-  scale_fill_manual(values = clade_cols) + 
-  labs(x = "Individual", 
-       y = "Proportion") + 
+# One tile per sequenced individual. Once Stage 1 is exported, this can show the
+# per-clade COI read proportions (results/03_clades/mito/mito_read_split.tsv) instead.
+sample_table %>% 
+  filter(sequenced) %>% 
+  droplevels() %>% 
+  mutate(call = case_when(library_failed ~ "failed library",
+                          is.na(clade) ~ "no call",
+                          TRUE ~ clade),
+         call = factor(call, levels = c(names(clade_cols), "no call", "failed library"))) %>% 
+  ggplot(aes(x = factor(sprintf("%d_%02d", replicate, tube)), y = 1, fill = call)) + 
+  facet_grid(site_code ~ season) + 
+  geom_tile(colour = "white") + 
+  scale_fill_manual(values = c(clade_cols, "no call" = "grey85", "failed library" = "grey60")) + 
+  labs(x = "Individual (assay_tube)", y = NULL, fill = "Clade") + 
   theme_bw(base_size = 18) + 
   theme(panel.grid = element_blank(), 
-        axis.text.x = element_text(angle = 290, hjust = 0, vjust = 0.5))
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        axis.text.x = element_text(angle = 290, hjust = 0, vjust = 0.5, size = 8))
 ```
 
 
 ```{r clade-props, fig.width=6, fig.height=9}
-
-exclusions = clade_summary %>%
-  group_by(sample) %>%
-  filter(prop == max(prop)) %>%
-  filter(Clade == "A_hudsonica" | prop < 0.85)
-
-clade_summary %>%  
-  filter(!(sample %in% exclusions$sample)) %>%  
-  group_by(sample) %>% 
-  filter(prop == max(prop)) %>% 
-  ggplot(aes(x = season, fill = Clade)) + 
-  facet_wrap(population~., ncol = 2) + 
+sample_table %>%  
+  filter(sequenced, clade %in% names(clade_cols)) %>% 
+  droplevels() %>% 
+  ggplot(aes(x = season, fill = clade)) + 
+  facet_wrap(site_code ~ ., ncol = 2) + 
   geom_bar() + 
   scale_fill_manual(values = clade_cols) + 
   labs(x = "Season", 
-       y = "Count") + 
+       y = "Count", 
+       fill = "Clade") + 
   theme_matt_facets(base_size = 18)
-
 ```
 
-These clades are deeply diverged, which affects the alignment and final coverage of the genome data. 
+These clades are deeply diverged, which affects the alignment and final coverage of the genome data (clade X is closest to the reference genome). 
 
-```{r clade-coverage}
-join_data %>% 
-  drop_na(clade) %>% 
-  ggplot(aes(x = clade, y = pct_1x)) + 
+```{r clade-coverage, fig.width=10, fig.height=5}
+cov_clade = sample_table %>% 
+  filter(sequenced, !library_failed, clade %in% names(clade_cols)) %>% 
+  ggplot(aes(x = clade, y = breadth_ge1x, fill = clade)) + 
   geom_boxplot() + 
+  scale_fill_manual(values = clade_cols, guide = "none") + 
+  labs(x = "Clade", y = "Genome breadth ≥1x") + 
   theme_matt()
 
-join_data %>% 
-  drop_na(clade) %>%
-  ggplot(aes(x = clade, y = pct_aligned)) + 
+map_clade = sample_table %>% 
+  filter(sequenced, !library_failed, clade %in% names(clade_cols)) %>% 
+  ggplot(aes(x = clade, y = pct_mapped, fill = clade)) + 
   geom_boxplot() + 
+  scale_fill_manual(values = clade_cols, guide = "none") + 
+  labs(x = "Clade", y = "% reads mapped") + 
   theme_matt()
+
+ggarrange(cov_clade, map_clade, nrow = 1)
 ```
 
 ### Clade-specific Physiology
@@ -1080,7 +1003,7 @@ These differences in physiology correspond to the distributional patterns for ea
 clade_prop = join_data %>% 
   filter(clade != "A_hudsonica") %>% 
   drop_na(clade) %>% 
-  select(site, season, clade, collection_temp,collection_salinity, lat) %>% 
+  dplyr::select(site, season, clade, collection_temp,collection_salinity, lat) %>% 
   group_by(site, season, collection_temp, collection_salinity, lat) %>% 
   count(clade) %>% 
   ungroup(collection_temp, collection_salinity, lat) %>% 
@@ -1117,7 +1040,7 @@ clade_prop %>%
 join_data %>% 
   drop_na(clade) %>% 
   filter(clade != "A_hudsonica") %>% 
-  select(collection_temp, collection_salinity, clade) %>% 
+  dplyr::select(collection_temp, collection_salinity, clade) %>% 
   ggplot(aes(y = collection_temp, x = collection_salinity)) +
   facet_wrap(clade~.) + 
   geom_density_2d_filled(contour_var = "ndensity",
@@ -1134,188 +1057,7 @@ join_data %>%
 
 ### PCA
 
-```{r}
-
-iv_eigs1 = data.frame(eigen(iv_matrix[])$vectors[,1:2])
-
-iv_pca_df1 = iv_eigs1 %>% 
-  bind_cols(filter(bam_list, clade == "IV"))
-
-ggplot(iv_pca_df1, aes(x = X1, y = X2, colour = site_code, shape = season)) + 
-  geom_point(size = 5) + 
-  scale_colour_manual(values = pop_cols) + 
-  theme_matt() + 
-  theme(legend.position = "right")
-
-# filter(iv_pca_df1, X2 > 0.4)
-# 
-# iv_pca_exclude = iv_pca_df1 %>% 
-#   filter(sample %in% c("TK_peak_2_08", "RW_peak_2_09", 
-#                        "ME_early_1_04", "TK_peak_2_10", 
-#                        "TK_late_1_04", "TK_late_2_02", 
-#                        "ME_late_1_01"))
-# 
-# iv_exc_positions = which(iv_pca_df1$sample %in% iv_pca_exclude$sample)
-# 
-# iv_eigs = data.frame(eigen(iv_matrix[-iv_exc_positions, -iv_exc_positions])$vectors[,1:2])
-# 
-# pc1_var = round((eigen(iv_matrix[-iv_exc_positions, -iv_exc_positions])$values[1] / sum(eigen(iv_matrix[-iv_exc_positions, -iv_exc_positions])$values)) * 100, digits = 2)
-# pc2_var = round((eigen(iv_matrix[-iv_exc_positions, -iv_exc_positions])$values[2] / sum(eigen(iv_matrix[-iv_exc_positions, -iv_exc_positions])$values)) * 100, digits = 2)
-# 
-# iv_pca_df = iv_eigs %>% 
-#   bind_cols(filter(bam_list, clade == "IV" & !(sample %in% iv_pca_exclude$sample)))
-# 
-# ggplot(iv_pca_df, aes(x = X1, y = X2, colour = site_code, shape = season)) + 
-#   geom_point(size = 5) + 
-#   labs(x = paste0("PC1 (", pc1_var, "%)", sep = ""),
-#        y = paste0("PC2 (", pc2_var, "%)", sep = "")) + 
-#   scale_colour_manual(values = pop_cols) + 
-#   theme_matt() + 
-#   theme(legend.position = "right")
-# 
-# 
-# #filter(iv_pca_df, X2 < -0.4 | site_code == "TK" & X2 < -0.1)
-
-```
-
-```{r}
-
-s_eigs1 = data.frame(eigen(s_matrix[])$vectors[,1:2])
-
-s_pca_df1 = s_eigs1 %>% 
-  bind_cols(filter(bam_list, clade == "S"))
-
-pc1_var = round((eigen(s_matrix)$values[1] / sum(eigen(s_matrix)$values)) * 100, digits = 2)
-pc2_var = round((eigen(s_matrix)$values[2] / sum(eigen(s_matrix)$values)) * 100, digits = 2)
-
-
-ggplot(s_pca_df1, aes(x = X1, y = X2, colour = site_code, shape = season)) + 
-  geom_point(size = 5) + 
-  labs(x = paste0("PC1 (", pc1_var, "%)", sep = ""),
-       y = paste0("PC2 (", pc2_var, "%)", sep = "")) + 
-  scale_colour_manual(values = pop_cols) + 
-  theme_matt() + 
-  theme(legend.position = "right")
-
-# 
-# s_pca_exclude = s_pca_df1 %>% 
-#   filter(sample %in% c("ME_peak_2_08", "CT_peak_1_09", "TK_early_1_10", 
-#                        "CT_peak_2_01", "MD_late_2_05", "CT_late_1_09", 
-#                        "MD_peak_2_05", "MD_peak_2_01", "MD_peak_2_07", #
-#                        "CT_early_2_07", "CT_early_2_08", "CT_late_1_04",
-#                        "CT_peak_1_01", "CT_peak_1_02", "CT_peak_1_03", "CT_peak_1_05",
-#                       "CT_peak_1_10", "CT_peak_2_04", "CT_peak_2_05",
-#                       "MD_late_2_07", "MD_peak_1_09", "MD_peak_1_10", 
-#                       "MD_peak_2_04", "MD_peak_2_06", "CT_early_1_02",
-#                       "CT_early_2_05", "CT_peak_2_03", "CT_peak_2_06",
-#                       "MD_peak_1_01", "MD_peak_1_04", "MD_peak_1_06",
-#                       "MD_peak_1_08", "MD_peak_1_07", "MD_peak_1_08", 
-#                       "MD_late_1_08", "MD_peak_2_09", "CT_peak_1_07",
-#                       "MD_peak_2_10"))
-# 
-# s_exc_positions = which(s_pca_df1$sample %in% s_pca_exclude$sample)
-# 
-# s_eigs = data.frame(eigen(s_matrix[-s_exc_positions, -s_exc_positions])$vectors[,1:2])
-# 
-# pc1_var = round((eigen(s_matrix[-s_exc_positions, -s_exc_positions])$values[1] / sum(eigen(s_matrix[-s_exc_positions, -s_exc_positions])$values)) * 100, digits = 2)
-# pc2_var = round((eigen(s_matrix[-s_exc_positions, -s_exc_positions])$values[2] / sum(eigen(s_matrix[-s_exc_positions, -s_exc_positions])$values)) * 100, digits = 2)
-# 
-# s_pca_df = s_eigs %>% 
-#   bind_cols(filter(bam_list, clade == "S" & !(sample %in% s_pca_exclude$sample)))
-# 
-# ggplot(s_pca_df, aes(x = X1, y = X2, colour = site_code, shape = season)) + 
-#   geom_point(size = 5) + 
-#   labs(x = paste0("PC1 (", pc1_var, "%)", sep = ""),
-#        y = paste0("PC2 (", pc2_var, "%)", sep = "")) + 
-#   scale_colour_manual(values = pop_cols) + 
-#   theme_matt() + 
-#   theme(legend.position = "right")
-# 
-# filter(s_pca_df, X2 < -0.4 | X2 > 0.4)
-
-```
-
-```{r}
-
-f_eigs = data.frame(eigen(f_matrix)$vectors[,1:2])
-
-pc1_var = round((eigen(f_matrix)$values[1] / sum(eigen(f_matrix)$values)) * 100, digits = 2)
-pc2_var = round((eigen(f_matrix)$values[2] / sum(eigen(f_matrix)$values)) * 100, digits = 2)
-
-f_pca_df = f_eigs %>% 
-  bind_cols(filter(bam_list, clade == "F"))
-
-ggplot(f_pca_df, aes(x = X1, y = X2, colour = site_code, shape = season)) + 
-  #facet_wrap(site_code~., scales = "free") + 
-  geom_point(size = 5) + 
-  labs(x = paste0("PC1 (", pc1_var, "%)", sep = ""),
-       y = paste0("PC2 (", pc2_var, "%)", sep = "")) + 
-  scale_colour_manual(values = pop_cols) + 
-  theme_matt() + 
-  theme(legend.position = "right")
-
-```
-
-
-```{r}
-
-x_eigs1 = data.frame(eigen(x_matrix[])$vectors[,1:2])
-
-x_pca_df1 = x_eigs1 %>% 
-  bind_cols(filter(bam_list, clade == "X"))
-
-ggplot(x_pca_df1, aes(x = X1, y = X2, colour = site_code, shape = season)) + 
-  geom_point(size = 5) + 
-  labs(x = paste0("PC1 (", pc1_var, "%)", sep = ""),
-       y = paste0("PC2 (", pc2_var, "%)", sep = "")) + 
-  scale_colour_manual(values = pop_cols) + 
-  theme_matt() + 
-  theme(legend.position = "right")
-# 
-# x_pca_exclude = x_pca_df1 %>% 
-#   filter(sample %in% c("ME_peak_2_10", "TK_early_2_04", "CT_early_1_01", "TK_early_2_01",
-#                        "CT_early_2_06", "TK_early_1_04", "TK_peak_1_09", "TK_peak_2_09", 
-#                        "TK_peak_2_07"))
-# 
-# x_exc_positions = which(x_pca_df1$sample %in% x_pca_exclude$sample)
-# 
-# x_eigs = data.frame(eigen(x_matrix[-x_exc_positions, -x_exc_positions])$vectors[,1:2])
-# 
-# pc1_var = round((eigen(x_matrix[-x_exc_positions, -x_exc_positions])$values[1] / sum(eigen(x_matrix[-x_exc_positions, -x_exc_positions])$values)) * 100, digits = 2)
-# pc2_var = round((eigen(x_matrix[-x_exc_positions, -x_exc_positions])$values[2] / sum(eigen(x_matrix[-x_exc_positions, -x_exc_positions])$values)) * 100, digits = 2)
-# 
-# x_pca_df = x_eigs %>% 
-#   bind_cols(filter(bam_list, clade == "X" & !(sample %in% x_pca_exclude$sample)))
-# 
-# ggplot(x_pca_df, aes(x = X1, y = X2, colour = site_code, shape = season)) + 
-#   geom_point(size = 5) + 
-#   labs(x = paste0("PC1 (", pc1_var, "%)", sep = ""),
-#        y = paste0("PC2 (", pc2_var, "%)", sep = "")) + 
-#   scale_colour_manual(values = pop_cols) + 
-#   theme_matt() + 
-#   theme(legend.position = "right")
-# 
-# filter(x_pca_df, X2 > 0.25)
-
-
-```
-
-```{r all-pca, fig.width=8, fig.height=6.5}
-tonsa_eigs = data.frame(eigen(tonsa_matrix)$vectors[,1:2])
-pc1_var = round((eigen(tonsa_matrix)$values[1] / sum(eigen(tonsa_matrix)$values)) * 100, digits = 2)
-pc2_var = round((eigen(tonsa_matrix)$values[2] / sum(eigen(tonsa_matrix)$values)) * 100, digits = 2)
-tonsa_pca_df = tonsa_eigs %>% 
-  bind_cols(bam_list)
-
-ggplot(tonsa_pca_df, aes(x = X1, y = X2, colour = clade)) + 
-  geom_point(size = 5) + 
-  labs(x = paste0("PC1 (", pc1_var, "%)", sep = ""),
-       y = paste0("PC2 (", pc2_var, "%)", sep = "")) + 
-  scale_colour_manual(values = clade_cols) + 
-  theme_matt() + 
-  theme(legend.position = "right")
-
-```
+Per-clade PCA (PCAngsd) and admixture (NGSadmix) come from Stage 1 of the cluster workflow (`results/04_structure/`). They will be read here from the cluster export once Stage 1 is done; the earlier exploratory PCA code (based on covariance matrices from before the Snakemake pipeline) is kept in `Output/Reports/legacy/report_pre_migration.Rmd`.
 
 ## Partitioning Vulnerability 
 
@@ -1423,14 +1165,14 @@ pred_data = temp_profiles %>%
                names_to = "clade", 
                values_to = "pred_wt") %>% 
   mutate(clade = str_split_fixed(clade, pattern = "_", n = 2)[,1]) %>%  
-  select(region, doy, date, "collection_temp" = temp_c, clade)
+  dplyr::select(region, doy, date, "collection_temp" = temp_c, clade)
 
 
 pred_data$pred_ctmax = predict(pred.model, newdata = pred_data)
 
 full_pred_profiles = pred_data %>% 
   mutate(pred_wt = pred_ctmax - collection_temp) %>% 
-  select(region, doy, date, "temp_c" = collection_temp, -pred_ctmax, clade, pred_wt) %>% 
+  dplyr::select(region, doy, date, "temp_c" = collection_temp, -pred_ctmax, clade, pred_wt) %>% 
   mutate(comparison = "Genetic Variation & Acclimation") %>% 
   ungroup() %>% 
   mutate(region = fct_relevel(region, "Florida", "Chesapeake", "Connecticut",
@@ -1633,14 +1375,14 @@ warming_pred_data = temp_profiles %>%
                names_to = "clade", 
                values_to = "pred_wt") %>% 
   mutate(clade = str_split_fixed(clade, pattern = "_", n = 2)[,1]) %>%  
-  select(region, doy, date, "collection_temp" = temp_c, clade)
+  dplyr::select(region, doy, date, "collection_temp" = temp_c, clade)
 
 
 warming_pred_data$pred_ctmax = predict(pred.model, newdata = warming_pred_data)
 
 warming_full_pred_profiles = warming_pred_data %>% 
   mutate(pred_wt = pred_ctmax - collection_temp) %>% 
-  select(region, doy, date, "temp_c" = collection_temp, -pred_ctmax, clade, pred_wt) %>% 
+  dplyr::select(region, doy, date, "temp_c" = collection_temp, -pred_ctmax, clade, pred_wt) %>% 
   mutate(comparison = "Genetic Variation & Acclimation") %>% 
   ungroup() %>% 
   mutate(region = fct_relevel(region, "Florida", "Chesapeake", "Connecticut",
@@ -1805,10 +1547,11 @@ range_changes = wt_comps %>%
   summarise(wt_range = max(min_wt) - min(min_wt)) %>% 
   mutate(percent_decrease = 100 * (1 - (wt_range / wt_range[1]))) %>% 
   ungroup() %>% 
-  select("Comparison" = comparison, "WT Range" = wt_range, "% Decrease" = percent_decrease) %>% 
+  dplyr::select("Comparison" = comparison, "WT Range" = wt_range, "% Decrease" = percent_decrease) %>% 
   arrange(`% Decrease`)
  
-#write.csv(range_changes, file = "Output/Output_data/range_changes.csv", row.names = F)
+# Saved for the phenotype manuscript (Table 2)
+write.csv(range_changes, file = here("Output", "Output_data", "range_changes.csv"), row.names = FALSE)
 
 knitr::kable(range_changes, digits = 2)
 
@@ -1844,13 +1587,13 @@ sal_regions = data.frame(region = rep(c("South", "Central", "North"), each = 2),
 sal_comps = join_data %>% 
   filter(site %in% sal_regions$site) %>% 
   inner_join(sal_regions, by = c("site")) %>% 
-  select( region = region.y, site, salinity, season, doy, collection_temp, collection_salinity,
+  dplyr::select( region = region.y, site, salinity, season, doy, collection_temp, collection_salinity,
           size, ctmax, warming_tol) %>% 
   mutate(salinity = fct_relevel(salinity, "low", "high"),
          region = fct_relevel(region, "South", "Central", "North"))
 
 sal_comp_temps = sal_comps %>%  
-  select(salinity, season, region, collection_temp, collection_salinity) %>% 
+  dplyr::select(salinity, season, region, collection_temp, collection_salinity) %>% 
   distinct() %>% 
   ggplot(aes(x = salinity, y = collection_temp, colour = season, group = season)) + 
   facet_wrap(region~.) + 
@@ -1862,7 +1605,7 @@ sal_comp_temps = sal_comps %>%
   theme_matt_facets(base_size = 14)
 
 sal_comp_sal = sal_comps %>%  
-  select(salinity, season, region, collection_temp, collection_salinity) %>% 
+  dplyr::select(salinity, season, region, collection_temp, collection_salinity) %>% 
   distinct() %>% 
   ggplot(aes(x = salinity, y = collection_salinity, colour = season, group = season)) + 
   facet_wrap(region~.) + 
@@ -1973,7 +1716,7 @@ early_peak = join_data %>%
          temp_change = max(collection_temp) - min(collection_temp),
          avg_temp = (max(collection_temp) + min(collection_temp)) / 2,
          days_passed = max(doy) - min(doy)) %>% 
-  select(site, lat, season, 
+  dplyr::select(site, lat, season, 
          ctmax_sd_p, size_sd_p, 
          temp_change, avg_temp, days_passed, 
          ctmax, size) %>%
@@ -1998,7 +1741,7 @@ peak_late = join_data %>%
          temp_change = last(collection_temp) - first(collection_temp),
          avg_temp = (max(collection_temp) + min(collection_temp)) / 2,
          days_passed = max(doy) - min(doy)) %>% 
-  select(site, lat, season, ctmax_sd_p, size_sd_p, 
+  dplyr::select(site, lat, season, ctmax_sd_p, size_sd_p, 
          temp_change, avg_temp, days_passed, 
          ctmax, size) %>%
   group_by(site, lat, season, ctmax_sd_p, size_sd_p, 
