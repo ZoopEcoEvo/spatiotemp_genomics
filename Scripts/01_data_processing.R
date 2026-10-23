@@ -126,7 +126,7 @@ if(length(new_runs) > 0){ # If there are new data files to process...
 ## Synthesis ##
 ###############
 # Combines trait and molecular data into one central data file 
-# Should indicate whether 
+# Should indicate whether the individual is included in phenotypic and molecular analyses
 
 
 

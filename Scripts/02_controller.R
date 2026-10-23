@@ -8,7 +8,6 @@ library(tidyverse)
 #Determine which scripts should be run
 process_all_data = F #Runs data analysis 
 process_site_temps = F #Compiles continuous temperature data for the sites
-process_clades = F #Processes clade data
 make_report = F #Runs project summary
 knit_pheno_manuscript = F #Compiles manuscript draft
 knit_genome_manuscript = F #Compiles manuscript draft
@@ -22,12 +21,15 @@ source(file = "Scripts/01_data_processing.R")
 ### Read in the PROCESSED data ###
 ##################################
 
+# Long-term temperature records for the sites
 temp_profiles = read.csv(file = "Output/Output_data/temp_profiles.csv") %>% 
   mutate(date = lubridate::as_datetime(date),
          doy = lubridate::yday(date))
 
+# Temperature sensor data from the CTmax assays
 temp_record = read.csv(file = "Output/Output_data/temp_record.csv")
 
+# Ramping rate data from the CTmax assays
 ramp_record = read.csv(file = "Output/Output_data/ramp_record.csv")
 
 all_data = read.csv(file = "Output/Output_data/full_data.csv") 
@@ -97,101 +99,6 @@ temp_summaries = join_data %>%
 site_temps = join_data %>% 
   dplyr::select(site, lat, season, doy, collection_temp, collection_salinity) %>%  
   distinct() 
-
-######## Sequencing data
-
-#tonsa_matrix = as.matrix(read.table("Raw_data/molecular/pcangsd/tonsa_exclusions.cov"))
-iv_matrix = as.matrix(read.table("Raw_data/molecular/pcangsd/clade_IV.cov"))
-s_matrix = as.matrix(read.table("Raw_data/molecular/pcangsd/clade_S.cov"))
-f_matrix = as.matrix(read.table("Raw_data/molecular/pcangsd/clade_F.cov"))
-x_matrix = as.matrix(read.table("Raw_data/molecular/pcangsd/clade_X.cov"))
-
-clade_summary = read.csv(file = "Output/Output_data/COI_clades_summary.csv") %>% 
-  mutate(population = fct_relevel(population, "FH", "MR", "MD", "GW", "CT", "ME", "TK", "RW"),
-         season = fct_relevel(season, "early", "peak", "late")) %>% 
-  group_by(sample) %>% 
-  mutate(prop = n / sum(n)) %>% 
-  ungroup()
-
-bam_list = read.csv(file = "Raw_data/molecular/bam_list.txt", header = F) %>% 
-  mutate(sample = str_remove_all(V1, pattern = "bam_files/"),
-         sample = str_remove_all(sample, pattern = "_dd_clip.bam"), 
-         site_code = str_split_fixed(sample, pattern = "_", n = 2)[,1],
-         season = str_split_fixed(sample, pattern = "_", n = 3)[,2],
-         replicate = as.numeric(str_split_fixed(sample, pattern = "_", n = 4)[,3]),
-         tube = as.numeric(str_split_fixed(sample, pattern = "_", n = 4)[,4])) %>% 
-  left_join(select(join_data, site_code, season, replicate, tube, clade), by = c("site_code", "season", "replicate", "tube")) %>% 
-  mutate(row = row_number()) %>% 
-  group_by(sample) %>% 
-  mutate(beagle_ind = paste0("Ind", row - 1, collapse = "")) %>% 
-  select(-row)
-
-# Takes the bam list and subsets to clade, site, season, and site x season lists
-for(c in unique(bam_list$clade)){
-  # Subsets the list to just the clade (allows next steps to skip anything with no representatives)
-  subset = bam_list %>%
-    ungroup() %>%
-    filter(clade == c)
-
-  clade_list = subset %>%
-    select(V1)
-
-  write.table(clade_list, file = paste("Raw_data/molecular/lists/clade_lists/", c, "_bam.txt", sep = ""),
-              quote = F,
-              col.names = F,
-              row.names = F)
-
-  ### Create lists for each season
-  for(s in unique(subset$season)){
-    season_list = subset %>%
-      ungroup() %>%
-      filter(season == s) %>%
-      select(V1)
-
-    write.table(season_list, file = paste("Raw_data/molecular/lists/season_lists/", c, "_",  s, "_bam.txt", sep = ""),
-                quote = F,
-                col.names = F,
-                row.names = F)
-  }
-
-  ### Create lists for each site AND site x season combos
-  for(l in unique(subset$site_code)){
-    site_subset = subset %>%
-      ungroup() %>%
-      filter(site_code == l)
-
-    site_list = site_subset %>%
-      select(V1)
-
-    write.table(site_list, file = paste("Raw_data/molecular/lists/site_lists/", c, "_",  l, "_bam.txt", sep = ""),
-                quote = F,
-                col.names = F,
-                row.names = F)
-
-    for(ss in unique(site_subset$season)){
-      site_season_list = site_subset %>%
-        ungroup() %>%
-        filter(season == ss) %>%
-        select(V1)
-
-      write.table(site_season_list, file = paste("Raw_data/molecular/lists/subset_lists/", c, "_",  l, "_", ss, "_bam.txt", sep = ""),
-                  quote = F,
-                  col.names = F,
-                  row.names = F)
-    }
-  }
-}
-
-for(c in unique(bam_list$clade)){
-  clade_list = bam_list %>%
-    ungroup() %>%
-    filter(clade == c) %>%
-    select(beagle_ind)
-
-  list_name = paste("Raw_data/molecular/beagle_inds/clade_", c, "_inds.txt", sep = "")
-
-  write.table(clade_list, file = list_name, row.names = F, col.names = F, quote = F)
-}
 
 range_changes = read.csv(file = "Output/Output_data/range_changes.csv") %>% 
   select("Scenario" = Comparison, "WT Range" = WT.Range, "% Decrease" = X..Decrease)
