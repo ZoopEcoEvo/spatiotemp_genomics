@@ -33,6 +33,19 @@ header-includes:
   \newcommand{\beginsupplement}{\setcounter{table}{0}  \renewcommand{\thetable}{S\arabic{table}} \setcounter{figure}{0} \renewcommand{\thefigure}{S\arabic{figure}}}
 ---
 
+```{r setup, include = FALSE}
+library(here)
+library(tidyverse)
+
+# Processed data shared with the report: join_data (phenotype analysis set),
+# sample_table, site_data, site_temps, collections, range_changes, ...
+source(here("Scripts", "load_data.R"))
+
+# Exclusion counts for the Methods text
+pheno_counts <- count(filter(sample_table, phenotyped), pheno_status)
+n_status <- function(x) sum(pheno_counts$n[pheno_counts$pheno_status == x])
+```
+
 ```{r echo = F}
 if(knitr::is_latex_output()){
   knitr::opts_chunk$set(
@@ -58,7 +71,7 @@ Copepods were collected by surface tow from eight sites across the Western Atlan
 
 site_data %>%  
   arrange(lat) %>%  
-  select("Site" = site, "Region" = region, "Lat" = lat, "Long" = long) %>% 
+  dplyr::select("Site" = site, "Region" = region, "Lat" = lat, "Long" = long) %>% 
   knitr::kable(align = "c",
                caption = "Locations of each collection site.")
 
@@ -86,7 +99,7 @@ For the purposes of this study, the sequence data was used to assign each phenot
 
 ## Statistical Analysis
 
-Thermal limits were filtered to include just data from individuals that could be verified as adult *A. tonsa* females with a high confidence clade assignment. Under these conditions, 17 individuals were excluded from analyses (5 individuals were identified after measurements as late-stage juveniles; 10 individuals failed to match to a clade; 2 individuals were identified after experiments as *Acartia hudsonica*). After filtering, we were left with thermal limit measurements for `r dim(join_data)[1]` individuals, each assigned to one of the four cryptic clades.
+Thermal limits were filtered to include just data from individuals that could be verified as adult *A. tonsa* females with a high confidence clade assignment. Under these conditions, `r sum(pheno_counts$n[pheno_counts$pheno_status != "included"])` individuals were excluded from analyses (`r n_status("manual exclusion")` individuals were identified after measurements as late-stage juveniles; `r n_status("failed library (no clade)") + n_status("no clade call")` individuals could not be assigned to a clade because their sequencing libraries failed; `r n_status("A. hudsonica")` individuals were identified after experiments as *Acartia hudsonica*). After filtering, we were left with thermal limit measurements for `r dim(join_data)[1]` individuals, each assigned to one of the four cryptic clades.
 
 We used a linear mixed effect model to examine variation in CTmax. Body size, temperature (centered but not scaled before analysis), and clade were included as fixed effects, along with the interaction between clade and temperature. Random effects were included for site (to account for non-thermal variation across latitude), tube (as a proxy for position within the water bath during the heat stress), and experimental replicate (to account for different amounts of time between collection and assay). Model performance was checked visually using the *performance* package (REF). We then extracted marginal mean CTmax and the temperature trend (i.e. the acclimation capacity of CTmax) for each clade using the *emmeans* package (REF).
 
@@ -109,7 +122,7 @@ Collections spanned the latitudinal gradient. Across the entire set of collectio
 ```{r, figure1, echo = F, out.width = "400px"}
 #| fig.cap = "Map of sites (A) and collection temperatures recorded during each collection (B)"
 
-knitr::include_graphics("../Output/Figures/markdown/site-chars-1.png")  
+knitr::include_graphics(here("Output", "Figures", "site-chars-1.png"))  
 ```
 
 \newpage
@@ -121,7 +134,7 @@ There was substantial variation in thermal limits and body sizes across both sea
 ```{r, figure2, echo = F, out.width = "400px"}
 #| fig.cap = "CTmax vs. season (A) and size vs. season (B) for each site"
 
-knitr::include_graphics("../Output/Figures/markdown/size-and-ctmax-season-1.png")  
+knitr::include_graphics(here("Output", "Figures", "size-and-ctmax-season-1.png"))  
 ```
 
 \newpage
@@ -133,7 +146,7 @@ There was substantial variation in the clade composition of the collections acro
 ```{r, figure3, echo = F, out.width = "250px"}
 #| fig.cap = "The distribution of clade identities at each site throughout the seasons. This plot includes just the 'high confidence' estimates - individuals identified as A. hudsonica were excluded, as were any individuals where less than 85% of the reads matched to any single clade)"
 
-knitr::include_graphics("../Output/Figures/markdown/clade-props-1.png")  
+knitr::include_graphics(here("Output", "Figures", "clade-props-1.png"))  
 ```
 
 \newpage
@@ -143,7 +156,7 @@ The seasonal shifts in the clade composition we observed at the sites in Connect
 ```{r, figure4, echo = F, out.width = "200px"}
 #| fig.cap = "Clade proportions in each sample vs. collection temp."
 
-knitr::include_graphics("../Output/Figures/markdown/clade-hab-patterns-1.png")  
+knitr::include_graphics(here("Output", "Figures", "clade-hab-patterns-1.png"))  
 ```
 
 \newpage
@@ -155,13 +168,13 @@ Individuals in the IV clade tended to have the largest body sizes, while F clade
 ```{r, figure5, echo = F, out.width = "400px"}
 #| fig.cap = "CTmax and body size vs. collection temperature, separated by clade."
 
-knitr::include_graphics("../Output/Figures/markdown/clade-trait-regs-1.png")  
+knitr::include_graphics(here("Output", "Figures", "clade-trait-regs-1.png"))  
 ```
 
 ```{r, figure6, echo = F, out.width = "400px"}
 #| fig.cap = "Clade marginal means (i.e. genetic variation in thermal limit) and the marginal trend (i.e. combined effect of local adaptation and plasticity)."
 
-knitr::include_graphics("../Output/Figures/markdown/clade-contrast-plots-1.png")  
+knitr::include_graphics(here("Output", "Figures", "clade-contrast-plots-1.png"))  
 
 ```
 
@@ -174,7 +187,7 @@ There were strong latitudinal gradients in warming tolerance estimate for all th
 ```{r, figure7, echo = F, out.width = "200px"}
 #| fig.cap = "Warming tolerance during the peak season for each region, estimated under three scenarios; 1) a fixed CTmax value across the entire range, 2) fixed CTmax estimates for each individual clade, and 3) clade-specific CTmax and temperature acclimation. Current estimates of warming tolerance are shown in solid bars, with the estimates assuming a 4°C future warming shown with the lighter bars." 
 
-knitr::include_graphics("../Output/Figures/markdown/peak-season-wt-plus-warming-1.png")  
+knitr::include_graphics(here("Output", "Figures", "peak-season-wt-plus-warming-1.png"))  
 ```
 
 ```{r table2}
@@ -202,30 +215,30 @@ Influence on space-for-time predictions? Stemkovski ecological acclimation paper
 ```{r supp-fig-1, echo = F, out.width = "450px"}
 #| fig.cap = "Continuous temperature profiles for the regions. These temperature profiles are shown with the temperatures measured during the time of collection included for comparison. While collection temperatures in Maine did not always match the recorded daily averages, across all sites the temperature records do give a general sense of the timing of seasonal maxima (and the proximity of collections to the seasonal maximum temperature). "
 
-knitr::include_graphics("../Output/Figures/markdown/continuous-temps-1.png")  
+knitr::include_graphics(here("Output", "Figures", "continuous-temps-1.png"))  
 ```
 
 ```{r supp-fig-2, echo = F, out.width = "450px"}
 #| fig.cap = "Recorded ramping rates from the CTmax assays."
 
-knitr::include_graphics("../Output/Figures/markdown/ramp-record-plot-1.png")  
+knitr::include_graphics(here("Output", "Figures", "ramp-record-plot-1.png"))  
 
 ```
 
 ```{r supp-fig-3, echo = F, out.width = "450px"}
 #| fig.cap = "Observed proportions of the different clades in each region, as used in the simulated populations."
 
-knitr::include_graphics("../Output/Figures/markdown/region-clade-props-1.png")  
+knitr::include_graphics(here("Output", "Figures", "region-clade-props-1.png"))  
 ```
 
 ```{r supp-fig-4, echo = F, out.width = "450px"}
 #| fig.cap = "Collection temperature seasonality against latitude."
 
-knitr::include_graphics("../Output/Figures/markdown/lat-temp-range-plot-1.png")
+knitr::include_graphics(here("Output", "Figures", "lat-temp-range-plot-1.png"))
 ```
 
 ```{r supp-fig-5, echo = F, out.width = "450px"}
 #| fig.cap = "Individual clade prop plot (shows the proportion of reads for each individual that matched to the different clades)"
 
-knitr::include_graphics("../Output/Figures/markdown/ind-clade-summary-1.png")  
+knitr::include_graphics(here("Output", "Figures", "ind-clade-summary-1.png"))  
 ```
