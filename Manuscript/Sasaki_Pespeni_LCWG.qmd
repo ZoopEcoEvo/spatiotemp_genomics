@@ -1,0 +1,125 @@
+---
+title: "TITLE: spatial and seasonal genomic variation across cryptic clades of Acartia tonsa"
+author:
+  - name: Matthew Sasaki
+    affiliation: University of Massachusetts Lowell
+  - name: Melissa Pespeni
+    affiliation: University of Vermont
+abstract: "ABSTRACT HERE."
+keywords:
+  - keyword1
+  - keyword2
+  - keyword3
+contact: "**Correspondence**: Matthew_Sasaki@uml.edu"
+repo: "**Code**: https://github.com/ZoopEcoEvo/spatiotemp_genomics"
+date: today
+date-format: "MMMM D, YYYY"
+bibliography: references.bib
+
+execute:
+  echo: false
+  message: false
+  warning: false
+knitr:
+  opts_chunk:
+    collapse: true
+
+format:
+  pdf:
+    template: preprint_template.tex
+    pdf-engine: pdflatex
+    cite-method: natbib
+    biblio-style: bib-style
+    keep-tex: false
+    fontsize: 10pt
+    fig-align: center
+    fig-width: 6.5   # R Markdown's PDF defaults, so figures keep their old size
+    fig-height: 4.5
+    include-in-header:
+      text: |
+        \usepackage{caption}
+        \captionsetup[figure]{font=small, margin=20pt, justification=centering}
+        \captionsetup[table]{font=small, margin=20pt, justification=centering}
+        \usepackage{float} \floatplacement{figure}{H}
+        \newcommand{\beginsupplement}{\setcounter{table}{0} \renewcommand{\thetable}{S\arabic{table}} \setcounter{figure}{0} \renewcommand{\thefigure}{S\arabic{figure}}}
+  docx:
+    reference-doc: word_template.docx
+    csl: lab_style.csl # matches bib-style.bst, which the PDF uses
+    fig-width: 6.5
+    fig-height: 4.5
+    fig-align: left
+    filters:
+      - quarto
+      - word_frontmatter.lua # adds affiliations, correspondence, and keywords
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(here)
+library(tidyverse)
+
+# Processed data shared with the report (sample_table, join_data, site_data, ...)
+source(here("Scripts", "load_data.R"))
+```
+
+# Introduction
+
+# Methods
+
+## Statistical Analysis
+
+# Results
+
+```{r}
+#| label: fig-example
+#| fig-cap: "CAPTION HERE."
+#| out-width: "100%"
+
+plot(1)
+# Figures made in report.qmd are saved as Output/Figures/<chunk-label>-1.png
+# knitr::include_graphics(here("Output", "Figures", "CHUNK-LABEL-1.png"))
+```
+
+```{r}
+#| label: tbl-example
+#| tbl-cap: "CAPTION HERE"
+
+knitr::kable(x = 1, # Replace 1 with whatever object you want included as a table
+             digits = 3, align = "c")
+```
+
+# Discussion
+
+<!-- References are printed here, before the supplementary material.
+     Move both blocks below together to put them somewhere else. -->
+
+```{=latex}
+\printreferences
+```
+
+::: {.content-visible when-format="docx"}
+{{< pagebreak >}}
+
+# References
+
+::: {#refs}
+:::
+:::
+
+{{< pagebreak >}}
+
+```{=latex}
+\beginsupplement
+```
+
+# Supplementary Material
+
+```{r}
+#| label: fig-supp-example
+#| fig-cap: "CAPTION HERE."
+#| out-width: "100%"
+
+plot(1)
+# knitr::include_graphics(here("Output", "Figures", "CHUNK-LABEL-1.png"))
+```

@@ -1,7 +1,8 @@
 # Project controller ------------------------------------------------------
-# Run the whole workflow from here. Each step runs in its own clean
-# environment, so every script and document loads its own packages and
-# reads its own input files. That keeps each piece reproducible on its own.
+# Run the whole workflow from here. Each step runs separately, so every script
+# and document must load its own packages and read its own input files. That
+# keeps each piece reproducible on its own. (Quarto documents are always
+# rendered in a fresh R session, so they can't see objects created here.)
 #
 # Paths are built with here::here(), which finds the project root from the
 # .Rproj file (or the .git folder), so this works regardless of the current
@@ -13,19 +14,21 @@
 # Raw_data/cluster_exports/<date>/. This project only reads them.
 
 library(here)
-library(rmarkdown)
+library(quarto)
 
 # Choose which steps to run -----------------------------------------------
-process_site_temps     <- FALSE # downloads buoy / OISST data -> Output_data/temp_profiles.csv (needs internet)
-process_pheno          <- FALSE # Raw_data/pheno_data + temp_data -> CTmax per individual
-process_samples        <- FALSE # phenotypes + cluster export -> Output_data/sample_table.csv
-process_micro          <- FALSE # cluster SSU profile -> Output_data/micro_calls.csv
-make_report            <- FALSE # Output/Reports/report.Rmd -> figures + report
-knit_pheno_manuscript  <- FALSE # Manuscript/Sasaki_Pespeni_Phenotype.Rmd -> Output/Drafts/
-knit_genome_manuscript <- FALSE # Manuscript/Sasaki_Pespeni_LCWG.Rmd -> Output/Drafts/
+process_site_temps       <- FALSE # downloads buoy / OISST data -> Output_data/temp_profiles.csv (needs internet)
+process_pheno            <- FALSE # Raw_data/pheno_data + temp_data -> CTmax per individual
+process_samples          <- FALSE # phenotypes + cluster export -> Output_data/sample_table.csv
+process_micro            <- FALSE # cluster SSU profile -> Output_data/micro_calls.csv
+render_report            <- FALSE # Output/Reports/report.qmd -> figures + report
+render_pheno_manuscript  <- FALSE # Manuscript/Sasaki_Pespeni_Phenotype.qmd -> Output/Drafts/
+render_genome_manuscript <- FALSE # Manuscript/Sasaki_Pespeni_LCWG.qmd -> Output/Drafts/
 
 # Which cluster export to use (a folder name in Raw_data/cluster_exports/).
 # NULL = the most recent one. Pin a folder name to freeze a manuscript's inputs.
+# (Used by 03_sample_table.R and 04_micro_calls.R; the report and manuscripts
+# read only the processed files in Output/Output_data/.)
 options(cluster_export = NULL)
 
 # Step 1: Site temperature records -----------------------------------------
@@ -49,35 +52,39 @@ if (process_micro) {
 }
 
 # Step 4: Render the project report ----------------------------------------
-if (make_report) {
-  render(input = here("Output", "Reports", "report.Rmd"),
-         output_format = "all",
-         envir = new.env())
+if (render_report) {
+  quarto_render(input = here("Output", "Reports", "report.qmd"),
+                output_format = "all")
 }
 
 # Step 5: Render the manuscripts -------------------------------------------
 # Drafts are named by date. Files starting with "dev_" are ignored by git;
 # remove the prefix if you want a draft committed to the repo.
-if (knit_pheno_manuscript) {
-  render(input = here("Manuscript", "Sasaki_Pespeni_Phenotype.Rmd"),
-         output_file = paste0("dev_pheno_draft_", Sys.Date()),
-         output_dir = here("Output", "Drafts"),
-         output_format = "all",
-         envir = new.env(),
-         clean = TRUE)
+render_draft <- function(qmd, prefix) {
+  draft_name <- paste0(prefix, Sys.Date())
+  quarto_render(input = here("Manuscript", qmd),
+                output_format = "all", # PDF and Word
+                metadata = list("output-file" = draft_name))
+  # Quarto writes the drafts next to the .qmd; move them to Output/Drafts/
+  drafts <- list.files(here("Manuscript"),
+                       pattern = paste0("^", draft_name, "\\.(pdf|docx)$"),
+                       full.names = TRUE)
+  file.copy(drafts, here("Output", "Drafts"), overwrite = TRUE)
+  file.remove(drafts)
 }
 
-if (knit_genome_manuscript) {
-  render(input = here("Manuscript", "Sasaki_Pespeni_LCWG.Rmd"),
-         output_file = paste0("dev_lcwg_draft_", Sys.Date()),
-         output_dir = here("Output", "Drafts"),
-         output_format = "all",
-         envir = new.env(),
-         clean = TRUE)
+if (render_pheno_manuscript) {
+  render_draft("Sasaki_Pespeni_Phenotype.qmd", "dev_pheno_draft_")
+}
+
+if (render_genome_manuscript) {
+  render_draft("Sasaki_Pespeni_LCWG.qmd", "dev_lcwg_draft_")
 }
 
 # Record the software environment ------------------------------------------
 # Written on every run so the README never needs a hand-copied sessionInfo().
 # If the project uses renv, renv.lock is the authoritative record instead.
-writeLines(capture.output(sessionInfo()),
+writeLines(c(capture.output(sessionInfo()),
+             "",
+             paste("Quarto version:", quarto_version())),
            here("Output", "session_info.txt"))

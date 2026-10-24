@@ -1,5 +1,5 @@
 # Lab ggplot2 themes --------------------------------------------------------
-# Sourced by report.Rmd (and anything else that makes figures), so a change
+# Sourced by report.qmd (and anything else that makes figures), so a change
 # here updates every figure in the project.
 #
 # Requires: ggplot2, ggpubr, monochromeR

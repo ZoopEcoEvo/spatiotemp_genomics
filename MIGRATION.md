@@ -56,3 +56,12 @@ libraries) are excluded automatically, so they are not in the file.
 - [ ] Fill in `Background/analysis_plan.qmd` (the cluster roadmap `docs/aton_lcwg_roadmap.md` has most of the content).
 - [ ] Knit the report and both manuscripts once on your machine (PDF needs LaTeX).
 - [ ] After Stage 1: export, unpack to `Raw_data/cluster_exports/<date>/`, rebuild the sample table, add PCA / admixture to the report.
+
+## Quarto update (2026-10-24)
+
+Report and manuscripts moved from R Markdown to Quarto, following the updated lab template:
+`report.Rmd` → `report.qmd`; `Sasaki_Pespeni_Phenotype.Rmd` / `Sasaki_Pespeni_LCWG.Rmd` → `.qmd`
+(chunk options as `#|` lines; figure and table captions as `fig-cap` / `tbl-cap` with `fig-` / `tbl-` labels;
+references printed before the supplement). New template files in `Manuscript/`: `word_template.docx`
+(replaces `doc_template.docx`), `lab_style.csl`, `word_frontmatter.lua`, updated `preprint_template.tex`.
+`00_controller.R` renders with `quarto::quarto_render()`; `.gitignore` and `themes.R` from the template.

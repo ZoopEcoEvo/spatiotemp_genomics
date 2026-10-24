@@ -1,5 +1,5 @@
 # Load processed data -----------------------------------------------------
-# Sourced at the top of report.Rmd and the manuscripts so each document reads
+# Sourced at the top of report.qmd and the manuscripts so each document reads
 # the same processed files the same way (they render in clean environments and
 # cannot see objects from the controller). Reads only Output/Output_data/ and
 # Raw_data/site_data.csv; run 02_pheno_processing.R and 03_sample_table.R first.
@@ -15,7 +15,7 @@
 #   site_temps      one row per collection (site x season)
 #   temp_summaries  collection temperatures per site, wide, with site means
 #   collections     site_temps with site codes
-#   range_changes   warming tolerance range scenarios (from report.Rmd)
+#   range_changes   warming tolerance range scenarios (from report.qmd)
 #
 # Requires: here, tidyverse
 
