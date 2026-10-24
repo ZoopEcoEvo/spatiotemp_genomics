@@ -9,6 +9,7 @@
 #   sample_table    every individual, with inclusion flags (03_sample_table.R)
 #   all_data        every phenotyped individual (incl. excluded ones)
 #   join_data       phenotype analysis set: include_pheno == TRUE
+#   (sample_table also carries micro-screen calls when micro_calls.csv exists)
 #   temp_profiles   daily temperature per region (01_site_temps.R)
 #   temp_record     CTmax assay logger data; ramp_record: ramping rates
 #   site_temps      one row per collection (site x season)
@@ -43,6 +44,15 @@ sample_table <- read.csv(od("sample_table.csv")) %>%
          pct_5x = breadth_ge5x,
          pct_aligned = pct_mapped / 100,
          pf_hq_aligned_reads = raw_reads * pct_mapped / 100)
+
+# Micro screen calls (04_micro_calls.R), if present: <group>_call, parasite_any, epibiont_any
+mc <- od("micro_calls.csv")
+if (file.exists(mc)) {
+  sample_table <- sample_table %>%
+    left_join(read.csv(mc) %>% dplyr::select(sample_id, ends_with("_call"), ends_with("_per_M"),
+                                             parasite_any, epibiont_any),
+              by = "sample_id")
+}
 
 all_data  <- filter(sample_table, phenotyped) %>% droplevels()
 join_data <- filter(sample_table, include_pheno) %>% droplevels()

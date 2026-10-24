@@ -17,11 +17,12 @@ library(rmarkdown)
 
 # Choose which steps to run -----------------------------------------------
 process_site_temps     <- FALSE # downloads buoy / OISST data -> Output_data/temp_profiles.csv (needs internet)
-process_pheno          <- T # Raw_data/pheno_data + temp_data -> CTmax per individual
-process_samples        <- T # phenotypes + cluster export -> Output_data/sample_table.csv
-make_report            <- T # Output/Reports/report.Rmd -> figures + report
-knit_pheno_manuscript  <- T # Manuscript/Sasaki_Pespeni_Phenotype.Rmd -> Output/Drafts/
-knit_genome_manuscript <- T # Manuscript/Sasaki_Pespeni_LCWG.Rmd -> Output/Drafts/
+process_pheno          <- FALSE # Raw_data/pheno_data + temp_data -> CTmax per individual
+process_samples        <- FALSE # phenotypes + cluster export -> Output_data/sample_table.csv
+process_micro          <- FALSE # cluster SSU profile -> Output_data/micro_calls.csv
+make_report            <- FALSE # Output/Reports/report.Rmd -> figures + report
+knit_pheno_manuscript  <- FALSE # Manuscript/Sasaki_Pespeni_Phenotype.Rmd -> Output/Drafts/
+knit_genome_manuscript <- FALSE # Manuscript/Sasaki_Pespeni_LCWG.Rmd -> Output/Drafts/
 
 # Which cluster export to use (a folder name in Raw_data/cluster_exports/).
 # NULL = the most recent one. Pin a folder name to freeze a manuscript's inputs.
@@ -40,6 +41,11 @@ if (process_pheno) {
 # Step 3: Central sample table (phenotypes + sequencing + clades) ----------
 if (process_samples) {
   source(here("Scripts", "03_sample_table.R"), local = new.env())
+}
+
+# Step 3b: Micro screen calls (parasites, epibionts) ------------------------
+if (process_micro) {
+  source(here("Scripts", "04_micro_calls.R"), local = new.env())
 }
 
 # Step 4: Render the project report ----------------------------------------

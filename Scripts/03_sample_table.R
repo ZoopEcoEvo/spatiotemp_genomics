@@ -94,17 +94,23 @@ seq <- samples %>%
 # from failed libraries are not trusted and are set to NA.
 clade_file <- ex("metadata", "clade_assignments.tsv")
 if (file.exists(clade_file)) {
-  calls <- read_tsv_q(clade_file) %>%
-    filter(!str_starts(sample_id, "#")) %>%
-    select(cluster_id = sample_id, clade)
+  # columns: clade (X/F/S/IV, or "unassigned" for two-clade DNA mixtures) and
+  # lineage (the Stage 2 analysis unit: X, S, IV, F-N, F-FH, F-MR)
+  calls <- read_tsv(clade_file, comment = "#", show_col_types = FALSE,
+                    col_types = cols(.default = col_character())) %>%
+    select(cluster_id = sample_id, clade, any_of("lineage"))
+  if (!"lineage" %in% names(calls)) calls$lineage <- calls$clade
   seq <- left_join(seq, calls, by = "cluster_id") %>%
     mutate(clade = coalesce(clade, if_else(prior_clade == "A_hudsonica", prior_clade, NA_character_)),
+           lineage = coalesce(lineage, if_else(prior_clade == "A_hudsonica", prior_clade, NA_character_)),
            clade_source = if_else(prior_clade == "A_hudsonica" & !library_kept, "prior_coi", "stage1"))
 } else {
   warning("No metadata/clade_assignments.tsv in the export; using prior_clade (COI skim).")
-  seq <- mutate(seq, clade = prior_clade, clade_source = "prior_coi")
+  seq <- mutate(seq, clade = prior_clade, lineage = prior_clade, clade_source = "prior_coi")
 }
-seq <- mutate(seq, clade = if_else(library_failed, NA_character_, clade))
+seq <- mutate(seq,
+              clade = if_else(library_failed, NA_character_, clade),
+              lineage = if_else(library_failed, NA_character_, lineage))
 
 # Combine --------------------------------------------------------------------
 keys <- c("site_code", "season", "replicate", "tube")
@@ -142,13 +148,14 @@ sample_table <- sample_table %>%
       !sequenced ~ "not sequenced (no clade)",
       species == "A_hudsonica" ~ "A. hudsonica",
       library_failed ~ "failed library (no clade)",
+      clade == "unassigned" ~ "mixed library (unassigned)",
       is.na(clade) | !(clade %in% tonsa_clades) ~ "no clade call",
       TRUE ~ "included"),
     site_code = factor(site_code, levels = site_data$site_code),
     season = factor(season, levels = seasons)) %>%
   arrange(site_code, season, replicate, tube) %>%
   select(sample_id, site_code, site, region, lat, long, season, replicate, tube,
-         phenotyped, sequenced, library_kept, library_failed, species, clade, clade_source, prior_clade,
+         phenotyped, sequenced, library_kept, library_failed, species, clade, lineage, clade_source, prior_clade,
          mito_best_contig, include_pheno, include_genomic, pheno_status, manual_exclusion,
          collection_date, collection_temp, collection_salinity, exp_date, days_in_lab,
          run, rank, size, time, ramp_rate, ctmax, warming_tol,
