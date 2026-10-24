@@ -18,18 +18,18 @@ library(quarto)
 
 # Choose which steps to run -----------------------------------------------
 process_site_temps       <- FALSE # downloads buoy / OISST data -> Output_data/temp_profiles.csv (needs internet)
-process_pheno            <- F # Raw_data/pheno_data + temp_data -> CTmax per individual
-process_samples          <- F # phenotypes + cluster export -> Output_data/sample_table.csv
-process_micro            <- F # cluster SSU profile -> Output_data/micro_calls.csv
+process_pheno            <- FALSE # Raw_data/pheno_data + temp_data -> CTmax per individual
+process_samples          <- FALSE # phenotypes + cluster export -> Output_data/sample_table.csv
+process_micro            <- FALSE # cluster SSU profile -> Output_data/micro_calls.csv
 render_report            <- T # Output/Reports/report.qmd -> figures + report
-render_pheno_manuscript  <- T # Manuscript/Sasaki_Pespeni_Phenotype.qmd -> Output/Drafts/
-render_genome_manuscript <- T # Manuscript/Sasaki_Pespeni_LCWG.qmd -> Output/Drafts/
+render_pheno_manuscript  <- FALSE # Manuscript/Sasaki_Pespeni_Phenotype.qmd -> Output/Drafts/
+render_genome_manuscript <- FALSE # Manuscript/Sasaki_Pespeni_LCWG.qmd -> Output/Drafts/
 
 # Which cluster export to use (a folder name in Raw_data/cluster_exports/).
 # NULL = the most recent one. Pin a folder name to freeze a manuscript's inputs.
-# (Used by 03_sample_table.R and 04_micro_calls.R; the report and manuscripts
-# read only the processed files in Output/Output_data/.)
 options(cluster_export = NULL)
+# Quarto documents run in a fresh R session; they read the choice from here
+Sys.setenv(CLUSTER_EXPORT = if (is.null(getOption("cluster_export"))) "" else getOption("cluster_export"))
 
 # Step 1: Site temperature records -----------------------------------------
 if (process_site_temps) {

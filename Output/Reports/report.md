@@ -3,28 +3,39 @@
 2026-10-24
 
 - [Main Message](#main-message)
-- [Site Characteristics](#site-characteristics)
-- [Phenotypic Measurements](#phenotypic-measurements)
+- [1. Collections and environment](#1-collections-and-environment)
+  - [Sites and collection conditions](#sites-and-collection-conditions)
+  - [Paired low- and high-salinity
+    sites](#paired-low--and-high-salinity-sites)
+  - [Generations between collections](#generations-between-collections)
+- [2. Phenotypes: thermal limits and body
+  size](#2-phenotypes-thermal-limits-and-body-size)
   - [Critical Thermal Limits](#critical-thermal-limits)
   - [Body Size](#body-size)
   - [Warming tolerance](#warming-tolerance)
-- [Trait Correlations](#trait-correlations)
-- [Statistical Analysis](#statistical-analysis)
-- [Trait Variability](#trait-variability)
-- [Low-Coverage Whole Genome
-  Sequencing](#low-coverage-whole-genome-sequencing)
-  - [Clade IDs](#clade-ids)
-  - [Clade-specific Physiology](#clade-specific-physiology)
-  - [PCA](#pca)
-- [Partitioning Vulnerability](#partitioning-vulnerability)
+  - [Trait correlations](#trait-correlations)
+  - [Paired sites: trait differences](#paired-sites-trait-differences)
+  - [Assay checks](#assay-checks)
+- [3. Low-coverage whole genome data](#3-low-coverage-whole-genome-data)
+  - [Sequencing summary](#sequencing-summary)
+  - [Site filtering](#site-filtering)
+  - [Clade identity](#clade-identity)
+  - [Genetic differentiation within
+    clades](#genetic-differentiation-within-clades)
+  - [Parasites and symbionts](#parasites-and-symbionts)
+- [4. Clade-specific physiological
+  patterns](#4-clade-specific-physiological-patterns)
+  - [CTmax model](#ctmax-model)
+  - [Trait variability within clades](#trait-variability-within-clades)
+  - [Parasites, epibionts and thermal
+    limits](#parasites-epibionts-and-thermal-limits)
+- [5. Partitioning vulnerability](#5-partitioning-vulnerability)
   - [Scenario 1 (Fixed CTmax)](#scenario-1-fixed-ctmax)
   - [Scenario 2 (Clade-level
     variation)](#scenario-2-clade-level-variation)
   - [Scenario 3 (Clade variation and
     acclimation/adaptation)](#scenario-3-clade-variation-and-acclimationadaptation)
   - [Comparing Scenarios](#comparing-scenarios)
-- [Salinity Comparisons](#salinity-comparisons)
-- [Misc. Details](#misc-details)
 
 ## Main Message
 
@@ -41,7 +52,13 @@ these clades provide a unique opportunity to compare replicate
 spatiotemporal patterns in adaptation against a relatively similar
 genetic background.
 
-## Site Characteristics
+## 1. Collections and environment
+
+Collection sites, conditions at the time of collection, continuous
+temperature records, and the timing of collections relative to copepod
+generation times.
+
+### Sites and collection conditions
 
 Copepods were collected by surface tow from sites across the Western
 Atlantic at several times throughout the year. The sites are shown below
@@ -105,7 +122,35 @@ contrasted with cooler, more variable environment).
 
 <img src="../Figures/max-temp-vs-range-1.png" data-fig-align="center" />
 
-## Phenotypic Measurements
+### Paired low- and high-salinity sites
+
+Nested within each of the three regions (South, Central, and Northern
+regions) are pairs of low and high salinity sites:
+
+| Region  | Low.Salinity  |      High.Salinity       |
+|:-------:|:-------------:|:------------------------:|
+|  South  |   Ft. Hamer   |      Manatee River       |
+| Central | Ganey’s Wharf |        Tyler Cove        |
+|  North  | Ritchie Wharf | St. Thomas de Kent Wharf |
+
+ 
+
+There are fairly well-established divergences between high salinity and
+low salinity populations of *Acartia tonsa*. These sets of
+geographically proximate sites potentially provide independent
+comparisons of the effects of seasonality across salinity gradients.
+Shown here are the collection conditions for these pairs of sites.
+Temperature was typically similar across the pairs within each
+collection, while salinity differences were fairly stable across
+collections.
+
+<img src="../Figures/season-sal-comps-1.png" data-fig-align="center" />
+
+### Generations between collections
+
+<img src="../Figures/num-gens-plot-1.png" data-fig-align="center" />
+
+## 2. Phenotypes: thermal limits and body size
 
 ### Critical Thermal Limits
 
@@ -186,7 +231,7 @@ limits, suggesting greater vulnerability.
 <img src="../Figures/seasonal-warming-tol-1.png"
 data-fig-align="center" />
 
-## Trait Correlations
+### Trait correlations
 
 Regardless of the underlying mechanism (genetic differentiation or
 phenotypic plasticity), we expect that collections from warmer waters
@@ -216,7 +261,156 @@ temperature variation.
 
 <img src="../Figures/ctmax-vs-size-1.png" data-fig-align="center" />
 
-## Statistical Analysis
+### Paired sites: trait differences
+
+The three pairs of cross-salinity comparisons do show evidence for
+fine-scale trait divergence, although there was no consistent pattern in
+the direction or magnitude of differences. CTmax was similar across
+sites in the Southern and Central pairs. In the Northern pair, CTmax
+tended to be slightly lower for individuals from the low salinity site.
+Size was more variable between the paired sites. In the South,
+individuals from the low salinity site were consistently smaller than
+individuals from the high salinity site, despite experiencing similar
+temperatures. By contrast, in the Central pair individuals from the low
+salinity site tended to be slightly larger than those from the high
+salinity site, although the magnitude of this difference this varied
+seasonally. In the Northern pair, individuals from the low salinity site
+were slightly larger than individuals from the high salinity site during
+the early and peak season collections, but there was an abrupt reversal
+of this pattern during the late collection, when individuals from the
+high salinity site were much larger than individuals from the low
+salinity site.
+
+Note that two of the three pairs also differ in clade composition:
+Manatee River and Ft. Hamer hold different F lineages (F-MR, F-FH), and
+St. Thomas de Kent Wharf and Ritchie Wharf differ in their mix of clades
+X and IV (Section 3). Differences between paired sites therefore combine
+environment, lineage and clade composition; Section 4 separates them.
+
+<img src="../Figures/sal-pair-traits-1.png" data-fig-align="center" />
+
+### Assay checks
+
+<img src="../Figures/ramp-record-plot-1.png" data-fig-align="center" />
+
+<img src="../Figures/rep-comp-1.png" data-fig-align="center" />
+
+<img src="../Figures/rank-sims-1.png" data-fig-align="center" />
+
+## 3. Low-coverage whole genome data
+
+After phenotyping, each individual was preserved in 95% ethanol.
+Individual DNA libraries were prepared using Twist Bio 96-plex prep
+kits, then sequenced on two lanes of an Illumina NovaSeq X Plus 25B by
+Novogene (436 libraries). Read processing, mapping, site filtering,
+clade assignment and population genomic analyses were run on the Unity
+cluster (Snakemake project `aton_lcwg`). The figures in this section are
+built from the exported result tables (`Raw_data/cluster_exports/`;
+export in use: aton_lcwg_tables_2026-10-24). *Acartia hudsonica*
+libraries are excluded throughout.
+
+### Sequencing summary
+
+Reads per library varied over two orders of magnitude; 23 libraries
+failed (\< 500,000 reads, 20 of them on plate 5). The reference genome
+is closest to clade X: the other clades map less well and yield less
+usable depth per read, on every plate. Libraries with low mapping and
+high GC content carry DNA from other organisms (Section 3.3).
+
+<img src="../Figures/seq-overview-1.png" data-fig-align="center" />
+
+There is no clear relationship between the number of reads and
+individual size or CTmax (phenotype analysis set only).
+
+<img src="../Figures/read-exp-factors-1.png" data-fig-align="center" />
+
+|           |       Sum Sq |  Df |   F value |   Pr(\>F) |
+|:----------|-------------:|----:|----------:|----------:|
+| size      | 9.603839e+14 |   1 | 2.6795203 | 0.1024488 |
+| ctmax     | 1.671663e+11 |   1 | 0.0004664 | 0.9827809 |
+| Residuals | 1.404992e+17 | 392 |        NA |        NA |
+
+### Site filtering
+
+Genotype-likelihood analyses use only the 15 chromosomes, minus
+soft-masked repeats, nuclear copies of mitochondrial DNA (NUMTs) and
+SNPs flagged as collapsed paralogs by ngsParalog. Because of the
+reference bias, far fewer sites pass the missing-data filter (data in at
+least 50% of individuals) in clades S and IV than in X.
+
+<img src="../Figures/site-filtering-1.png" data-fig-align="center" />
+
+### Clade identity
+
+Clades were assigned in two independent ways. **Mitochondrial:** each
+individual’s reads were mapped to one partial mitogenome per clade, and
+the clade was taken from the reads covering the COI barcode region.
+**Nuclear:** genome-wide genotype likelihoods (PCAngsd, NGSadmix) on all
+kept libraries. The two agree for every individual. Two libraries
+contained DNA from individuals of two different clades (both
+mitochondrial and nuclear signals mixed) and were excluded.
+
+<img src="../Figures/mito-read-split-1.png" data-fig-align="center" />
+
+All four clades are cleanly separated in the nuclear genome. Clade F
+splits further into site-specific sub-lineages (Manatee River, Ft.
+Hamer, and the Chesapeake/New England group), visible on PC4 and at K =
+5–6.
+
+<img src="../Figures/clade-structure-1.png" data-fig-align="center" />
+
+Within clade F, the sub-lineages are clearly separated (2–6% COI
+divergence) but much less divergent than the clades are from each other
+(12–18%). We therefore analyse four clades, and keep the F sub-lineage
+as an annotation.
+
+<img src="../Figures/coi-divergence-1.png" data-fig-align="center" />
+
+<img src="../Figures/clade-props-1.png" data-fig-align="center" />
+
+### Genetic differentiation within clades
+
+Population structure and diversity are analysed within each clade (X, F,
+S, IV), with populations defined as clade × site × sampling event (n ≥
+8). Within clade F, site differences include differences between F
+sub-lineages.
+
+    ## Within-clade PCAs are not in this export yet.
+
+    ## FST results are not in this export yet.
+
+    ## Diversity estimates are not in this export yet.
+
+Diversity is compared within clades only: reference bias changes which
+sites are usable in each clade.
+
+### Parasites and symbionts
+
+Reads that did not map to the *A. tonsa* reference were screened for
+small-subunit rRNA (phyloFlash, SILVA 138.1). Each read pair was
+assigned to the shared ancestor of all equally good database hits, at a
+rank limited by its identity, and host (*Acartia*) rRNA was removed. An
+organism group was called present at ≥ 5 read pairs and ≥ 2 per million
+library pairs (`Scripts/04_micro_calls.R`). Parasites (*Paradinium*,
+trematodes) and epibionts (apostome and peritrich ciliates) show strong
+site × season patterns: apostomes in every Connecticut late-season
+individual, trematodes in most Ritchie Wharf peak-season individuals,
+and *Zoothamnium* on late-season Maine and St. Thomas de Kent Wharf
+copepods.
+
+<img src="../Figures/micro-prevalence-1.png" data-fig-align="center" />
+
+<img src="../Figures/micro-loads-1.png" data-fig-align="center" />
+
+Kinetoplastids are present at low levels in most individuals, mostly at
+the northern sites, and are treated as non-pathogenic background;
+crustacean (Malacostraca) DNA is likely diet.
+
+<img src="../Figures/micro-all-groups-1.png" data-fig-align="center" />
+
+## 4. Clade-specific physiological patterns
+
+### CTmax model
 
 To more formally test the relationships between CTmax, collection
 temperature, and size, we used a linear mixed effects model, structured
@@ -227,94 +421,15 @@ centered before model fitting. The model also includes random intercepts
 for each site and the tube number (the position of each individual
 within the water bath during the CTmax assay).
 
-## Trait Variability
-
-Shown below is the trait variation (ranges) for each site. Ranges are
-calculated for each collection separately.
-
-<img src="../Figures/trait-range-plot-1.png" data-fig-align="center" />
-
-Changes in trait variance may be indicative of phenotypic selection. If
-selection (as opposed to acclimation) are driving seasonal changes, we
-may expect to see a reduction in variance in the peak samples relative
-to the early season samples. Note that early season collection
-temperatures this year were higher than expected, driven by fairly
-strong heatwaves across the North Atlantic. As shown in the temperature
-profiles for each site, the ‘early’ samples were collected just after
-high temperatures were reached, while ‘peak’ samples were collected
-after sites had experienced high temperatures for several weeks
-(generations). As warming tolerances were fairly high throughout this
-period, we will assume that selection was weak before the early samples.
-If the early onset of high temperatures filtered out vulnerable
-genotypes prior to our sampling, the results will be a conservative
-estimate of the effects of selection on trait variance.
-
-## Low-Coverage Whole Genome Sequencing
-
-While plasticity appears to play a large role in the response of
-*Acartia tonsa* populations to seasonality, a growing number of studies
-have also uncovered patterns in allele frequency indicating of rapid
-adaptive responses to seasonality. Our data set of seasonal samples
-across a large latitudinal gradient enables a comparison of these fine
-scale temporal patterns with the larger latitudinal patterns in allele
-frequency to determine whether the same alleles driving rapid seasonal
-adaptation are in play over larger spatial (and longer temporal) scales.
-
-After phenotyping, each individual was preserved in 95% ethanol.
-Individual DNA libraries were prepared using Twist Bio 96-plex prep
-kits, then sequenced on two lanes of an Illumina NovaSeq X Plus 25B by
-Novogene. Reads were de-multiplexed first to the plate level, and then
-to the sample level. Read processing, mapping and QC were done on the
-Unity cluster (Snakemake project `aton_lcwg`); the numbers below come
-from the exported QC tables (`results/00_qc/sample_summary.tsv`,
-`coverage_per_sample.tsv`) joined in `Scripts/03_sample_table.R`. Failed
-libraries (`library_failed`) are shown in grey.
-
-<img src="../Figures/overall-read-counts-1.png"
-data-fig-align="center" />
-
-The number of reads per individual varies, but there is no clear
-relationship between sequencing depth and individual size or CTmax
-(phenotype analysis set only).
-
-<img src="../Figures/read-exp-factors-1.png" data-fig-align="center" />
-
-|           |       Sum Sq |  Df |   F value |   Pr(\>F) |
-|:----------|-------------:|----:|----------:|----------:|
-| size      | 9.603839e+14 |   1 | 2.6795203 | 0.1024488 |
-| ctmax     | 1.671663e+11 |   1 | 0.0004664 | 0.9827809 |
-| Residuals | 1.404992e+17 | 392 |        NA |        NA |
-
-<img src="../Figures/site-coverage-1.png" data-fig-align="center" />
-
-### Clade IDs
-
-*Acartia tonsa* is well known to comprise multiple, deeply diverged
-clades. Clade calls currently come from stage1, prior_coi (`prior_coi` =
-COI reads skimmed from the low-coverage data; `stage1` = final calls
-from the cluster, mitochondrial COI tree plus nuclear clustering). Calls
-from failed libraries are not used.
-
-<img src="../Figures/ind-clade-summary-1.png" data-fig-align="center" />
-
-<img src="../Figures/clade-props-1.png" data-fig-align="center" />
-
-These clades are deeply diverged, which affects the alignment and final
-coverage of the genome data (clade X is closest to the reference
-genome).
-
-<img src="../Figures/clade-coverage-1.png" data-fig-align="center" />
-
-### Clade-specific Physiology
-
-These COI clades were then merged with the CTmax and body size data set
-to examine clade-specific patterns of divergence. By plotting CTmax and
-size against the collection temperature we can see that these clades
-appear to be physiologically differentiated. Clades F and S tend to have
-higher CTmax, even when collected at the same temperatures as Clades X
-and IV. Size is more variable, with varying degrees of temperature
-sensitivity across the clades. Overall, however, Clade F tends to be
-smaller than Clades S and X. Clade IV tended to be the largest.
+The Stage 1 clade calls (Section 3.1) were merged with the CTmax and
+body size data set to examine clade-specific patterns of divergence. By
+plotting CTmax and size against the collection temperature we can see
+that these clades appear to be physiologically differentiated. Clades F
+and S tend to have higher CTmax, even when collected at the same
+temperatures as Clades X and IV. Size is more variable, with varying
+degrees of temperature sensitivity across the clades. Overall, however,
+Clade F tends to be smaller than Clades S and X. Clade IV tended to be
+the largest.
 
 <img src="../Figures/clade-trait-regs-1.png" data-fig-align="center" />
 
@@ -349,15 +464,49 @@ data-fig-align="center" />
 
 <img src="../Figures/clade-contours-1.png" data-fig-align="center" />
 
-### PCA
+### Trait variability within clades
 
-Per-clade PCA (PCAngsd) and admixture (NGSadmix) come from Stage 1 of
-the cluster workflow (`results/04_structure/`). They will be read here
-from the cluster export once Stage 1 is done; the earlier exploratory
-PCA code (based on covariance matrices from before the Snakemake
-pipeline) is kept in `Output/Reports/legacy/report_pre_migration.Rmd`.
+Shown below is the trait variation (ranges) for each site. Ranges are
+calculated for each collection separately.
 
-## Partitioning Vulnerability
+<img src="../Figures/trait-range-plot-1.png" data-fig-align="center" />
+
+Changes in trait variance may be indicative of phenotypic selection. If
+selection (as opposed to acclimation) are driving seasonal changes, we
+may expect to see a reduction in variance in the peak samples relative
+to the early season samples. Note that early season collection
+temperatures this year were higher than expected, driven by fairly
+strong heatwaves across the North Atlantic. As shown in the temperature
+profiles for each site, the ‘early’ samples were collected just after
+high temperatures were reached, while ‘peak’ samples were collected
+after sites had experienced high temperatures for several weeks
+(generations). As warming tolerances were fairly high throughout this
+period, we will assume that selection was weak before the early samples.
+If the early onset of high temperatures filtered out vulnerable
+genotypes prior to our sampling, the results will be a conservative
+estimate of the effects of selection on trait variance.
+
+### Parasites, epibionts and thermal limits
+
+Infected and uninfected individuals are compared within the same
+collection (same site, date and collection temperature), so differences
+are not confounded with acclimation temperature. Only collections with
+at least two positive and two negative individuals are shown.
+
+<img src="../Figures/infection-traits-1.png" data-fig-align="center" />
+
+| covariate    | trait | n_collections | n_positive | effect |    se |
+|:-------------|:------|--------------:|-----------:|-------:|------:|
+| parasite_any | ctmax |             6 |         23 |  0.361 | 0.304 |
+| parasite_any | size  |             6 |         23 |  0.009 | 0.012 |
+| epibiont_any | ctmax |             4 |         13 | -0.233 | 0.312 |
+| epibiont_any | size  |             4 |         13 | -0.013 | 0.023 |
+
+Effect of carrying a parasite or epibiont on CTmax and size, within
+collections (trait ~ status + clade + (1 \| collection)); only
+collections with both positive and negative individuals.
+
+## 5. Partitioning vulnerability
 
 Our study examines spatial and temporal variation in upper thermal
 limits for field-acclimated individuals. Given the short generation time
@@ -392,7 +541,7 @@ Here, the same approach is taken but for each clade separately. The
 average CTmax from the peak season for each clade was used as a fixed
 CTmax value when calculating warming tolerance.
 
-<img src="../Figures/unnamed-chunk-42-1.png" data-fig-align="center" />
+<img src="../Figures/unnamed-chunk-61-1.png" data-fig-align="center" />
 
 ### Scenario 3 (Clade variation and acclimation/adaptation)
 
@@ -401,7 +550,7 @@ model of CTmax as a function of the interaction between collection
 temperature and clade. The predicted CTmax values fall within the range
 of CTmax values observed in the field.
 
-<img src="../Figures/unnamed-chunk-43-1.png" data-fig-align="center" />
+<img src="../Figures/unnamed-chunk-62-1.png" data-fig-align="center" />
 
 ### Comparing Scenarios
 
@@ -460,61 +609,3 @@ samples by ~30%.
 | Fixed CTmax                     |    13.05 |       0.00 |
 | Clade                           |     9.72 |      25.53 |
 | Genetic Variation & Acclimation |     8.97 |      31.26 |
-
-## Salinity Comparisons
-
-Nested within each of the three regions (South, Central, and Northern
-regions) are pairs of low and high salinity sites:
-
-| Region  | Low.Salinity  |      High.Salinity       |
-|:-------:|:-------------:|:------------------------:|
-|  South  |   Ft. Hamer   |      Manatee River       |
-| Central | Ganey’s Wharf |        Tyler Cove        |
-|  North  | Ritchie Wharf | St. Thomas de Kent Wharf |
-
- 
-
-There are fairly well-established divergences between high salinity and
-low salinity populations of *Acartia tonsa*. These sets of
-geographically proximate sites potentially provide independent
-comparisons of the effects of seasonality across salinity gradients.
-Shown here are the collection conditions for these pairs of sites.
-Temperature was typically similar across the pairs within each
-collection, while salinity differences were fairly stable across
-collections.
-
-<img src="../Figures/season-sal-comps-1.png" data-fig-align="center" />
-
-The three pairs of cross-salinity comparisons do show evidence for
-fine-scale trait divergence, although there was no consistent pattern in
-the direction or magnitude of differences. CTmax was similar across
-sites in the Southern and Central pairs. In the Northern pair, CTmax
-tended to be slightly lower for individuals from the low salinity site.
-Size was more variable between the paired sites. In the South,
-individuals from the low salinity site were consistently smaller than
-individuals from the high salinity site, despite experiencing similar
-temperatures. By contrast, in the Central pair individuals from the low
-salinity site tended to be slightly larger than those from the high
-salinity site, although the magnitude of this difference this varied
-seasonally. In the Northern pair, individuals from the low salinity site
-were slightly larger than individuals from the high salinity site during
-the early and peak season collections, but there was an abrupt reversal
-of this pattern during the late collection, when individuals from the
-high salinity site were much larger than individuals from the low
-salinity site.
-
-We will return to potential mechanisms behind divergence between these
-geographically proximate but environmentally separated sites later in
-this report.
-
-<img src="../Figures/sal-pair-traits-1.png" data-fig-align="center" />
-
-## Misc. Details
-
-<img src="../Figures/ramp-record-plot-1.png" data-fig-align="center" />
-
-<img src="../Figures/rep-comp-1.png" data-fig-align="center" />
-
-<img src="../Figures/num-gens-plot-1.png" data-fig-align="center" />
-
-<img src="../Figures/rank-sims-1.png" data-fig-align="center" />

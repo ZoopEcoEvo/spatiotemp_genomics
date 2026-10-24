@@ -8,7 +8,9 @@
 #   site_data       site, site_code, region, lat, long
 #   sample_table    every individual, with inclusion flags (03_sample_table.R)
 #   all_data        every phenotyped individual (incl. excluded ones)
-#   join_data       phenotype analysis set: include_pheno == TRUE
+#   join_data       phenotype analysis set: include_pheno == TRUE (A. tonsa, clade assigned)
+#   seq_data        sequenced libraries, A. hudsonica removed
+#   cx(...)         path inside the cluster export in use (export_name)
 #   (sample_table also carries micro-screen calls when micro_calls.csv exists)
 #   temp_profiles   daily temperature per region (01_site_temps.R)
 #   temp_record     CTmax assay logger data; ramp_record: ramping rates
@@ -55,7 +57,21 @@ if (file.exists(mc)) {
 }
 
 all_data  <- filter(sample_table, phenotyped) %>% droplevels()
-join_data <- filter(sample_table, include_pheno) %>% droplevels()
+join_data <- filter(sample_table, include_pheno) %>% droplevels()   # A. tonsa only, clade assigned
+
+# Sequenced A. tonsa libraries with a clade, plus failed libraries (kept for the
+# sequencing QC plots; species unknown). Drops A. hudsonica and the two mixed
+# (unassigned) libraries.
+tonsa_clades <- c("X", "F", "S", "IV")
+seq_data <- filter(sample_table, sequenced, !(species %in% "A_hudsonica"),
+                   library_failed | clade %in% tonsa_clades) %>% droplevels()
+
+# Cluster export, for figures built directly from cluster tables. The controller
+# passes its choice through CLUSTER_EXPORT; otherwise the most recent export.
+export_root <- here("Raw_data", "cluster_exports")
+export_name <- Sys.getenv("CLUSTER_EXPORT")
+if (export_name == "") export_name <- tail(sort(dir(export_root)), 1)
+cx <- function(...) file.path(export_root, export_name, ...)
 
 temp_profiles <- read.csv(od("temp_profiles.csv")) %>%
   mutate(date = lubridate::as_datetime(date),
