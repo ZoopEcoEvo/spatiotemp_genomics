@@ -1,0 +1,8 @@
+group,pattern,role
+paradinium,Paradiniidae,parasite
+trematode,Trematoda,parasite
+apostome,Apostomatia,epibiont
+peritrich,Peritrichia,epibiont
+cnidaria_myxozoa,Cnidaria,unresolved
+kinetoplastid,Kinetoplastea,background
+malacostraca,Malacostraca,diet
