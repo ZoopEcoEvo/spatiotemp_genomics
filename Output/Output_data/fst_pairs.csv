@@ -1,0 +1,31 @@
+clade,site1,season1,clade2,site2,season2,fst_unweighted,fst_weighted,comparison
+F,FH,late,F,FH,peak,0.016737,0.015393,seasonal (same site)
+F,FH,late,F,GW,late,0.043287,0.296265,spatial (same season)
+F,FH,late,F,MR,late,0.06828,0.388902,spatial (same season)
+F,FH,peak,F,GW,late,0.046344,0.296237,site and season differ
+F,FH,peak,F,MD,late,0.05343,0.273932,site and season differ
+F,GW,early,F,MD,late,0.043015,0.04007,site and season differ
+F,GW,late,F,MD,late,0.043074,0.04643,spatial (same season)
+F,GW,late,F,MR,late,0.07317,0.476283,spatial (same season)
+F,GW,peak,F,MD,late,0.041442,0.043336,site and season differ
+F,GW,peak,F,MR,late,0.084508,0.487195,site and season differ
+F,MD,early,F,MD,late,0.03016,0.028606,seasonal (same site)
+F,MD,early,F,MR,late,0.078807,0.465295,site and season differ
+F,MD,late,F,MR,late,0.066375,0.447168,spatial (same season)
+F,MD,late,F,MR,peak,0.043444,0.392619,site and season differ
+F,MR,late,F,MR,peak,0.021631,0.023326,seasonal (same site)
+IV,CT,late,IV,TK,late,0.024419,0.046975,spatial (same season)
+S,CT,peak,S,MD,late,0.025486,0.038075,site and season differ
+S,CT,peak,S,MD,peak,0.0195,0.030876,spatial (same season)
+S,CT,peak,S,MR,late,0.035458,0.047767,site and season differ
+S,MD,late,S,MD,peak,0.01894,0.019821,seasonal (same site)
+S,MD,late,S,MR,late,0.038939,0.056159,spatial (same season)
+S,MD,peak,S,MR,late,0.033403,0.048189,site and season differ
+X,ME,early,X,ME,peak,0.027286,0.028654,seasonal (same site)
+X,ME,early,X,RW,early,0.04038,0.058699,spatial (same season)
+X,ME,early,X,RW,late,0.04586,0.070783,site and season differ
+X,ME,early,X,RW,peak,0.04348,0.066641,site and season differ
+X,ME,early,X,TK,early,0.045002,0.069302,spatial (same season)
+X,ME,early,X,TK,peak,0.043175,0.063384,site and season differ
+X,RW,late,X,TK,early,0.029493,0.032421,site and season differ
+X,RW,peak,X,TK,early,0.027286,0.030135,site and season differ

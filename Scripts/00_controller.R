@@ -19,8 +19,8 @@ library(quarto)
 # Choose which steps to run -----------------------------------------------
 process_site_temps       <- FALSE # downloads buoy / OISST data -> Output_data/temp_profiles.csv (needs internet)
 process_pheno            <- FALSE # Raw_data/pheno_data + temp_data -> CTmax per individual
-process_samples          <- FALSE # phenotypes + cluster export -> Output_data/sample_table.csv
-process_micro            <- FALSE # cluster SSU profile -> Output_data/micro_calls.csv
+process_samples          <- F # phenotypes + cluster export -> Output_data/sample_table.csv
+process_micro            <- F # cluster SSU profile -> Output_data/micro_calls.csv
 render_report            <- T # Output/Reports/report.qmd -> figures + report
 render_pheno_manuscript  <- FALSE # Manuscript/Sasaki_Pespeni_Phenotype.qmd -> Output/Drafts/
 render_genome_manuscript <- FALSE # Manuscript/Sasaki_Pespeni_LCWG.qmd -> Output/Drafts/

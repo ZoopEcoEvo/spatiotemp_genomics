@@ -16,8 +16,8 @@ lat_gradient <- c("MR" = "#8D1A2C",   #  1
                   "GW" = "#DBC270",   #  6
                   "CT" = "#A2C4AA",   #  7
                   "IV" = "#6CB1B4",   #  8  clade
-                  "ME" = "#3C95AD",   #  9
-                  "TK" = "#3274A6",   # 10
+                  "ME" = "#2A9D8F",   #  9
+                  "TK" = "#4A62AE",   # 10
                   "X"  = "#24518B",   # 11  clade
                   "RW" = "#192E63")   # 12
 

@@ -1,6 +1,6 @@
 # Comparing seasonal and latitudinal patterns in thermal adaptation
 
-2026-10-24
+2026-10-25
 
 - [Main Message](#main-message)
 - [1. Collections and environment](#1-collections-and-environment)
@@ -306,7 +306,7 @@ Novogene (436 libraries). Read processing, mapping, site filtering,
 clade assignment and population genomic analyses were run on the Unity
 cluster (Snakemake project `aton_lcwg`). The figures in this section are
 built from the exported result tables (`Raw_data/cluster_exports/`;
-export in use: aton_lcwg_tables_2026-10-24). *Acartia hudsonica*
+export in use: aton_lcwg_tables_2026-10-25). *Acartia hudsonica*
 libraries are excluded throughout.
 
 ### Sequencing summary
@@ -375,14 +375,74 @@ S, IV), with populations defined as clade × site × sampling event (n ≥
 8). Within clade F, site differences include differences between F
 sub-lineages.
 
-    ## Within-clade PCAs are not in this export yet.
+<img src="../Figures/within-clade-pca-1.png" data-fig-align="center" />
 
-    ## FST results are not in this export yet.
+<img src="../Figures/fst-pairs-1.png" data-fig-align="center" />
 
-    ## Diversity estimates are not in this export yet.
+Shown below are estimates of diversity across the data set. Tajima’s D
+can be used to detect random vs. non-random evolutionary processes
+(e.g. drift vs. selection). A value near zero indicates neutral
+processes and a stable population size. Negative values indicate an
+excess of rare alleles, suggesting possible recent selective sweeps or
+population expansion after a bottleneck. Positive values indicate
+possible population contraction or balancing selection, resulting in
+fewer rare alleles than expected.
 
-Diversity is compared within clades only: reference bias changes which
-sites are usable in each clade.
+Most values of Tajima’s D for our data set are small (within 0.5 of 0).
+A few samples reached moderate values around -1 and 1. Interestingly,
+all cases are from the two sites in the Chesapeake, with a low Tajima’s
+D value for S clade individuals at the high salinity site, and high
+values for F clade individuals at both high and low salinity sites.
+
+We also calculated nucleotide diversity, which represents the average
+number of nucleotide differences between randomly sampled sequences in a
+population. Theta values tended to be high, with the exception of F
+Clade individuals at the low salinity site in Florida and the two sites
+in the Chesapeake.
+
+We note that these diversity metrics should only be compared within
+clades since reference bias changes which sites are usable in each
+clade.
+
+Within sites, there is notably little change in these metrics across
+seasons. Three general within-clade patterns can be seen across sites:
+
+1.  **Increasing Tajima’s D and decreased nucleotide diversity,** as
+    seen in Clade F. This may indicate serial founder effects. Diversity
+    should fall steadily in the direction of expansion ([Excoffier et
+    al. 2009](https://doi.org/10.1146/annurev.ecolsys.39.110707.173414)).
+    For a clade spreading north since the last glacial maximum, northern
+    sites would be expected to have lower θπ and higher D ([Hewitt
+    2000](https://doi.org/10.1038/35016000)). This suggests a low
+    latitude origin for this clade.
+2.  **Consistently low Tajima’s D and consistently high nucleotide
+    diversity**, as seen in Clades S and IV (although note the limited
+    sampling for these clades). This pattern suggests large,
+    well-connected populations. There may have been population expansion
+    before sites diverged, or there may be substantial gene flow between
+    populations keeping them similar ([Excoffier et
+    al. 2009](https://doi.org/10.1146/annurev.ecolsys.39.110707.173414)).
+3.  **Consistently small Tajima’s D and consistently high nucleotide
+    diversity**, as seen in Clade X. While this typically would indicate
+    large, stable populations, Clade X is found only at the high
+    latitude sites, where populations of *Acartia tonsa* are present
+    during only part of the year, exhibiting drastic fluctuations in
+    population size over this period. This may indicate the importance
+    of an egg bank / resting eggs. If the population is generated each
+    year by hatching out of eggs laid over many previous years,
+    diversity would remain high. The egg bank acts as a store of
+    diversity, so a brief active season doesn’t mean a small genetic
+    population ([Hairston
+    1996](https://doi.org/10.4319/lo.1996.41.5.1087)). Resting eggs are
+    well documented in *Acartia* (Marcus 1996, *Hydrobiologia*
+    320:141–152). In Narragansett Bay, *A. tonsa* replaces the
+    egg-banking *A. hudsonica* each summer ([Sullivan & McManus
+    1986](https://doi.org/10.3354/meps028121)), the same seasonal
+    turnover your ME site shows. Under these dynamics, individual sites
+    may retain distinct populations, as seen in the within-clade PCAs
+    above.
+
+<img src="../Figures/diversity-pops-1.png" data-fig-align="center" />
 
 ### Parasites and symbionts
 
