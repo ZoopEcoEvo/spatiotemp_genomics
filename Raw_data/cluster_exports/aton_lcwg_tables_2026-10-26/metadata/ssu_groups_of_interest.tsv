@@ -1,0 +1,30 @@
+# Optional convenience view for ssu_profile.py: group name <TAB> substring of the SILVA lineage.
+# Several lines with the same name = OR. Groups may overlap. Edit freely; the full,
+# taxon-neutral matrices (ssu_depth*_counts.tsv) are always produced regardless.
+Bacteria	Bacteria;
+Archaea	Archaea;
+Chloroplast	;Chloroplast
+Fungi	;Fungi
+Oomycota	Peronosporomycetes
+Labyrinthulomycetes	Labyrinthulomycetes
+Ichthyosporea	Ichthyosporea
+Microsporidia	Microsporidia
+Apicomplexa	;Apicomplexa
+Dinoflagellata	;Dinoflagellata
+Ciliophora	;Ciliophora
+Diatomea	;Diatomea
+Other_Ochrophyta	;Ochrophyta
+Kinetoplastea	;Kinetoplastea
+Rhizaria	;Rhizaria
+Amoebozoa	;Amoebozoa
+Chlorophyta	;Chlorophyta
+Rhodophyta	;Rhodophyceae
+Cnidaria_incl_Myxozoa	;Cnidaria
+Cnidaria_incl_Myxozoa	Myxosporea
+Platyhelminthes	;Platyhelminthes
+Nematoda	;Nematoda
+Rotifera	;Rotifera
+Annelida	;Annelida
+Mollusca	;Mollusca
+Crustacea	;Crustacea
+Chordata	;Chordata

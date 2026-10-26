@@ -1,0 +1,7 @@
+clade	snps_tested	snps_flagged	pct_flagged	median_LR	max_LR
+F	690168	77301	11.200	0.000	62017.56
+IV	198349	36878	18.592	0.111	63072.64
+S	413220	61718	14.936	0.187	37472.89
+X	2517115	192046	7.630	0.001	11520.13
+union_all_clades		349941			
+masked_bp_with_pad_0		349941			

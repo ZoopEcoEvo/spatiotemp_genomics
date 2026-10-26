@@ -51,7 +51,7 @@ source(here("Scripts", "load_data.R"))
 
 ## Main Message
 
-By assaying thermal limits several times per year in natural populations distributed across a large latitudinal gradient, we highlight the importance of intra-specific variation for predicting vulnerability to climate change. Indeed, across the entire spatiotemporal framework examined here, we observed an \~12°C range in thermal limits. Both spatial and temporal variations in thermal limits are essential for robust predictions. Also highlighted in this study are the major differences in thermal limits between the various cryptic lineages of *Acartia tonsa*. The broad (and sometimes overlapping) distrbutions of these clades provide a unique opportunity to compare replicate spatiotemporal patterns in adaptation against a relatively similar genetic background.
+By assaying thermal limits several times per year in natural populations distributed across a large latitudinal gradient, we highlight the importance of intra-specific variation for predicting vulnerability to climate change. Indeed, across the entire spatiotemporal framework examined here, we observed an ~12°C range in thermal limits. Both spatial and temporal variations in thermal limits are essential for robust predictions. Also highlighted in this study are the major differences in thermal limits between the various cryptic lineages of *Acartia tonsa*. The broad (and sometimes overlapping) distrbutions of these clades provide a unique opportunity to compare replicate spatiotemporal patterns in adaptation against a relatively similar genetic background.  
 
 ## 1. Collections and environment
 
@@ -97,9 +97,10 @@ site_temp_plot = ggplot(site_temps, aes(x = doy, y = collection_temp, colour = s
 ggarrange(site_map, site_temp_plot, common.legend = T, legend = "bottom")
 ```
 
-Collections aimed to obtain copepods near the onset of peak temperatures, after peak temperatures, and then after temperatures cooled during the Fall. To put the collections into this larger seasonal context, we examined continuous temperature records for each site. Continuous data is not available for all sites, however, so here we've pieced together daily temperature values from either local temperature sensors (sites in Florida and the Chesapeake) and high resolution satellite temperature data (Connecticut, Maine, and the Canadian sites). This satellite data comes from the NOAA 1/4° Daily Optimum Interpolation Sea Surface Temperature (OISST).
 
-These temperature profiles are shown below, with the temperatures measured during the time of collection included for comparison While collection temperatures in Maine did not always match the recorded daily averages, across all sites the temperature records do give a general sense of the timing of seasonal maxima (and the proximity of collections to the seasonal maximum temperature). In general, the first sample from each site fell just after the site reached the warmest period. The exception to that pattern is in Florida, where collections occurred after an extended period of high temperatures.
+Collections aimed to obtain copepods near the onset of peak temperatures, after peak temperatures, and then after temperatures cooled during the Fall. To put the collections into this larger seasonal context, we examined continuous temperature records for each site. Continuous data is not available for all sites, however, so here we've pieced together daily temperature values from either local temperature sensors (sites in Florida and the Chesapeake) and high resolution satellite temperature data (Connecticut, Maine, and the Canadian sites). This satellite data comes from the NOAA 1/4° Daily Optimum Interpolation Sea Surface Temperature (OISST). 
+
+These temperature profiles are shown below, with the temperatures measured during the time of collection included for comparison While collection temperatures in Maine did not always match the recorded daily averages, across all sites the temperature records do give a general sense of the timing of seasonal maxima (and the proximity of collections to the seasonal maximum temperature). In general, the first sample from each site fell just after the site reached the warmest period. The exception to that pattern is in Florida, where collections occurred after an extended period of high temperatures. 
 
 ```{r}
 #| label: continuous-temps
@@ -137,7 +138,9 @@ ggplot(temp_profiles, aes(x = doy, y = temp_c)) +
         axis.text.x = element_text(angle = 320, hjust = 0, vjust = 0.5))
 ```
 
-Exact locations for the sites are provided here:
+
+
+Exact locations for the sites are provided here: 
 
 ```{r}
 #| label: site-table
@@ -147,7 +150,8 @@ site_data %>%
   knitr::kable(align = "c")
 ```
 
-The latitudinal gradient covers a wide range of seasonality. Shown below is the temperature range. While based on collection temperatures, and therefore an underestimate of the total seasonal range of temperatures, these patterns are representative of the expected latitudinal gradient in seasonality.
+
+The latitudinal gradient covers a wide range of seasonality. Shown below is the temperature range. While based on collection temperatures, and therefore an underestimate of the total seasonal range of temperatures, these patterns are representative of the expected latitudinal gradient in seasonality. 
 
 ```{r}
 #| label: lat-temp-range-plot
@@ -165,6 +169,7 @@ site_temps %>%
   theme_matt() + 
   theme(legend.position = "right")
 ```
+
 
 There was a general increase in the collection temperature range at warmer sites. This provides an opportunity to disentangle some of the traditionally proposed hypotheses about thermal adaptation (macrophysiological gradients often include stable and warm environments contrasted with cooler, more variable environment).
 
@@ -189,7 +194,7 @@ site_temps %>%
 
 ### Paired low- and high-salinity sites
 
-Nested within each of the three regions (South, Central, and Northern regions) are pairs of low and high salinity sites:
+Nested within each of the three regions (South, Central, and Northern regions) are pairs of low and high salinity sites:    
 
 ```{r}
 #| label: sal-table
@@ -199,9 +204,10 @@ data.frame("Region" = c("South", "Central", "North"),
   knitr::kable(align = "c")
 ```
 
- 
 
-There are fairly well-established divergences between high salinity and low salinity populations of *Acartia tonsa*. These sets of geographically proximate sites potentially provide independent comparisons of the effects of seasonality across salinity gradients. Shown here are the collection conditions for these pairs of sites. Temperature was typically similar across the pairs within each collection, while salinity differences were fairly stable across collections.
+\ 
+
+There are fairly well-established divergences between high salinity and low salinity populations of *Acartia tonsa*. These sets of geographically proximate sites potentially provide independent comparisons of the effects of seasonality across salinity gradients. Shown here are the collection conditions for these pairs of sites. Temperature was typically similar across the pairs within each collection, while salinity differences were fairly stable across collections. 
 
 ```{r}
 #| label: season-sal-comps
@@ -253,6 +259,7 @@ ggarrange(sal_comp_temps, sal_comp_sal, nrow = 2, common.legend = T, legend = "r
 ```
 
 ### Generations between collections
+
 
 ```{r}
 
@@ -310,6 +317,7 @@ generations = bind_rows(early_peak, peak_late) %>%
          "gens" = floor(days_passed / gen_time))
 ```
 
+
 ```{r}
 #| label: num-gens-plot
 #| fig-width: 10
@@ -325,17 +333,18 @@ ggplot(generations, aes(x = lat, y = gens, colour = site, shape = season)) +
   theme(legend.position = "right")
 ```
 
-## 2. Phenotypes: thermal limits and body size
+
+## 2. Phenotypes: thermal limits and body size 
 
 ### Critical Thermal Limits
 
-A total of `r dim(all_data)[1]` individuals were examined. Critical thermal limits and body size measurements were made before individuals were preserved in ethanol. We excluded data for individuals that were either later classified as males or juveniles, that we were unable to assign to a clade, or that were identified as individuals from a closely related species (*Acartia hudsonica*). With these individuals excluded, the full data set contains `r dim(join_data)[1]` adult females with CTmax and body size measurements, and clade identifications.
+A total of `r dim(all_data)[1]` individuals were examined. Critical thermal limits and body size measurements were made before individuals were preserved in ethanol. We excluded data for individuals that were either later classified as males or juveniles, that we were unable to assign to a clade, or that were identified as individuals from a closely related species (*Acartia hudsonica*). With these individuals excluded, the full data set contains `r dim(join_data)[1]` adult females with CTmax and body size measurements, and clade identifications. 
 
-Critical thermal maxima (CTmax) was measured using a custom setup. The method uses a standard dynamic ramping assay to determine the maximum temperature individuals could sustain normal functioning. This differs from lethal temperatures, and indeed, all individuals recovered following the assay.
+Critical thermal maxima (CTmax) was measured using a custom setup. The method uses a standard dynamic ramping assay to determine the maximum temperature individuals could sustain normal functioning. This differs from lethal temperatures, and indeed, all individuals recovered following the assay.    
 
-Individuals were rested for one hour after collection before the assay. During the assay, copepods were held in artificial seawater, composed of bottled spring water and Instant Ocean salt mix adjusted to match collection salinities. During the assay, several 'control' individuals were maintained in this solution at ambient temperatures without the temperature ramp to ensure that there was no background changes in behavior or mortality. When sorting individuals from the plankton tow contents, they were held in a 50:50 mix of 60 um filtered water from the collection site and artificial seawater as an additional acclimation step.
+Individuals were rested for one hour after collection before the assay. During the assay, copepods were held in artificial seawater, composed of bottled spring water and Instant Ocean salt mix adjusted to match collection salinities. During the assay, several 'control' individuals were maintained in this solution at ambient temperatures without the temperature ramp to ensure that there was no background changes in behavior or mortality. When sorting individuals from the plankton tow contents, they were held in a 50:50 mix of 60 um filtered water from the collection site and artificial seawater as an additional acclimation step. 
 
-Sample sizes varied slightly across experiments, but generally \~20 individuals were measured per season at each site. The major exceptions were the early samples from the Florida sites and the late sample from Sawyer Park (Maine). Only two sets of samples (peak and late) were collected from Fort Hamer and Manatee River. The late season collection from Sawyer Park occurred after *Acartia tonsa* abundance decreased, and samples were dominated by *Acartia hudsonica*. Thermal limits were measured for all *A. tonsa* individuals recovered. No samples were collected from Key Largo for this project, as *Acartia tonsa* wasn't present in the water during the peak season, likely due to a recent extreme heat event.
+Sample sizes varied slightly across experiments, but generally ~20 individuals were measured per season at each site. The major exceptions were the early samples from the Florida sites and the late sample from Sawyer Park (Maine). Only two sets of samples (peak and late) were collected from Fort Hamer and Manatee River. The late season collection from Sawyer Park occurred after *Acartia tonsa* abundance decreased, and samples were dominated by *Acartia hudsonica*. Thermal limits were measured for all *A. tonsa* individuals recovered. No samples were collected from Key Largo for this project, as *Acartia tonsa* wasn't present in the water during the peak season, likely due to a recent extreme heat event. 
 
 ```{r}
 join_data %>%  
@@ -349,7 +358,8 @@ join_data %>%
   knitr::kable()
 ```
 
-Shown below are the measured CTmax values. Individual measurements are shown in small points for each collection. The large points indicate the mean values for each collection.
+
+Shown below are the measured CTmax values. Individual measurements are shown in small points for each collection. The large points indicate the mean values for each collection.     
 
 ```{r}
 #| label: seasonal-ct-max
@@ -380,6 +390,7 @@ ctmax_plot = join_data %>%
   theme(legend.position = "right", 
         legend.title.align = 0.125)
 ```
+
 
 ```{r}
 #| label: doy-ct-max
@@ -412,6 +423,7 @@ join_data %>%
         legend.title.align = 0.125)
 ```
 
+
 ```{r}
 #| label: ctmax-ind-pops-doy
 #| fig-width: 8
@@ -434,6 +446,7 @@ ggplot(filter(join_data, clade!="A_hudsonica"),
         legend.title.align = 0.125,
         axis.text.x = element_text(angle = 320, hjust = 0, vjust = 0.5))
 ```
+
 
 ```{r}
 #| label: ctmax-ind-pops-season
@@ -470,7 +483,7 @@ join_data %>%
 
 ### Body Size
 
-Following the CTmax assay, individuals were photographed for body size measurements. Prosome lengths were measured from these photographs using a scale micrometer and the software ImageJ. These measurements are shown below. As before, large points indicate the mean body size. While less cohesive than CTmax, a general trend of increasing body size with latitude and time of year can be seen.
+Following the CTmax assay, individuals were photographed for body size measurements. Prosome lengths were measured from these photographs using a scale micrometer and the software ImageJ. These measurements are shown below. As before, large points indicate the mean body size. While less cohesive than CTmax, a general trend of increasing body size with latitude and time of year can be seen. 
 
 ```{r}
 #| label: seasonal-body-size
@@ -502,6 +515,7 @@ size_plot = join_data %>%
         legend.title.align = 0.125)
 ```
 
+
 ```{r}
 #| label: doy-body-size
 #| include: false
@@ -524,6 +538,8 @@ ggplot(drop_na(join_data, size), aes(x = doy, y = size, colour = site)) +
   theme(legend.position = "right", 
         legend.title.align = 0.125)
 ```
+
+
 
 ```{r}
 #| label: size-ind-pops-doy
@@ -553,6 +569,7 @@ ggplot(drop_na(join_data, size), aes(x = doy, y = size, colour = site)) +
         legend.title.align = 0.125)
 ```
 
+
 ```{r}
 #| label: size-ind-pops-season
 #| fig-width: 8
@@ -579,6 +596,7 @@ ggplot(join_data, aes(x = season, y = size, colour = site)) +
         legend.title.align = 0.125)
 ```
 
+
 ```{r}
 #| label: size-and-ctmax-season
 #| fig-width: 11
@@ -588,7 +606,7 @@ ggarrange(ctmax_plot, size_plot, common.legend = T, legend = "right")
 
 ### Warming tolerance
 
-Warming tolerance (the difference between thermal limits and environmental temperatures) is a commonly used metric of climate vulnerability. We calculated this as the difference between measured CTmax values and the collection temperature. Smaller warming tolerance values indicate that populations were nearer to their upper thermal limits, suggesting greater vulnerability.
+Warming tolerance (the difference between thermal limits and environmental temperatures) is a commonly used metric of climate vulnerability. We calculated this as the difference between measured CTmax values and the collection temperature. Smaller warming tolerance values indicate that populations were nearer to their upper thermal limits, suggesting greater vulnerability. 
 
 ```{r}
 #| label: seasonal-warming-tol
@@ -620,7 +638,7 @@ ggplot(join_data, aes(x = season, y = warming_tol, colour = site)) +
 
 ### Trait correlations
 
-Regardless of the underlying mechanism (genetic differentiation or phenotypic plasticity), we expect that collections from warmer waters should yield copepods with higher thermal limits and smaller body sizes. Our observations largely fit this expectation, with strong increases in CTmax at higher temperatures, and a general decrease in prosome lengths as temperature increased. There was a larger correlation between CTmax and temperature than size and temperature. There are myriad reasons this might be observed, but one potential is the potential for acclimation of thermal limits. Body size is fixed in the adult stage, while CTmax can continue to vary as water temperature changes. This is indirect evidence for the importance of rapid acclimation in the observed patterns.
+Regardless of the underlying mechanism (genetic differentiation or phenotypic plasticity), we expect that collections from warmer waters should yield copepods with higher thermal limits and smaller body sizes. Our observations largely fit this expectation, with strong increases in CTmax at higher temperatures, and a general decrease in prosome lengths as temperature increased. There was a larger correlation between CTmax and temperature than size and temperature. There are myriad reasons this might be observed, but one potential is the potential for acclimation of thermal limits. Body size is fixed in the adult stage, while CTmax can continue to vary as water temperature changes. This is indirect evidence for the importance of rapid acclimation in the observed patterns. 
 
 ```{r}
 #| label: temp-cors
@@ -690,6 +708,7 @@ wt_temp_plot = join_data %>%
 ggarrange(ctmax_temp_plot, wt_temp_plot, size_temp_plot, common.legend = T, legend = "bottom", nrow = 1)
 ```
 
+
 ```{r}
 #| label: pop-temp-cors
 #| fig-width: 8
@@ -729,7 +748,8 @@ join_data %>%
 
 ```
 
-The relationship between prosome length and CTmax is also of interest. Given that larger body sizes are associated with cold adaptation/acclimation, it is unsurprising that there is a general trend of decreasing thermal limits with increasing size. Individual regression lines for each site are also included - the dark grey lines in the background represent the 'universal' regression for that site, with individual colored regression lines for each collection. At most sites, evidence for this negative relationship between CTmax and body size is observed across collections rather than within collections, suggesting this relationship is primaly a reflection of the response to seasonal temperature variation.
+
+The relationship between prosome length and CTmax is also of interest. Given that larger body sizes are associated with cold adaptation/acclimation, it is unsurprising that there is a general trend of decreasing thermal limits with increasing size. Individual regression lines for each site are also included - the dark grey lines in the background represent the 'universal' regression for that site, with individual colored regression lines for each collection. At most sites, evidence for this negative relationship between CTmax and body size is observed across collections rather than within collections, suggesting this relationship is primaly a reflection of the response to seasonal temperature variation. 
 
 ```{r}
 #| label: ctmax-vs-size
@@ -784,9 +804,10 @@ ggarrange(universal_size, pop_size, common.legend = T, legend = "none", nrow = 2
 
 ### Paired sites: trait differences
 
+
 The three pairs of cross-salinity comparisons do show evidence for fine-scale trait divergence, although there was no consistent pattern in the direction or magnitude of differences. CTmax was similar across sites in the Southern and Central pairs. In the Northern pair, CTmax tended to be slightly lower for individuals from the low salinity site. Size was more variable between the paired sites. In the South, individuals from the low salinity site were consistently smaller than individuals from the high salinity site, despite experiencing similar temperatures. By contrast, in the Central pair individuals from the low salinity site tended to be slightly larger than those from the high salinity site, although the magnitude of this difference this varied seasonally. In the Northern pair, individuals from the low salinity site were slightly larger than individuals from the high salinity site during the early and peak season collections, but there was an abrupt reversal of this pattern during the late collection, when individuals from the high salinity site were much larger than individuals from the low salinity site.
 
-Note that two of the three pairs also differ in clade composition: Manatee River and Ft. Hamer hold different F lineages (F-MR, F-FH), and St. Thomas de Kent Wharf and Ritchie Wharf differ in their mix of clades X and IV (Section 3). Differences between paired sites therefore combine environment, lineage and clade composition; Section 4 separates them.
+Note that two of the three pairs also differ in clade composition: Manatee River and Ft. Hamer hold different F lineages (F-MR, F-FH), and St. Thomas de Kent Wharf and Ritchie Wharf differ in their mix of clades X and IV (Section 3). Differences between paired sites therefore combine environment, lineage and clade composition; Section 4 separates them. 
 
 ```{r}
 #| label: sal-pair-traits
@@ -859,6 +880,7 @@ ggplot(ramp_record2, aes(x = minute_interval, y = mean_ramp)) +
   theme_matt(base_size = 16) 
 ```
 
+
 ```{r}
 #| label: rep-comp
 #| fig-height: 12
@@ -875,6 +897,7 @@ join_data %>%
        y = "CTmax") + 
   theme_matt_facets()
 ```
+
 
 ```{r}
 #| label: rank-sims
@@ -939,7 +962,7 @@ status_cols <- c(clade_cols[tonsa_clades], "failed library" = "grey75")
 
 ### Sequencing summary
 
-Reads per library varied over two orders of magnitude; 23 libraries failed (\< 500,000 reads, 20 of them on plate 5). The reference genome is closest to clade X: the other clades map less well and yield less usable depth per read, on every plate. Libraries with low mapping and high GC content carry DNA from other organisms (Section 3.3).
+Reads per library varied over two orders of magnitude; 23 libraries failed (< 500,000 reads, 20 of them on plate 5). The reference genome is closest to clade X: the other clades map less well and yield less usable depth per read, on every plate. Libraries with low mapping and high GC content carry DNA from other organisms (Section 3.3).
 
 ```{r}
 #| label: seq-overview
@@ -1232,12 +1255,12 @@ if (nrow(wpca) == 0) {
            panel = factor(panel, levels = unique(panel))) %>%
     ggplot(aes(x = PC1, y = PC2, fill = site, shape = season)) +
     facet_wrap(~ panel, scales = "free") +
-    geom_point(size = 5, colour = "grey15", stroke = 0.3) +
+    geom_point(size = 2.5, colour = "grey15", stroke = 0.3) +
     # 95% ellipse per site (t distribution, so a few outlying individuals don't
     # inflate it); sites with fewer than 4 individuals in a clade get no ellipse
-    # stat_ellipse(data = ~ add_count(.x, panel, site) %>% filter(n >= 4),
-    #              aes(x = PC1, y = PC2, colour = site, group = site), inherit.aes = FALSE,
-    #              type = "t", level = 0.95, linewidth = 1.5) +
+    stat_ellipse(data = ~ add_count(.x, panel, site) %>% filter(n >= 4),
+                 aes(x = PC1, y = PC2, colour = site, group = site), inherit.aes = FALSE,
+                 type = "t", level = 0.95, linewidth = 0.7) +
     scale_colour_manual(values = pop_cols[site_order], guide = "none") +
     scale_fill_manual(values = pop_cols[site_order], drop = FALSE) +
     scale_shape_manual(values = c(early = 21, peak = 24, late = 22)) +
@@ -1268,11 +1291,11 @@ if (length(fst_files) == 0) {
                                   TRUE ~ "site and season differ"),
            clade = factor(clade, levels = tonsa_clades))
   write_csv(fst, here("Output", "Output_data", "fst_pairs.csv"))
-  
-  ggplot(fst, aes(x = comparison, y = fst_weighted, fill = clade)) +
-    geom_boxplot(position = position_dodge(width = 0.8)) + 
-    geom_point(size = 2.5, position = position_dodge(width = 0.8)) +
-    scale_fill_manual(values = clade_cols) +
+  ggplot(fst, aes(x = comparison, y = fst_weighted, colour = clade, shape = clade)) +
+    facet_wrap(~ clade, nrow = 1) +
+    geom_point(size = 2.5, position = position_jitter(width = 0.12, height = 0)) +
+    scale_colour_manual(values = clade_cols, guide = "none") +
+    scale_shape_manual(values = clade_shapes, guide = "none") +
     labs(x = NULL, y = expression(F[ST]~"(weighted)")) +
     theme_matt_facets(base_size = 13) +
     theme(axis.text.x = element_text(angle = 30, hjust = 1))
@@ -1295,20 +1318,55 @@ Within sites, there is notably little change in these metrics across seasons. Th
 
 ```{r}
 #| label: diversity-pops
-#| fig-width: 10
-#| fig-height: 7
-theta_files <- Sys.glob(cx("results", "05_diversity", "thetas", "*.genome.tsv"))
-if (length(theta_files) == 0) {
+#| fig-width: 12
+#| fig-height: 5
+# Genome-wide theta_W, theta_pi and Tajima's D per population, with 95% CIs.
+# Preferred: block bootstrap over 1 Mb blocks (diversity_ci.tsv, rule tajima_boot).
+# Fallback for older exports: delete-one-chromosome jackknife (15 blocks, crude)
+# from the per-chromosome thetaStat output. D is always computed from summed
+# thetas, not by averaging per-block D.
+tajima_D <- function(tw, tp, n_ind) {
+  nchr <- 2 * n_ind
+  i <- seq_len(nchr - 1)
+  a1 <- sum(1 / i); a2 <- sum(1 / i^2)
+  b1 <- (nchr + 1) / (3 * (nchr - 1)); b2 <- 2 * (nchr^2 + nchr + 3) / (9 * nchr * (nchr - 1))
+  c1 <- b1 - 1 / a1; c2 <- b2 - (nchr + 2) / (a1 * nchr) + a2 / a1^2
+  e1 <- c1 / a1; e2 <- c2 / (a1^2 + a2)
+  S <- tw * a1
+  (tp - tw) / sqrt(e1 * S + e2 * S * (S - 1))
+}
+jackknife_pop <- function(pop, n_ind) {
+  f <- cx("results", "05_diversity", "thetas", paste0(pop, ".thetas.idx.pestPG"))
+  if (!file.exists(f)) return(NULL)
+  t <- read.table(f, comment.char = "", skip = 1)
+  tw <- t[[4]]; tp <- t[[5]]; ns <- t[[14]]; g <- length(ns)
+  est <- function(keep) c(tajima_D(sum(tw[keep]), sum(tp[keep]), n_ind),
+                          sum(tp[keep]) / sum(ns[keep]), sum(tw[keep]) / sum(ns[keep]))
+  full <- est(rep(TRUE, g))
+  loo <- sapply(seq_len(g), function(j) est(seq_len(g) != j))
+  se <- sqrt((g - 1) / g * rowSums((loo - rowMeans(loo))^2))
+  tibble(population = pop, n_ind = n_ind, n_sites = sum(ns),
+         tajima_D = full[1], tajima_D_lo95 = full[1] - 1.96 * se[1], tajima_D_hi95 = full[1] + 1.96 * se[1],
+         pi = full[2], pi_lo95 = full[2] - 1.96 * se[2], pi_hi95 = full[2] + 1.96 * se[2],
+         theta_W = full[3], ci_method = "chromosome jackknife (15 blocks)")
+}
+
+ci_file  <- cx("results", "05_diversity", "diversity_ci.tsv")
+pop_file <- cx("results", "05_diversity", "populations.tsv")
+if (file.exists(ci_file)) {
+  div_pop <- read_tsv(ci_file, show_col_types = FALSE) %>%
+    mutate(ci_method = "block bootstrap (1 Mb blocks)")
+} else if (file.exists(pop_file)) {
+  pops <- read_tsv(pop_file, show_col_types = FALSE)
+  div_pop <- map2_dfr(pops$population, pops$n, jackknife_pop)
+} else {
+  div_pop <- tibble()
+}
+
+if (nrow(div_pop) == 0) {
   cat("Diversity estimates are not in this export yet.")
 } else {
-  tajima <- function(pop) {
-    f <- cx("results", "05_diversity", "thetas", paste0(pop, ".thetas.idx.pestPG"))
-    if (!file.exists(f)) return(NA_real_)
-    t <- read.table(f, comment.char = "", skip = 1)
-    weighted.mean(t[[9]], t[[14]])    # Tajima's D per chromosome, weighted by sites
-  }
-  div_pop <- map_dfr(theta_files, ~ read_tsv(.x, show_col_types = FALSE)) %>%
-    mutate(tajima_D = map_dbl(population, tajima)) %>%
+  div_pop <- div_pop %>%
     separate(population, c("clade", "site", "season"), sep = "__", remove = FALSE) %>%
     filter(clade %in% tonsa_clades) %>%
     mutate(clade = factor(clade, levels = tonsa_clades),
@@ -1316,18 +1374,25 @@ if (length(theta_files) == 0) {
            season = factor(season, levels = season_order))
   write_csv(div_pop, here("Output", "Output_data", "diversity_populations.csv"))
   div_pop %>%
-    select(clade, site, season, `θπ per site` = pi_per_site, `Tajima's D` = tajima_D) %>%
-    pivot_longer(c(`θπ per site`, `Tajima's D`), names_to = "stat") %>%
-    ggplot(aes(x = site, y = value, shape = season, colour = clade)) +
-    facet_grid(stat ~ ., scales = "free", space = "free_x") +
-    geom_hline(yintercept = 0, colour = "grey") + 
-    geom_point(size = 5) +
-    scale_colour_manual(values = clade_cols) +
+    transmute(clade, site, season,
+              `θπ per site_est` = pi, `θπ per site_lo` = pi_lo95, `θπ per site_hi` = pi_hi95,
+              `Tajima's D_est` = tajima_D, `Tajima's D_lo` = tajima_D_lo95, `Tajima's D_hi` = tajima_D_hi95) %>%
+    pivot_longer(-c(clade, site, season), names_to = c("stat", ".value"), names_sep = "_(?=[^_]+$)") %>%
+    mutate(stat = factor(stat, levels = c("θπ per site", "Tajima's D"))) %>%
+    ggplot(aes(x = site, y = est, ymin = lo, ymax = hi, shape = season, colour = clade)) +
+    facet_grid(stat ~ clade, scales = "free", space = "free_x") +
+    geom_hline(data = tibble(stat = factor("Tajima's D", levels = c("θπ per site", "Tajima's D")), y = 0), aes(yintercept = y),
+               inherit.aes = FALSE, colour = "grey70", linetype = "dashed") +
+    geom_pointrange(position = position_dodge(width = 0.5), size = 0.5, fatten = 2.5) +
+    scale_colour_manual(values = clade_cols, guide = "none") +
     scale_shape_manual(values = c(early = 16, peak = 17, late = 15)) +
-    labs(x = "Site (south → north)", y = NULL, shape = "Season") +
+    labs(x = "Site (south → north)", y = NULL, shape = "Season",
+         caption = paste("Bars: 95% CI,", unique(div_pop$ci_method))) +
     theme_matt_facets(base_size = 13)
 }
 ```
+
+Diversity is compared within clades only: reference bias changes which sites are usable in each clade. The spectra are folded (no outgroup), and low-coverage data shift the absolute values of Tajima's D, so differences between populations of the same clade are more informative than whether D is above or below zero. Confidence intervals come from a block bootstrap over 1 Mb blocks; populations of 8 individuals (F MD late, S MR late) are the least precise.
 
 ### Parasites and symbionts
 
@@ -1436,7 +1501,7 @@ prev_plot(micro_prev(all_groups))
 
 ### CTmax model
 
-To more formally test the relationships between CTmax, collection temperature, and size, we used a linear mixed effects model, structured as `ctmax ~ clade * temp_cent + size + (1 + temp_cent|site) + (1|tube)`. This examines the effects of clade, temperature and size on CTmax, along with clade-specific effects of temperature. Collection temperature was centered before model fitting. The model also includes random intercepts for each site and the tube number (the position of each individual within the water bath during the CTmax assay).
+To more formally test the relationships between CTmax, collection temperature, and size, we used a linear mixed effects model, structured as `ctmax ~ clade * temp_cent + size + (1 + temp_cent|site) + (1|tube)`. This examines the effects of clade, temperature and size on CTmax, along with clade-specific effects of temperature. Collection temperature was centered before model fitting. The model also includes random intercepts for each site and the tube number (the position of each individual within the water bath during the CTmax assay). 
 
 ```{r}
 #| label: ctmax-model
@@ -1461,6 +1526,8 @@ lmerTest::ranova(ctmax.model)
 car::Anova(ctmax.model, type = "III")
 
 ```
+
+  
 
 ```{r}
 #| label: pop-effs-plot
@@ -1513,6 +1580,8 @@ car::Anova(ctmax.model, type = "III")
 # ggarrange(pop_effs_plot, pop_clim_plot, common.legend = T, legend = "bottom")
 ```
 
+
+
 ```{r}
 #| label: site-arr-plot
 #| fig-width: 6
@@ -1532,7 +1601,8 @@ car::Anova(ctmax.model, type = "III")
 #         axis.title.y = element_blank())
 ```
 
-The Stage 1 clade calls (Section 3.1) were merged with the CTmax and body size data set to examine clade-specific patterns of divergence. By plotting CTmax and size against the collection temperature we can see that these clades appear to be physiologically differentiated. Clades F and S tend to have higher CTmax, even when collected at the same temperatures as Clades X and IV. Size is more variable, with varying degrees of temperature sensitivity across the clades. Overall, however, Clade F tends to be smaller than Clades S and X. Clade IV tended to be the largest.
+
+The Stage 1 clade calls (Section 3.1) were merged with the CTmax and body size data set to examine clade-specific patterns of divergence. By plotting CTmax and size against the collection temperature we can see that these clades appear to be physiologically differentiated. Clades F and S tend to have higher CTmax, even when collected at the same temperatures as Clades X and IV. Size is more variable, with varying degrees of temperature sensitivity across the clades. Overall, however, Clade F tends to be smaller than Clades S and X. Clade IV tended to be the largest. 
 
 ```{r}
 #| label: clade-trait-regs
@@ -1581,6 +1651,8 @@ ggarrange(clade_ctmax_plot, clade_size_plot, nrow = 1, common.legend = T, legend
 #   theme_matt_facets()
 ```
 
+
+
 ```{r}
 #| label: clade-marg-mean
 #| fig-width: 6
@@ -1601,6 +1673,7 @@ ctmax_contrast_plot = emmeans::emmeans(ctmax.model, specs = "clade") %>%
 
 ```
 
+
 ```{r}
 #| label: clade-ctmax-contrasts
 #| fig-width: 7
@@ -1611,6 +1684,7 @@ emmeans::emmeans(ctmax.model, specs = "clade") %>% pairs() %>%  plot() +
        y = "Clade Contrast") + 
   theme_matt()
 ```
+
 
 ```{r}
 #| label: clade-marg-trend
@@ -1632,6 +1706,7 @@ plast_contrast_plot = emmeans::emtrends(ctmax.model, var = "temp_cent", specs = 
 
 ```
 
+
 ```{r}
 #| label: clade-contrast-plots
 #| fig-width: 12
@@ -1641,10 +1716,12 @@ ggarrange(ctmax_contrast_plot, plast_contrast_plot)
 
 ```
 
+
 ```{r}
 #| label: clade-plast-contrast
 emmeans::emtrends(ctmax.model, var = "temp_cent", specs = "clade") %>% pairs() %>% plot()
 ```
+
 
 ```{r}
 #| label: clade-trait-regs-pops
@@ -1664,9 +1741,11 @@ join_data %>%
 
 ```
 
+
+
 The general result here is that Clade F appears to be more thermally tolerant than Clades S and X, which in turn are more thermally tolerant than Clade IV. Clade IV does however, appear to exibit stronger plasticity than the other clades (although this pattern is only marginally significant in two of the comparisons; IV-S and IV-X)
 
-These differences in physiology correspond to the distributional patterns for each clade. Using a Loess smoother (span = 2) highlights how the proportional abundance of the clades is affected by temperature in different ways. Clade F occurs in high proportion at high temperature, Clade IV occurs in high proportions at low temperatures, while Clade X occurs in high proportions at intermediate temperatures. Clade S generally occurs in low proportions, with a few exceptions.
+These differences in physiology correspond to the distributional patterns for each clade. Using a Loess smoother (span = 2) highlights how the proportional abundance of the clades is affected by temperature in different ways. Clade F occurs in high proportion at high temperature, Clade IV occurs in high proportions at low temperatures, while Clade X occurs in high proportions at intermediate temperatures. Clade S generally occurs in low proportions, with a few exceptions.  
 
 ```{r}
 #| label: clade-hab-patterns
@@ -1707,6 +1786,7 @@ clade_prop %>%
   theme(legend.position = "none")
 ```
 
+
 ```{r}
 #| label: clade-contours
 #| fig-width: 8
@@ -1731,7 +1811,7 @@ join_data %>%
 
 ### Trait variability within clades
 
-Shown below is the trait variation (ranges) for each site. Ranges are calculated for each collection separately.
+Shown below is the trait variation (ranges) for each site. Ranges are calculated for each collection separately. 
 
 ```{r}
 #| label: trait-range-plot
@@ -1797,7 +1877,8 @@ size_var_temp = ggplot(trait_ranges, aes(x = collection_temp, y = size_var, colo
 ggarrange(ctmax_var_temp, size_var_temp, common.legend = T, legend = "right")
 ```
 
-Changes in trait variance may be indicative of phenotypic selection. If selection (as opposed to acclimation) are driving seasonal changes, we may expect to see a reduction in variance in the peak samples relative to the early season samples. Note that early season collection temperatures this year were higher than expected, driven by fairly strong heatwaves across the North Atlantic. As shown in the temperature profiles for each site, the 'early' samples were collected just after high temperatures were reached, while 'peak' samples were collected after sites had experienced high temperatures for several weeks (generations). As warming tolerances were fairly high throughout this period, we will assume that selection was weak before the early samples. If the early onset of high temperatures filtered out vulnerable genotypes prior to our sampling, the results will be a conservative estimate of the effects of selection on trait variance.
+
+Changes in trait variance may be indicative of phenotypic selection. If selection (as opposed to acclimation) are driving seasonal changes, we may expect to see a reduction in variance in the peak samples relative to the early season samples. Note that early season collection temperatures this year were higher than expected, driven by fairly strong heatwaves across the North Atlantic. As shown in the temperature profiles for each site, the 'early' samples were collected just after high temperatures were reached, while 'peak' samples were collected after sites had experienced high temperatures for several weeks (generations). As warming tolerances were fairly high throughout this period, we will assume that selection was weak before the early samples. If the early onset of high temperatures filtered out vulnerable genotypes prior to our sampling, the results will be a conservative estimate of the effects of selection on trait variance.     
 
 ### Parasites, epibionts and thermal limits
 
@@ -1859,9 +1940,9 @@ bind_rows(infection_fit("parasite_any"), infection_fit("epibiont_any")) %>%
                caption = "Effect of carrying a parasite or epibiont on CTmax and size, within collections (trait ~ status + clade + (1 | collection)); only collections with both positive and negative individuals.")
 ```
 
-## 5. Partitioning vulnerability
+## 5. Partitioning vulnerability 
 
-Our study examines spatial and temporal variation in upper thermal limits for field-acclimated individuals. Given the short generation time of these copepods, our results likely reflect the combined influence of phenotypic plasticity (acclimation to the changes in temperature), local adaptation (variation amongst the sites), and genetic variation between the clades.
+Our study examines spatial and temporal variation in upper thermal limits for field-acclimated individuals. Given the short generation time of these copepods, our results likely reflect the combined influence of phenotypic plasticity (acclimation to the changes in temperature), local adaptation (variation amongst the sites), and genetic variation between the clades. 
 
 The four clades, while morphologically difficult to differentiate, have distinct geographic distributions and physiological tolerances. The inclusion of this clade-level variation decreases the slope of the CTmax vs. temperature regression. Ignoring this source of variation would lead to an overestimated capacity for *A. tonsa* to respond to warming (either through acclimation or via gene flow and evolutionary rescue).
 
@@ -1885,11 +1966,12 @@ join_data %>%
   theme(legend.position = "none")
 ```
 
+
 We illustrate the effects of these different levels of variation by calculating warming tolerance for each collection (site x collection temperature combination) under three different scenarios.
 
-### Scenario 1 (Fixed CTmax)
+### Scenario 1 (Fixed CTmax)    
 
-Warming tolerance was calculated using the average CTmax from the peak season collections (across all sites and individuals regardless of clade). This essentially assumes a fixed CTmax that is constant across the geographic range examined.
+Warming tolerance was calculated using the average CTmax from the peak season collections (across all sites and individuals regardless of clade). This essentially assumes a fixed CTmax that is constant across the geographic range examined. 
 
 ```{r}
 illus_data = join_data %>% 
@@ -1913,8 +1995,7 @@ mean_ctmax_profiles = temp_profiles %>%
 ```
 
 ### Scenario 2 (Clade-level variation)
-
-Here, the same approach is taken but for each clade separately. The average CTmax from the peak season for each clade was used as a fixed CTmax value when calculating warming tolerance.
+Here, the same approach is taken but for each clade separately. The average CTmax from the peak season for each clade was used as a fixed CTmax value when calculating warming tolerance. 
 
 ```{r}
 
@@ -1950,9 +2031,8 @@ ggplot(clade_mean_profiles, aes(x = pred_wt, y = region, fill = region)) +
 
 ```
 
-### Scenario 3 (Clade variation and acclimation/adaptation)
-
-Here CTmax is predicted based on the continuous temperature data and a model of CTmax as a function of the interaction between collection temperature and clade. The predicted CTmax values fall within the range of CTmax values observed in the field.
+### Scenario 3 (Clade variation and acclimation/adaptation) 
+Here CTmax is predicted based on the continuous temperature data and a model of CTmax as a function of the interaction between collection temperature and clade. The predicted CTmax values fall within the range of CTmax values observed in the field. 
 
 ```{r}
 
@@ -1993,8 +2073,7 @@ ggplot(full_pred_profiles, aes(x = pred_wt, y = region, fill = region)) +
 ```
 
 ### Comparing Scenarios
-
-There is strong geographic variation in the distributions of these clades. It does not, for example, make sense to examine warming tolerance of Clade X individuals in Florida, as this clade was not collected from lower latitudes. To incorporate this distribution information, simulated populations were re-assembled reflecting the proportional clade composition within each region (calculated across the entire set of collections).
+There is strong geographic variation in the distributions of these clades. It does not, for example, make sense to examine warming tolerance of Clade X individuals in Florida, as this clade was not collected from lower latitudes. To incorporate this distribution information, simulated populations were re-assembled reflecting the proportional clade composition within each region (calculated across the entire set of collections). 
 
 ```{r}
 #| label: region-clade-props
@@ -2033,7 +2112,8 @@ ggplot(mutate(pred_samples, clade = factor(clade, levels = tonsa_clades)), aes(x
 
 ```
 
-Warming tolerance profiles for each clade were added in these proportions to generation populations of 100 individuals.
+
+Warming tolerance profiles for each clade were added in these proportions to generation populations of 100 individuals. 
 
 ```{r}
 clade_mean_populations = data.frame()
@@ -2080,7 +2160,8 @@ for(i in 1:dim(pred_samples)[1]){
 
 ```
 
-The warming tolerance distributions for each region and the three different scenarios are shown below.
+
+The warming tolerance distributions for each region and the three different scenarios are shown below. 
 
 ```{r}
 #| label: peak-season-wt
@@ -2127,9 +2208,10 @@ ggarrange(current_mean_ctmax_plot, current_clade_mean_plot, current_full_pred_pl
           nrow = 3, labels = "AUTO")
 ```
 
-Overall, differences were fairly minor, with slight increases in predicted warming tolerance in low latitude regions and slight decreases in higher latitude regions.
 
-We also examined potential effects of warming (a +4°C increase in temperature). These predictions assume clade composition does not change over time and that warming is constant throughout the year.
+Overall, differences were fairly minor, with slight increases in predicted warming tolerance in low latitude regions and slight decreases in higher latitude regions. 
+
+We also examined potential effects of warming (a +4°C increase in temperature). These predictions assume clade composition does not change over time and that warming is constant throughout the year. 
 
 ```{r}
 
@@ -2223,6 +2305,7 @@ for(i in 1:dim(pred_samples)[1]){
 
 ```
 
+
 Unsurprisingly warming decreases the predicted warming tolerance. Similar patterns are observed as in the comparison between the initial three scenarios - predicted warming tolerance under warming is lowest in Florida and highest in the high latitude regions. Similarly, including clade-level variation and acclimation increases warming tolerance in the lower latitude regions and decreases it in the higher latitude regions.
 
 ```{r}
@@ -2294,7 +2377,8 @@ ggarrange(warming_mean_ctmax_plot, warming_clade_mean_plot, warming_full_pred_pl
 
 ```
 
-To simplify the comparisons, here we subset the data to just August and September (the warmest months and the season typically associated with the highest abundance of A. tonsa).
+
+To simplify the comparisons, here we subset the data to just August and September (the warmest months and the season typically associated with the highest abundance of A. tonsa). 
 
 ```{r}
 #| label: wt-range-scenarios
@@ -2351,7 +2435,8 @@ ggplot(peak_comps, aes(x = comparison, y = mean_wt, colour = warming, group = wa
 
 ```
 
-Changes were slight between the scenarios, with the same relative patterns between the current and warming scenarios. Compared to the fixed CTmax estimate, incorporating both genetic diversity and acclimation reduced the range of warming tolerance estimates across the samples by \~30%.
+
+Changes were slight between the scenarios, with the same relative patterns between the current and warming scenarios. Compared to the fixed CTmax estimate, incorporating both genetic diversity and acclimation reduced the range of warming tolerance estimates across the samples by ~30%. 
 
 ```{r}
 

@@ -1,6 +1,6 @@
 # Comparing seasonal and latitudinal patterns in thermal adaptation
 
-2026-10-25
+2026-10-26
 
 - [Main Message](#main-message)
 - [1. Collections and environment](#1-collections-and-environment)
@@ -306,7 +306,7 @@ Novogene (436 libraries). Read processing, mapping, site filtering,
 clade assignment and population genomic analyses were run on the Unity
 cluster (Snakemake project `aton_lcwg`). The figures in this section are
 built from the exported result tables (`Raw_data/cluster_exports/`;
-export in use: aton_lcwg_tables_2026-10-25). *Acartia hudsonica*
+export in use: aton_lcwg_tables_2026-10-26). *Acartia hudsonica*
 libraries are excluded throughout.
 
 ### Sequencing summary
@@ -601,7 +601,7 @@ Here, the same approach is taken but for each clade separately. The
 average CTmax from the peak season for each clade was used as a fixed
 CTmax value when calculating warming tolerance.
 
-<img src="../Figures/unnamed-chunk-61-1.png" data-fig-align="center" />
+<img src="../Figures/unnamed-chunk-4-1.png" data-fig-align="center" />
 
 ### Scenario 3 (Clade variation and acclimation/adaptation)
 
@@ -610,7 +610,7 @@ model of CTmax as a function of the interaction between collection
 temperature and clade. The predicted CTmax values fall within the range
 of CTmax values observed in the field.
 
-<img src="../Figures/unnamed-chunk-62-1.png" data-fig-align="center" />
+<img src="../Figures/unnamed-chunk-5-1.png" data-fig-align="center" />
 
 ### Comparing Scenarios
 
@@ -647,6 +647,11 @@ three scenarios - predicted warming tolerance under warming is lowest in
 Florida and highest in the high latitude regions. Similarly, including
 clade-level variation and acclimation increases warming tolerance in the
 lower latitude regions and decreases it in the higher latitude regions.
+
+In all scenarios, however, we find support for the idea that
+environmental tolerances define the lower latitude range edge (i.e. low
+latitude range distributions may be set by heat tolerance in this
+group).
 
 <img src="../Figures/peak-season-wt-plus-warming-1.png"
 data-fig-align="center" />
