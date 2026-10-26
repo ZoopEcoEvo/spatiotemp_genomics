@@ -444,6 +444,14 @@ seasons. Three general within-clade patterns can be seen across sites:
 
 <img src="../Figures/diversity-pops-1.png" data-fig-align="center" />
 
+Diversity is compared within clades only: reference bias changes which
+sites are usable in each clade. The spectra are folded (no outgroup),
+and low-coverage data shift the absolute values of Tajima’s D, so
+differences between populations of the same clade are more informative
+than whether D is above or below zero. Confidence intervals come from a
+block bootstrap over 1 Mb blocks; populations of 8 individuals (F MD
+late, S MR late) are the least precise.
+
 ### Parasites and symbionts
 
 Reads that did not map to the *A. tonsa* reference were screened for
@@ -601,7 +609,7 @@ Here, the same approach is taken but for each clade separately. The
 average CTmax from the peak season for each clade was used as a fixed
 CTmax value when calculating warming tolerance.
 
-<img src="../Figures/unnamed-chunk-4-1.png" data-fig-align="center" />
+<img src="../Figures/unnamed-chunk-61-1.png" data-fig-align="center" />
 
 ### Scenario 3 (Clade variation and acclimation/adaptation)
 
@@ -610,7 +618,7 @@ model of CTmax as a function of the interaction between collection
 temperature and clade. The predicted CTmax values fall within the range
 of CTmax values observed in the field.
 
-<img src="../Figures/unnamed-chunk-5-1.png" data-fig-align="center" />
+<img src="../Figures/unnamed-chunk-62-1.png" data-fig-align="center" />
 
 ### Comparing Scenarios
 
@@ -647,11 +655,6 @@ three scenarios - predicted warming tolerance under warming is lowest in
 Florida and highest in the high latitude regions. Similarly, including
 clade-level variation and acclimation increases warming tolerance in the
 lower latitude regions and decreases it in the higher latitude regions.
-
-In all scenarios, however, we find support for the idea that
-environmental tolerances define the lower latitude range edge (i.e. low
-latitude range distributions may be set by heat tolerance in this
-group).
 
 <img src="../Figures/peak-season-wt-plus-warming-1.png"
 data-fig-align="center" />
