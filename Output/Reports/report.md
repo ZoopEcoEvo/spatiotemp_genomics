@@ -5,6 +5,8 @@
 - [Main Message](#main-message)
 - [1. Collections and environment](#1-collections-and-environment)
   - [Sites and collection conditions](#sites-and-collection-conditions)
+  - [Long-term site temperatures (MUR
+    SST)](#long-term-site-temperatures-mur-sst)
   - [Paired low- and high-salinity
     sites](#paired-low--and-high-salinity-sites)
   - [Generations between collections](#generations-between-collections)
@@ -28,6 +30,8 @@
   - [Parasites and symbionts](#parasites-and-symbionts)
   - [Seasonal allele-frequency
     change](#seasonal-allele-frequency-change)
+  - [Spatial vs. seasonal genetic
+    variation](#spatial-vs-seasonal-genetic-variation)
   - [Does space substitute for time? Concordance of temperature
     responses](#does-space-substitute-for-time-concordance-of-temperature-responses)
 - [4. Clade-specific physiological
@@ -35,6 +39,7 @@
   - [CTmax model](#ctmax-model)
   - [Acclimation vs. site differences (within- and between-site
     temperature)](#acclimation-vs-site-differences-within--and-between-site-temperature)
+  - [Partitioning CTmax variation](#partitioning-ctmax-variation)
   - [Trait variability within clades](#trait-variability-within-clades)
   - [Parasites, epibionts and thermal
     limits](#parasites-epibionts-and-thermal-limits)
@@ -130,6 +135,45 @@ traditionally proposed hypotheses about thermal adaptation
 contrasted with cooler, more variable environment).
 
 <img src="../Figures/max-temp-vs-range-1.png" data-fig-align="center" />
+
+### Long-term site temperatures (MUR SST)
+
+Daily sea-surface temperature for 2014–2023 was taken from the MUR SST
+analysis (GHRSST Level 4, ~1 km) for each site, averaging the water
+pixels within 5 km of the site (`Scripts/05_site_environment.R`). Where
+MUR has no water near a site (Ganey’s Wharf, Ritchie Wharf), the water
+within 5 km of the nearest water pixel (14–19 km away) was used. MUR
+agreed closely with nearby monitoring stations wherever it resolves the
+site’s own water (mean bias −0.4 to +0.4 °C at Noank, New London, Gooses
+Reef, Port Manatee, Portland and the Manatee River gauge). At Ganey’s
+Wharf, Chesapeake Bay Program station ET5.1 (at the wharf) is 2–4 °C
+warmer than MUR in spring and 1–1.7 °C colder in autumn, as expected for
+a shallow upper estuary, so Ganey’s Wharf uses MUR corrected by the
+station’s smoothed monthly bias. Ritchie Wharf has no station within 50
+km and is flagged. Temperatures measured at collection (shallow wharf
+water, often at midday) run 2–6 °C warmer than MUR in summer at the
+northern sites; MUR describes the water mass the plankton live in and is
+used for site climatology and the genomic analyses, while the measured
+temperatures are used for acclimation in the CTmax models.
+
+<img src="../Figures/site-temperature-cycle-1.png"
+data-fig-align="center" />
+
+<img src="../Figures/site-climatology-1.png" data-fig-align="center" />
+
+| Site | Lat (°N) | Annual mean | Jun–Nov mean | 95th pct | Warmest month | Coldest month | Monthly range | Days ≥ 10 °C | Note |
+|:---|---:|---:|---:|---:|---:|---:|---:|---:|:---|
+| KL | 25.3 | 27.3 | 29.2 | 31.2 | 30.9 | 23.5 | 2.7 | 365.0 |  |
+| MR | 27.5 | 24.9 | 28.3 | 31.1 | 30.7 | 17.4 | 3.8 | 365.0 |  |
+| FH | 27.5 | 24.9 | 28.2 | 31.0 | 30.7 | 17.3 | 3.8 | 365.0 |  |
+| MD | 38.4 | 15.9 | 22.8 | 28.2 | 27.8 | 3.7 | 5.0 | 243.2 |  |
+| GW | 38.8 | 16.6 | 22.9 | 29.2 | 29.0 | 4.4 | 5.0 | 247.6 | corrected (ET5.1) |
+| CT | 41.3 | 12.7 | 18.4 | 22.0 | 21.7 | 3.9 | 3.7 | 214.0 |  |
+| ME | 43.9 | 9.9 | 14.4 | 18.0 | 17.8 | 2.9 | 3.2 | 176.2 |  |
+| TK | 46.4 | 7.5 | 14.1 | 19.5 | 19.4 | -1.4 | 4.7 | 149.9 |  |
+| RW | 47.0 | 7.1 | 13.5 | 18.9 | 18.8 | -1.4 | 4.3 | 145.4 | unverified |
+
+Site climatology from MUR SST, 2014–2023 (°C unless stated).
 
 ### Paired low- and high-salinity sites
 
@@ -783,6 +827,49 @@ a seasonal candidate on its own. The permutation null is coarse (time:
 12 and 24 orderings; temperature: 24 and 48), which limits the smallest
 attainable rank-based p value to 1/12–1/48.
 
+### Spatial vs. seasonal genetic variation
+
+How much do allele frequencies differ between sites compared with
+between seasons at the same site? Within each clade, the variance of
+population allele frequencies at the unlinked SNPs was split into a
+between-site component and a between-season (within-site) component,
+after subtracting the calibrated sampling noise (1/(2cn) per population,
+from the split-half calibration). Both are expressed relative to p̄(1 −
+p̄), like F<sub>ST</sub>, summed over SNPs (ratio of sums), with 95%
+intervals from a delete-one-chromosome jackknife. The between-site
+component reflects long-term history and spatial selection; the seasonal
+component reflects drift and selection over a single season (3–20
+generations).
+
+<img src="../Figures/freq-variance-partition-1.png"
+data-fig-align="center" />
+
+| Group | Sites | Sites with ≥ 2 seasons | Populations | SNPs | Between sites | Between seasons | Site : season ratio |
+|:---|---:|---:|---:|---:|:---|:---|:---|
+| X | 3 | 3 | 7 | 38543 | 0.0301 (0.0269, 0.0333) | 0.0023 (0.0012, 0.0034) | 13 |
+| S | 3 | 1 | 4 | 16025 | 0.0298 (0.0231, 0.0365) | -0.0020 (-0.0044, 0.0004) | – |
+| IV | 2 | 0 | 2 | 28489 | 0.0390 (0.0335, 0.0445) | – | – |
+| F-N | 2 | 2 | 5 | 18186 | 0.0145 (0.0066, 0.0224) | 0.0026 (0.0012, 0.0040) | 6 |
+| F (all lineages) | 4 | 4 | 9 | 24494 | 0.4088 (0.3829, 0.4347) | 0.0014 (0.0006, 0.0022) | 289 |
+
+Allele-frequency variance between sites and between seasons within
+sites, relative to p̄(1 − p̄), after removing sampling noise (95% CI).
+Ratio shown only where the seasonal component is clearly above zero.
+
+Allele frequencies differ far more between sites than between seasons at
+the same site. In clade X, the between-site variance (0.030) is about 13
+times the seasonal variance (0.0023); in F-N (MD vs. GW) the ratio is
+about 6. The seasonal component is small but above zero in X and F-N,
+consistent with the temporal F<sub>c</sub> excess above (drift over a
+season with N<sub>e</sub> in the high hundreds to thousands); in S, with
+one seasonal site, it is indistinguishable from zero. Across the F
+lineages the between-site component (0.41) is an order of magnitude
+larger, because it measures divergence between lineages rather than
+among populations of one lineage. Seasonal change in allele frequencies
+is therefore a small fraction of the spatial differentiation it would
+have to reproduce for seasonal evolution to mirror spatial adaptation,
+which fits the absence of concordance below.
+
 ### Does space substitute for time? Concordance of temperature responses
 
 If the alleles that are more common at warmer sites are favoured by warm
@@ -886,51 +973,62 @@ across sites) ([van de Pol & Wright
 between-site slope equals the within-site slope, site differences are
 explained by acclimation to different temperatures; a steeper
 between-site slope indicates local adaptation on top of plasticity, and
-a shallower one countergradient variation. Clade is in the model, so
-turnover of lineages along the coast does not inflate the between-site
-slope. Body size and the assay terms are kept as in the CTmax model
-above.
+a shallower one countergradient variation. Lineage (X, S, IV and the
+four F lineages, F-MR, F-FH, F-N and F-NE) is in the model, so turnover
+of lineages along the coast does not inflate the between-site slope;
+grouping by clade would not suffice, because the F lineages replace one
+another between sites (Florida vs. Chesapeake). Body size and the assay
+terms are kept as in the CTmax model above.
 
-The site mean is currently the mean of each site’s collection
-temperatures. Sites were not sampled in the same seasons (MR and FH only
-at peak and late), so this will be replaced by the long-term MUR SST
-climatology (`Output_data/site_climatology.csv`) once it is available;
-the within-site component stays centred on the collection temperatures.
+The site temperature is the long-term (2014–2023, full-year) MUR SST
+mean (`Output_data/site_climatology.csv`, Section 1), not the mean of
+the collection temperatures, which depends on which seasons were sampled
+(MR and FH only at peak and late). The within-site component stays
+centred on each site’s collection temperatures. Lineage-specific
+within-site slopes are estimated for lineages with ≥ 15 individuals and
+seasonal variation in collection temperature, and lineage-specific
+between-site slopes only for lineages sampled at ≥ 3 sites (X, S, IV);
+the remaining lineages share a pooled slope.
 
 | term                      |  slope |    se |     lo |    hi |
 |:--------------------------|-------:|------:|-------:|------:|
-| Within site (acclimation) |  0.142 | 0.009 |  0.125 | 0.160 |
-| Between sites             |  0.095 | 0.057 | -0.016 | 0.207 |
-| Between − within          | -0.047 | 0.056 | -0.158 | 0.063 |
+| Within site (acclimation) |  0.143 | 0.009 |  0.126 | 0.161 |
+| Between sites             |  0.106 | 0.070 | -0.031 | 0.244 |
+| Between − within          | -0.037 | 0.069 | -0.172 | 0.098 |
 
 CTmax slopes (°C per °C) for within-site and between-site temperature,
-all clades (site temperature: long-term MUR SST mean). 95% CI = ± 1.96
+all lineages (site temperature: long-term MUR SST mean). 95% CI = ± 1.96
 SE.
 
-| Clade | Sites | Individuals | Within site       | Between sites       |
-|:------|------:|------------:|:------------------|:--------------------|
-| F     |     6 |         151 | 0.13 (0.11, 0.16) | 0.10 (-0.06, 0.26)  |
-| IV    |     4 |          55 | 0.21 (0.14, 0.27) | -0.23 (-0.57, 0.11) |
-| S     |     5 |          71 | 0.15 (0.12, 0.19) | 0.16 (-0.01, 0.33)  |
-| X     |     4 |         118 | 0.09 (0.05, 0.14) | 0.26 (-0.08, 0.60)  |
+| Lineage | Sites | Individuals | Within site | Between sites |
+|:---|---:|---:|:---|:---|
+| F-FH | 1 | 39 | 0.12 (0.08, 0.15) | – |
+| F-MR | 1 | 28 | 0.13 (0.08, 0.18) | – |
+| F-N | 2 | 78 | 0.15 (0.12, 0.18) | – |
+| IV | 4 | 55 | 0.21 (0.14, 0.27) | -0.26 (-0.58, 0.05) |
+| S | 4 | 71 | 0.15 (0.12, 0.19) | 0.16 (-0.01, 0.33) |
+| X | 4 | 118 | 0.09 (0.05, 0.14) | 0.22 (-0.09, 0.54) |
+| other lineages (pooled) | NA | NA | – | -0.17 (-0.82, 0.49) |
 
-Clade-specific CTmax slopes. Between-site slopes rest on few sites per
-clade and are imprecise.
+Lineage-specific CTmax slopes. Sites = sites with ≥ 5 individuals of the
+lineage. Between-site slopes are estimated only for lineages at ≥ 3
+sites and rest on few sites; lineages without their own slope share the
+pooled slope.
 
 <img src="../Figures/within-between-plot-1.png"
 data-fig-align="center" />
 
 CTmax rises by 0.14 °C for every 1 °C of within-site temperature change
-(95% CI 0.13–0.16), with clade-specific acclimation slopes of 0.09 to
-0.21. The between-site slope is 0.10 (CI -0.02 to 0.21; site
+(95% CI 0.13–0.16), with lineage-specific acclimation slopes of 0.09 to
+0.21. The between-site slope is 0.11 (CI -0.03 to 0.24; site
 temperature: long-term MUR SST mean), and the difference between the two
-is -0.05 (CI -0.16 to 0.06). If that interval includes zero, CTmax
-differences between sites within a clade are consistent with acclimation
-to each site’s temperature, with no detectable local adaptation beyond
-it; with only 2–6 sites per clade, the test can rule out only large
-differences between the slopes. Panel B shows the site-level pattern
-behind the between-site slope: each point is a site’s CTmax at its own
-mean collection conditions.
+is -0.04 (CI -0.17 to 0.10). If that interval includes zero, CTmax
+differences between sites within a lineage are consistent with
+acclimation to each site’s temperature, with no detectable local
+adaptation beyond it; with only 1–5 sites per lineage, the test can rule
+out only large differences between the slopes. Panel B shows the
+site-level pattern behind the between-site slope: each point is a site’s
+CTmax at its own mean collection conditions.
 
 The Stage 1 clade calls (Section 3.1) were merged with the CTmax and
 body size data set to examine clade-specific patterns of divergence. By
@@ -974,6 +1072,52 @@ Clade S generally occurs in low proportions, with a few exceptions.
 data-fig-align="center" />
 
 <img src="../Figures/clade-contours-1.png" data-fig-align="center" />
+
+### Partitioning CTmax variation
+
+How much of the variation in CTmax among individuals is due to lineage,
+to the site an animal comes from, to the conditions at collection
+(acclimation), to the assay, and to individuals? The variance was
+partitioned with a mixed model with random effects for lineage, site,
+collection (site × sampling event), assay run and tube position, plus
+fixed effects for body size and, in the second model, the within- and
+between-site temperature components from the previous section. The
+variance explained by each fixed effect is the variance of its fitted
+contribution ([Nakagawa & Schielzeth
+2013](https://doi.org/10.1111/j.2041-210x.2012.00261.x)). Comparing the
+two models shows how much of the site and collection components the
+temperature terms absorb: collection-level variance taken up by
+within-site temperature is acclimation, and site-level variance taken up
+by long-term site temperature is the between-site temperature effect.
+Intervals are from 200 parametric bootstrap replicates.
+
+<img src="../Figures/ctmax-variance-partition-1.png"
+data-fig-align="center" />
+
+| Component | Without temperature | With within/between temperature |
+|:---|:---|:---|
+| Lineage | 28% (6–48) | 23% (3–46) |
+| Site temperature | – | 13% (0–42) |
+| Site (other) | 17% (0–50) | 18% (0–39) |
+| Acclimation (within-site temperature) | – | 17% (8–32) |
+| Collection (other) | 35% (15–61) | 10% (3–20) |
+| Body size | 5% (1–13) | 3% (0–9) |
+| Assay | 0% (0–1) | 0% (0–1) |
+| Individual | 15% (9–27) | 15% (10–24) |
+
+Share of CTmax variance (95% parametric bootstrap interval).
+
+Without temperature terms, the largest components are collection (35%),
+lineage (28%) and site (17%), with 15% among individuals within a
+collection. Adding the temperature terms, within-site temperature
+(acclimation) explains 17% of all CTmax variance and absorbs most of the
+collection component (which drops to 10%), while long-term site
+temperature explains 13% and the remaining site component is 18%.
+Lineage accounts for 23%. Thermal tolerance in this complex is therefore
+structured roughly equally by lineage, by acclimation to recent
+conditions, and by site (temperature plus other site differences), with
+little left to body size or the assay. The intervals are wide because
+lineage and site have few levels (7 lineages, 8 sites).
 
 ### Trait variability within clades
 
@@ -1052,7 +1196,7 @@ Here, the same approach is taken but for each clade separately. The
 average CTmax from the peak season for each clade was used as a fixed
 CTmax value when calculating warming tolerance.
 
-<img src="../Figures/unnamed-chunk-79-1.png" data-fig-align="center" />
+<img src="../Figures/unnamed-chunk-88-1.png" data-fig-align="center" />
 
 ### Scenario 3 (Clade variation and acclimation/adaptation)
 
@@ -1061,7 +1205,7 @@ model of CTmax as a function of the interaction between collection
 temperature and clade. The predicted CTmax values fall within the range
 of CTmax values observed in the field.
 
-<img src="../Figures/unnamed-chunk-80-1.png" data-fig-align="center" />
+<img src="../Figures/unnamed-chunk-89-1.png" data-fig-align="center" />
 
 ### Comparing Scenarios
 

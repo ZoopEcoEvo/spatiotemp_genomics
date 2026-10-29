@@ -187,6 +187,96 @@ site_temps %>%
   theme(legend.position = "right")
 ```
 
+### Long-term site temperatures (MUR SST)
+
+Daily sea-surface temperature for 2014–2023 was taken from the MUR SST analysis (GHRSST Level 4, ~1 km) for each site, averaging the water pixels within 5 km of the site (`Scripts/05_site_environment.R`). Where MUR has no water near a site (Ganey's Wharf, Ritchie Wharf), the water within 5 km of the nearest water pixel (14–19 km away) was used. MUR agreed closely with nearby monitoring stations wherever it resolves the site's own water (mean bias −0.4 to +0.4 °C at Noank, New London, Gooses Reef, Port Manatee, Portland and the Manatee River gauge). At Ganey's Wharf, Chesapeake Bay Program station ET5.1 (at the wharf) is 2–4 °C warmer than MUR in spring and 1–1.7 °C colder in autumn, as expected for a shallow upper estuary, so Ganey's Wharf uses MUR corrected by the station's smoothed monthly bias. Ritchie Wharf has no station within 50 km and is flagged. Temperatures measured at collection (shallow wharf water, often at midday) run 2–6 °C warmer than MUR in summer at the northern sites; MUR describes the water mass the plankton live in and is used for site climatology and the genomic analyses, while the measured temperatures are used for acclimation in the CTmax models.
+
+```{r}
+#| label: site-temperature-cycle
+#| fig-width: 12
+#| fig-height: 8
+mur_file <- od("mur_sst_daily_corrected.csv")
+if (!file.exists(mur_file)) mur_file <- od("mur_sst_daily.csv")
+if (!file.exists(mur_file)) {
+  cat("MUR SST is not in Output_data yet (run Scripts/05_site_environment.R).")
+} else {
+  mur_daily <- read_csv(mur_file, show_col_types = FALSE) %>%
+    mutate(doy = lubridate::yday(date), year = lubridate::year(date))
+  site_lab <- c(KL = "Key Largo", site_names)
+  site_lvls <- names(site_lab)[names(site_lab) %in% unique(mur_daily$site_code)]
+  mur_cycle <- mur_daily %>%
+    filter(doy <= 365) %>%
+    group_by(site_code, doy) %>%
+    summarise(mean = mean(sst_c), lo = min(sst_c), hi = max(sst_c), .groups = "drop") %>%
+    mutate(site_code = factor(site_code, levels = site_lvls))
+  seas_file <- od("seasonal_temperature.tsv")
+  coll <- if (file.exists(seas_file)) {
+    read_tsv(seas_file, show_col_types = FALSE) %>%
+      mutate(doy = lubridate::yday(date), site_code = factor(site, levels = site_lvls),
+             season = factor(season, levels = season_order)) %>%
+      filter(!is.na(site_code))
+  } else NULL
+
+  p_cycle <- ggplot(mur_cycle, aes(x = doy)) +
+    geom_ribbon(aes(ymin = lo, ymax = hi, fill = site_code), alpha = 0.25) +
+    geom_line(aes(y = mean, colour = site_code), linewidth = 0.9) +
+    facet_wrap(~ site_code, nrow = 3, labeller = as_labeller(site_lab)) +
+    scale_colour_manual(values = pop_cols, guide = "none") +
+    scale_fill_manual(values = pop_cols, guide = "none") +
+    scale_x_continuous(breaks = c(1, 91, 182, 274), labels = c("Jan", "Apr", "Jul", "Oct")) +
+    labs(x = NULL, y = "SST (°C)",
+         caption = "Line: 2014–2023 mean for each day of the year; band: range across years.\nPoints: 2023 collections. Filled = MUR mean over the generation before collection (seasonal genomic model); open = temperature measured at collection.") +
+    theme_matt_facets(base_size = 11)
+  if (!is.null(coll)) {
+    p_cycle <- p_cycle +
+      geom_point(data = coll, aes(y = temp_c, shape = season), size = 2.5, fill = "grey20") +
+      geom_point(data = coll, aes(y = temp_measured, shape = season), size = 2.5, colour = "grey30",
+                 fill = NA, stroke = 0.6) +
+      scale_shape_manual(values = c(early = 21, peak = 22, late = 24), name = "Collection") +
+      theme(legend.position = "bottom")
+  }
+  p_cycle
+}
+```
+
+```{r}
+#| label: site-climatology
+#| fig-width: 12
+#| fig-height: 4.5
+clim_file <- od("site_climatology.csv")
+if (file.exists(clim_file)) {
+  site_clim <- read_csv(clim_file, show_col_types = FALSE)
+  site_clim %>%
+    select(site_code, lat, `Annual mean (°C)` = temp_mean, `Warmest month (°C)` = warmest_month,
+           `Coldest month (°C)` = coldest_month, `Mean monthly range (°C)` = monthly_range,
+           `Days ≥ 10 °C per year` = season_days) %>%
+    pivot_longer(-c(site_code, lat), names_to = "metric", values_to = "value") %>%
+    mutate(metric = factor(metric, levels = unique(metric))) %>%
+    ggplot(aes(x = lat, y = value)) +
+    geom_line(colour = "grey70") +
+    geom_point(aes(colour = site_code), size = 3) +
+    ggrepel::geom_text_repel(aes(label = site_code), size = 3, seed = 1, min.segment.length = 0) +
+    facet_wrap(~ metric, nrow = 1, scales = "free_y") +
+    scale_colour_manual(values = pop_cols, guide = "none") +
+    labs(x = "Latitude (°N)", y = NULL,
+         caption = "MUR SST 2014–2023 (Ganey's Wharf corrected against station ET5.1; Ritchie Wharf unverified).\nMonthly range = mean over months of (max − min daily SST), about one generation.") +
+    theme_matt_facets(base_size = 11)
+}
+```
+
+```{r}
+#| label: site-climatology-table
+if (file.exists(clim_file)) {
+  site_clim %>%
+    transmute(Site = site_code, `Lat (°N)` = lat, `Annual mean` = temp_mean, `Jun–Nov mean` = temp_season,
+              `95th pct` = temp_p95, `Warmest month` = warmest_month, `Coldest month` = coldest_month,
+              `Monthly range` = monthly_range, `Days ≥ 10 °C` = season_days,
+              Note = case_when(site_code == "GW" ~ "corrected (ET5.1)", site_code == "RW" ~ "unverified", TRUE ~ "")) %>%
+    knitr::kable(digits = 1, caption = "Site climatology from MUR SST, 2014–2023 (°C unless stated).")
+}
+```
+
+
 ### Paired low- and high-salinity sites
 
 Nested within each of the three regions (South, Central, and Northern regions) are pairs of low and high salinity sites:
@@ -1999,6 +2089,108 @@ if (length(glm_files) > 0) {
 There is no genome-wide excess of seasonal SNPs in either clade, with either model. With the real seasons, X and F have about as many low-p SNPs as the permuted orderings, at every threshold, on both the unlinked and the full SNP sets. Modelling temperature instead of time does not change this: the closest to a signal is clade X on all SNPs (rank 5–6 of 24 at p < 0.01 and p < 0.001, i.e. p ≈ 0.2–0.25), which is not significant and does not hold on the unlinked set. Removing chromosome 6 changes nothing, so the X inversion is not driving or masking a seasonal signal. The genomic-control λ is close to 1 (X ≈ 1.1, F ≈ 1.0) for the observed and permuted values alike, so the calibrated binomial weights describe the sampling variance well. Together with the uncorrelated early→peak changes across X sites, this means that any seasonal selection in these populations acts on too few loci, or is too weak, to show up genome-wide with 3–4 seasonal sites per clade, whether it is modelled as a seasonal trend or as a response to temperature. Individual SNPs with the smallest p values are listed in `results/13_seasonal/*.top.tsv` and `results/13_seasonal/temp/*.top.tsv` but are not more numerous than expected by chance, so none can be called a seasonal candidate on its own. The permutation null is coarse (time: 12 and 24 orderings; temperature: 24 and 48), which limits the smallest attainable rank-based p value to 1/12–1/48.
 
 
+
+### Spatial vs. seasonal genetic variation
+
+How much do allele frequencies differ between sites compared with between seasons at the same site? Within each clade, the variance of population allele frequencies at the unlinked SNPs was split into a between-site component and a between-season (within-site) component, after subtracting the calibrated sampling noise (1/(2cn) per population, from the split-half calibration). Both are expressed relative to p̄(1 − p̄), like F<sub>ST</sub>, summed over SNPs (ratio of sums), with 95% intervals from a delete-one-chromosome jackknife. The between-site component reflects long-term history and spatial selection; the seasonal component reflects drift and selection over a single season (3–20 generations).
+
+```{r}
+#| label: freq-variance-partition
+#| fig-width: 9
+#| fig-height: 4
+if (length(freq_files) == 0 || is.null(split_half)) {
+  cat("Allele-frequency tables or the split-half calibration are not in this export yet.")
+} else {
+  # population sets (clade.prefix = which frequency table): F-N = F populations at MD and GW;
+  # F as a whole spans three lineages (its between-site component includes lineage divergence)
+  vp_sets <- list(X = c("X", NA), S = c("S", NA), IV = c("IV", NA), `F-N` = c("F", "MD|GW"), `F (all lineages)` = c("F", NA))
+  vp_freq <- map_dfr(names(vp_sets), function(nm) {
+    cl <- vp_sets[[nm]][1]; site_pat <- vp_sets[[nm]][2]
+    f <- cx("results", "09_stage34", paste0(cl, ".freqs.unlinked.tsv.gz"))
+    if (!file.exists(f)) return(NULL)
+    m <- read_tsv(f, show_col_types = FALSE, col_types = cols(chrom = "c"))
+    pops <- sub("^freq_", "", grep("^freq_", names(m), value = TRUE))
+    site <- str_split_i(pops, "__", 2)
+    if (!is.na(site_pat)) { keep <- str_detect(site, paste0("^(", site_pat, ")$")); pops <- pops[keep]; site <- site[keep] }
+    P <- as.matrix(m[paste0("freq_", pops)]); N <- as.matrix(m[paste0("nind_", pops)])
+    cvec <- unname(c_of[pops]); cvec[is.na(cvec)] <- median(c_of)
+    ok <- rowSums(is.na(P)) == 0 & rowSums(N < 5, na.rm = TRUE) == 0 & rowSums(is.na(N)) == 0
+    pbar <- rowMeans(P); ok <- ok & pbar >= 0.05 & pbar <= 0.95
+    P <- P[ok, , drop = FALSE]; N <- N[ok, , drop = FALSE]; pbar <- pbar[ok]; chrom <- m$chrom[ok]
+    # sampling variance of each population's frequency, from its own frequency:
+    # E[p(1-p)] = p(1-p)(1 - 1/n_eff), so p(1-p) / (n_eff - 1) is unbiased; n_eff = 2cn chromosomes
+    neff <- 2 * sweep(N, 2, cvec, "*")
+    s2 <- P * (1 - P) / pmax(neff - 1, 1)
+    sites <- unique(site); I <- length(sites); k <- table(site)[sites]
+    # within-site (seasonal) component
+    W <- 0; EW <- 0
+    msite <- sapply(sites, function(s) rowMeans(P[, site == s, drop = FALSE]))
+    if (!is.matrix(msite)) msite <- matrix(msite, ncol = I)
+    s2bar <- sapply(sites, function(s) rowMeans(s2[, site == s, drop = FALSE]))
+    if (!is.matrix(s2bar)) s2bar <- matrix(s2bar, ncol = I)
+    for (j in seq_along(sites)) {
+      cols <- which(site == sites[j])
+      W <- W + rowSums((P[, cols, drop = FALSE] - msite[, j])^2)
+      EW <- EW + rowSums(s2[, cols, drop = FALSE]) * (1 - 1 / k[[j]])
+    }
+    df_w <- sum(k - 1)
+    sig_season <- if (df_w > 0) (W - EW) / df_w else rep(NA_real_, length(pbar))
+    # between-site component
+    sig_site <- if (I > 1) {
+      B <- rowSums((msite - rowMeans(msite))^2)
+      adj <- rowSums(sweep(s2bar, 2, as.numeric(k), "/")) + (if (df_w > 0) sig_season else 0) * sum(1 / k)
+      (B - (1 - 1 / I) * adj) / (I - 1)
+    } else rep(NA_real_, length(pbar))
+    het <- pbar * (1 - pbar)
+    est <- function(sel) c(site = sum(sig_site[sel]) / sum(het[sel]), season = sum(sig_season[sel]) / sum(het[sel]))
+    full <- est(rep(TRUE, length(pbar)))
+    jk <- sapply(unique(chrom), function(ch) est(chrom != ch)); g <- ncol(jk)
+    se <- sqrt((g - 1) / g * rowSums((jk - rowMeans(jk))^2))
+    tibble(group = nm, component = c("Between sites", "Between seasons (within site)"),
+           value = unname(full), lo = unname(full - 1.96 * se), hi = unname(full + 1.96 * se),
+           sites = I, populations = length(pops), seasonal_sites = sum(k > 1), snps = length(pbar))
+  }) %>%
+    mutate(group = factor(group, levels = names(vp_sets)))
+
+  ggplot(filter(vp_freq, !is.na(value), group != "F (all lineages)"), aes(x = group, y = value, colour = component)) +
+    geom_hline(yintercept = 0, colour = "grey60") +
+    geom_pointrange(aes(ymin = lo, ymax = hi), position = position_dodge(width = 0.5), size = 0.6) +
+    scale_colour_manual(values = c(`Between sites` = unname(lat_gradient["MR"]),
+                                   `Between seasons (within site)` = unname(lat_gradient["X"])), name = NULL) +
+    labs(x = NULL, y = expression("Variance / " * bar(p) * "(1 - " * bar(p) * ")"),
+         caption = "Unlinked SNPs; sampling noise removed; 95% CI: chromosome jackknife.\nF across all lineages is in the table only (its between-site variance is lineage divergence).") +
+    theme_matt(base_size = 12) +
+    theme(legend.position = "top")
+}
+```
+
+```{r}
+#| label: freq-variance-partition-table
+if (exists("vp_freq")) {
+  vp_freq %>%
+    mutate(value = if_else(is.na(value), "–", sprintf("%.4f (%.4f, %.4f)", value, lo, hi))) %>%
+    select(group, component, value, sites, seasonal_sites, populations, snps) %>%
+    pivot_wider(names_from = component, values_from = value) %>%
+    mutate(`Site : season ratio` = map2_chr(group, sites, function(g, s) {
+      v <- filter(vp_freq, group == g)
+      se <- v[v$component == "Between seasons (within site)", ]
+      if (any(is.na(v$value)) || se$lo <= 0) "–" else
+        sprintf("%.0f", v$value[v$component == "Between sites"] / se$value)
+    })) %>%
+    knitr::kable(col.names = c("Group", "Sites", "Sites with ≥ 2 seasons", "Populations", "SNPs",
+                               "Between sites", "Between seasons", "Site : season ratio"),
+                 caption = "Allele-frequency variance between sites and between seasons within sites, relative to p̄(1 − p̄), after removing sampling noise (95% CI). Ratio shown only where the seasonal component is clearly above zero.")
+}
+```
+
+```{r}
+#| include: false
+vf <- function(g, comp, what = "value") filter(vp_freq, group == g, component == comp)[[what]]
+```
+
+Allele frequencies differ far more between sites than between seasons at the same site. In clade X, the between-site variance (`r sprintf("%.3f", vf("X", "Between sites"))`) is about `r round(vf("X", "Between sites") / vf("X", "Between seasons (within site)"))` times the seasonal variance (`r sprintf("%.4f", vf("X", "Between seasons (within site)"))`); in F-N (MD vs. GW) the ratio is about `r round(vf("F-N", "Between sites") / vf("F-N", "Between seasons (within site)"))`. The seasonal component is small but above zero in X and F-N, consistent with the temporal F<sub>c</sub> excess above (drift over a season with N<sub>e</sub> in the high hundreds to thousands); in S, with one seasonal site, it is indistinguishable from zero. Across the F lineages the between-site component (`r sprintf("%.2f", vf("F (all lineages)", "Between sites"))`) is an order of magnitude larger, because it measures divergence between lineages rather than among populations of one lineage. Seasonal change in allele frequencies is therefore a small fraction of the spatial differentiation it would have to reproduce for seasonal evolution to mirror spatial adaptation, which fits the absence of concordance below.
+
+
 ### Does space substitute for time? Concordance of temperature responses
 
 If the alleles that are more common at warmer sites are favoured by warm conditions, they should also rise after warm periods and fall after cool ones within sites. For every SNP, two temperature slopes were estimated with the same binomial GLM and calibrated weights as above: a **spatial** slope (frequency against each site's long-term MUR SST, with a site's seasonal samples pooled) and a **seasonal** slope (the temperature model above: frequency against site + temperature before collection). Their agreement across the genome was measured as the correlation of the two z-scores, and, among the 1% and 5% of SNPs with the strongest spatial slopes, as the fraction whose seasonal slope has the same sign (0.5 = no agreement). The null keeps the spatial slopes and permutes temperatures among each site's sampling events (as in the seasonal test); a second, smaller null permutes site temperatures among sites. This is the genomic counterpart of the within- vs between-site comparison for CTmax (Section 4) and follows the seasonal–clinal comparison of [Machado et al. (2021)](https://doi.org/10.7554/eLife.67577).
@@ -2173,9 +2365,9 @@ car::Anova(ctmax.model, type = "III")
 
 ### Acclimation vs. site differences (within- and between-site temperature)
 
-A single temperature slope mixes two processes. Within a site, CTmax changes across the season as the same population experiences warmer or cooler water, which is mostly acclimation. Between sites, CTmax differs with each site's typical temperature, which reflects acclimation plus any local adaptation. Collection temperature was therefore split into a within-site component (collection temperature minus the site's mean collection temperature, so it averages zero at every site) and a between-site component (the site's mean temperature minus the mean across sites) ([van de Pol & Wright 2009](https://doi.org/10.1016/j.anbehav.2008.11.006)). If the between-site slope equals the within-site slope, site differences are explained by acclimation to different temperatures; a steeper between-site slope indicates local adaptation on top of plasticity, and a shallower one countergradient variation. Clade is in the model, so turnover of lineages along the coast does not inflate the between-site slope. Body size and the assay terms are kept as in the CTmax model above.
+A single temperature slope mixes two processes. Within a site, CTmax changes across the season as the same population experiences warmer or cooler water, which is mostly acclimation. Between sites, CTmax differs with each site's typical temperature, which reflects acclimation plus any local adaptation. Collection temperature was therefore split into a within-site component (collection temperature minus the site's mean collection temperature, so it averages zero at every site) and a between-site component (the site's mean temperature minus the mean across sites) ([van de Pol & Wright 2009](https://doi.org/10.1016/j.anbehav.2008.11.006)). If the between-site slope equals the within-site slope, site differences are explained by acclimation to different temperatures; a steeper between-site slope indicates local adaptation on top of plasticity, and a shallower one countergradient variation. Lineage (X, S, IV and the four F lineages, F-MR, F-FH, F-N and F-NE) is in the model, so turnover of lineages along the coast does not inflate the between-site slope; grouping by clade would not suffice, because the F lineages replace one another between sites (Florida vs. Chesapeake). Body size and the assay terms are kept as in the CTmax model above.
 
-The site mean is currently the mean of each site's collection temperatures. Sites were not sampled in the same seasons (MR and FH only at peak and late), so this will be replaced by the long-term MUR SST climatology (`Output_data/site_climatology.csv`) once it is available; the within-site component stays centred on the collection temperatures.
+The site temperature is the long-term (2014–2023, full-year) MUR SST mean (`Output_data/site_climatology.csv`, Section 1), not the mean of the collection temperatures, which depends on which seasons were sampled (MR and FH only at peak and late). The within-site component stays centred on each site's collection temperatures. Lineage-specific within-site slopes are estimated for lineages with ≥ 15 individuals and seasonal variation in collection temperature, and lineage-specific between-site slopes only for lineages sampled at ≥ 3 sites (X, S, IV); the remaining lineages share a pooled slope.
 
 ```{r}
 #| label: within-between-model
@@ -2198,10 +2390,25 @@ wb_data <- filtered_data %>%
   mutate(t_within = collection_temp - site_mean_collection,
          t_between = site_temp - mean(wb_events$site_temp))
 
-# overall slopes (clade as intercept only) and clade-specific slopes
-wb_add <- lme4::lmer(ctmax ~ clade + t_within + t_between + size +
+wb_data <- wb_data %>% filter(!is.na(lineage))
+lin_order <- c("F-MR", "F-FH", "F-N", "F-NE", "S", "IV", "X")
+lin_n <- wb_data %>%
+  group_by(lineage) %>%
+  summarise(n = n(),
+            sites = n_distinct(site[site %in% names(which(table(site) >= 5))]),
+            within_var = any(tapply(t_within, site, function(x) diff(range(x))) > 0, na.rm = TRUE),
+            .groups = "drop")
+est_w <- lin_n$lineage[lin_n$n >= 15 & lin_n$within_var]
+est_b <- lin_n$lineage[lin_n$sites >= 3]
+wb_data <- wb_data %>%
+  mutate(lineage = factor(lineage, levels = intersect(lin_order, unique(lineage))),
+         lin_w = factor(if_else(lineage %in% est_w, as.character(lineage), "other")),
+         lin_b = factor(if_else(lineage %in% est_b, as.character(lineage), "other")))
+
+# overall slopes (lineage as intercept only) and lineage-specific slopes
+wb_add <- lme4::lmer(ctmax ~ lineage + t_within + t_between + size +
                        (1 | site) + (1 | replicate) + (1 | tube), data = wb_data)
-wb_int <- lme4::lmer(ctmax ~ clade * (t_within + t_between) + size +
+wb_int <- lme4::lmer(ctmax ~ lineage + lin_w:t_within + lin_b:t_between + size +
                        (1 | site) + (1 | replicate) + (1 | tube), data = wb_data)
 
 b <- lme4::fixef(wb_add); V <- as.matrix(vcov(wb_add))
@@ -2213,15 +2420,20 @@ wb_overall <- tibble(
   se = c(sqrt(V["t_within", "t_within"]), sqrt(V["t_between", "t_between"]), diff_se)) %>%
   mutate(lo = slope - 1.96 * se, hi = slope + 1.96 * se)
 
-wb_clade <- bind_rows(
-  as_tibble(emmeans::emtrends(wb_int, ~ clade, var = "t_within")) %>%
-    transmute(clade, component = "Within site", slope = t_within.trend, lo = lower.CL, hi = upper.CL),
-  as_tibble(emmeans::emtrends(wb_int, ~ clade, var = "t_between")) %>%
-    transmute(clade, component = "Between sites", slope = t_between.trend, lo = lower.CL, hi = upper.CL)) %>%
-  left_join(wb_data %>% group_by(clade) %>% summarise(sites = n_distinct(site), n = n()), by = "clade")
+bi <- lme4::fixef(wb_int); Vi <- as.matrix(vcov(wb_int))
+wb_clade <- tibble(term = names(bi)) %>%
+  filter(str_detect(term, ":t_within$|:t_between$")) %>%
+  mutate(lineage = str_remove(str_remove(term, "^lin_[wb]"), ":t_(within|between)$"),
+         component = if_else(str_detect(term, "t_within"), "Within site", "Between sites"),
+         slope = bi[term], se = sqrt(diag(Vi)[term]),
+         lo = slope - 1.96 * se, hi = slope + 1.96 * se) %>%
+  left_join(lin_n %>% transmute(lineage = as.character(lineage), sites, n), by = "lineage") %>%
+  mutate(sites = if_else(lineage == "other", NA_integer_, sites),
+         n = if_else(lineage == "other", NA_integer_, n),
+         lineage = if_else(lineage == "other", "other lineages (pooled)", lineage))
 
 knitr::kable(wb_overall, digits = 3,
-             caption = paste0("CTmax slopes (°C per °C) for within-site and between-site temperature, all clades (site temperature: ",
+             caption = paste0("CTmax slopes (°C per °C) for within-site and between-site temperature, all lineages (site temperature: ",
                               wb_source, "). 95% CI = ± 1.96 SE."))
 ```
 
@@ -2229,57 +2441,63 @@ knitr::kable(wb_overall, digits = 3,
 #| label: within-between-clade-table
 wb_clade %>%
   mutate(`Slope (95% CI)` = sprintf("%.2f (%.2f, %.2f)", slope, lo, hi)) %>%
-  select(Clade = clade, Component = component, `Slope (95% CI)`, Sites = sites, Individuals = n) %>%
-  pivot_wider(names_from = Component, values_from = `Slope (95% CI)`) %>%
-  knitr::kable(caption = "Clade-specific CTmax slopes. Between-site slopes rest on few sites per clade and are imprecise.")
+  select(Lineage = lineage, Component = component, `Slope (95% CI)`, Sites = sites, Individuals = n) %>%
+  pivot_wider(names_from = Component, values_from = `Slope (95% CI)`, values_fill = "–") %>%
+  knitr::kable(caption = "Lineage-specific CTmax slopes. Sites = sites with ≥ 5 individuals of the lineage. Between-site slopes are estimated only for lineages at ≥ 3 sites and rest on few sites; lineages without their own slope share the pooled slope.")
 ```
 
 ```{r}
 #| label: within-between-plot
-#| fig-width: 12
+#| fig-width: 13
 #| fig-height: 9
 size_mean <- mean(wb_data$size)
+plot_lins <- lin_n$lineage[lin_n$n >= 15]
+pd <- filter(wb_data, lineage %in% plot_lins) %>% droplevels()
 # (A) within site: each site's fitted CTmax across its own collection temperatures
-wb_within_lines <- wb_data %>%
-  reframe(t_within = range(t_within), .by = c(clade, site, site_code, site_mean_collection, t_between)) %>%
+wb_within_lines <- pd %>%
+  reframe(t_within = range(t_within),
+          .by = c(lineage, lin_w, lin_b, site, site_code, site_mean_collection, t_between)) %>%
   mutate(size = size_mean, temp = site_mean_collection + t_within)
 wb_within_lines$fit <- predict(wb_int, newdata = wb_within_lines, re.form = ~ (1 | site))
 
-p_within <- ggplot(wb_data, aes(x = collection_temp, y = ctmax)) +
+p_within <- ggplot(pd, aes(x = collection_temp, y = ctmax)) +
   geom_point(aes(colour = site), alpha = 0.35, size = 1.5) +
   geom_line(data = wb_within_lines, aes(x = temp, y = fit, colour = site, group = site), linewidth = 1.1) +
-  facet_wrap(~ clade, nrow = 1) +
+  facet_wrap(~ lineage, nrow = 1) +
   scale_colour_manual(values = site_cols) +
   labs(x = "Collection temperature (°C)", y = "CTmax (°C)", colour = "Site",
        title = "A. Within sites (acclimation)") +
   theme_matt_facets(base_size = 12)
 
 # (B) between sites: each site's CTmax at its own mean collection conditions (no within-site
-# deviation; fixed effects + site effect) against the site temperature, with the fitted
-# between-site slope
-wb_site_pts <- wb_data %>%
-  distinct(clade, site, site_code, site_mean_collection, site_temp, t_between) %>%
+# deviation; fixed effects + site effect) against the site temperature; line = between-site
+# slope, drawn for lineages with their own slope (>= 3 sites)
+wb_site_pts <- pd %>%
+  group_by(lineage, lin_w, lin_b, site, site_code, site_mean_collection, site_temp, t_between) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  filter(n >= 5) %>%
   mutate(t_within = 0, size = size_mean)
 wb_site_pts$fit <- predict(wb_int, newdata = wb_site_pts, re.form = ~ (1 | site))
 wb_between_line <- wb_site_pts %>%
-  reframe(t_between = seq(min(t_between), max(t_between), length.out = 20), .by = clade) %>%
+  filter(lineage %in% est_b) %>%
+  reframe(t_between = seq(min(t_between), max(t_between), length.out = 20), .by = c(lineage, lin_w, lin_b)) %>%
   mutate(t_within = 0, size = size_mean, site_temp = t_between + mean(wb_events$site_temp))
 wb_between_line$fit <- predict(wb_int, newdata = wb_between_line, re.form = NA)
 
 p_between <- ggplot(wb_site_pts, aes(x = site_temp, y = fit)) +
   geom_line(data = wb_between_line, colour = "black", linewidth = 1.2) +
   geom_point(aes(colour = site), size = 3.5) +
-  facet_wrap(~ clade, nrow = 1) +
+  facet_wrap(~ lineage, nrow = 1, drop = FALSE) +
   scale_colour_manual(values = site_cols) +
   labs(x = paste0("Site temperature (°C; ", wb_source, ")"), y = "Site CTmax (°C)", colour = "Site",
        title = "B. Between sites",
-       caption = "B: each site's fitted CTmax at its mean collection conditions; line = between-site slope.") +
+       caption = "Lineages with ≥ 15 individuals. B: each site's fitted CTmax at its mean collection conditions (sites with ≥ 5 individuals);\nline = lineage-specific between-site slope (lineages at ≥ 3 sites).") +
   theme_matt_facets(base_size = 12)
 
 ggarrange(p_within, p_between, ncol = 1, common.legend = TRUE, legend = "right")
 ```
 
-CTmax rises by `r sprintf("%.2f", wb_overall$slope[1])` °C for every 1 °C of within-site temperature change (95% CI `r sprintf("%.2f–%.2f", wb_overall$lo[1], wb_overall$hi[1])`), with clade-specific acclimation slopes of `r sprintf("%.2f", min(wb_clade$slope[wb_clade$component == "Within site"]))` to `r sprintf("%.2f", max(wb_clade$slope[wb_clade$component == "Within site"]))`. The between-site slope is `r sprintf("%.2f", wb_overall$slope[2])` (CI `r sprintf("%.2f to %.2f", wb_overall$lo[2], wb_overall$hi[2])`; site temperature: `r wb_source`), and the difference between the two is `r sprintf("%.2f", wb_overall$slope[3])` (CI `r sprintf("%.2f to %.2f", wb_overall$lo[3], wb_overall$hi[3])`). If that interval includes zero, CTmax differences between sites within a clade are consistent with acclimation to each site's temperature, with no detectable local adaptation beyond it; with only 2–6 sites per clade, the test can rule out only large differences between the slopes. Panel B shows the site-level pattern behind the between-site slope: each point is a site's CTmax at its own mean collection conditions.
+CTmax rises by `r sprintf("%.2f", wb_overall$slope[1])` °C for every 1 °C of within-site temperature change (95% CI `r sprintf("%.2f–%.2f", wb_overall$lo[1], wb_overall$hi[1])`), with lineage-specific acclimation slopes of `r sprintf("%.2f", min(wb_clade$slope[wb_clade$component == "Within site"]))` to `r sprintf("%.2f", max(wb_clade$slope[wb_clade$component == "Within site"]))`. The between-site slope is `r sprintf("%.2f", wb_overall$slope[2])` (CI `r sprintf("%.2f to %.2f", wb_overall$lo[2], wb_overall$hi[2])`; site temperature: `r wb_source`), and the difference between the two is `r sprintf("%.2f", wb_overall$slope[3])` (CI `r sprintf("%.2f to %.2f", wb_overall$lo[3], wb_overall$hi[3])`). If that interval includes zero, CTmax differences between sites within a lineage are consistent with acclimation to each site's temperature, with no detectable local adaptation beyond it; with only 1–5 sites per lineage, the test can rule out only large differences between the slopes. Panel B shows the site-level pattern behind the between-site slope: each point is a site's CTmax at its own mean collection conditions.
 
 
 The Stage 1 clade calls (Section 3.1) were merged with the CTmax and body size data set to examine clade-specific patterns of divergence. By plotting CTmax and size against the collection temperature we can see that these clades appear to be physiologically differentiated. Clades F and S tend to have higher CTmax, even when collected at the same temperatures as Clades X and IV. Size is more variable, with varying degrees of temperature sensitivity across the clades. Overall, however, Clade F tends to be smaller than Clades S and X. Clade IV tended to be the largest.
@@ -2478,6 +2696,80 @@ join_data %>%
 
 
 ```
+
+
+### Partitioning CTmax variation
+
+How much of the variation in CTmax among individuals is due to lineage, to the site an animal comes from, to the conditions at collection (acclimation), to the assay, and to individuals? The variance was partitioned with a mixed model with random effects for lineage, site, collection (site × sampling event), assay run and tube position, plus fixed effects for body size and, in the second model, the within- and between-site temperature components from the previous section. The variance explained by each fixed effect is the variance of its fitted contribution ([Nakagawa & Schielzeth 2013](https://doi.org/10.1111/j.2041-210x.2012.00261.x)). Comparing the two models shows how much of the site and collection components the temperature terms absorb: collection-level variance taken up by within-site temperature is acclimation, and site-level variance taken up by long-term site temperature is the between-site temperature effect. Intervals are from 200 parametric bootstrap replicates.
+
+```{r}
+#| label: ctmax-variance-partition
+#| fig-width: 10
+#| fig-height: 4.5
+vp_data <- wb_data %>% mutate(collection = paste(site_code, season, sep = "_"))
+vp_m0 <- lme4::lmer(ctmax ~ size + (1 | lineage) + (1 | site) + (1 | collection) + (1 | replicate) + (1 | tube),
+                    data = vp_data)
+vp_m1 <- lme4::lmer(ctmax ~ size + t_within + t_between + (1 | lineage) + (1 | site) + (1 | collection) +
+                      (1 | replicate) + (1 | tube), data = vp_data)
+
+vp_shares <- function(m) {
+  vc <- as.data.frame(lme4::VarCorr(m))
+  re <- setNames(vc$vcov, vc$grp)
+  b <- lme4::fixef(m)
+  fx <- c(size = var(b[["size"]] * m@frame$size))
+  if ("t_within" %in% names(b)) fx <- c(fx, t_within = var(b[["t_within"]] * m@frame$t_within),
+                                        t_between = var(b[["t_between"]] * m@frame$t_between))
+  comp <- c(Lineage = re[["lineage"]], `Site temperature` = unname(fx["t_between"]),
+            `Site (other)` = re[["site"]], `Acclimation (within-site temperature)` = unname(fx["t_within"]),
+            `Collection (other)` = re[["collection"]], `Body size` = unname(fx["size"]),
+            Assay = re[["replicate"]] + re[["tube"]], Individual = re[["Residual"]])
+  comp[is.na(comp)] <- 0
+  comp / sum(comp)
+}
+set.seed(1)
+vp_boot <- function(m) {
+  bt <- lme4::bootMer(m, vp_shares, nsim = 200, type = "parametric", use.u = FALSE)
+  tibble(component = names(bt$t0), share = bt$t0,
+         lo = apply(bt$t, 2, quantile, 0.025, na.rm = TRUE), hi = apply(bt$t, 2, quantile, 0.975, na.rm = TRUE))
+}
+vp_tab <- bind_rows(vp_boot(vp_m0) %>% mutate(model = "Without temperature"),
+                    vp_boot(vp_m1) %>% mutate(model = "With within/between temperature")) %>%
+  mutate(component = factor(component, levels = names(vp_shares(vp_m1))),
+         model = factor(model, levels = c("Without temperature", "With within/between temperature")))
+
+vp_cols <- c(Lineage = "#555555", `Site temperature` = unname(lat_gradient["MR"]), `Site (other)` = "#E8B4A6",
+             `Acclimation (within-site temperature)` = unname(lat_gradient["X"]), `Collection (other)` = "#A9BCD9",
+             `Body size` = "#9C9C9C", Assay = "#D0D0D0", Individual = "#EDEDED")
+ggplot(filter(vp_tab, share > 0), aes(x = model, y = share, fill = component)) +
+  geom_col(width = 0.6, colour = "white") +
+  coord_flip() +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = vp_cols, name = NULL) +
+  guides(fill = guide_legend(nrow = 2)) +
+  labs(x = NULL, y = "Share of CTmax variance") +
+  theme_matt(base_size = 12) +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+#| label: ctmax-variance-partition-table
+vp_tab %>%
+  filter(share > 0) %>%
+  mutate(value = sprintf("%.0f%% (%.0f–%.0f)", 100 * share, 100 * lo, 100 * hi)) %>%
+  select(component, model, value) %>%
+  pivot_wider(names_from = model, values_from = value, values_fill = "–") %>%
+  arrange(component) %>%
+  knitr::kable(col.names = c("Component", "Without temperature", "With within/between temperature"),
+               caption = "Share of CTmax variance (95% parametric bootstrap interval).")
+```
+
+```{r}
+#| include: false
+vc <- function(comp, mod = "With within/between temperature") round(100 * filter(vp_tab, component == comp, model == mod)$share)
+```
+
+Without temperature terms, the largest components are collection (`r vc("Collection (other)", "Without temperature")`%), lineage (`r vc("Lineage", "Without temperature")`%) and site (`r vc("Site (other)", "Without temperature")`%), with `r vc("Individual", "Without temperature")`% among individuals within a collection. Adding the temperature terms, within-site temperature (acclimation) explains `r vc("Acclimation (within-site temperature)")`% of all CTmax variance and absorbs most of the collection component (which drops to `r vc("Collection (other)")`%), while long-term site temperature explains `r vc("Site temperature")`% and the remaining site component is `r vc("Site (other)")`%. Lineage accounts for `r vc("Lineage")`%. Thermal tolerance in this complex is therefore structured roughly equally by lineage, by acclimation to recent conditions, and by site (temperature plus other site differences), with little left to body size or the assay. The intervals are wide because lineage and site have few levels (7 lineages, 8 sites).
+
 
 ### Trait variability within clades
 
