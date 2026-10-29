@@ -18,11 +18,11 @@ library(quarto)
 
 # Choose which steps to run -----------------------------------------------
 process_site_temps       <- FALSE # downloads buoy / OISST data -> Output_data/temp_profiles.csv (needs internet)
-process_mur_sst          <- T # downloads MUR SST per site, 2014-2023 -> Output_data/mur_sst_daily.csv (needs internet)
+process_site_env         <- FALSE # MUR SST 2014-2023 + monitoring-station checks -> Output_data/mur_*.csv (needs internet)
 process_pheno            <- FALSE # Raw_data/pheno_data + temp_data -> CTmax per individual
 process_samples          <- FALSE # phenotypes + cluster export -> Output_data/sample_table.csv
 process_micro            <- FALSE # cluster SSU profile -> Output_data/micro_calls.csv
-render_report            <- FALSE # Output/Reports/report.qmd -> figures + report
+render_report            <- TRUE # Output/Reports/report.qmd -> figures + report
 render_pheno_manuscript  <- FALSE # Manuscript/Sasaki_Pespeni_Phenotype.qmd -> Output/Drafts/
 render_genome_manuscript <- FALSE # Manuscript/Sasaki_Pespeni_LCWG.qmd -> Output/Drafts/
 
@@ -37,9 +37,9 @@ if (process_site_temps) {
   source(here("Scripts", "01_site_temps.R"), local = new.env())
 }
 
-# Step 1b: MUR SST per site (Stage 3 environmental summaries) ---------------
-if (process_mur_sst) {
-  source(here("Scripts", "05_mur_sst.R"), local = new.env())
+# Step 1b: Site environment for Stage 3 (MUR SST, station checks) ----------
+if (process_site_env) {
+  source(here("Scripts", "05_site_environment.R"), local = new.env())
 }
 
 # Step 2: Phenotypes (CTmax, body size) ------------------------------------

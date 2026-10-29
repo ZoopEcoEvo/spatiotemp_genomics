@@ -1,0 +1,5 @@
+perm	snp_set	x_by_pop	snps	lambda	n_p<0.01	n_p<0.001	n_p<0.0001
+0	all	S__MD__late=15.50;S__MD__peak=27.00	26484	0.3615	20	1	0
+0	without_NC_137265.1	S__MD__late=15.50;S__MD__peak=27.00	24783	0.3614	18	1	0
+1	all	S__MD__late=27.00;S__MD__peak=15.50	26484	0.3615	20	1	0
+1	without_NC_137265.1	S__MD__late=27.00;S__MD__peak=15.50	24783	0.3614	18	1	0

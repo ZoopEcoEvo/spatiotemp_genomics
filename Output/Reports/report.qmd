@@ -1334,7 +1334,7 @@ Within sites, there is notably little change in these metrics across seasons. Th
 
 1.  **Increasing Tajima's D and decreased nucleotide diversity,** as seen in Clade F. This may indicate serial founder effects. Diversity should fall steadily in the direction of expansion ([Excoffier et al. 2009](https://doi.org/10.1146/annurev.ecolsys.39.110707.173414)). For a clade spreading north since the last glacial maximum, northern sites would be expected to have lower θπ and higher D ([Hewitt 2000](https://doi.org/10.1038/35016000)). This suggests a low latitude origin for this clade.
 2.  **Consistently low Tajima's D and consistently high nucleotide diversity**, as seen in Clades S and IV (although note the limited sampling for these clades). This pattern suggests large, well-connected populations. There may have been population expansion before sites diverged, or there may be substantial gene flow between populations keeping them similar ([Excoffier et al. 2009](https://doi.org/10.1146/annurev.ecolsys.39.110707.173414)).
-3.  **Consistently small Tajima's D and consistently high nucleotide diversity**, as seen in Clade X. While this typically would indicate large, stable populations, Clade X is found only at the high latitude sites, where populations of *Acartia tonsa* are present during only part of the year, exhibiting drastic fluctuations in population size over this period. This may indicate the importance of an egg bank / resting eggs. If the population is generated each year by hatching out of eggs laid over many previous years, diversity would remain high. The egg bank acts as a store of diversity, so a brief active season doesn’t mean a small genetic population ([Hairston 1996](https://doi.org/10.4319/lo.1996.41.5.1087)). Resting eggs are well documented in *Acartia* (Marcus 1996, *Hydrobiologia* 320:141–152). In Narragansett Bay, *A. tonsa* replaces the egg-banking *A. hudsonica* each summer ([Sullivan & McManus 1986](https://doi.org/10.3354/meps028121)), the same seasonal turnover the ME site shows. Under these dynamics, individual sites may retain distinct populations, as seen in the within-clade PCAs above.
+3.  **Consistently small Tajima's D and consistently high nucleotide diversity**, as seen in Clade X. While this typically would indicate large, stable populations, Clade X is found only at the high latitude sites, where populations of *Acartia tonsa* are present during only part of the year, exhibiting drastic fluctuations in population size over this period. This may indicate the importance of an egg bank / resting eggs. If the population is generated each year by hatching out of eggs laid over many previous years, diversity would remain high. The egg bank acts as a store of diversity, so a brief active season doesn’t mean a small genetic population ([Hairston 1996](https://doi.org/10.4319/lo.1996.41.5.1087)). Resting eggs are well documented in *Acartia* (Marcus 1996, *Hydrobiologia* 320:141–152). In Narragansett Bay, *A. tonsa* replaces the egg-banking *A. hudsonica* each summer ([Sullivan & McManus 1986](https://doi.org/10.3354/meps028121)), the same seasonal turnover your ME site shows. Under these dynamics, individual sites may retain distinct populations, as seen in the within-clade PCAs above.
 
 ```{r}
 #| label: diversity-pops
@@ -1412,7 +1412,8 @@ if (nrow(div_pop) == 0) {
 }
 ```
 
-Diversity is compared within clades only: reference bias changes which sites are usable in each clade. The spectra are folded (no outgroup), and low-coverage data shift the absolute values of Tajima's D, so differences between populations of the same clade are more informative than whether D is above or below zero. Confidence intervals come from a block bootstrap over 1 Mb blocks; populations of 8 individuals (F MD late, S MR late) are the least precise. \### Linkage disequilibrium
+Diversity is compared within clades only: reference bias changes which sites are usable in each clade. The spectra are folded (no outgroup), and low-coverage data shift the absolute values of Tajima's D, so differences between populations of the same clade are more informative than whether D is above or below zero. Confidence intervals come from a block bootstrap over 1 Mb blocks; populations of 8 individuals (F MD late, S MR late) are the least precise.
+### Linkage disequilibrium
 
 LD was estimated with ngsLD within each clade on every fifth SNP (MAF ≥ 0.05), for a random 2% of SNP pairs up to 100 kb apart, and averaged in distance bins. Dashed lines show the r² expected between unlinked SNPs from sample size alone (≈ 1/n). LD decays to near that level within a few kb in X, S and IV, as expected for very large long-term population sizes. The higher plateau in F reflects allele-frequency differences between the F sub-lineages pooled in the clade, not physical linkage.
 
@@ -1627,6 +1628,7 @@ if (length(lp_files) > 0) {
 }
 ```
 
+
 #### Follow-up of the candidate regions
 
 Each candidate region (and a control region on chromosome 1 with no local-PCA signal) was analysed on its own: a PCA of the region (PCAngsd), each individual's heterozygosity inside the region relative to its genome-wide heterozygosity, and LD over distances up to 2 Mb. An inversion shows as groups on the regional PC1 with heterozygotes raised in heterozygosity (ratio above the bulk) and homozygotes for the rarer arrangement lowered; suppressed recombination raises long-range LD when both arrangements are common.
@@ -1796,7 +1798,7 @@ prev_plot(micro_prev(all_groups))
 
 Allele frequencies per population at the unlinked SNP set (one SNP per 10 kb; Section 3.2, LD) were compared between seasons within each site. Temporal differentiation is Nei & Tajima's F<sub>c</sub> ([Nei & Tajima 1981](https://doi.org/10.1093/genetics/98.3.625)) over SNPs with ≥ 5 individuals with data in both samples and a mean minor-allele frequency of 0.05–0.95. Under the temporal method, F<sub>c</sub> ≈ t/(2N<sub>e</sub>) + sampling noise of both samples, so N<sub>e</sub> follows once the sampling noise is subtracted ([Waples 1989](https://doi.org/10.1093/genetics/121.2.379); [Jorde & Ryman 2007](https://doi.org/10.1534/genetics.107.075481)).
 
-**Calibrating sampling noise.** With \< 1× coverage, frequencies are sampled twice, once through the individuals and once through the reads, so an individual contributes less than two chromosomes of information ([Jónás et al. 2016](https://doi.org/10.1534/genetics.116.191197)). Pool-seq studies handle this with an "effective number of chromosomes" ([Feder et al. 2012](https://doi.org/10.1371/journal.pone.0048588); [Bergland et al. 2014](https://doi.org/10.1371/journal.pgen.1004775); [Machado et al. 2021](https://doi.org/10.7554/eLife.67577)). Here it was measured directly: each population was split at random into two halves (two replicates), allele frequencies were estimated for each half, and F<sub>c</sub> between the halves (pure sampling noise) was compared with the 1/(2n) expectation. The ratio, c, is the effective number of chromosomes per individual divided by two, and the sampling term for any sample becomes 1/(2cn). This split-half calibration is an empirical resampling check rather than a named published method.
+**Calibrating sampling noise.** With < 1× coverage, frequencies are sampled twice, once through the individuals and once through the reads, so an individual contributes less than two chromosomes of information ([Jónás et al. 2016](https://doi.org/10.1534/genetics.116.191197)). Pool-seq studies handle this with an "effective number of chromosomes" ([Feder et al. 2012](https://doi.org/10.1371/journal.pone.0048588); [Bergland et al. 2014](https://doi.org/10.1371/journal.pgen.1004775); [Machado et al. 2021](https://doi.org/10.7554/eLife.67577)). Here it was measured directly: each population was split at random into two halves (two replicates), allele frequencies were estimated for each half, and F<sub>c</sub> between the halves (pure sampling noise) was compared with the 1/(2n) expectation. The ratio, c, is the effective number of chromosomes per individual divided by two, and the sampling term for any sample becomes 1/(2cn). This split-half calibration is an empirical resampling check rather than a named published method.
 
 ```{r}
 #| label: split-half
@@ -1937,39 +1939,42 @@ if (exists("temporal")) {
 }
 ```
 
-Calibration removes almost all of the apparent excess: with two chromosomes per individual assumed, every pair showed an excess of ≈ 0.05 regardless of the number of generations (open circles); with the calibrated sampling term the excess is 0.000–0.011 (filled points). Most pairs give N<sub>e</sub> in the high hundreds to a few thousand, with lower 95% bounds of roughly 400–2,000, and several upper bounds are infinite (no drift detectable within the season). These estimates describe drift over a few to \~20 generations within one season, not long-term N<sub>e</sub>, and they are at or above the lab estimate of \~400. ME early→peak is the exception (N<sub>e</sub> ≈ 225, CI ≈ 185–285): ME early is the smallest X sample (10 individuals), so a modest error in its c would inflate the excess, and the value should be checked before it is interpreted biologically. In clade X, early→peak changes at different sites remain uncorrelated genome-wide (r ≈ 0).
+Calibration removes almost all of the apparent excess: with two chromosomes per individual assumed, every pair showed an excess of ≈ 0.05 regardless of the number of generations (open circles); with the calibrated sampling term the excess is 0.000–0.011 (filled points). Most pairs give N<sub>e</sub> in the high hundreds to a few thousand, with lower 95% bounds of roughly 400–2,000, and several upper bounds are infinite (no drift detectable within the season). These estimates describe drift over a few to ~20 generations within one season, not long-term N<sub>e</sub>, and they are at or above the lab estimate of ~400. ME early→peak is the exception (N<sub>e</sub> ≈ 225, CI ≈ 185–285): ME early is the smallest X sample (10 individuals), so a modest error in its c would inflate the excess, and the value should be checked before it is interpreted biologically. In clade X, early→peak changes at different sites remain uncorrelated genome-wide (r ≈ 0).
 
-**Per-SNP seasonal test.** For each SNP, the minor-allele count was modelled with a binomial GLM, count \~ site + time, where time is the collection day of year scaled from 0 (first sampling event at a site) to 1 (last), and each population is weighted by its effective number of chromosomes (2cn). A shared slope for time rewards change in the same direction at every site, as in the *Drosophila* seasonal studies ([Bergland et al. 2014](https://doi.org/10.1371/journal.pgen.1004775); [Machado et al. 2021](https://doi.org/10.7554/eLife.67577)). The null distribution comes from permuting the order of sampling events within each site, enumerating every distinct ordering (X: 3 sites, 11 permutations; F: 4 sites, 23 permutations). The genome-wide test asks whether more SNPs reach a given p value with the real seasons than with the permuted ones. Results are shown with and without chromosome 6, which carries the likely inversion in clade X (Section 3.2). Clade S has a single seasonal site (MD), so it cannot be permuted and is not shown.
+**Per-SNP seasonal test.** For each SNP, the minor-allele count was modelled with a binomial GLM, count ~ site + x, with each population weighted by its effective number of chromosomes (2cn), as in the *Drosophila* seasonal studies ([Bergland et al. 2014](https://doi.org/10.1371/journal.pgen.1004775); [Machado et al. 2021](https://doi.org/10.7554/eLife.67577)). Two versions of x were fitted: (1) **time**, the collection day of year scaled from 0 (first sampling event at a site) to 1 (last), which rewards change in the same direction through the season at every site; and (2) **temperature**, the mean MUR SST over the generation before each collection (Ganey's Wharf corrected against station ET5.1), which rewards change that tracks temperature, so that a warming and a cooling step move frequencies in opposite directions. Temperature matters because the season is not a monotonic temperature ramp: water before the early and peak collections was similar (or cooler at peak in the north), and the late collections followed a strong cooling. The null distribution comes from permuting x among each site's sampling events, enumerating every distinct ordering (time: X 11 and F 23 permutations, as reversing all sites only flips the sign; temperature: X 23 and F 47). The genome-wide test asks whether more SNPs reach a given p value with the real values than with the permuted ones. Results are shown with and without chromosome 6, which carries the likely inversion in clade X (Section 3.2). Clade S has a single seasonal site (MD) with two samples, so it has no permutation null and is not shown.
 
 ```{r}
 #| label: seasonal-glm
 #| fig-width: 11
 #| fig-height: 5
-glm_files <- Sys.glob(cx("results", "13_seasonal", "*.perm.tsv"))
+glm_files <- c(Sys.glob(cx("results", "13_seasonal", "*.perm.tsv")),
+               Sys.glob(cx("results", "13_seasonal", "temp", "*.perm.tsv")))
 if (length(glm_files) == 0) {
   cat("Seasonal GLM results are not in this export yet.")
 } else {
   glm_perm <- map_dfr(glm_files, function(f) {
     read_tsv(f, show_col_types = FALSE) %>%
-      mutate(clade = str_split_1(basename(f), "\\.")[1], snps_used = str_split_1(basename(f), "\\.")[2])
+      mutate(clade = str_split_1(basename(f), "\\.")[1], snps_used = str_split_1(basename(f), "\\.")[2],
+             model = if_else(basename(dirname(f)) == "temp", "temperature", "time"))
   }) %>%
     filter(clade %in% c("X", "F")) %>%
     mutate(snp_set = if_else(snp_set == "all", "all chr.", "no chr6"),
+           model = factor(model, levels = c("time", "temperature")),
            panel = paste0(clade, ", ", snps_used, " SNPs"),
            clade = factor(clade, levels = tonsa_clades)) %>%
     pivot_longer(starts_with("n_p<"), names_to = "threshold", values_to = "n_snps") %>%
     mutate(threshold = sub("n_", "", threshold), observed = perm == 0)
 
   glm_perm %>%
-    filter(threshold %in% c("p<0.01", "p<0.001")) %>%
-    ggplot(aes(x = snp_set, y = n_snps)) +
+    filter(threshold %in% c("p<0.01", "p<0.001"), snp_set == "all chr.") %>%
+    ggplot(aes(x = model, y = n_snps)) +
     geom_point(data = ~ filter(.x, !observed), colour = "grey60", alpha = 0.7,
                position = position_jitter(width = 0.12, height = 0, seed = 1)) +
     geom_point(data = ~ filter(.x, observed), aes(colour = clade), size = 3.5, shape = 18) +
     facet_wrap(threshold ~ panel, scales = "free_y", nrow = 2) +
     scale_colour_manual(values = clade_cols[tonsa_clades], guide = "none") +
     labs(x = NULL, y = "SNPs below threshold",
-         caption = "Diamonds: observed seasons. Grey: every within-site reordering of the sampling events.") +
+         caption = "Diamonds: observed. Grey: every within-site reordering of the sampling events. All chromosomes (with/without chr6 in the table).") +
     theme_matt_facets(base_size = 11)
 }
 ```
@@ -1978,20 +1983,92 @@ if (length(glm_files) == 0) {
 #| label: seasonal-glm-table
 if (length(glm_files) > 0) {
   glm_perm %>%
-    group_by(clade, snps_used, snp_set, threshold) %>%
+    group_by(clade, snps_used, model, snp_set, threshold) %>%
     summarise(obs = n_snps[observed], perm_mean = mean(n_snps[!observed]),
               perm_max = max(n_snps[!observed]),
               rank = sum(n_snps[!observed] >= n_snps[observed]) + 1, label_sets = n(), .groups = "drop") %>%
     mutate(rank = paste0(rank, " / ", label_sets)) %>%
     select(-label_sets) %>%
-    arrange(clade, snps_used, snp_set, threshold) %>%
-    knitr::kable(digits = 1, col.names = c("Clade", "SNPs", "Chromosomes", "Threshold", "Observed",
+    arrange(clade, snps_used, model, snp_set, threshold) %>%
+    knitr::kable(digits = 1, col.names = c("Clade", "SNPs", "Model", "Chromosomes", "Threshold", "Observed",
                                           "Permutation mean", "Permutation max", "Rank of observed"),
                  caption = "Per-SNP seasonal GLM: SNPs below each p threshold with the real seasons vs all within-site permutations (rank 1 = more than every permutation).")
 }
 ```
 
-There is no genome-wide excess of seasonal SNPs in either clade. With the real seasons, X and F have about as many low-p SNPs as the permuted orderings, at every threshold, on both the unlinked and the full SNP sets. Removing chromosome 6 changes nothing, so the X inversion is not driving or masking a seasonal signal. The genomic-control λ is close to 1 (X ≈ 1.1, F ≈ 1.0) for the observed and permuted labellings alike, so the calibrated binomial weights describe the sampling variance well. Together with the uncorrelated early→peak changes across X sites, this means that any seasonal selection in these populations acts on too few loci, or is too weak, to show up genome-wide with 3–4 seasonal sites per clade. Individual SNPs with the smallest p values are listed in `results/13_seasonal/*.top.tsv` but are not more numerous than expected by chance, so none can be called a seasonal candidate on its own. The permutation null is coarse (12 and 24 orderings), which limits the smallest attainable rank-based p value to 1/12 (X) and 1/24 (F).
+There is no genome-wide excess of seasonal SNPs in either clade, with either model. With the real seasons, X and F have about as many low-p SNPs as the permuted orderings, at every threshold, on both the unlinked and the full SNP sets. Modelling temperature instead of time does not change this: the closest to a signal is clade X on all SNPs (rank 5–6 of 24 at p < 0.01 and p < 0.001, i.e. p ≈ 0.2–0.25), which is not significant and does not hold on the unlinked set. Removing chromosome 6 changes nothing, so the X inversion is not driving or masking a seasonal signal. The genomic-control λ is close to 1 (X ≈ 1.1, F ≈ 1.0) for the observed and permuted values alike, so the calibrated binomial weights describe the sampling variance well. Together with the uncorrelated early→peak changes across X sites, this means that any seasonal selection in these populations acts on too few loci, or is too weak, to show up genome-wide with 3–4 seasonal sites per clade, whether it is modelled as a seasonal trend or as a response to temperature. Individual SNPs with the smallest p values are listed in `results/13_seasonal/*.top.tsv` and `results/13_seasonal/temp/*.top.tsv` but are not more numerous than expected by chance, so none can be called a seasonal candidate on its own. The permutation null is coarse (time: 12 and 24 orderings; temperature: 24 and 48), which limits the smallest attainable rank-based p value to 1/12–1/48.
+
+
+### Does space substitute for time? Concordance of temperature responses
+
+If the alleles that are more common at warmer sites are favoured by warm conditions, they should also rise after warm periods and fall after cool ones within sites. For every SNP, two temperature slopes were estimated with the same binomial GLM and calibrated weights as above: a **spatial** slope (frequency against each site's long-term MUR SST, with a site's seasonal samples pooled) and a **seasonal** slope (the temperature model above: frequency against site + temperature before collection). Their agreement across the genome was measured as the correlation of the two z-scores, and, among the 1% and 5% of SNPs with the strongest spatial slopes, as the fraction whose seasonal slope has the same sign (0.5 = no agreement). The null keeps the spatial slopes and permutes temperatures among each site's sampling events (as in the seasonal test); a second, smaller null permutes site temperatures among sites. This is the genomic counterpart of the within- vs between-site comparison for CTmax (Section 4) and follows the seasonal–clinal comparison of [Machado et al. (2021)](https://doi.org/10.7554/eLife.67577).
+
+Clade X (ME, TK, RW; one lineage, three seasonal sites) is the main test. In clade F the warm sites (MR, FH) and the cool sites (MD, GW) belong to different lineages, so its spatial slopes mostly reflect lineage differences, not temperature; F is shown for completeness but not interpreted. Clade S has one seasonal site, so its seasonal null has a single alternative ordering.
+
+```{r}
+#| label: concordance
+#| fig-width: 11
+#| fig-height: 4.5
+conc_files <- Sys.glob(cx("results", "14_concordance", "*.perm.tsv"))
+if (length(conc_files) == 0) {
+  cat("Concordance results are not in this export yet.")
+} else {
+  conc <- map_dfr(conc_files, function(f) {
+    read_tsv(f, show_col_types = FALSE) %>%
+      mutate(clade = str_split_1(basename(f), "\\.")[1], snps_used = str_split_1(basename(f), "\\.")[2])
+  }) %>%
+    mutate(snp_set = if_else(snp_set == "all", "all chr.", "no chr6"),
+           clade = factor(clade, levels = tonsa_clades),
+           observed = null == "seasonal" & perm == 0)
+
+  conc %>%
+    filter(snp_set == "all chr.", null == "seasonal") %>%
+    select(clade, snps_used, observed, r, conc_top1, conc_top5) %>%
+    pivot_longer(c(r, conc_top1, conc_top5), names_to = "statistic", values_to = "value") %>%
+    mutate(statistic = recode(statistic, r = "Correlation of z-scores",
+                              conc_top1 = "Same direction, top 1% spatial SNPs",
+                              conc_top5 = "Same direction, top 5% spatial SNPs"),
+           x = paste(clade, snps_used, sep = "\n")) %>%
+    ggplot(aes(x = x, y = value)) +
+    geom_hline(data = tibble(statistic = c("Correlation of z-scores", "Same direction, top 1% spatial SNPs",
+                                           "Same direction, top 5% spatial SNPs"), h = c(0, 0.5, 0.5)),
+               aes(yintercept = h), colour = "grey50", linetype = "dashed") +
+    geom_point(data = ~ filter(.x, !observed), colour = "grey60", alpha = 0.7,
+               position = position_jitter(width = 0.12, height = 0, seed = 1)) +
+    geom_point(data = ~ filter(.x, observed), aes(colour = str_sub(x, 1, 1)), size = 3.5, shape = 18) +
+    facet_wrap(~ statistic, scales = "free_y") +
+    scale_colour_manual(values = setNames(clade_cols[c("F", "S", "X")], c("F", "S", "X")), guide = "none") +
+    labs(x = NULL, y = NULL,
+         caption = "Diamonds: observed. Grey: seasonal null (temperatures permuted among each site's sampling events). All chromosomes.") +
+    theme_matt_facets(base_size = 11)
+}
+```
+
+```{r}
+#| label: concordance-table
+if (length(conc_files) > 0) {
+  conc %>%
+    filter(null == "seasonal") %>%
+    group_by(clade, snps_used, snp_set) %>%
+    summarise(snps = snps[observed],
+              r_obs = r[observed], r_rank = sum(r[!observed] >= r[observed]) + 1,
+              top1_obs = conc_top1[observed], top1_rank = sum(conc_top1[!observed] >= conc_top1[observed]) + 1,
+              top5_obs = conc_top5[observed], top5_rank = sum(conc_top5[!observed] >= conc_top5[observed]) + 1,
+              sets = n(), .groups = "drop") %>%
+    mutate(across(ends_with("_rank"), ~ paste0(.x, " / ", sets))) %>%
+    select(-sets) %>%
+    arrange(clade, snps_used, snp_set) %>%
+    knitr::kable(digits = 3,
+                 col.names = c("Clade", "SNPs", "Chromosomes", "SNPs tested", "r", "Rank",
+                               "Top 1% same sign", "Rank", "Top 5% same sign", "Rank"),
+                 caption = "Concordance of spatial and seasonal temperature slopes. Rank = position of the observed value among all seasonal-null orderings (1 = higher than every permutation).")
+}
+```
+
+In clade X the spatial and seasonal responses point weakly in the same direction: across all SNPs the two slopes are slightly positively correlated (r ≈ 0.04), and among the 1% of SNPs with the strongest spatial slopes about 55% change in the same direction through the season. But the real temperatures rank only 5th–6th of 24 orderings (p ≈ 0.2), 8th–12th on the unlinked set, and the smaller spatial null (6 orderings) cannot go below p ≈ 0.17; removing chromosome 6 changes nothing. So there is no detectable genome-wide concordance between spatial and seasonal temperature responses. Two limits shape this answer. First, the spatial temperature contrast within X is short (7.1–9.9 °C long-term mean across ME, TK and RW), and the spatial slope is mostly ME against the two Gulf of St. Lawrence sites, so it also carries their geographic separation. Second, the null rests on only 24 orderings. A modest true concordance, of the size seen here, could go undetected. Clade F shows the opposite tendency (its observed concordance is the lowest of 48 orderings for the top-1% statistic), but because its spatial contrast is a contrast between lineages (Florida lineages vs F-N) it is not interpreted as a temperature response. Clade S has no usable seasonal null.
+
+In contrast to CTmax, whose between-site slope matches the within-site (acclimation) slope (Section 4), allele frequencies give no evidence that the response to temperature across sites predicts the response through the season. The genomic side of the space-for-time question therefore remains unresolved rather than negative: the data are consistent with no shared response and with a weak one.
+
 
 ## 4. Clade-specific physiological patterns
 
@@ -2092,6 +2169,118 @@ car::Anova(ctmax.model, type = "III")
 #   theme(legend.position = "none",
 #         axis.title.y = element_blank())
 ```
+
+
+### Acclimation vs. site differences (within- and between-site temperature)
+
+A single temperature slope mixes two processes. Within a site, CTmax changes across the season as the same population experiences warmer or cooler water, which is mostly acclimation. Between sites, CTmax differs with each site's typical temperature, which reflects acclimation plus any local adaptation. Collection temperature was therefore split into a within-site component (collection temperature minus the site's mean collection temperature, so it averages zero at every site) and a between-site component (the site's mean temperature minus the mean across sites) ([van de Pol & Wright 2009](https://doi.org/10.1016/j.anbehav.2008.11.006)). If the between-site slope equals the within-site slope, site differences are explained by acclimation to different temperatures; a steeper between-site slope indicates local adaptation on top of plasticity, and a shallower one countergradient variation. Clade is in the model, so turnover of lineages along the coast does not inflate the between-site slope. Body size and the assay terms are kept as in the CTmax model above.
+
+The site mean is currently the mean of each site's collection temperatures. Sites were not sampled in the same seasons (MR and FH only at peak and late), so this will be replaced by the long-term MUR SST climatology (`Output_data/site_climatology.csv`) once it is available; the within-site component stays centred on the collection temperatures.
+
+```{r}
+#| label: within-between-model
+wb_clim_file <- here("Output", "Output_data", "site_climatology.csv")
+wb_events <- filtered_data %>%
+  distinct(site, site_code, season, collection_temp) %>%
+  group_by(site, site_code) %>%
+  summarise(site_mean_collection = mean(collection_temp), .groups = "drop")
+if (file.exists(wb_clim_file)) {
+  wb_events <- wb_events %>%
+    left_join(read_csv(wb_clim_file, show_col_types = FALSE) %>% select(site_code, site_temp = temp_mean),
+              by = "site_code")
+  wb_source <- "long-term MUR SST mean"
+} else {
+  wb_events <- mutate(wb_events, site_temp = site_mean_collection)
+  wb_source <- "mean of the site's collection temperatures"
+}
+wb_data <- filtered_data %>%
+  left_join(wb_events, by = c("site", "site_code")) %>%
+  mutate(t_within = collection_temp - site_mean_collection,
+         t_between = site_temp - mean(wb_events$site_temp))
+
+# overall slopes (clade as intercept only) and clade-specific slopes
+wb_add <- lme4::lmer(ctmax ~ clade + t_within + t_between + size +
+                       (1 | site) + (1 | replicate) + (1 | tube), data = wb_data)
+wb_int <- lme4::lmer(ctmax ~ clade * (t_within + t_between) + size +
+                       (1 | site) + (1 | replicate) + (1 | tube), data = wb_data)
+
+b <- lme4::fixef(wb_add); V <- as.matrix(vcov(wb_add))
+diff_est <- b[["t_between"]] - b[["t_within"]]
+diff_se <- sqrt(V["t_between", "t_between"] + V["t_within", "t_within"] - 2 * V["t_between", "t_within"])
+wb_overall <- tibble(
+  term = c("Within site (acclimation)", "Between sites", "Between − within"),
+  slope = c(b[["t_within"]], b[["t_between"]], diff_est),
+  se = c(sqrt(V["t_within", "t_within"]), sqrt(V["t_between", "t_between"]), diff_se)) %>%
+  mutate(lo = slope - 1.96 * se, hi = slope + 1.96 * se)
+
+wb_clade <- bind_rows(
+  as_tibble(emmeans::emtrends(wb_int, ~ clade, var = "t_within")) %>%
+    transmute(clade, component = "Within site", slope = t_within.trend, lo = lower.CL, hi = upper.CL),
+  as_tibble(emmeans::emtrends(wb_int, ~ clade, var = "t_between")) %>%
+    transmute(clade, component = "Between sites", slope = t_between.trend, lo = lower.CL, hi = upper.CL)) %>%
+  left_join(wb_data %>% group_by(clade) %>% summarise(sites = n_distinct(site), n = n()), by = "clade")
+
+knitr::kable(wb_overall, digits = 3,
+             caption = paste0("CTmax slopes (°C per °C) for within-site and between-site temperature, all clades (site temperature: ",
+                              wb_source, "). 95% CI = ± 1.96 SE."))
+```
+
+```{r}
+#| label: within-between-clade-table
+wb_clade %>%
+  mutate(`Slope (95% CI)` = sprintf("%.2f (%.2f, %.2f)", slope, lo, hi)) %>%
+  select(Clade = clade, Component = component, `Slope (95% CI)`, Sites = sites, Individuals = n) %>%
+  pivot_wider(names_from = Component, values_from = `Slope (95% CI)`) %>%
+  knitr::kable(caption = "Clade-specific CTmax slopes. Between-site slopes rest on few sites per clade and are imprecise.")
+```
+
+```{r}
+#| label: within-between-plot
+#| fig-width: 12
+#| fig-height: 9
+size_mean <- mean(wb_data$size)
+# (A) within site: each site's fitted CTmax across its own collection temperatures
+wb_within_lines <- wb_data %>%
+  reframe(t_within = range(t_within), .by = c(clade, site, site_code, site_mean_collection, t_between)) %>%
+  mutate(size = size_mean, temp = site_mean_collection + t_within)
+wb_within_lines$fit <- predict(wb_int, newdata = wb_within_lines, re.form = ~ (1 | site))
+
+p_within <- ggplot(wb_data, aes(x = collection_temp, y = ctmax)) +
+  geom_point(aes(colour = site), alpha = 0.35, size = 1.5) +
+  geom_line(data = wb_within_lines, aes(x = temp, y = fit, colour = site, group = site), linewidth = 1.1) +
+  facet_wrap(~ clade, nrow = 1) +
+  scale_colour_manual(values = site_cols) +
+  labs(x = "Collection temperature (°C)", y = "CTmax (°C)", colour = "Site",
+       title = "A. Within sites (acclimation)") +
+  theme_matt_facets(base_size = 12)
+
+# (B) between sites: each site's CTmax at its own mean collection conditions (no within-site
+# deviation; fixed effects + site effect) against the site temperature, with the fitted
+# between-site slope
+wb_site_pts <- wb_data %>%
+  distinct(clade, site, site_code, site_mean_collection, site_temp, t_between) %>%
+  mutate(t_within = 0, size = size_mean)
+wb_site_pts$fit <- predict(wb_int, newdata = wb_site_pts, re.form = ~ (1 | site))
+wb_between_line <- wb_site_pts %>%
+  reframe(t_between = seq(min(t_between), max(t_between), length.out = 20), .by = clade) %>%
+  mutate(t_within = 0, size = size_mean, site_temp = t_between + mean(wb_events$site_temp))
+wb_between_line$fit <- predict(wb_int, newdata = wb_between_line, re.form = NA)
+
+p_between <- ggplot(wb_site_pts, aes(x = site_temp, y = fit)) +
+  geom_line(data = wb_between_line, colour = "black", linewidth = 1.2) +
+  geom_point(aes(colour = site), size = 3.5) +
+  facet_wrap(~ clade, nrow = 1) +
+  scale_colour_manual(values = site_cols) +
+  labs(x = paste0("Site temperature (°C; ", wb_source, ")"), y = "Site CTmax (°C)", colour = "Site",
+       title = "B. Between sites",
+       caption = "B: each site's fitted CTmax at its mean collection conditions; line = between-site slope.") +
+  theme_matt_facets(base_size = 12)
+
+ggarrange(p_within, p_between, ncol = 1, common.legend = TRUE, legend = "right")
+```
+
+CTmax rises by `r sprintf("%.2f", wb_overall$slope[1])` °C for every 1 °C of within-site temperature change (95% CI `r sprintf("%.2f–%.2f", wb_overall$lo[1], wb_overall$hi[1])`), with clade-specific acclimation slopes of `r sprintf("%.2f", min(wb_clade$slope[wb_clade$component == "Within site"]))` to `r sprintf("%.2f", max(wb_clade$slope[wb_clade$component == "Within site"]))`. The between-site slope is `r sprintf("%.2f", wb_overall$slope[2])` (CI `r sprintf("%.2f to %.2f", wb_overall$lo[2], wb_overall$hi[2])`; site temperature: `r wb_source`), and the difference between the two is `r sprintf("%.2f", wb_overall$slope[3])` (CI `r sprintf("%.2f to %.2f", wb_overall$lo[3], wb_overall$hi[3])`). If that interval includes zero, CTmax differences between sites within a clade are consistent with acclimation to each site's temperature, with no detectable local adaptation beyond it; with only 2–6 sites per clade, the test can rule out only large differences between the slopes. Panel B shows the site-level pattern behind the between-site slope: each point is a site's CTmax at its own mean collection conditions.
+
 
 The Stage 1 clade calls (Section 3.1) were merged with the CTmax and body size data set to examine clade-specific patterns of divergence. By plotting CTmax and size against the collection temperature we can see that these clades appear to be physiologically differentiated. Clades F and S tend to have higher CTmax, even when collected at the same temperatures as Clades X and IV. Size is more variable, with varying degrees of temperature sensitivity across the clades. Overall, however, Clade F tends to be smaller than Clades S and X. Clade IV tended to be the largest.
 
