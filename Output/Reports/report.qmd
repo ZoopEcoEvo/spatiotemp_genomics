@@ -2266,7 +2266,7 @@ In contrast to CTmax, whose between-site slope matches the within-site (acclimat
 
 ### CTmax model
 
-To more formally test the relationships between CTmax, collection temperature, and size, we used a linear mixed effects model, structured as `ctmax ~ clade * temp_cent + size + (1 + temp_cent|site) + (1|tube)`. This examines the effects of clade, temperature and size on CTmax, along with clade-specific effects of temperature. Collection temperature was centered before model fitting. The model also includes random intercepts for each site and the tube number (the position of each individual within the water bath during the CTmax assay).
+To more formally test the relationship between CTmax and collection temperature, we used a linear mixed effects model, structured as `ctmax ~ clade * temp_cent + (1 | site) + (1 | replicate) + (1 | tube)`. This examines the effects of clade and temperature on CTmax, along with clade-specific effects of temperature. Body size is not included, so temperature effects include any effect acting through body size. Collection temperature was centered before model fitting. The model also includes random intercepts for each site, the assay run (replicate) and the tube number (the position of each individual within the water bath during the CTmax assay).
 
 ```{r}
 #| label: ctmax-model
@@ -2283,7 +2283,7 @@ filtered_data = join_data %>%
          replicate = factor(replicate))
 
 ctmax.model = lme4::lmer(data = filtered_data, 
-                         ctmax ~ clade * temp_cent + size + (1 | site) + (1 | replicate) + (1|tube))
+                         ctmax ~ clade * temp_cent + (1 | site) + (1 | replicate) + (1|tube))
 
 performance::check_model(ctmax.model)
 
@@ -2365,7 +2365,7 @@ car::Anova(ctmax.model, type = "III")
 
 ### Acclimation vs. site differences (within- and between-site temperature)
 
-A single temperature slope mixes two processes. Within a site, CTmax changes across the season as the same population experiences warmer or cooler water, which is mostly acclimation. Between sites, CTmax differs with each site's typical temperature, which reflects acclimation plus any local adaptation. Collection temperature was therefore split into a within-site component (collection temperature minus the site's mean collection temperature, so it averages zero at every site) and a between-site component (the site's mean temperature minus the mean across sites) ([van de Pol & Wright 2009](https://doi.org/10.1016/j.anbehav.2008.11.006)). If the between-site slope equals the within-site slope, site differences are explained by acclimation to different temperatures; a steeper between-site slope indicates local adaptation on top of plasticity, and a shallower one countergradient variation. Lineage (X, S, IV and the four F lineages, F-MR, F-FH, F-N and F-NE) is in the model, so turnover of lineages along the coast does not inflate the between-site slope; grouping by clade would not suffice, because the F lineages replace one another between sites (Florida vs. Chesapeake). Body size and the assay terms are kept as in the CTmax model above.
+A single temperature slope mixes two processes. Within a site, CTmax changes across the season as the same population experiences warmer or cooler water, which is mostly acclimation. Between sites, CTmax differs with each site's typical temperature, which reflects acclimation plus any local adaptation. Collection temperature was therefore split into a within-site component (collection temperature minus the site's mean collection temperature, so it averages zero at every site) and a between-site component (the site's mean temperature minus the mean across sites) ([van de Pol & Wright 2009](https://doi.org/10.1016/j.anbehav.2008.11.006)). If the between-site slope equals the within-site slope, site differences are explained by acclimation to different temperatures; a steeper between-site slope indicates local adaptation on top of plasticity, and a shallower one countergradient variation. Lineage (X, S, IV and the four F lineages, F-MR, F-FH, F-N and F-NE) is in the model, so turnover of lineages along the coast does not inflate the between-site slope; grouping by clade would not suffice, because the F lineages replace one another between sites (Florida vs. Chesapeake). The assay terms are kept as in the CTmax model above; body size is not included, so the temperature slopes include any effect acting through body size.
 
 The site temperature is the long-term (2014–2023, full-year) MUR SST mean (`Output_data/site_climatology.csv`, Section 1), not the mean of the collection temperatures, which depends on which seasons were sampled (MR and FH only at peak and late). The within-site component stays centred on each site's collection temperatures. Lineage-specific within-site slopes are estimated for lineages with ≥ 15 individuals and seasonal variation in collection temperature, and lineage-specific between-site slopes only for lineages sampled at ≥ 3 sites (X, S, IV); the remaining lineages share a pooled slope.
 
@@ -2406,9 +2406,9 @@ wb_data <- wb_data %>%
          lin_b = factor(if_else(lineage %in% est_b, as.character(lineage), "other")))
 
 # overall slopes (lineage as intercept only) and lineage-specific slopes
-wb_add <- lme4::lmer(ctmax ~ lineage + t_within + t_between + size +
+wb_add <- lme4::lmer(ctmax ~ lineage + t_within + t_between +
                        (1 | site) + (1 | replicate) + (1 | tube), data = wb_data)
-wb_int <- lme4::lmer(ctmax ~ lineage + lin_w:t_within + lin_b:t_between + size +
+wb_int <- lme4::lmer(ctmax ~ lineage + lin_w:t_within + lin_b:t_between +
                        (1 | site) + (1 | replicate) + (1 | tube), data = wb_data)
 
 b <- lme4::fixef(wb_add); V <- as.matrix(vcov(wb_add))
@@ -2450,14 +2450,13 @@ wb_clade %>%
 #| label: within-between-plot
 #| fig-width: 13
 #| fig-height: 9
-size_mean <- mean(wb_data$size)
 plot_lins <- lin_n$lineage[lin_n$n >= 15]
 pd <- filter(wb_data, lineage %in% plot_lins) %>% droplevels()
 # (A) within site: each site's fitted CTmax across its own collection temperatures
 wb_within_lines <- pd %>%
   reframe(t_within = range(t_within),
           .by = c(lineage, lin_w, lin_b, site, site_code, site_mean_collection, t_between)) %>%
-  mutate(size = size_mean, temp = site_mean_collection + t_within)
+  mutate(temp = site_mean_collection + t_within)
 wb_within_lines$fit <- predict(wb_int, newdata = wb_within_lines, re.form = ~ (1 | site))
 
 p_within <- ggplot(pd, aes(x = collection_temp, y = ctmax)) +
@@ -2476,12 +2475,12 @@ wb_site_pts <- pd %>%
   group_by(lineage, lin_w, lin_b, site, site_code, site_mean_collection, site_temp, t_between) %>%
   summarise(n = n(), .groups = "drop") %>%
   filter(n >= 5) %>%
-  mutate(t_within = 0, size = size_mean)
+  mutate(t_within = 0)
 wb_site_pts$fit <- predict(wb_int, newdata = wb_site_pts, re.form = ~ (1 | site))
 wb_between_line <- wb_site_pts %>%
   filter(lineage %in% est_b) %>%
   reframe(t_between = seq(min(t_between), max(t_between), length.out = 20), .by = c(lineage, lin_w, lin_b)) %>%
-  mutate(t_within = 0, size = size_mean, site_temp = t_between + mean(wb_events$site_temp))
+  mutate(t_within = 0, site_temp = t_between + mean(wb_events$site_temp))
 wb_between_line$fit <- predict(wb_int, newdata = wb_between_line, re.form = NA)
 
 p_between <- ggplot(wb_site_pts, aes(x = site_temp, y = fit)) +
@@ -2700,28 +2699,28 @@ join_data %>%
 
 ### Partitioning CTmax variation
 
-How much of the variation in CTmax among individuals is due to lineage, to the site an animal comes from, to the conditions at collection (acclimation), to the assay, and to individuals? The variance was partitioned with a mixed model with random effects for lineage, site, collection (site × sampling event), assay run and tube position, plus fixed effects for body size and, in the second model, the within- and between-site temperature components from the previous section. The variance explained by each fixed effect is the variance of its fitted contribution ([Nakagawa & Schielzeth 2013](https://doi.org/10.1111/j.2041-210x.2012.00261.x)). Comparing the two models shows how much of the site and collection components the temperature terms absorb: collection-level variance taken up by within-site temperature is acclimation, and site-level variance taken up by long-term site temperature is the between-site temperature effect. Intervals are from 200 parametric bootstrap replicates.
+How much of the variation in CTmax among individuals is due to lineage, to the site an animal comes from, to the conditions at collection (acclimation), to the assay, and to individuals? The variance was partitioned with a mixed model with random effects for lineage, site, collection (site × sampling event), assay run and tube position, plus, in the second model, fixed effects for the within- and between-site temperature components from the previous section (body size is not included). The variance explained by each fixed effect is the variance of its fitted contribution ([Nakagawa & Schielzeth 2013](https://doi.org/10.1111/j.2041-210x.2012.00261.x)). Comparing the two models shows how much of the site and collection components the temperature terms absorb: collection-level variance taken up by within-site temperature is acclimation, and site-level variance taken up by long-term site temperature is the between-site temperature effect. Intervals are from 200 parametric bootstrap replicates.
 
 ```{r}
 #| label: ctmax-variance-partition
 #| fig-width: 10
 #| fig-height: 4.5
 vp_data <- wb_data %>% mutate(collection = paste(site_code, season, sep = "_"))
-vp_m0 <- lme4::lmer(ctmax ~ size + (1 | lineage) + (1 | site) + (1 | collection) + (1 | replicate) + (1 | tube),
+vp_m0 <- lme4::lmer(ctmax ~ 1 + (1 | lineage) + (1 | site) + (1 | collection) + (1 | replicate) + (1 | tube),
                     data = vp_data)
-vp_m1 <- lme4::lmer(ctmax ~ size + t_within + t_between + (1 | lineage) + (1 | site) + (1 | collection) +
+vp_m1 <- lme4::lmer(ctmax ~ t_within + t_between + (1 | lineage) + (1 | site) + (1 | collection) +
                       (1 | replicate) + (1 | tube), data = vp_data)
 
 vp_shares <- function(m) {
   vc <- as.data.frame(lme4::VarCorr(m))
   re <- setNames(vc$vcov, vc$grp)
   b <- lme4::fixef(m)
-  fx <- c(size = var(b[["size"]] * m@frame$size))
-  if ("t_within" %in% names(b)) fx <- c(fx, t_within = var(b[["t_within"]] * m@frame$t_within),
+  fx <- c(t_within = NA_real_, t_between = NA_real_)
+  if ("t_within" %in% names(b)) fx <- c(t_within = var(b[["t_within"]] * m@frame$t_within),
                                         t_between = var(b[["t_between"]] * m@frame$t_between))
   comp <- c(Lineage = re[["lineage"]], `Site temperature` = unname(fx["t_between"]),
             `Site (other)` = re[["site"]], `Acclimation (within-site temperature)` = unname(fx["t_within"]),
-            `Collection (other)` = re[["collection"]], `Body size` = unname(fx["size"]),
+            `Collection (other)` = re[["collection"]],
             Assay = re[["replicate"]] + re[["tube"]], Individual = re[["Residual"]])
   comp[is.na(comp)] <- 0
   comp / sum(comp)
@@ -2739,7 +2738,7 @@ vp_tab <- bind_rows(vp_boot(vp_m0) %>% mutate(model = "Without temperature"),
 
 vp_cols <- c(Lineage = "#555555", `Site temperature` = unname(lat_gradient["MR"]), `Site (other)` = "#E8B4A6",
              `Acclimation (within-site temperature)` = unname(lat_gradient["X"]), `Collection (other)` = "#A9BCD9",
-             `Body size` = "#9C9C9C", Assay = "#D0D0D0", Individual = "#EDEDED")
+             Assay = "#D0D0D0", Individual = "#EDEDED")
 ggplot(filter(vp_tab, share > 0), aes(x = model, y = share, fill = component)) +
   geom_col(width = 0.6, colour = "white") +
   coord_flip() +
@@ -2768,7 +2767,7 @@ vp_tab %>%
 vc <- function(comp, mod = "With within/between temperature") round(100 * filter(vp_tab, component == comp, model == mod)$share)
 ```
 
-Without temperature terms, the largest components are collection (`r vc("Collection (other)", "Without temperature")`%), lineage (`r vc("Lineage", "Without temperature")`%) and site (`r vc("Site (other)", "Without temperature")`%), with `r vc("Individual", "Without temperature")`% among individuals within a collection. Adding the temperature terms, within-site temperature (acclimation) explains `r vc("Acclimation (within-site temperature)")`% of all CTmax variance and absorbs most of the collection component (which drops to `r vc("Collection (other)")`%), while long-term site temperature explains `r vc("Site temperature")`% and the remaining site component is `r vc("Site (other)")`%. Lineage accounts for `r vc("Lineage")`%. Thermal tolerance in this complex is therefore structured roughly equally by lineage, by acclimation to recent conditions, and by site (temperature plus other site differences), with little left to body size or the assay. The intervals are wide because lineage and site have few levels (7 lineages, 8 sites).
+Without temperature terms, the largest components are collection (`r vc("Collection (other)", "Without temperature")`%), lineage (`r vc("Lineage", "Without temperature")`%) and site (`r vc("Site (other)", "Without temperature")`%), with `r vc("Individual", "Without temperature")`% among individuals within a collection. Adding the temperature terms, within-site temperature (acclimation) explains `r vc("Acclimation (within-site temperature)")`% of all CTmax variance and absorbs most of the collection component (which drops to `r vc("Collection (other)")`%), while long-term site temperature explains `r vc("Site temperature")`% and the remaining site component is `r vc("Site (other)")`%. Lineage accounts for `r vc("Lineage")`%. Thermal tolerance in this complex is therefore structured roughly equally by lineage, by acclimation to recent conditions, and by site (temperature plus other site differences), with little left to the assay. The intervals are wide because lineage and site have few levels (7 lineages, 8 sites).
 
 
 ### Trait variability within clades

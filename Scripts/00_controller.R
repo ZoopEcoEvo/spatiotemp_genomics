@@ -20,9 +20,10 @@ library(quarto)
 process_site_temps       <- FALSE # downloads buoy / OISST data -> Output_data/temp_profiles.csv (needs internet)
 process_site_env         <- FALSE # MUR SST 2014-2023 + monitoring-station checks -> Output_data/mur_*.csv (needs internet)
 process_pheno            <- FALSE # Raw_data/pheno_data + temp_data -> CTmax per individual
+process_gwas_inputs      <- F # sample table -> Output_data/ctmax_gwas_pheno.tsv (copy to cluster metadata/)
 process_samples          <- FALSE # phenotypes + cluster export -> Output_data/sample_table.csv
 process_micro            <- FALSE # cluster SSU profile -> Output_data/micro_calls.csv
-render_report            <- TRUE # Output/Reports/report.qmd -> figures + report
+render_report            <- T # Output/Reports/report.qmd -> figures + report
 render_pheno_manuscript  <- FALSE # Manuscript/Sasaki_Pespeni_Phenotype.qmd -> Output/Drafts/
 render_genome_manuscript <- FALSE # Manuscript/Sasaki_Pespeni_LCWG.qmd -> Output/Drafts/
 
@@ -50,6 +51,11 @@ if (process_pheno) {
 # Step 3: Central sample table (phenotypes + sequencing + clades) ----------
 if (process_samples) {
   source(here("Scripts", "03_sample_table.R"), local = new.env())
+}
+
+# Step 3c: Phenotype table for the CTmax association scan ------------------
+if (process_gwas_inputs) {
+  source(here("Scripts", "06_ctmax_gwas_inputs.R"), local = new.env())
 }
 
 # Step 3b: Micro screen calls (parasites, epibionts) ------------------------

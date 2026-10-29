@@ -949,14 +949,16 @@ consistent with no shared response and with a weak one.
 
 ### CTmax model
 
-To more formally test the relationships between CTmax, collection
-temperature, and size, we used a linear mixed effects model, structured
-as `ctmax ~ clade * temp_cent + size + (1 + temp_cent|site) + (1|tube)`.
-This examines the effects of clade, temperature and size on CTmax, along
-with clade-specific effects of temperature. Collection temperature was
-centered before model fitting. The model also includes random intercepts
-for each site and the tube number (the position of each individual
-within the water bath during the CTmax assay).
+To more formally test the relationship between CTmax and collection
+temperature, we used a linear mixed effects model, structured as
+`ctmax ~ clade * temp_cent + (1 | site) + (1 | replicate) + (1 | tube)`.
+This examines the effects of clade and temperature on CTmax, along with
+clade-specific effects of temperature. Body size is not included, so
+temperature effects include any effect acting through body size.
+Collection temperature was centered before model fitting. The model also
+includes random intercepts for each site, the assay run (replicate) and
+the tube number (the position of each individual within the water bath
+during the CTmax assay).
 
 ### Acclimation vs. site differences (within- and between-site temperature)
 
@@ -977,8 +979,9 @@ a shallower one countergradient variation. Lineage (X, S, IV and the
 four F lineages, F-MR, F-FH, F-N and F-NE) is in the model, so turnover
 of lineages along the coast does not inflate the between-site slope;
 grouping by clade would not suffice, because the F lineages replace one
-another between sites (Florida vs. Chesapeake). Body size and the assay
-terms are kept as in the CTmax model above.
+another between sites (Florida vs. Chesapeake). The assay terms are kept
+as in the CTmax model above; body size is not included, so the
+temperature slopes include any effect acting through body size.
 
 The site temperature is the long-term (2014–2023, full-year) MUR SST
 mean (`Output_data/site_climatology.csv`, Section 1), not the mean of
@@ -992,9 +995,9 @@ the remaining lineages share a pooled slope.
 
 | term                      |  slope |    se |     lo |    hi |
 |:--------------------------|-------:|------:|-------:|------:|
-| Within site (acclimation) |  0.143 | 0.009 |  0.126 | 0.161 |
-| Between sites             |  0.106 | 0.070 | -0.031 | 0.244 |
-| Between − within          | -0.037 | 0.069 | -0.172 | 0.098 |
+| Within site (acclimation) |  0.147 | 0.008 |  0.130 | 0.163 |
+| Between sites             |  0.125 | 0.067 | -0.006 | 0.256 |
+| Between − within          | -0.022 | 0.067 | -0.152 | 0.109 |
 
 CTmax slopes (°C per °C) for within-site and between-site temperature,
 all lineages (site temperature: long-term MUR SST mean). 95% CI = ± 1.96
@@ -1002,13 +1005,13 @@ SE.
 
 | Lineage | Sites | Individuals | Within site | Between sites |
 |:---|---:|---:|:---|:---|
-| F-FH | 1 | 39 | 0.12 (0.08, 0.15) | – |
-| F-MR | 1 | 28 | 0.13 (0.08, 0.18) | – |
-| F-N | 2 | 78 | 0.15 (0.12, 0.18) | – |
-| IV | 4 | 55 | 0.21 (0.14, 0.27) | -0.26 (-0.58, 0.05) |
-| S | 4 | 71 | 0.15 (0.12, 0.19) | 0.16 (-0.01, 0.33) |
-| X | 4 | 118 | 0.09 (0.05, 0.14) | 0.22 (-0.09, 0.54) |
-| other lineages (pooled) | NA | NA | – | -0.17 (-0.82, 0.49) |
+| F-FH | 1 | 39 | 0.12 (0.08, 0.16) | – |
+| F-MR | 1 | 28 | 0.12 (0.08, 0.17) | – |
+| F-N | 2 | 78 | 0.16 (0.13, 0.19) | – |
+| IV | 4 | 55 | 0.22 (0.16, 0.28) | -0.21 (-0.52, 0.09) |
+| S | 4 | 71 | 0.16 (0.13, 0.20) | 0.19 (0.03, 0.35) |
+| X | 4 | 118 | 0.10 (0.06, 0.14) | 0.25 (-0.06, 0.55) |
+| other lineages (pooled) | NA | NA | – | -0.19 (-0.84, 0.47) |
 
 Lineage-specific CTmax slopes. Sites = sites with ≥ 5 individuals of the
 lineage. Between-site slopes are estimated only for lineages at ≥ 3
@@ -1018,11 +1021,11 @@ pooled slope.
 <img src="../Figures/within-between-plot-1.png"
 data-fig-align="center" />
 
-CTmax rises by 0.14 °C for every 1 °C of within-site temperature change
-(95% CI 0.13–0.16), with lineage-specific acclimation slopes of 0.09 to
-0.21. The between-site slope is 0.11 (CI -0.03 to 0.24; site
+CTmax rises by 0.15 °C for every 1 °C of within-site temperature change
+(95% CI 0.13–0.16), with lineage-specific acclimation slopes of 0.10 to
+0.22. The between-site slope is 0.13 (CI -0.01 to 0.26; site
 temperature: long-term MUR SST mean), and the difference between the two
-is -0.04 (CI -0.17 to 0.10). If that interval includes zero, CTmax
+is -0.02 (CI -0.15 to 0.11). If that interval includes zero, CTmax
 differences between sites within a lineage are consistent with
 acclimation to each site’s temperature, with no detectable local
 adaptation beyond it; with only 1–5 sites per lineage, the test can rule
@@ -1079,11 +1082,11 @@ How much of the variation in CTmax among individuals is due to lineage,
 to the site an animal comes from, to the conditions at collection
 (acclimation), to the assay, and to individuals? The variance was
 partitioned with a mixed model with random effects for lineage, site,
-collection (site × sampling event), assay run and tube position, plus
-fixed effects for body size and, in the second model, the within- and
-between-site temperature components from the previous section. The
-variance explained by each fixed effect is the variance of its fitted
-contribution ([Nakagawa & Schielzeth
+collection (site × sampling event), assay run and tube position, plus,
+in the second model, fixed effects for the within- and between-site
+temperature components from the previous section (body size is not
+included). The variance explained by each fixed effect is the variance
+of its fitted contribution ([Nakagawa & Schielzeth
 2013](https://doi.org/10.1111/j.2041-210x.2012.00261.x)). Comparing the
 two models shows how much of the site and collection components the
 temperature terms absorb: collection-level variance taken up by
@@ -1096,28 +1099,27 @@ data-fig-align="center" />
 
 | Component | Without temperature | With within/between temperature |
 |:---|:---|:---|
-| Lineage | 28% (6–48) | 23% (3–46) |
-| Site temperature | – | 13% (0–42) |
-| Site (other) | 17% (0–50) | 18% (0–39) |
-| Acclimation (within-site temperature) | – | 17% (8–32) |
-| Collection (other) | 35% (15–61) | 10% (3–20) |
-| Body size | 5% (1–13) | 3% (0–9) |
+| Lineage | 29% (7–52) | 24% (3–48) |
+| Site temperature | – | 20% (2–48) |
+| Site (other) | 21% (0–55) | 16% (0–36) |
+| Acclimation (within-site temperature) | – | 18% (9–34) |
+| Collection (other) | 35% (15–66) | 8% (3–18) |
 | Assay | 0% (0–1) | 0% (0–1) |
-| Individual | 15% (9–27) | 15% (10–24) |
+| Individual | 14% (9–26) | 14% (9–23) |
 
 Share of CTmax variance (95% parametric bootstrap interval).
 
 Without temperature terms, the largest components are collection (35%),
-lineage (28%) and site (17%), with 15% among individuals within a
+lineage (29%) and site (21%), with 14% among individuals within a
 collection. Adding the temperature terms, within-site temperature
-(acclimation) explains 17% of all CTmax variance and absorbs most of the
-collection component (which drops to 10%), while long-term site
-temperature explains 13% and the remaining site component is 18%.
-Lineage accounts for 23%. Thermal tolerance in this complex is therefore
+(acclimation) explains 18% of all CTmax variance and absorbs most of the
+collection component (which drops to 8%), while long-term site
+temperature explains 20% and the remaining site component is 16%.
+Lineage accounts for 24%. Thermal tolerance in this complex is therefore
 structured roughly equally by lineage, by acclimation to recent
 conditions, and by site (temperature plus other site differences), with
-little left to body size or the assay. The intervals are wide because
-lineage and site have few levels (7 lineages, 8 sites).
+little left to the assay. The intervals are wide because lineage and
+site have few levels (7 lineages, 8 sites).
 
 ### Trait variability within clades
 
@@ -1196,7 +1198,7 @@ Here, the same approach is taken but for each clade separately. The
 average CTmax from the peak season for each clade was used as a fixed
 CTmax value when calculating warming tolerance.
 
-<img src="../Figures/unnamed-chunk-88-1.png" data-fig-align="center" />
+<img src="../Figures/unnamed-chunk-6-1.png" data-fig-align="center" />
 
 ### Scenario 3 (Clade variation and acclimation/adaptation)
 
@@ -1205,7 +1207,7 @@ model of CTmax as a function of the interaction between collection
 temperature and clade. The predicted CTmax values fall within the range
 of CTmax values observed in the field.
 
-<img src="../Figures/unnamed-chunk-89-1.png" data-fig-align="center" />
+<img src="../Figures/unnamed-chunk-7-1.png" data-fig-align="center" />
 
 ### Comparing Scenarios
 
