@@ -1,6 +1,6 @@
 # Comparing seasonal and latitudinal patterns in thermal adaptation
 
-2026-10-26
+2026-10-28
 
 - [Main Message](#main-message)
 - [1. Collections and environment](#1-collections-and-environment)
@@ -22,7 +22,12 @@
   - [Clade identity](#clade-identity)
   - [Genetic differentiation within
     clades](#genetic-differentiation-within-clades)
+  - [Relatedness and sample quality](#relatedness-and-sample-quality)
+  - [Local PCA and candidate
+    inversions](#local-pca-and-candidate-inversions)
   - [Parasites and symbionts](#parasites-and-symbionts)
+  - [Seasonal allele-frequency change
+    (preliminary)](#seasonal-allele-frequency-change-preliminary)
 - [4. Clade-specific physiological
   patterns](#4-clade-specific-physiological-patterns)
   - [CTmax model](#ctmax-model)
@@ -306,7 +311,7 @@ Novogene (436 libraries). Read processing, mapping, site filtering,
 clade assignment and population genomic analyses were run on the Unity
 cluster (Snakemake project `aton_lcwg`). The figures in this section are
 built from the exported result tables (`Raw_data/cluster_exports/`;
-export in use: aton_lcwg_tables_2026-10-26). *Acartia hudsonica*
+export in use: aton_lcwg_tables_2026-10-28). *Acartia hudsonica*
 libraries are excluded throughout.
 
 ### Sequencing summary
@@ -379,6 +384,20 @@ sub-lineages.
 
 <img src="../Figures/fst-pairs-1.png" data-fig-align="center" />
 
+#### Isolation by distance
+
+Genetic differentiation between sites within each clade, against the
+straight-line distance between sites. F<sub>ST</sub> is averaged over
+the season pairs available for each pair of sites. F pairs between
+sub-lineages (F-MR, F-FH, F-N) are shown separately: they reflect
+divergence between lineages, not gene flow between populations.
+Straight-line distances underestimate the distance by sea (around
+Florida, and around Nova Scotia between Maine and the Gulf of
+St. Lawrence), and each clade has only 2–4 sites, so this is
+descriptive.
+
+<img src="../Figures/ibd-1.png" data-fig-align="center" />
+
 Shown below are estimates of diversity across the data set. Tajima’s D
 can be used to detect random vs. non-random evolutionary processes
 (e.g. drift vs. selection). A value near zero indicates neutral
@@ -450,7 +469,106 @@ and low-coverage data shift the absolute values of Tajima’s D, so
 differences between populations of the same clade are more informative
 than whether D is above or below zero. Confidence intervals come from a
 block bootstrap over 1 Mb blocks; populations of 8 individuals (F MD
-late, S MR late) are the least precise.
+late, S MR late) are the least precise. \### Linkage disequilibrium
+
+LD was estimated with ngsLD within each clade on every fifth SNP (MAF ≥
+0.05), for a random 2% of SNP pairs up to 100 kb apart, and averaged in
+distance bins. Dashed lines show the r² expected between unlinked SNPs
+from sample size alone (≈ 1/n). LD decays to near that level within a
+few kb in X, S and IV, as expected for very large long-term population
+sizes. The higher plateau in F reflects allele-frequency differences
+between the F sub-lineages pooled in the clade, not physical linkage.
+
+<img src="../Figures/ld-decay-1.png" data-fig-align="center" />
+
+### Relatedness and sample quality
+
+Relatedness was estimated with ngsRelate for every pair of individuals
+within each population. KING-robust kinship does not depend on allele
+frequencies, so it is less affected than *r*<sub>ab</sub> by the small
+samples per population: unrelated pairs fall near or below 0,
+second-degree relatives near 0.125 and first-degree relatives near 0.25.
+In panel B, related pairs move towards high R1 and high KING; pairs
+above 0.1 are labelled.
+
+<img src="../Figures/relatedness-1.png" data-fig-align="center" />
+
+In MR peak, MR_peak_1_09 belongs to the F-FH sub-lineage while the rest
+are F-MR, so its kinship with every other individual is strongly
+negative (the cluster near −1.1). MR_peak_2_04 and MR_peak_2_05 carry
+about 15% and 22% F-N ancestry (NGSadmix, K = 6) and have elevated
+kinship with each other (KING 0.20, R0 0.11). The heterozygosity check
+below shows both are far more heterozygous than any other F individual
+(F = −0.18 and −0.22; clade median 0.13), so their libraries most likely
+contain DNA from a second individual rather than coming from admixed
+relatives. On library plate 3 they sit in wells F11 and G11, directly
+next to GW early individuals (F-N; wells F10 and G10). Both were
+excluded from the genomic analyses within clades
+(`clades.exclude_samples` in the cluster config) and are not shown here;
+their phenotype data are kept. With them removed, no pair in any
+population reaches second-degree kinship.
+
+<img src="../Figures/inbreeding-1.png" data-fig-align="center" />
+
+Per-individual inbreeding coefficients (PCAngsd, allowing for structure
+within each clade) flag libraries that are more heterozygous than
+expected (strongly negative F), the signature of DNA from two
+individuals in one library. Individuals more than 4 robust SDs below
+their clade’s median are labelled. High F mostly reflects low sequencing
+depth (panel B: F falls with depth), so only unusually low values are
+informative. MR_peak_2_04 and MR_peak_2_05 (F = −0.18 and −0.22) were
+excluded on this basis and no longer appear; no other individual stands
+out.
+
+### Local PCA and candidate inversions
+
+Each clade’s genome was split into windows of 2,000 SNPs, and the
+population structure in each window (top two PCs of the covariance among
+individuals) was compared between all windows (lostruct; Li & Ralph
+2019). Windows were then placed on MDS axes: most of the genome shares
+the same structure and clusters near zero; regions with distinct
+structure, such as inversions, stand out as runs of windows far from
+zero. Windows more than 4 robust SDs from the median are coloured.
+
+<img src="../Figures/localpca-genome-1.png" data-fig-align="center" />
+
+For each candidate region (at least 5 windows, mostly outliers),
+individuals are placed by their average PC1 score across the region’s
+windows. An inversion typically splits individuals into three groups
+(the two homozygous arrangements and the heterozygotes); a region
+tracking site or sub-lineage instead points to differentiation, and a
+few individuals far from everyone else to a rare variant arrangement or
+introgression.
+
+<img src="../Figures/localpca-regions-1.png" data-fig-align="center" />
+
+#### Follow-up of the candidate regions
+
+Each candidate region (and a control region on chromosome 1 with no
+local-PCA signal) was analysed on its own: a PCA of the region
+(PCAngsd), each individual’s heterozygosity inside the region relative
+to its genome-wide heterozygosity, and LD over distances up to 2 Mb. An
+inversion shows as groups on the regional PC1 with heterozygotes raised
+in heterozygosity (ratio above the bulk) and homozygotes for the rarer
+arrangement lowered; suppressed recombination raises long-range LD when
+both arrangements are common.
+
+<img src="../Figures/region-followup-1.png" data-fig-align="center" />
+
+**Chromosome 6 (X)** fits a rare chromosomal variant such as an
+inversion. A minority of individuals, almost all from St. Thomas de Kent
+Wharf and a few from Ritchie Wharf, sits apart on the regional PC1. Most
+of them are about 5% more heterozygous on chromosome 6 than their
+genome-wide average, as expected for heterozygous carriers, while the
+two most extreme individuals (TK_peak_1_09, TK_peak_2_07) are less
+heterozygous, as expected for homozygotes of the rare arrangement. At
+this frequency (roughly 5% of chromosomes overall) LD across the whole
+sample is raised only slightly (panel B: higher at short distances and
+marginally at 0.1–2 Mb than on the control chromosome). **Chromosome 3
+(X)** does not: individuals split by site as on the control chromosome,
+with no heterozygosity classes; only two or three TK early individuals
+stand out on PC2 with slightly raised heterozygosity, which could be a
+smaller rare variant within the region.
 
 ### Parasites and symbionts
 
@@ -475,6 +593,47 @@ the northern sites, and are treated as non-pathogenic background;
 crustacean (Malacostraca) DNA is likely diet.
 
 <img src="../Figures/micro-all-groups-1.png" data-fig-align="center" />
+
+### Seasonal allele-frequency change (preliminary)
+
+Allele frequencies per population at the unlinked SNP set (one SNP per
+10 kb; Section 3.2, LD) were compared between seasons within each site.
+Temporal differentiation is measured as Nei & Tajima’s F<sub>c</sub>
+over SNPs with ≥ 5 individuals with data in both samples and a mean
+minor-allele frequency of 0.05–0.95. Sampling noise is subtracted
+assuming each individual with data contributes two sampled chromosomes
+(1/2S per sample); with \< 1× coverage the real sampling noise is
+larger, so the remaining “excess” still contains sampling noise. Drift
+should make the excess grow with the number of generations between
+samples (Section 1); sampling noise should not.
+
+    ## 
+    ## 
+    ## Table: Clade X: correlation of early→peak allele-frequency change between sites (unlinked SNPs; SE from a delete-one-chromosome jackknife)
+    ## 
+    ## |comparison |  snps|      r|    se|
+    ## |:----------|-----:|------:|-----:|
+    ## |ME vs TK   | 40454| -0.013| 0.006|
+    ## |ME vs RW   | 40454|  0.000| 0.005|
+    ## |TK vs RW   | 40454| -0.002| 0.006|
+
+<img src="../Figures/seasonal-change-1.png" data-fig-align="center" />
+
+The excess is about the same (≈ 0.05) whether 3 or 20 generations
+separate the samples, so most of it is extra sampling noise from low
+coverage, not drift. The slope across pairs would imply an Ne of ~500,
+but it is not reliable: it rests on 12 pairs from different clades and
+sites, the long intervals are all F pairs, and the highest of those (MR
+peak→late, MD early→late) include the smallest samples (12 and 8
+individuals), whose uncorrected sampling noise is largest. Separating
+drift from sampling needs the sampling noise measured directly. In clade
+X, early→peak changes at different sites are uncorrelated genome-wide (r
+≈ 0), so there is no broad parallel seasonal shift at unlinked SNPs;
+selection on a limited number of loci would not show up in this average.
+Next steps: calibrate sampling noise directly by splitting each
+population’s individuals into random halves (F<sub>c</sub> between
+halves of the same sample is pure sampling noise), then per-SNP seasonal
+tests with season labels permuted within sites.
 
 ## 4. Clade-specific physiological patterns
 
@@ -609,7 +768,7 @@ Here, the same approach is taken but for each clade separately. The
 average CTmax from the peak season for each clade was used as a fixed
 CTmax value when calculating warming tolerance.
 
-<img src="../Figures/unnamed-chunk-61-1.png" data-fig-align="center" />
+<img src="../Figures/unnamed-chunk-69-1.png" data-fig-align="center" />
 
 ### Scenario 3 (Clade variation and acclimation/adaptation)
 
@@ -618,7 +777,7 @@ model of CTmax as a function of the interaction between collection
 temperature and clade. The predicted CTmax values fall within the range
 of CTmax values observed in the field.
 
-<img src="../Figures/unnamed-chunk-62-1.png" data-fig-align="center" />
+<img src="../Figures/unnamed-chunk-70-1.png" data-fig-align="center" />
 
 ### Comparing Scenarios
 

@@ -1,0 +1,6 @@
+clade,axis,chr,run,chrom,start,end,n_win,label
+X,mds2,3,1,NC_137262.1,9454943,12651011,5,"X chr3: 9.5–12.7 Mb (MDS2, 5 windows)"
+X,mds2,3,3,NC_137262.1,15371258,20684184,12,"X chr3: 15.4–20.7 Mb (MDS2, 12 windows)"
+X,mds2,3,5,NC_137262.1,29287924,35461899,12,"X chr3: 29.3–35.5 Mb (MDS2, 12 windows)"
+X,mds2,3,7,NC_137262.1,37772304,43825707,12,"X chr3: 37.8–43.8 Mb (MDS2, 12 windows)"
+X,mds1,6,1,NC_137265.1,106809,53293149,79,"X chr6: 0.1–53.3 Mb (MDS1, 79 windows)"

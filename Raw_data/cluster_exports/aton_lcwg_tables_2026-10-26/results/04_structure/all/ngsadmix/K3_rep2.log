@@ -1,9 +1,0 @@
-Input: lname=results/02_sites/gl/all.thin.beagle.gz nPop=3, fname=(null) qname=(null) outfiles=results/04_structure/all/ngsadmix/K3_rep2
-Setup: seed=2 nThreads=8 method=1
-Convergence: maxIter=2000 tol=0.000010 tolLike50=0.100000 dymBound=0
-Filters: misTol=0.050000 minMaf=0.050000 minLrt=0.000000 minInd=0
-Input file has dim: nsites=70960 nind=402
-Input file has dim (AFTER filtering): nsites=70960 nind=402
-	[ALL done] cpu-time used =  2480.45 sec
-	[ALL done] walltime used =  504.00 sec
-best like=-20932441.969515 after 350 iterations

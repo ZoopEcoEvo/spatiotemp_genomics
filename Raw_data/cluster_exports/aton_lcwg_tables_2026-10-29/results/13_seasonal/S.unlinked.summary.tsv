@@ -1,0 +1,9 @@
+snp_set	statistic	observed	perm_mean	perm_max	rank	n_label_sets
+all	lambda	0.3615			1	1
+all	n_p<0.01	20.0000			1	1
+all	n_p<0.001	1.0000			1	1
+all	n_p<0.0001	0.0000			1	1
+without_NC_137265.1	lambda	0.3614			1	1
+without_NC_137265.1	n_p<0.01	18.0000			1	1
+without_NC_137265.1	n_p<0.001	1.0000			1	1
+without_NC_137265.1	n_p<0.0001	0.0000			1	1

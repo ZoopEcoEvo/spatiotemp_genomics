@@ -1,5 +1,0 @@
-contig	clade	source_individual	assembler	length_bp	coi_start	coi_end	coi_match	N_bases
-mtDNA_F	F	MD_early_2_09	MEGAHIT	16091	7547	8103	Hap_176 557/557	0
-mtDNA_S	S	MD_peak_2_05	MEGAHIT	12374	7259	7815	Hap_73 557/557	0
-mtDNA_X	X	TK_peak_1_09	NOVOPlasty	5519	1214	1770	Hap_113 557/557	9
-mtDNA_IV	IV	ME_peak_1_09	MEGAHIT	5055	655	1211	Hap_29 557/557	0

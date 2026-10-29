@@ -1278,6 +1278,50 @@ if (length(fst_files) == 0) {
 }
 ```
 
+#### Isolation by distance
+
+Genetic differentiation between sites within each clade, against the straight-line distance between sites. F<sub>ST</sub> is averaged over the season pairs available for each pair of sites. F pairs between sub-lineages (F-MR, F-FH, F-N) are shown separately: they reflect divergence between lineages, not gene flow between populations. Straight-line distances underestimate the distance by sea (around Florida, and around Nova Scotia between Maine and the Gulf of St. Lawrence), and each clade has only 2–4 sites, so this is descriptive.
+
+```{r}
+#| label: ibd
+#| fig-width: 8
+#| fig-height: 5
+if (exists("fst") && nrow(fst) > 0) {
+  haversine_km <- function(lat1, lon1, lat2, lon2) {
+    rad <- pi / 180
+    a <- sin((lat2 - lat1) * rad / 2)^2 + cos(lat1 * rad) * cos(lat2 * rad) * sin((lon2 - lon1) * rad / 2)^2
+    2 * 6371 * asin(sqrt(a))
+  }
+  f_lineage <- c(MR = "F-MR", FH = "F-FH", MD = "F-N", GW = "F-N")
+  coords <- site_data %>% distinct(site_code, lat, long)
+  ibd <- fst %>%
+    filter(site1 != site2) %>%
+    mutate(a = pmin(site1, site2), b = pmax(site1, site2)) %>%
+    group_by(clade, a, b) %>%
+    summarise(fst = mean(fst_weighted), n_pairs = n(), .groups = "drop") %>%
+    left_join(rename(coords, a = site_code, lat_a = lat, long_a = long), by = "a") %>%
+    left_join(rename(coords, b = site_code, lat_b = lat, long_b = long), by = "b") %>%
+    mutate(dist_km = haversine_km(lat_a, long_a, lat_b, long_b),
+           fst_lin = fst / (1 - fst),
+           comparison = if_else(clade == "F" & f_lineage[a] != f_lineage[b],
+                                "between F sub-lineages", "within clade / sub-lineage"),
+           label = paste(a, b, sep = "–"))
+  write_csv(ibd, here("Output", "Output_data", "isolation_by_distance.csv"))
+  ggplot(ibd, aes(x = dist_km, y = fst_lin, colour = clade, shape = comparison)) +
+    geom_point(size = 3) +
+    geom_text(aes(label = label), size = 3, vjust = -0.9, check_overlap = TRUE, show.legend = FALSE) +
+    scale_x_log10() +
+    scale_colour_manual(values = clade_cols[tonsa_clades]) +
+    scale_shape_manual(values = c("within clade / sub-lineage" = 16, "between F sub-lineages" = 1)) +
+    labs(x = "Straight-line distance between sites (km, log scale)", y = expression(F[ST] / (1 - F[ST])),
+         colour = "Clade", shape = NULL) +
+    theme_matt(base_size = 13) +
+    theme(legend.position = "right")
+} else {
+  cat("FST results are not in this export yet.")
+}
+```
+
 Shown below are estimates of diversity across the data set. Tajima's D can be used to detect random vs. non-random evolutionary processes (e.g. drift vs. selection). A value near zero indicates neutral processes and a stable population size. Negative values indicate an excess of rare alleles, suggesting possible recent selective sweeps or population expansion after a bottleneck. Positive values indicate possible population contraction or balancing selection, resulting in fewer rare alleles than expected.
 
 Most values of Tajima's D for our data set are small (within 0.5 of 0). A few samples reached moderate values around -1 and 1. Interestingly, all cases are from the two sites in the Chesapeake, with a low Tajima's D value for S clade individuals at the high salinity site, and high values for F clade individuals at both high and low salinity sites.
@@ -1290,7 +1334,7 @@ Within sites, there is notably little change in these metrics across seasons. Th
 
 1.  **Increasing Tajima's D and decreased nucleotide diversity,** as seen in Clade F. This may indicate serial founder effects. Diversity should fall steadily in the direction of expansion ([Excoffier et al. 2009](https://doi.org/10.1146/annurev.ecolsys.39.110707.173414)). For a clade spreading north since the last glacial maximum, northern sites would be expected to have lower θπ and higher D ([Hewitt 2000](https://doi.org/10.1038/35016000)). This suggests a low latitude origin for this clade.
 2.  **Consistently low Tajima's D and consistently high nucleotide diversity**, as seen in Clades S and IV (although note the limited sampling for these clades). This pattern suggests large, well-connected populations. There may have been population expansion before sites diverged, or there may be substantial gene flow between populations keeping them similar ([Excoffier et al. 2009](https://doi.org/10.1146/annurev.ecolsys.39.110707.173414)).
-3.  **Consistently small Tajima's D and consistently high nucleotide diversity**, as seen in Clade X. While this typically would indicate large, stable populations, Clade X is found only at the high latitude sites, where populations of *Acartia tonsa* are present during only part of the year, exhibiting drastic fluctuations in population size over this period. This may indicate the importance of an egg bank / resting eggs. If the population is generated each year by hatching out of eggs laid over many previous years, diversity would remain high. The egg bank acts as a store of diversity, so a brief active season doesn’t mean a small genetic population ([Hairston 1996](https://doi.org/10.4319/lo.1996.41.5.1087)). Resting eggs are well documented in *Acartia* (Marcus 1996, *Hydrobiologia* 320:141–152). In Narragansett Bay, *A. tonsa* replaces the egg-banking *A. hudsonica* each summer ([Sullivan & McManus 1986](https://doi.org/10.3354/meps028121)), the same seasonal turnover your ME site shows. Under these dynamics, individual sites may retain distinct populations, as seen in the within-clade PCAs above.
+3.  **Consistently small Tajima's D and consistently high nucleotide diversity**, as seen in Clade X. While this typically would indicate large, stable populations, Clade X is found only at the high latitude sites, where populations of *Acartia tonsa* are present during only part of the year, exhibiting drastic fluctuations in population size over this period. This may indicate the importance of an egg bank / resting eggs. If the population is generated each year by hatching out of eggs laid over many previous years, diversity would remain high. The egg bank acts as a store of diversity, so a brief active season doesn’t mean a small genetic population ([Hairston 1996](https://doi.org/10.4319/lo.1996.41.5.1087)). Resting eggs are well documented in *Acartia* (Marcus 1996, *Hydrobiologia* 320:141–152). In Narragansett Bay, *A. tonsa* replaces the egg-banking *A. hudsonica* each summer ([Sullivan & McManus 1986](https://doi.org/10.3354/meps028121)), the same seasonal turnover the ME site shows. Under these dynamics, individual sites may retain distinct populations, as seen in the within-clade PCAs above.
 
 ```{r}
 #| label: diversity-pops
@@ -1368,7 +1412,282 @@ if (nrow(div_pop) == 0) {
 }
 ```
 
-Diversity is compared within clades only: reference bias changes which sites are usable in each clade. The spectra are folded (no outgroup), and low-coverage data shift the absolute values of Tajima's D, so differences between populations of the same clade are more informative than whether D is above or below zero. Confidence intervals come from a block bootstrap over 1 Mb blocks; populations of 8 individuals (F MD late, S MR late) are the least precise.
+Diversity is compared within clades only: reference bias changes which sites are usable in each clade. The spectra are folded (no outgroup), and low-coverage data shift the absolute values of Tajima's D, so differences between populations of the same clade are more informative than whether D is above or below zero. Confidence intervals come from a block bootstrap over 1 Mb blocks; populations of 8 individuals (F MD late, S MR late) are the least precise. \### Linkage disequilibrium
+
+LD was estimated with ngsLD within each clade on every fifth SNP (MAF ≥ 0.05), for a random 2% of SNP pairs up to 100 kb apart, and averaged in distance bins. Dashed lines show the r² expected between unlinked SNPs from sample size alone (≈ 1/n). LD decays to near that level within a few kb in X, S and IV, as expected for very large long-term population sizes. The higher plateau in F reflects allele-frequency differences between the F sub-lineages pooled in the clade, not physical linkage.
+
+```{r}
+#| label: ld-decay
+#| fig-width: 9
+#| fig-height: 5
+ld_files <- Sys.glob(cx("results", "07_ld", "*.ld_decay.tsv"))
+if (length(ld_files) == 0) {
+  cat("LD decay is not in this export yet.")
+} else {
+  ld <- map_dfr(ld_files, ~ read_tsv(.x, col_types = cols(clade = "c"))) %>%   # "F" would otherwise be read as FALSE
+    filter(n_pairs >= 50) %>%                 # drop sparse edge bins
+    mutate(width = case_when(bin_start_bp < 1000 ~ 100, bin_start_bp < 10000 ~ 1000, TRUE ~ 5000),
+           mid_kb = (bin_start_bp + width / 2) / 1000,
+           clade = factor(clade, levels = tonsa_clades))
+  n_clade <- seq_data %>% filter(clade %in% tonsa_clades, !library_failed) %>%
+    count(clade) %>% mutate(clade = factor(clade, levels = tonsa_clades), r2_null = 1 / n)
+  write_csv(ld, here("Output", "Output_data", "ld_decay.csv"))
+  ggplot(ld, aes(x = mid_kb, y = mean_r2_ExpG, colour = clade)) +
+    geom_hline(data = n_clade, aes(yintercept = r2_null, colour = clade), linetype = "dashed", linewidth = 0.4) +
+    geom_line(linewidth = 0.8) +
+    geom_point(size = 1.2) +
+    scale_x_log10(breaks = c(0.1, 0.3, 1, 3, 10, 30, 100), labels = c("0.1", "0.3", "1", "3", "10", "30", "100")) +
+    scale_colour_manual(values = clade_cols[tonsa_clades]) +
+    labs(x = "Distance between SNPs (kb, log scale)", y = expression(Mean~italic(r)^2), colour = "Clade") +
+    theme_matt(base_size = 14)
+}
+```
+
+### Relatedness and sample quality
+
+Relatedness was estimated with ngsRelate for every pair of individuals within each population. KING-robust kinship does not depend on allele frequencies, so it is less affected than *r*<sub>ab</sub> by the small samples per population: unrelated pairs fall near or below 0, second-degree relatives near 0.125 and first-degree relatives near 0.25. In panel B, related pairs move towards high R1 and high KING; pairs above 0.1 are labelled.
+
+```{r}
+#| label: relatedness
+#| fig-width: 13
+#| fig-height: 6
+rel_file <- cx("results", "06_relatedness", "relatedness.tsv")
+if (!file.exists(rel_file)) {
+  cat("Relatedness is not in this export yet.")
+} else {
+  rel <- read_tsv(rel_file, show_col_types = FALSE) %>%
+    select(population, ida, idb, nSites, rab, KING, R0, R1) %>%
+    separate(population, c("clade", "site", "season"), sep = "__", remove = FALSE) %>%
+    filter(clade %in% tonsa_clades) %>%
+    mutate(clade = factor(clade, levels = tonsa_clades),
+           site = factor(site, levels = site_order),
+           season = factor(season, levels = season_order),
+           flag = KING > 0.1,
+           pair = paste(ida, idb, sep = " × "))
+  rel <- rel %>% mutate(collection = factor(paste(site, season),
+                                            levels = unique(paste(site, season)[order(site, season)])))
+  write_csv(rel, here("Output", "Output_data", "relatedness_pairs.csv"))
+  # x labels carry the median number of sites per pair (precision of the estimates)
+  site_n <- rel %>% group_by(collection) %>%
+    summarise(lab = sprintf("%s\n(%.1fk sites)", first(collection), median(nSites) / 1000), .groups = "drop")
+  rel <- rel %>% mutate(collection = factor(collection, levels = site_n$collection, labels = site_n$lab))
+
+  p_king <- ggplot(rel, aes(x = collection, y = KING)) +
+    facet_grid(~ clade, scales = "free_x", space = "free_x") +
+    geom_hline(yintercept = c(0.125, 0.25), linetype = "dashed", colour = "grey60") +
+    geom_jitter(aes(colour = flag), width = 0.2, height = 0, size = 1, alpha = 0.6) +
+    scale_colour_manual(values = c(`FALSE` = "grey55", `TRUE` = "#B73534"), guide = "none") +
+    labs(x = NULL, y = "KING-robust kinship") +
+    theme_matt_facets(base_size = 12) +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 8))
+
+  p_r1 <- ggplot(rel, aes(x = KING, y = R1)) +
+    geom_point(aes(colour = clade), size = 1, alpha = 0.5) +
+    geom_point(data = filter(rel, flag), shape = 21, size = 3, colour = "black") +
+    geom_text(data = filter(rel, flag), aes(label = pair), hjust = 1.05, vjust = -0.6, size = 3) +
+    scale_colour_manual(values = clade_cols[tonsa_clades]) +
+    labs(x = "KING-robust kinship", y = "R1", colour = "Clade") +
+    theme_matt(base_size = 12)
+
+  ggarrange(p_king, p_r1, nrow = 1, widths = c(1.7, 1), labels = "AUTO")
+}
+```
+
+In MR peak, MR_peak_1_09 belongs to the F-FH sub-lineage while the rest are F-MR, so its kinship with every other individual is strongly negative (the cluster near −1.1). MR_peak_2_04 and MR_peak_2_05 carry about 15% and 22% F-N ancestry (NGSadmix, K = 6) and have elevated kinship with each other (KING 0.20, R0 0.11). The heterozygosity check below shows both are far more heterozygous than any other F individual (F = −0.18 and −0.22; clade median 0.13), so their libraries most likely contain DNA from a second individual rather than coming from admixed relatives. On library plate 3 they sit in wells F11 and G11, directly next to GW early individuals (F-N; wells F10 and G10). Both were excluded from the genomic analyses within clades (`clades.exclude_samples` in the cluster config) and are not shown here; their phenotype data are kept. With them removed, no pair in any population reaches second-degree kinship.
+
+```{r}
+#| label: inbreeding
+#| fig-width: 13
+#| fig-height: 5
+inb_files <- Sys.glob(cx("results", "06_relatedness", "inbreeding", "*.inbreed_samples.tsv"))
+if (length(inb_files) == 0) {
+  cat("Per-individual inbreeding (heterozygosity check) is not in this export yet.")
+} else {
+  inb <- map_dfr(inb_files, ~ read_tsv(.x, show_col_types = FALSE)) %>%
+    inner_join(select(seq_data, sample_id, clade, site_code, season, mean_depth_nuclear), by = "sample_id") %>%
+    filter(clade %in% tonsa_clades) %>%
+    mutate(clade = factor(clade, levels = tonsa_clades),
+           ord = match(as.character(site_code), site_order) * 10 + match(as.character(season), season_order),
+           collection = fct_reorder(paste(site_code, season), ord)) %>%
+    group_by(clade) %>%
+    # flag only excess heterozygosity (low F); high F mostly reflects low depth (panel B)
+    mutate(z = (F - median(F)) / mad(F), flag = z < -4) %>%   # robust z within clade
+    ungroup()
+  write_csv(inb, here("Output", "Output_data", "inbreeding_individuals.csv"))
+  p_f <- ggplot(inb, aes(x = collection, y = F)) +
+    facet_grid(~ clade, scales = "free_x", space = "free_x") +
+    geom_hline(yintercept = 0, colour = "grey70") +
+    geom_jitter(aes(colour = flag), width = 0.15, height = 0, size = 1.4, alpha = 0.8) +
+    geom_text(data = filter(inb, flag), aes(label = sample_id), size = 2.6, hjust = -0.1) +
+    scale_colour_manual(values = c(`FALSE` = "grey40", `TRUE` = "#B73534"), guide = "none") +
+    labs(x = NULL, y = "Inbreeding coefficient F") +
+    theme_matt_facets(base_size = 12) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  p_fd <- ggplot(inb, aes(x = mean_depth_nuclear, y = F, colour = clade)) +
+    geom_point(size = 1.3, alpha = 0.7) +
+    scale_colour_manual(values = clade_cols[tonsa_clades]) +
+    labs(x = "Mean nuclear depth", y = "F", colour = "Clade") +
+    theme_matt(base_size = 12)
+  ggarrange(p_f, p_fd, nrow = 1, widths = c(2.2, 1), labels = "AUTO")
+}
+```
+
+Per-individual inbreeding coefficients (PCAngsd, allowing for structure within each clade) flag libraries that are more heterozygous than expected (strongly negative F), the signature of DNA from two individuals in one library. Individuals more than 4 robust SDs below their clade's median are labelled. High F mostly reflects low sequencing depth (panel B: F falls with depth), so only unusually low values are informative. MR_peak_2_04 and MR_peak_2_05 (F = −0.18 and −0.22) were excluded on this basis and no longer appear; no other individual stands out.
+
+### Local PCA and candidate inversions
+
+Each clade's genome was split into windows of 2,000 SNPs, and the population structure in each window (top two PCs of the covariance among individuals) was compared between all windows (lostruct; Li & Ralph 2019). Windows were then placed on MDS axes: most of the genome shares the same structure and clusters near zero; regions with distinct structure, such as inversions, stand out as runs of windows far from zero. Windows more than 4 robust SDs from the median are coloured.
+
+```{r}
+#| label: localpca-genome
+#| fig-width: 14
+#| fig-height: 11
+lp_files <- Sys.glob(cx("results", "08_localpca", "*", "windows.tsv"))
+fai_file <- cx("data", "reference", "genome", "reference.fa.fai")
+if (length(lp_files) == 0) {
+  cat("Local PCA is not in this export yet.")
+} else {
+  chrom_order <- if (file.exists(fai_file)) read_tsv(fai_file, col_names = FALSE, show_col_types = FALSE)$X1 else NULL
+  lp <- map_dfr(lp_files, ~ read_tsv(.x, show_col_types = FALSE) %>%
+                  mutate(clade = basename(dirname(.x)))) %>%
+    filter(clade %in% tonsa_clades)
+  if (is.null(chrom_order)) chrom_order <- unique(lp$chrom)
+  chroms <- intersect(chrom_order, unique(lp$chrom))
+  lp <- lp %>%
+    mutate(chr = factor(match(chrom, chroms)),
+           mid_mb = (start + end) / 2e6,
+           clade = factor(clade, levels = tonsa_clades)) %>%
+    pivot_longer(c(mds1, mds2), names_to = "axis", values_to = "mds") %>%
+    group_by(clade, axis) %>%
+    mutate(z = (mds - median(mds)) / mad(mds), outlier = abs(z) > 4) %>%
+    ungroup() %>%
+    mutate(row = factor(paste(clade, toupper(axis)),
+                        levels = paste(rep(tonsa_clades, each = 2), c("MDS1", "MDS2"))))
+  write_csv(lp, here("Output", "Output_data", "localpca_windows.csv"))
+  ggplot(lp, aes(x = mid_mb, y = mds, colour = ifelse(outlier, as.character(clade), "none"))) +
+    facet_grid(row ~ chr, scales = "free", space = "free_x", switch = "x") +
+    geom_point(size = 0.7) +
+    scale_colour_manual(values = c(clade_cols[tonsa_clades], none = "grey70"), guide = "none") +
+    scale_x_continuous(breaks = NULL) +
+    labs(x = "Chromosome (window position)", y = "MDS coordinate") +
+    theme_matt_facets(base_size = 11) +
+    theme(panel.spacing.x = unit(1, "pt"), strip.text.y = element_text(size = 9))
+}
+```
+
+For each candidate region (at least 5 windows, mostly outliers), individuals are placed by their average PC1 score across the region's windows. An inversion typically splits individuals into three groups (the two homozygous arrangements and the heterozygotes); a region tracking site or sub-lineage instead points to differentiation, and a few individuals far from everyone else to a rare variant arrangement or introgression.
+
+```{r}
+#| label: localpca-regions
+#| fig-width: 13
+#| fig-height: 6
+if (length(lp_files) > 0) {
+  # candidate regions: runs of windows where >= 60% of the 5 surrounding windows are
+  # outliers; runs separated by up to 3 windows are merged
+  fill_gaps <- function(x, gap = 3) {
+    r <- rle(x)
+    inner <- seq_along(r$values) > 1 & seq_along(r$values) < length(r$values)
+    r$values[!r$values & r$lengths <= gap & inner] <- TRUE
+    inverse.rle(r)
+  }
+  regions <- lp %>%
+    arrange(clade, axis, chr, start) %>%
+    group_by(clade, axis, chr) %>%
+    mutate(dens = map_dbl(seq_along(outlier), ~ mean(outlier[max(1, .x - 2):min(length(outlier), .x + 2)])),
+           inreg = fill_gaps(dens >= 0.6),
+           run = cumsum(inreg != lag(inreg, default = FALSE))) %>%
+    filter(inreg) %>%
+    group_by(clade, axis, chr, run) %>%
+    summarise(chrom = first(chrom), start = min(start), end = max(end), n_win = n(), .groups = "drop") %>%
+    filter(n_win >= 5) %>%
+    arrange(clade, as.integer(as.character(chr)), start) %>%
+    mutate(label = sprintf("%s chr%s: %.1f–%.1f Mb (%s, %d windows)", clade, chr, start / 1e6, end / 1e6,
+                           toupper(axis), n_win))
+  write_csv(regions, here("Output", "Output_data", "localpca_candidate_regions.csv"))
+  if (nrow(regions) == 0) {
+    cat("No candidate regions (runs of at least 5 outlier windows).")
+  } else {
+    region_scores <- pmap_dfr(regions, function(clade, chrom, start, end, label, ...) {
+      sc <- read_tsv(cx("results", "08_localpca", clade, "window_pc1_scores.tsv.gz"), show_col_types = FALSE)
+      m <- sc %>% filter(chrom == !!chrom, start >= !!start, end <= !!end) %>% select(-chrom, -start, -end) %>% as.matrix()
+      ref <- m[which.max(rowSums(abs(m))), ]
+      m <- m * sign(apply(m, 1, function(x) cor(x, ref)))      # PC signs are arbitrary per window
+      tibble(label = label, clade = clade, sample_id = colnames(m), score = colMeans(m))
+    }) %>%
+      left_join(select(seq_data, sample_id, site_code, season), by = "sample_id") %>%
+      mutate(site_code = factor(site_code, levels = site_order),
+             label = factor(label, levels = regions$label))
+    ggplot(region_scores, aes(x = score, y = site_code, fill = site_code)) +
+      facet_wrap(~ label, scales = "free", ncol = 2) +
+      geom_jitter(shape = 21, size = 2, height = 0.2, width = 0, colour = "grey20", stroke = 0.2) +
+      scale_fill_manual(values = pop_cols[site_order], guide = "none") +
+      labs(x = "Mean PC1 score across the region", y = NULL) +
+      theme_matt_facets(base_size = 12)
+  }
+}
+```
+
+#### Follow-up of the candidate regions
+
+Each candidate region (and a control region on chromosome 1 with no local-PCA signal) was analysed on its own: a PCA of the region (PCAngsd), each individual's heterozygosity inside the region relative to its genome-wide heterozygosity, and LD over distances up to 2 Mb. An inversion shows as groups on the regional PC1 with heterozygotes raised in heterozygosity (ratio above the bulk) and homozygotes for the rarer arrangement lowered; suppressed recombination raises long-range LD when both arrangements are common.
+
+```{r}
+#| label: region-followup
+#| fig-width: 13
+#| fig-height: 9
+reg_dirs <- Sys.glob(cx("results", "11_regions", "*"))
+reg_dirs <- reg_dirs[file.exists(file.path(reg_dirs, "het.tsv"))]
+if (length(reg_dirs) == 0) {
+  cat("Candidate-region results are not in this export yet.")
+} else {
+  reg <- map_dfr(reg_dirs, function(d) {
+    region <- basename(d)
+    clade <- sub("_.*", "", region)
+    ids <- readLines(cx("results", "02_sites", "bamlists", paste0(clade, ".ids.txt")))
+    cv <- as.matrix(read.table(file.path(d, "pcangsd.cov")))
+    e <- eigen(cv, symmetric = TRUE)
+    het <- read_tsv(file.path(d, "het.tsv"), show_col_types = FALSE)
+    tibble(region = region, sample_id = ids, PC1 = e$vectors[, 1], PC2 = e$vectors[, 2],
+           pc1_pct = 100 * e$values[1] / sum(e$values)) %>%
+      left_join(het, by = "sample_id")
+  }) %>%
+    left_join(select(seq_data, sample_id, site_code, season), by = "sample_id") %>%
+    group_by(region) %>%
+    mutate(PC1 = PC1 * sign(sum(PC1^3)) * -1,                      # put the minority group on the left
+           z_het = (het_ratio - median(het_ratio)) / mad(het_ratio),
+           # label a small group far from the rest on PC1 (< 15% of individuals), and the
+           # 2 most extreme individuals for heterozygosity
+           far = abs(PC1 - median(PC1)) > 0.15,
+           label = if_else((far & mean(far) < 0.15) | rank(het_ratio) <= 2 | rank(-het_ratio) <= 2,
+                           sample_id, NA_character_),
+           panel = sprintf("%s (PC1 %.1f%%)", region, first(pc1_pct))) %>%
+    ungroup() %>%
+    mutate(site_code = factor(site_code, levels = site_order))
+  write_csv(reg, here("Output", "Output_data", "candidate_regions_individuals.csv"))
+
+  p_reg <- ggplot(reg, aes(x = PC1, y = het_ratio, fill = site_code)) +
+    facet_wrap(~ panel, scales = "free", nrow = 1) +
+    geom_point(shape = 21, size = 2.2, colour = "grey20", stroke = 0.2) +
+    geom_text(aes(label = label), size = 2.6, hjust = -0.1, vjust = 0.5, na.rm = TRUE) +
+    scale_fill_manual(values = pop_cols[site_order], drop = TRUE) +
+    labs(x = "Regional PC1", y = "Heterozygosity in region / genome-wide", fill = "Site") +
+    theme_matt_facets(base_size = 12)
+
+  reg_ld <- map_dfr(reg_dirs, ~ read_tsv(file.path(.x, "ld_bins.tsv"), show_col_types = FALSE) %>%
+                      mutate(region = basename(.x))) %>%
+    filter(n_pairs >= 50)
+  p_ld <- ggplot(reg_ld, aes(x = min_bp / 1000, y = mean_r2_ExpG, colour = region)) +
+    geom_line(linewidth = 0.8) + geom_point(size = 1.5) +
+    scale_x_log10() +
+    scale_colour_manual(values = c("grey55", "#24518B", "#B73534")) +
+    labs(x = "Distance between SNPs (kb, log scale)", y = expression(Mean~italic(r)^2), colour = NULL) +
+    theme_matt(base_size = 12)
+
+  ggarrange(p_reg, ggarrange(p_ld, NULL, widths = c(1, 1.2)), nrow = 2, heights = c(1.2, 1), labels = c("A", "B"))
+}
+```
+
+**Chromosome 6 (X)** fits a rare chromosomal variant such as an inversion. A minority of individuals, almost all from St. Thomas de Kent Wharf and a few from Ritchie Wharf, sits apart on the regional PC1. Most of them are about 5% more heterozygous on chromosome 6 than their genome-wide average, as expected for heterozygous carriers, while the two most extreme individuals (TK_peak_1_09, TK_peak_2_07) are less heterozygous, as expected for homozygotes of the rare arrangement. At this frequency (roughly 5% of chromosomes overall) LD across the whole sample is raised only slightly (panel B: higher at short distances and marginally at 0.1–2 Mb than on the control chromosome). **Chromosome 3 (X)** does not: individuals split by site as on the control chromosome, with no heterozygosity classes; only two or three TK early individuals stand out on PC2 with slightly raised heterozygosity, which could be a smaller rare variant within the region.
 
 ### Parasites and symbionts
 
@@ -1472,6 +1791,207 @@ Kinetoplastids are present at low levels in most individuals, mostly at the nort
 #| fig-height: 7
 prev_plot(micro_prev(all_groups))
 ```
+
+### Seasonal allele-frequency change
+
+Allele frequencies per population at the unlinked SNP set (one SNP per 10 kb; Section 3.2, LD) were compared between seasons within each site. Temporal differentiation is Nei & Tajima's F<sub>c</sub> ([Nei & Tajima 1981](https://doi.org/10.1093/genetics/98.3.625)) over SNPs with ≥ 5 individuals with data in both samples and a mean minor-allele frequency of 0.05–0.95. Under the temporal method, F<sub>c</sub> ≈ t/(2N<sub>e</sub>) + sampling noise of both samples, so N<sub>e</sub> follows once the sampling noise is subtracted ([Waples 1989](https://doi.org/10.1093/genetics/121.2.379); [Jorde & Ryman 2007](https://doi.org/10.1534/genetics.107.075481)).
+
+**Calibrating sampling noise.** With \< 1× coverage, frequencies are sampled twice, once through the individuals and once through the reads, so an individual contributes less than two chromosomes of information ([Jónás et al. 2016](https://doi.org/10.1534/genetics.116.191197)). Pool-seq studies handle this with an "effective number of chromosomes" ([Feder et al. 2012](https://doi.org/10.1371/journal.pone.0048588); [Bergland et al. 2014](https://doi.org/10.1371/journal.pgen.1004775); [Machado et al. 2021](https://doi.org/10.7554/eLife.67577)). Here it was measured directly: each population was split at random into two halves (two replicates), allele frequencies were estimated for each half, and F<sub>c</sub> between the halves (pure sampling noise) was compared with the 1/(2n) expectation. The ratio, c, is the effective number of chromosomes per individual divided by two, and the sampling term for any sample becomes 1/(2cn). This split-half calibration is an empirical resampling check rather than a named published method.
+
+```{r}
+#| label: split-half
+#| fig-width: 10
+#| fig-height: 4
+split_half <- read_cx("results", "12_split", "split_half.tsv")
+if (is.null(split_half)) {
+  cat("Split-half calibration is not in this export yet.")
+} else {
+  c_pop <- split_half %>%
+    group_by(population) %>%
+    summarise(c = mean(c), c_diff = abs(diff(range(c))), n = mean(mean_n_a + mean_n_b), .groups = "drop") %>%
+    separate(population, c("clade", "site", "season"), sep = "__", remove = FALSE) %>%
+    filter(clade %in% tonsa_clades) %>%
+    mutate(clade = factor(clade, levels = tonsa_clades),
+           label = paste(site, season))
+  ggplot(c_pop, aes(x = reorder(label, c), y = c, colour = clade)) +
+    geom_hline(yintercept = 1, linetype = "dashed", colour = "grey50") +
+    geom_point(size = 3) +
+    facet_grid(. ~ clade, scales = "free_x", space = "free_x") +
+    scale_colour_manual(values = clade_cols[tonsa_clades], guide = "none") +
+    scale_y_continuous(limits = c(0, 1.05)) +
+    labs(x = NULL, y = "c (effective chromosomes\nper individual / 2)",
+         caption = "Mean of two random splits per population; dashed line = two full chromosomes per individual") +
+    theme_matt_facets(base_size = 11) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+}
+```
+
+Every population gives c ≈ 0.6–0.7 (about 1.2–1.4 effective chromosomes per individual), and the two random splits agree to within 0.02. The calibration is therefore stable and similar across clades, sites and seasons.
+
+```{r}
+#| label: seasonal-change
+#| fig-width: 12
+#| fig-height: 5
+freq_files <- Sys.glob(cx("results", "09_stage34", "*.freqs.unlinked.tsv.gz"))
+if (length(freq_files) == 0 || !exists("generations") || is.null(split_half)) {
+  cat("Allele-frequency tables or the split-half calibration are not in this export yet.")
+} else {
+  season_lv <- c("early", "peak", "late")
+  c_of <- setNames(c_pop$c, c_pop$population)
+  gens_tab <- generations %>% ungroup() %>%
+    left_join(distinct(site_data, site, site_code), by = "site") %>%
+    select(site_code, season, gens)
+  gens_between <- function(site, s1, s2) {
+    steps <- c("early_to_peak", "peak_to_late")[match(s1, season_lv):(match(s2, season_lv) - 1)]
+    g <- gens_tab$gens[gens_tab$site_code == site & gens_tab$season %in% steps]
+    if (length(g) == length(steps)) sum(g) else NA_real_
+  }
+  # Fc, uncalibrated (2 chromosomes per individual) and calibrated sampling terms, and
+  # a delete-one-chromosome jackknife SE of the calibrated excess
+  fc_pair <- function(m, a, b, min_n = 5) {
+    x <- m[[paste0("freq_", a)]]; y <- m[[paste0("freq_", b)]]
+    na <- m[[paste0("nind_", a)]]; nb <- m[[paste0("nind_", b)]]
+    z <- (x + y) / 2
+    ok <- !is.na(x) & !is.na(y) & na >= min_n & nb >= min_n & z >= 0.05 & z <= 0.95
+    x <- x[ok]; y <- y[ok]; z <- z[ok]; na <- na[ok]; nb <- nb[ok]; ch <- m$chrom[ok]
+    excess <- function(k) sum((x[k] - y[k])^2) / sum(z[k] - x[k] * y[k]) -
+      mean(1 / (2 * c_of[[a]] * na[k]) + 1 / (2 * c_of[[b]] * nb[k]))
+    jk <- map_dbl(unique(ch), ~ excess(ch != .x)); g <- length(jk)
+    Fc <- sum((x - y)^2) / sum(z - x * y)
+    tibble(snps = sum(ok), Fc = Fc,
+           sampling_2n = mean(1 / (2 * na) + 1 / (2 * nb)),
+           sampling_cal = Fc - excess(rep(TRUE, length(x))),
+           excess = Fc - sampling_cal,
+           se = sqrt((g - 1) / g * sum((jk - mean(jk))^2)))
+  }
+  temporal <- map_dfr(freq_files, function(f) {
+    clade <- sub("\\.freqs.*", "", basename(f))
+    m <- read_tsv(f, show_col_types = FALSE, col_types = cols(chrom = "c"))
+    pops <- sub("^freq_", "", grep("^freq_", names(m), value = TRUE))
+    combn(pops, 2, simplify = FALSE) %>% map_dfr(function(p) {
+      a <- str_split_1(p[1], "__"); b <- str_split_1(p[2], "__")
+      if (a[2] != b[2]) return(NULL)                       # seasonal pairs only
+      ord <- order(match(c(a[3], b[3]), season_lv)); pp <- p[ord]
+      s <- c(a[3], b[3])[ord]
+      bind_cols(tibble(clade = clade, site = a[2], from = s[1], to = s[2],
+                       gens = gens_between(a[2], s[1], s[2])),
+                fc_pair(m, pp[1], pp[2]))
+    })
+  }) %>%
+    mutate(ne = if_else(excess > 0, gens / (2 * excess), Inf),
+           ne_lo = gens / (2 * (excess + 1.96 * se)),
+           ne_hi = if_else(excess - 1.96 * se > 0, gens / (2 * (excess - 1.96 * se)), Inf),
+           clade = factor(clade, levels = tonsa_clades),
+           pair = paste0(site, " ", from, "→", to))
+  write_csv(temporal, here("Output", "Output_data", "temporal_fc.csv"))
+
+  p_exc <- temporal %>%
+    mutate(uncal = Fc - sampling_2n) %>%
+    ggplot(aes(x = gens, colour = clade)) +
+    geom_hline(yintercept = 0, colour = "grey50") +
+    geom_point(aes(y = uncal), shape = 1, size = 2.5, alpha = 0.6) +
+    geom_pointrange(aes(y = excess, ymin = excess - 1.96 * se, ymax = excess + 1.96 * se), size = 0.5) +
+    geom_text(aes(y = excess, label = pair), size = 2.8, vjust = -1.2, check_overlap = TRUE, show.legend = FALSE) +
+    scale_colour_manual(values = clade_cols[tonsa_clades]) +
+    labs(x = "Generations between samples", y = expression(F[c] - "sampling noise"),
+         colour = "Clade",
+         caption = "Open circles: sampling noise assuming 2 chromosomes per individual.\nFilled: calibrated sampling noise (1/2cn), ± 95% CI from a chromosome jackknife.") +
+    theme_matt(base_size = 12)
+  p_exc
+}
+```
+
+```{r}
+#| label: seasonal-ne-table
+if (exists("temporal")) {
+  temporal %>%
+    transmute(Clade = clade, Pair = pair, Generations = gens, SNPs = snps,
+              Fc = round(Fc, 3), `Excess (calibrated)` = sprintf("%.4f ± %.4f", excess, se),
+              Ne = if_else(is.finite(ne), sprintf("%.0f", ne), "∞"),
+              `Ne 95% CI` = sprintf("%.0f – %s", ne_lo, if_else(is.finite(ne_hi), sprintf("%.0f", ne_hi), "∞"))) %>%
+    knitr::kable(caption = "Temporal F~c~ and N~e~ per seasonal pair, with sampling noise calibrated by the split-half c. CI from a delete-one-chromosome jackknife of the excess; ∞ = excess not distinguishable from zero.")
+}
+```
+
+```{r}
+#| label: seasonal-parallel
+if (exists("temporal")) {
+  # parallel change: correlation of early→peak changes between X sites
+  mx <- read_tsv(cx("results", "09_stage34", "X.freqs.unlinked.tsv.gz"), show_col_types = FALSE, col_types = cols(chrom = "c"))
+  dp <- function(site, s1, s2) {
+    a <- paste0("X__", site, "__", s1); b <- paste0("X__", site, "__", s2)
+    ok <- mx[[paste0("nind_", a)]] >= 5 & mx[[paste0("nind_", b)]] >= 5
+    if_else(ok, mx[[paste0("freq_", b)]] - mx[[paste0("freq_", a)]], NA_real_)
+  }
+  d <- tibble(chrom = mx$chrom, ME = dp("ME", "early", "peak"), TK = dp("TK", "early", "peak"),
+              RW = dp("RW", "early", "peak")) %>% drop_na()
+  par_tab <- map_dfr(list(c("ME", "TK"), c("ME", "RW"), c("TK", "RW")), function(p) {
+    r <- cor(d[[p[1]]], d[[p[2]]])
+    jk <- map_dbl(unique(d$chrom), function(ch) { k <- d$chrom != ch; cor(d[[p[1]]][k], d[[p[2]]][k]) })
+    g <- length(jk)
+    tibble(comparison = paste(p, collapse = " vs "), snps = nrow(d), r = r,
+           se = sqrt((g - 1) / g * sum((jk - mean(jk))^2)))
+  })
+  knitr::kable(par_tab, digits = 3,
+               caption = "Clade X: correlation of early→peak allele-frequency change between sites (unlinked SNPs; SE from a delete-one-chromosome jackknife)")
+}
+```
+
+Calibration removes almost all of the apparent excess: with two chromosomes per individual assumed, every pair showed an excess of ≈ 0.05 regardless of the number of generations (open circles); with the calibrated sampling term the excess is 0.000–0.011 (filled points). Most pairs give N<sub>e</sub> in the high hundreds to a few thousand, with lower 95% bounds of roughly 400–2,000, and several upper bounds are infinite (no drift detectable within the season). These estimates describe drift over a few to \~20 generations within one season, not long-term N<sub>e</sub>, and they are at or above the lab estimate of \~400. ME early→peak is the exception (N<sub>e</sub> ≈ 225, CI ≈ 185–285): ME early is the smallest X sample (10 individuals), so a modest error in its c would inflate the excess, and the value should be checked before it is interpreted biologically. In clade X, early→peak changes at different sites remain uncorrelated genome-wide (r ≈ 0).
+
+**Per-SNP seasonal test.** For each SNP, the minor-allele count was modelled with a binomial GLM, count \~ site + time, where time is the collection day of year scaled from 0 (first sampling event at a site) to 1 (last), and each population is weighted by its effective number of chromosomes (2cn). A shared slope for time rewards change in the same direction at every site, as in the *Drosophila* seasonal studies ([Bergland et al. 2014](https://doi.org/10.1371/journal.pgen.1004775); [Machado et al. 2021](https://doi.org/10.7554/eLife.67577)). The null distribution comes from permuting the order of sampling events within each site, enumerating every distinct ordering (X: 3 sites, 11 permutations; F: 4 sites, 23 permutations). The genome-wide test asks whether more SNPs reach a given p value with the real seasons than with the permuted ones. Results are shown with and without chromosome 6, which carries the likely inversion in clade X (Section 3.2). Clade S has a single seasonal site (MD), so it cannot be permuted and is not shown.
+
+```{r}
+#| label: seasonal-glm
+#| fig-width: 11
+#| fig-height: 5
+glm_files <- Sys.glob(cx("results", "13_seasonal", "*.perm.tsv"))
+if (length(glm_files) == 0) {
+  cat("Seasonal GLM results are not in this export yet.")
+} else {
+  glm_perm <- map_dfr(glm_files, function(f) {
+    read_tsv(f, show_col_types = FALSE) %>%
+      mutate(clade = str_split_1(basename(f), "\\.")[1], snps_used = str_split_1(basename(f), "\\.")[2])
+  }) %>%
+    filter(clade %in% c("X", "F")) %>%
+    mutate(snp_set = if_else(snp_set == "all", "all chr.", "no chr6"),
+           panel = paste0(clade, ", ", snps_used, " SNPs"),
+           clade = factor(clade, levels = tonsa_clades)) %>%
+    pivot_longer(starts_with("n_p<"), names_to = "threshold", values_to = "n_snps") %>%
+    mutate(threshold = sub("n_", "", threshold), observed = perm == 0)
+
+  glm_perm %>%
+    filter(threshold %in% c("p<0.01", "p<0.001")) %>%
+    ggplot(aes(x = snp_set, y = n_snps)) +
+    geom_point(data = ~ filter(.x, !observed), colour = "grey60", alpha = 0.7,
+               position = position_jitter(width = 0.12, height = 0, seed = 1)) +
+    geom_point(data = ~ filter(.x, observed), aes(colour = clade), size = 3.5, shape = 18) +
+    facet_wrap(threshold ~ panel, scales = "free_y", nrow = 2) +
+    scale_colour_manual(values = clade_cols[tonsa_clades], guide = "none") +
+    labs(x = NULL, y = "SNPs below threshold",
+         caption = "Diamonds: observed seasons. Grey: every within-site reordering of the sampling events.") +
+    theme_matt_facets(base_size = 11)
+}
+```
+
+```{r}
+#| label: seasonal-glm-table
+if (length(glm_files) > 0) {
+  glm_perm %>%
+    group_by(clade, snps_used, snp_set, threshold) %>%
+    summarise(obs = n_snps[observed], perm_mean = mean(n_snps[!observed]),
+              perm_max = max(n_snps[!observed]),
+              rank = sum(n_snps[!observed] >= n_snps[observed]) + 1, label_sets = n(), .groups = "drop") %>%
+    mutate(rank = paste0(rank, " / ", label_sets)) %>%
+    select(-label_sets) %>%
+    arrange(clade, snps_used, snp_set, threshold) %>%
+    knitr::kable(digits = 1, col.names = c("Clade", "SNPs", "Chromosomes", "Threshold", "Observed",
+                                          "Permutation mean", "Permutation max", "Rank of observed"),
+                 caption = "Per-SNP seasonal GLM: SNPs below each p threshold with the real seasons vs all within-site permutations (rank 1 = more than every permutation).")
+}
+```
+
+There is no genome-wide excess of seasonal SNPs in either clade. With the real seasons, X and F have about as many low-p SNPs as the permuted orderings, at every threshold, on both the unlinked and the full SNP sets. Removing chromosome 6 changes nothing, so the X inversion is not driving or masking a seasonal signal. The genomic-control λ is close to 1 (X ≈ 1.1, F ≈ 1.0) for the observed and permuted labellings alike, so the calibrated binomial weights describe the sampling variance well. Together with the uncorrelated early→peak changes across X sites, this means that any seasonal selection in these populations acts on too few loci, or is too weak, to show up genome-wide with 3–4 seasonal sites per clade. Individual SNPs with the smallest p values are listed in `results/13_seasonal/*.top.tsv` but are not more numerous than expected by chance, so none can be called a seasonal candidate on its own. The permutation null is coarse (12 and 24 orderings), which limits the smallest attainable rank-based p value to 1/12 (X) and 1/24 (F).
 
 ## 4. Clade-specific physiological patterns
 
