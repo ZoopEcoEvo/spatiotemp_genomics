@@ -1,0 +1,11 @@
+snp_set	statistic	observed	perm_mean	perm_q95	rank	n_label_sets
+all	lambda	0.95358	0.97302	1.0418	65	101
+all	n_p<0.001	265	273.78	397.4	52	101
+all	n_p<0.0001	21	26.61	45.05	73	101
+all	n_p<1e-05	0	2.9	7	101	101
+all	n_p<1e-06	0	0.28	1	101	101
+without_NC_137265.1	lambda	0.95578	0.97328	1.0415	65	101
+without_NC_137265.1	n_p<0.001	246	253.36	367.2	52	101
+without_NC_137265.1	n_p<0.0001	20	24.59	42	69	101
+without_NC_137265.1	n_p<1e-05	0	2.75	7	101	101
+without_NC_137265.1	n_p<1e-06	0	0.28	1	101	101

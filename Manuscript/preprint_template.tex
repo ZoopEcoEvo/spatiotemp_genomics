@@ -57,7 +57,12 @@ $if(verbatim-in-note)$
 \usepackage{fancyvrb}
 $endif$
 $if(tables)$
-\usepackage{longtable,booktabs}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for \real{} in Pandoc table column widths
+% Pandoc puts table captions inside longtable; don't number them twice
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\makeatother
 $endif$
 
 $if(graphics)$
@@ -70,6 +75,20 @@ $if(graphics)$
 % margins by default, and it is still possible to overwrite the defaults
 % using explicit options in \includegraphics[width, height, ...]{}
 \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Pandoc >= 3.2 wraps images in \pandocbounded: scale down to fit the page, never up
+\makeatletter
+\@ifundefined{pandocbounded}{%
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{%
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi}%
+}{}
+\makeatother
 $endif$
 
 
@@ -153,6 +172,13 @@ $if(endnotes)$
 \renewcommand{\enotesize}{\normalsize}
 \let\footnote=\endnote
 $endif$
+
+% Characters pdflatex does not map by default (safe if also declared in header-includes)
+\DeclareUnicodeCharacter{2248}{\ensuremath{\approx}}
+\DeclareUnicodeCharacter{2265}{\ensuremath{\geq}}
+\DeclareUnicodeCharacter{2264}{\ensuremath{\leq}}
+\DeclareUnicodeCharacter{2212}{\ensuremath{-}}
+\DeclareUnicodeCharacter{2192}{\ensuremath{\rightarrow}}
 
 % add tightlist ----------
 \providecommand{\tightlist}{%

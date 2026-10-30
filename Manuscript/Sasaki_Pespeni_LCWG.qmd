@@ -1,15 +1,18 @@
 ---
-title: "TITLE: spatial and seasonal genomic variation across cryptic clades of Acartia tonsa"
+title: "Space does not substitute for time: cryptic lineages and plasticity, not rapid evolution, structure thermal tolerance in a coastal copepod"
 author:
   - name: Matthew Sasaki
     affiliation: University of Massachusetts Lowell
   - name: Melissa Pespeni
     affiliation: University of Vermont
-abstract: "ABSTRACT HERE."
+abstract: "ABSTRACT HERE. (Draft once Results 1-7 are settled: question - design - lineages differ heritably - within-lineage CTmax tracks temperature plastically, same across space and season - no seasonal evolution beyond drift, no concordance with spatial patterns - a single CTmax misplaces vulnerability; forecasts should be built on lineages and plasticity.)"
 keywords:
-  - keyword1
-  - keyword2
-  - keyword3
+  - thermal tolerance
+  - cryptic lineages
+  - phenotypic plasticity
+  - seasonal evolution
+  - low-coverage whole-genome sequencing
+  - Acartia tonsa
 contact: "**Correspondence**: Matthew_Sasaki@uml.edu"
 repo: "**Code**: https://github.com/ZoopEcoEvo/spatiotemp_genomics"
 date: today
@@ -38,6 +41,15 @@ format:
     include-in-header:
       text: |
         \usepackage{caption}
+        \usepackage{textcomp}
+        \DeclareUnicodeCharacter{2248}{\ensuremath{\approx}}
+        \DeclareUnicodeCharacter{2265}{\ensuremath{\geq}}
+        \DeclareUnicodeCharacter{2264}{\ensuremath{\leq}}
+        \DeclareUnicodeCharacter{2212}{\ensuremath{-}}
+        \DeclareUnicodeCharacter{00B0}{\textdegree}
+        \DeclareUnicodeCharacter{00D7}{\ensuremath{\times}}
+        \DeclareUnicodeCharacter{00B1}{\ensuremath{\pm}}
+        \DeclareUnicodeCharacter{2192}{\ensuremath{\rightarrow}}
         \captionsetup[figure]{font=small, margin=20pt, justification=centering}
         \captionsetup[table]{font=small, margin=20pt, justification=centering}
         \usepackage{float} \floatplacement{figure}{H}
@@ -65,31 +77,201 @@ source(here("Scripts", "load_data.R"))
 
 # Introduction
 
+<!-- OUTLINE. Draft status shown in [brackets] throughout; delete the outline notes as text is written. -->
+
+**Organising question:** at what scale does thermal tolerance vary in a widespread coastal "species", and does variation across space predict change through time?
+
+- **Thermal tolerance can vary at four levels**, each implying a different response to warming:
+    - among cryptic lineages: lineages shift ranges;
+    - among populations: local adaptation, so populations adapt in place;
+    - across seasons: rapid evolution tracks warming quickly;
+    - within individuals: plasticity buffers warming.
+- **Space-for-time substitution.** Forecasts often assume spatial gradients (latitude, site temperature) predict responses through time. This assumption can hold for phenotypes and fail for genomes, or the reverse, and it is rarely tested on the same organisms.
+- **Seasonal evolution has been shown in *Drosophila*** (Bergland et al. 2014; Machado et al. 2021), with seasonal allele-frequency change that parallels latitudinal clines. Short-lived marine plankton with many generations per season should be an even better candidate.
+- ***Acartia tonsa*** is a dominant coastal copepod and a standard model for thermal physiology. It has short generations (several per season) and large populations. It is also a complex of deeply divergent cryptic lineages, which is usually ignored in physiological work.
+- **The gap:** no field study has separated the lineage, population, seasonal and individual levels for the same animals, or tested space-for-time substitution at both the phenotypic and genomic levels.
+- **Why it matters for forecasts:** vulnerability is usually summarised as warming tolerance (CTmax minus habitat temperature) from a single CTmax per species. If tolerance differs among lineages and shifts with acclimation, a single value misplaces where and when populations are at risk.
+- **This study:** 9 sites from about 25°N to 47°N, sampled repeatedly through the season. Each individual's CTmax was measured on the day of collection, and the same individual was sequenced at low coverage (about 400 individuals). Pairing individual phenotypes and genomes across space and season is the methodological hook.
+
 # Methods
 
-## Statistical Analysis
+<!-- Most methods text can be adapted from the report (Output/Reports/report.qmd); section names below match it. -->
+
+## Field collections and site temperatures
+- Sites, seasons, collection temperatures. [report §1]
+- Long-term site temperatures: MUR SST 2014-2023, water pixels within 5 km. Validated against USGS, CBP, NOAA CO-OPS and DFO stations. Month-varying bias correction at GW (ET5.1); RW flagged. [report §1, "Long-term site temperatures"]
+
+## Thermal tolerance
+- CTmax assay on the day of collection; ramp rate; body size measured but not used as a covariate. [report §2]
+
+## Sequencing, mapping and site filtering
+- Library preparation, low-coverage sequencing, mapping to GCF_053477335.1 plus clade mitogenome contigs. Repeat, NUMT and paralog masks; per-clade depth bounds. [report §3]
+- Exclusions: *A. hudsonica*, unassigned libraries, MR_peak_2_04 and MR_peak_2_05.
+
+## Clade and lineage assignment
+- Mitogenome assemblies (MEGAHIT, NOVOPlasty), COI tree, genome-wide PCA/admixture; lineages within F. [report §3]
+
+## Population genetics within lineages
+- Diversity, Tajima's D, FST, LD decay, relatedness and inbreeding (ANGSD, ngsRelate, ngsLD); local PCA. [report §3]
+
+## Seasonal allele-frequency change
+- Split-half calibration of low-coverage sampling noise (c $\approx$ 0.58–0.70); calibrated temporal Fc and Ne. [report §3, "Seasonal allele-frequency change"]
+- Per-SNP binomial GLMs against time in season and against generation-averaged temperature; exact within-site permutations. [same]
+- Allele-frequency variance partition, spatial vs seasonal, with per-population sampling variance; chromosome jackknife. [report §3, "Spatial vs. seasonal genetic variation"]
+- Space-for-time concordance: per-SNP spatial (site-mean MUR temperature) and seasonal temperature slopes; seasonal and spatial nulls. [report §3, "Does space substitute for time?"]
+
+## Statistical analysis of CTmax
+- CTmax ~ lineage × temperature mixed model. [report §4, "CTmax model"]
+- Within/between temperature decomposition (van de Pol & Wright 2009), with lineage-specific slopes. [report §4, "Acclimation vs. site differences"]
+- Variance partition (Nakagawa & Schielzeth 2013) with parametric bootstrap. [report §4, "Partitioning CTmax variation"]
+- Natural common garden: collections with $\geq$ 2 lineages of $\geq$ 3 individuals, CTmax ~ collection + lineage. [report §4, "Lineage differences under shared conditions"]
+
+## Genetic basis of CTmax
+- Within lineages: dosage regression on genotype posteriors, collection and log depth as covariates, within-collection permutation null. [report §4, "Genetic basis of CTmax within collections"]
+- Between lineages: mitochondrial ORF comparisons; nuclear clade consensus and clade-specific amino-acid substitutions in candidate gene sets. [report §4, "Candidate genes"; nuclear part running]
+
+## Warming tolerance scenarios
+- Warming tolerance = CTmax - daily habitat temperature (bias-corrected MUR SST 2014–2023, current and +4 °C uniform warming), August–September, per site [report §5].
+- Three scenarios:
+    1. Fixed CTmax: mean of all peak-season individuals.
+    2. Lineage means: each lineage's peak-season mean CTmax, weighted by the peak collection's lineage make-up.
+    3. Lineages + acclimation: daily CTmax per lineage from the within/between model (population level), with temperature clamped to each lineage's sampled range.
+- Summaries: peak-season mean, and the warmest day per year for the least tolerant lineage making up $\geq$ 10% of the peak collection. Sensitivity: annual instead of peak-season make-up.
+- 95% intervals: 1,000 bootstrap resamples of individuals (scenarios 1–2) or draws of the model's fixed effects (scenario 3).
 
 # Results
 
-```{r}
-#| label: fig-example
-#| fig-cap: "CAPTION HERE."
-#| out-width: "100%"
+## 1. *A. tonsa* is a complex of cryptic lineages that turn over along the coast and through the season
+- Four deeply divergent clades (F, S, X, IV); F splits into lineages (F-N, F-NE, F-FH, F-MR). [in hand]
+- Mitochondrial (COI) and nuclear trees agree at every level: {S, IV} vs {X, F}, X sister to F, and the same order of F lineages. The lineages are separate genetic units, not mitochondrial types on a shared nuclear background. [in hand; report "Lineage phylogeny"]
+- Lineages replace each other along the coast but co-occur at several sites and in single collections.
+- Lineage composition changes through the season at 6 of 7 sites with more than one lineage (combined permutation p < 10^-4^). Late-season (October–November, 10–15 °C) collections shift toward IV at CT, TK and ME, and toward S at MD and GW; S dominates the warm peak at MD and CT. [in hand; report "Seasonal turnover of lineages"]
+- Turnover tracks temperature: the composition-expected CTmax rises 0.04 °C per °C of collection temperature within sites (p < 0.001), about a quarter of the acclimation slope. Warm water holds more tolerant lineages, cool water more IV. Seasonal change in tolerance has a heritable component, through sorting of lineages rather than evolution within them. [in hand; report "Does lineage turnover change seasonal thermal tolerance?" - may sit better in Result 2 or 3]
+- Caveat: about 20 individuals per collection, one year of sampling.
 
-plot(1)
-# Figures made in report.qmd are saved as Output/Figures/<chunk-label>-1.png
-# knitr::include_graphics(here("Output", "Figures", "CHUNK-LABEL-1.png"))
+```{r}
+#| label: fig-lineages
+#| fig-cap: "Cryptic lineages of *Acartia tonsa*. (A) Mitochondrial (COI, maximum likelihood) and nuclear (genome-wide, neighbour-joining) trees of the lineages. (B) Lineage composition of each collection, with collection temperature. (Planned: add a site map.)"
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "lineage-phylogeny-1.png"))
+knitr::include_graphics(here("Output", "Figures", "lineage-turnover-1.png"))
+```
+
+## 2. Lineages differ heritably in thermal tolerance
+- Lineage explains about a quarter of CTmax variance. [in hand]
+- Natural common garden: IV is 2.5–2.9 °C less tolerant than co-occurring X or S, and F-N is 0.8 °C more tolerant than S across three Chesapeake collections. These differences cannot be acclimation. [in hand]
+- S–X shrinks from 1.0 °C across all collections to 0.4 °C (not significant) where they co-occur, so part of it reflects where each lineage was sampled.
+- Caveat: "heritable" here means not explained by shared recent conditions; it could include developmental or maternal effects.
+
+```{r}
+#| label: fig-common-garden
+#| fig-cap: "CTmax of lineages collected together at the same place and time. Points are individuals, black is the mean ± SE."
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "common-garden-1.png"))
+```
+
+## 3. Within lineages, CTmax tracks temperature through plasticity, equally across space and season
+- Within-site (seasonal) slope 0.15 °C per °C; between-site slope 0.12; difference -0.02 (-0.15 to 0.11). The spatial gradient in CTmax is what acclimation predicts: for the phenotype, space substitutes for time. [in hand]
+- Variance partition: lineage 24%, site temperature 20%, other site 16%, acclimation 18%, other collection 8%, individual 14%. [in hand]
+- Cannot exclude modest local adaptation (upper CI ~0.1 °C per °C).
+- Note: in summer, collection-day temperatures at northern sites run 2–6 °C warmer than MUR, which matters for interpreting acclimation. [TO CHECK]
+
+```{r}
+#| label: fig-plasticity
+#| fig-cap: "CTmax against within-site (seasonal) and between-site (spatial) temperature, and the partition of CTmax variance."
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "within-between-plot-1.png"))
+knitr::include_graphics(here("Output", "Figures", "ctmax-variance-partition-1.png"))
+```
+
+## 4. Genomic variation within lineages is structured in space, not time
+- High diversity and a large long-term Ne in every lineage; no close kin. Lineage-specific histories: expansion in F, large stable S and IV, high diversity in northern X despite its seasonal presence. [in hand]
+- Temporal Ne is much smaller (about 750–5,400). The contrast with long-term Ne suggests sites are open: advection and mixing of water masses inflate apparent drift within a season. [in hand; interpretation for Discussion]
+- Allele-frequency variance between sites is about 13 times that between seasons in X, and about 6 times in F-N. [in hand]
+- chr6 structural polymorphism in northern X. [TO DECIDE: main text or supplement]
+
+```{r}
+#| label: fig-genomic-variation
+#| fig-cap: "Genetic diversity within lineages and the partition of allele-frequency variance into spatial and seasonal components."
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "diversity-pops-1.png"))
+knitr::include_graphics(here("Output", "Figures", "freq-variance-partition-1.png"))
+```
+
+## 5. No rapid seasonal evolution, and no concordance between space and time
+- After calibrating low-coverage sampling noise, seasonal change is about what drift predicts (calibrated excess Fc 0.000–0.011). [in hand]
+- No genome-wide excess of seasonal association in X or F, against time in season or against temperature; chr6 makes no difference; S uninformative. [in hand]
+- Concordance: alleles associated with warm sites do not rise after warm periods (X: r $\approx$ 0.04, rank 5–6 of 24 under the null). For the genome, space does not substitute for time. [in hand]
+
+```{r}
+#| label: fig-seasonal
+#| fig-cap: "Seasonal allele-frequency change against the drift expectation, per-SNP seasonal tests against their permutation null, and spatial–seasonal concordance."
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "seasonal-change-1.png"))
+knitr::include_graphics(here("Output", "Figures", "concordance-1.png"))
+```
+
+## 6. The genetic basis of tolerance lies between lineages, not within them
+- Within lineages: no SNP associates with CTmax beyond what within-collection shuffles produce, once sequencing depth is controlled. [in hand; TO DO: power statement, i.e. the per-SNP effect detectable in each lineage]
+- Between lineages, mitochondrial: COX1 nearly invariant; 29 substitutions unique to IV (7 COX1, 14 CYTB, 8 in a third ORF). Large mitochondrial divergence within F does not track CTmax. [in hand; X and IV contigs cover only ~a third of the mitogenome]
+- Between lineages, nuclear: clade-specific amino-acid substitutions in heat-shock, nuclear OXPHOS and lipid genes against the genome background. [running]
+
+```{r}
+#| label: fig-genetic-basis
+#| fig-cap: "CTmax association within lineages against within-collection shuffles. (Planned: add the candidate-gene summary and a summary diagram of the scales of variation.)"
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "gwas-qq-1.png"))
 ```
 
 ```{r}
-#| label: tbl-example
-#| tbl-cap: "CAPTION HERE"
+#| label: tbl-scales
+#| tbl-cap: "Summary of the scales of variation in thermal tolerance (draft)."
+tibble::tribble(
+  ~Scale, ~`CTmax varies?`, ~`Genomic signal?`, ~Interpretation,
+  "Lineage", "Yes, up to ~3 °C", "Deep divergence; candidates under test", "Heritable; range shifts",
+  "Site within lineage", "Yes, as acclimation predicts", "Strong differentiation, not linked to CTmax", "Mostly plasticity",
+  "Season within site", "Yes, through acclimation", "Change about equal to drift; no concordance", "No rapid evolution",
+  "Individual", "Yes", "No within-lineage associations", "Plasticity / small effects"
+) %>% knitr::kable()
+```
 
-knitr::kable(x = 1, # Replace 1 with whatever object you want included as a table
-             digits = 3, align = "c")
+## 7. Accounting for lineages, acclimation and turnover changes where *A. tonsa* is vulnerable
+- A single CTmax makes Florida look most vulnerable and the north least. Lineage means raise Florida's margin by about 3 °C (F-FH, F-MR are the most tolerant lineages) and lower the northern sites' by about 2 °C (X, IV); Chesapeake and Connecticut peak-season means barely change. [in hand; report §5]
+- The spread of warming tolerance among sites shrinks by about a third (30–37% depending on scenario and metric).
+- With +4 °C, the fixed CTmax puts Florida's warmest days at zero warming tolerance; lineage-specific CTmax keeps them about 2.5 °C above.
+- Acclimation changes little at the peak (peak means already include it) and adds up to ~2 °C under warming; it is the least certain scenario.
+- Seasonal turnover matters: annual instead of peak-season make-up lowers the warmest-day margin by ~2 °C at CT and TK, because IV is common there only in autumn. Links Result 7 to Result 1.
+- Ties the paper together: lineages (Results 1–2) and plasticity (Result 3) are what matter for forecasts; rapid evolution (Result 5) adds nothing detectable.
+- Caveat: MUR summer temperatures run below in-situ collection temperatures at the northern sites; the acclimation model was fitted to in-situ temperatures.
+
+```{r}
+#| label: fig-vulnerability
+#| fig-cap: "Warming tolerance (CTmax - habitat temperature) in August–September at each site under three scenarios: a single fixed CTmax, lineage-specific mean CTmax weighted by peak-season lineage make-up, and lineage-specific CTmax with acclimation. Circles: peak-season mean; triangles: warmest day, least tolerant common lineage. Current conditions and +4 °C uniform warming; bars are 95% intervals."
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "wt-scenarios-plot-1.png"))
+```
+
+```{r}
+#| label: tbl-wt-range
+#| tbl-cap: "Spread of warming tolerance among sites under current conditions, and its change relative to a fixed CTmax. The last scenario uses annual instead of peak-season lineage make-up."
+read_csv(here("Output", "Output_data", "wt_range_changes.csv"), show_col_types = FALSE) %>%
+  mutate(`Change vs fixed (%)` = if_else(Scenario == "Fixed CTmax", "–", sprintf("%+.0f", `Change vs fixed (%)`))) %>%
+  knitr::kable(digits = 1, col.names = c("Scenario", "Metric", "Range among sites (°C)", "Change vs fixed (%)"))
 ```
 
 # Discussion
+
+- **Main message:** thermal tolerance in this "species" is structured by cryptic lineages (heritable) and plasticity (within lineages), not by rapid evolution. Space substitutes for time in phenotype but not in genome.
+- **Why no rapid seasonal evolution, despite short generations?**
+    - Open populations: advection and mixing reset local allele frequencies; the gap between long-term and temporal Ne.
+    - Overlapping generations and egg banks slow the response to selection within a season.
+    - Plasticity absorbs seasonal temperature change, weakening selection on tolerance.
+    - Contrast with *Drosophila* (Bergland et al. 2014; Machado et al. 2021).
+- **Lineage turnover as the seasonal response.** Composition shifts with temperature and adds about a quarter to the seasonal CTmax change from acclimation. The community responds to season through sorting of heritably different lineages (cf. seasonal species succession in plankton), not through allele-frequency change within them. Where do lineages go between seasons: resting eggs, advection from offshore or other estuaries?
+- **Implications for forecasting:** model lineages separately, treat within-lineage spatial variation as plastic, and do not expect within-season evolutionary rescue. A single species-level CTmax overstates vulnerability in warm regions and understates it in cool ones (Result 7); seasonal lineage turnover means peak-season composition, not annual composition, sets exposure.
+- **Implications for lab studies:** experiments that treat "*A. tonsa*" as one unit can mix lineages that differ by ~3 °C in CTmax.
+- **Caveats:** low-coverage power for small-effect loci; CTmax as one measure of tolerance; collection-day temperature vs MUR; partial mitogenomes for X and IV; F consensus pools four lineages.
+
 
 <!-- References are printed here, before the supplementary material.
      Move both blocks below together to put them somewhere else. -->
@@ -115,11 +297,27 @@ knitr::kable(x = 1, # Replace 1 with whatever object you want included as a tabl
 
 # Supplementary Material
 
-```{r}
-#| label: fig-supp-example
-#| fig-cap: "CAPTION HERE."
-#| out-width: "100%"
+<!-- Candidate supplementary figures (report chunk labels): site-temperature-cycle, site-climatology,
+     clade-structure, mito-read-split, fst-pairs, ld-decay, relatedness, localpca-genome, split-half,
+     seasonal-glm, mito amino-acid tables, gwas tables. -->
 
-plot(1)
-# knitr::include_graphics(here("Output", "Figures", "CHUNK-LABEL-1.png"))
+```{r}
+#| label: fig-supp-site-temps
+#| fig-cap: "Long-term (MUR SST 2014–2023) temperature cycles at each site."
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "site-temperature-cycle-1.png"))
+```
+
+```{r}
+#| label: fig-supp-clade-structure
+#| fig-cap: "Genome-wide structure and mitochondrial clades."
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "clade-structure-1.png"))
+```
+
+```{r}
+#| label: fig-supp-split-half
+#| fig-cap: "Calibration of low-coverage sampling noise from random split halves of each population."
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "split-half-1.png"))
 ```

@@ -1,6 +1,6 @@
 # Comparing seasonal and latitudinal patterns in thermal adaptation
 
-2026-10-29
+2026-10-30
 
 - [Main Message](#main-message)
 - [1. Collections and environment](#1-collections-and-environment)
@@ -40,16 +40,16 @@
   - [Acclimation vs. site differences (within- and between-site
     temperature)](#acclimation-vs-site-differences-within--and-between-site-temperature)
   - [Partitioning CTmax variation](#partitioning-ctmax-variation)
+  - [Lineage differences under shared conditions (natural common
+    garden)](#lineage-differences-under-shared-conditions-natural-common-garden)
+  - [Genetic basis of CTmax within
+    collections](#genetic-basis-of-ctmax-within-collections)
+  - [Candidate genes: mitochondrial amino-acid
+    differences](#candidate-genes-mitochondrial-amino-acid-differences)
   - [Trait variability within clades](#trait-variability-within-clades)
   - [Parasites, epibionts and thermal
     limits](#parasites-epibionts-and-thermal-limits)
 - [5. Partitioning vulnerability](#5-partitioning-vulnerability)
-  - [Scenario 1 (Fixed CTmax)](#scenario-1-fixed-ctmax)
-  - [Scenario 2 (Clade-level
-    variation)](#scenario-2-clade-level-variation)
-  - [Scenario 3 (Clade variation and
-    acclimation/adaptation)](#scenario-3-clade-variation-and-acclimationadaptation)
-  - [Comparing Scenarios](#comparing-scenarios)
 
 ## Main Message
 
@@ -359,7 +359,7 @@ Novogene (436 libraries). Read processing, mapping, site filtering,
 clade assignment and population genomic analyses were run on the Unity
 cluster (Snakemake project `aton_lcwg`). The figures in this section are
 built from the exported result tables (`Raw_data/cluster_exports/`;
-export in use: aton_lcwg_tables_2026-10-29). *Acartia hudsonica*
+export in use: aton_lcwg_tables_2026-10-30). *Acartia hudsonica*
 libraries are excluded throughout.
 
 ### Sequencing summary
@@ -419,7 +419,61 @@ as an annotation.
 
 <img src="../Figures/coi-divergence-1.png" data-fig-align="center" />
 
+#### Lineage phylogeny: mitochondrial vs nuclear
+
+Mitochondrial relationships come from the COI maximum-likelihood tree
+(IQ-TREE, all individuals and reference haplotypes), reduced to one
+representative per lineage (the individual with the most complete COI
+sequence) and rooted on *A. hudsonica*. Support values are ultrafast
+bootstraps of the corresponding node in the full tree. Nuclear
+relationships come from genome-wide individual covariances (PCAngsd, all
+individuals): pairwise distances d<sub>ij</sub> = C<sub>ii</sub> +
+C<sub>jj</sub> − 2C<sub>ij</sub> were averaged between lineages and
+corrected for within-lineage distance (net distance), and a
+neighbour-joining tree was built from them (midpoint-rooted; support =
+percentage of 200 bootstrap replicates resampling individuals within
+lineages).
+
+<img src="../Figures/lineage-phylogeny-1.png" data-fig-align="center" />
+
+The two genomes give the same tree. Unrooted, both split the clades into
+{S, IV} and {X, F}, with X sister to F (support 98 in COI, 100 in the
+nuclear tree), and both order the F lineages the same way: F-MR first,
+then F-FH, then F-N with F-NE. They differ only in where the root falls,
+and the nuclear root is a midpoint placement, not an estimate.
+Mito-nuclear concordance at every level means the lineages are not
+mitochondrial types introgressed onto a shared nuclear background: they
+are separate, non-interbreeding (or rarely interbreeding) genetic units.
+Nuclear distances from the PCAngsd covariance summarise genome-wide
+divergence rather than coming from a substitution model, so branch
+lengths in the two panels are not comparable.
+
 <img src="../Figures/clade-props-1.png" data-fig-align="center" />
+
+#### Seasonal turnover of lineages
+
+Lineage composition is compared among the collections at each site
+(sequenced individuals only; unassigned libraries excluded). Each site
+gets a Fisher exact test of lineage × season (simulated p, 10⁴
+replicates). The combined test uses the sum of per-site χ² statistics,
+with season labels shuffled among individuals within each site (10⁴
+permutations); sites with a single lineage contribute nothing.
+
+<img src="../Figures/lineage-turnover-1.png" data-fig-align="center" />
+
+| Site | Seasons | Lineages | Individuals | Fisher p | Composition |
+|:---|---:|---:|---:|:---|:---|
+| MR | 2 | 3 | 37 | 0.0030 | peak: F-FH 1, F-MR 16; late: S 8, F-MR 12 |
+| FH | 2 | 1 | 39 | – | peak: F-FH 19; late: F-FH 20 |
+| MD | 3 | 2 | 60 | \<1e-04 | early: S 3, F-N 17; peak: S 20; late: S 12, F-N 8 |
+| GW | 3 | 2 | 60 | 0.0140 | early: S 1, F-N 19; peak: F-N 20; late: S 6, F-N 14 |
+| CT | 3 | 4 | 56 | \<1e-04 | early: X 7, S 3, IV 2, F-NE 5; peak: X 4, S 15; late: S 3, IV 17 |
+| ME | 3 | 4 | 39 | 0.0064 | early: X 10, S 1, IV 2, F-NE 1; peak: X 16, IV 1; late: X 3, IV 5 |
+| TK | 3 | 2 | 54 | \<1e-04 | early: X 12, IV 3; peak: X 18, IV 1; late: IV 20 |
+| RW | 3 | 2 | 53 | 0.1195 | early: X 16; peak: X 17, IV 1; late: X 15, IV 4 |
+
+Lineage composition by season at each site. Combined test across sites:
+χ² = 166, permutation p \<1e-04.
 
 ### Genetic differentiation within clades
 
@@ -1121,6 +1175,300 @@ conditions, and by site (temperature plus other site differences), with
 little left to the assay. The intervals are wide because lineage and
 site have few levels (7 lineages, 8 sites).
 
+### Lineage differences under shared conditions (natural common garden)
+
+Lineage accounts for about a quarter of CTmax variance (above), but
+lineages occupy different sites, so their differences could partly
+reflect the conditions they were collected in. Several collections,
+however, contain two or more lineages sampled at the same time and
+place: those animals experienced the same water before the assay, so
+differences between them cannot be acclimation. Lineage differences were
+therefore re-estimated using only collections with ≥ 2 lineages of ≥ 3
+individuals each, with collection as a fixed effect, so each lineage
+contrast is a within-collection comparison. These estimates are compared
+with the lineage effects from all collections (the within/between model
+above, which adjusts for temperature but compares lineages across
+different collections). Differences that persist within collections are
+heritable (genetic, or developmental/maternal), not plastic responses to
+recent conditions.
+
+<img src="../Figures/common-garden-1.png" data-fig-align="center" />
+
+| Lineage pair (first − second) | Shared collections | Within shared collections | p | All collections (temperature-adjusted) |
+|:---|---:|:---|---:|:---|
+| F-MR – S | 1 | 0.34 (-0.53, 1.22) | 0.4400 | 0.21 (-0.57, 0.98) |
+| F-N – S | 3 | 0.78 (0.21, 1.34) | 0.0075 | 0.93 (0.50, 1.36) |
+| F-NE – S | 1 | 0.54 (-0.62, 1.71) | 0.3600 | 0.63 (-0.25, 1.51) |
+| F-NE – X | 1 | 0.94 (-0.14, 2.01) | 0.0860 | 1.67 (0.81, 2.52) |
+| IV – S | 1 | -2.85 (-3.66, -2.04) | 0.0000 | -2.87 (-3.42, -2.33) |
+| S – X | 2 | 0.39 (-0.32, 1.11) | 0.2800 | 1.04 (0.49, 1.59) |
+| IV – X | 3 | -2.46 (-3.09, -1.82) | 0.0000 | -1.83 (-2.19, -1.48) |
+
+CTmax differences (°C, 95% CI) between lineages that co-occur in at
+least one collection: estimated only within shared collections, and from
+all collections in the within/between model.
+
+The two largest lineage differences hold up when lineages are compared
+side by side. IV is about 2.5–2.9 °C less tolerant than X and S in the
+same collections (three and one shared collections), as large as or
+larger than the difference estimated across all collections. F-N is
+about 0.8 °C more tolerant than S across the three Chesapeake
+collections where both occur (MD early and late, GW late), close to its
+overall estimate. These differences cannot be acclimation. The S–X
+difference is the exception: about 1 °C across all collections, but only
+0.4 °C (CI spanning zero) in the two Connecticut collections where they
+co-occur, so part of it may reflect where each lineage was collected
+rather than the lineages themselves. The F-MR and F-NE contrasts each
+rest on a single collection and are uninformative. Caveats: co-occurring
+lineages may differ in body size, development or recent history (for
+example, advection from elsewhere), so “heritable” here means not
+explained by shared recent conditions, not necessarily genetic.
+
+#### Does lineage turnover change seasonal thermal tolerance?
+
+If lineages differ heritably in CTmax and their make-up changes through
+the season, turnover alone shifts the CTmax a collection would have,
+independent of acclimation. For each collection, the expected CTmax from
+composition alone is the composition-weighted mean of the lineage
+effects (temperature-adjusted lineage means from the within/between
+model). Its within-site slope against collection temperature (site as a
+fixed effect, weighted by individuals) is compared with the within-site
+acclimation slope. The null shuffles lineage labels among individuals
+across the seasons of each site (10⁴ permutations), keeping each site’s
+lineages but removing their timing.
+
+<img src="../Figures/turnover-ctmax-1.png" data-fig-align="center" />
+
+Composition alone shifts expected CTmax by 0.04 °C per °C of collection
+temperature within sites (permutation p \< 0.001), compared with an
+acclimation slope of 0.15 °C per °C within lineages: turnover adds about
+27% to the seasonal change that acclimation produces. Collections are
+dominated by more tolerant lineages when the water is warm and by less
+tolerant lineages (above all IV) when it is cool, so turnover reinforces
+acclimation rather than opposing it. This is a seasonal change in
+thermal tolerance with a heritable basis that happens through the
+sorting of lineages, not evolution within them. Caveat: composition
+comes from the individuals sequenced per collection (about 20), so
+proportions are coarse, and collections were sampled in one year.
+
+### Genetic basis of CTmax within collections
+
+Is CTmax variation among individuals collected together associated with
+particular genetic variants? Within each lineage with ≥ 30 phenotyped
+and sequenced individuals (collections with ≥ 8 individuals of the
+lineage: X 104, F-N 78, S 54, F-FH 38, IV 36), CTmax was regressed on
+genotype dosage (the expected number of minor alleles, from ANGSD
+genotype posteriors) at every SNP, with collection and log mean
+sequencing depth as covariates. Collection absorbs acclimation and
+population differences, so individuals are compared only with others
+collected at the same time and place; depth is included because at \< 1×
+coverage deeper individuals show more minor alleles, which would
+otherwise bias every SNP’s effect if depth tracks CTmax (it does,
+weakly: +0.26 °C per log unit of depth within collections, all lineages
+pooled). Individuals without reads at a SNP were given their
+collection’s mean dosage. Body size was not included. Genome-wide
+calibration comes from 100 replicates with CTmax shuffled among
+individuals of the same collection, which keep each collection’s CTmax
+distribution and all genotype structure but break any genotype–phenotype
+link.
+
+<img src="../Figures/gwas-qq-1.png" data-fig-align="center" />
+
+| Lineage | SNPs | λ | p \< 10⁻³ | p \< 10⁻⁴ | p \< 10⁻⁵ | p \< 10⁻⁶ |
+|:---|---:|:---|:---|:---|:---|:---|
+| X | 2209940 | 0.95 vs 1.04 (94) | 2570 vs 3743 (91) | 338 vs 553 (89) | 48 vs 88 (86) | 11 vs 14 (63) |
+| F-N | 313838 | 0.95 vs 0.97 (65) | 265 vs 274 (52) | 21 vs 27 (73) | 0 vs 3 (101) | 0 vs 0 (101) |
+| S | 223199 | 0.96 vs 0.94 (41) | 332 vs 355 (54) | 62 vs 63 (50) | 7 vs 12 (85) | 5 vs 3 (16) |
+| F-FH | 183335 | 0.97 vs 1.00 (65) | 195 vs 232 (67) | 18 vs 30 (91) | 2 vs 4 (85) | 2 vs 1 (15) |
+| IV | 88781 | 1.15 vs 1.05 (6) | 212 vs 140 (6) | 16 vs 19 (64) | 2 vs 3 (74) | 1 vs 0 (29) |
+
+Observed vs. mean of 100 within-collection CTmax shuffles (rank of the
+observed value among the 101; 1 = larger than every shuffle).
+
+| Lineage | Comparison     | Unlinked SNPs | r      | Shuffle SD of r | Rank     |
+|:--------|:---------------|--------------:|:-------|:----------------|:---------|
+| X       | Spatial slope  |         41784 | 0.011  | 0.053           | 90 / 101 |
+| X       | Seasonal slope |         41784 | -0.004 | 0.010           | 69 / 101 |
+| S       | Spatial slope  |         17707 | 0.009  | 0.008           | 21 / 101 |
+| S       | Seasonal slope |         17707 | -0.008 | 0.017           | 59 / 101 |
+
+Correlation between each SNP’s CTmax effect (t) and its spatial or
+seasonal temperature slope (z), against 100 within-collection CTmax
+shuffles (two-sided rank).
+
+| Lineage | SNPs (freq \< 0.15, \|t\| \> 2.6) | Observed | Shuffles: mean (95% range) | Rank |
+|:---|---:|:---|:---|:---|
+| X | 454 | 0.64 | 0.63 (0.54–0.71) | 41 / 101 |
+| F-N | 94 | 0.69 | 0.58 (0.45–0.70) | 4 / 101 |
+| S | 114 | 0.85 | 0.86 (0.78–0.93) | 66 / 101 |
+| F-FH | 21 | 0.76 | 0.80 (0.56–0.96) | 73 / 101 |
+| IV | 25 | 0.60 | 0.49 (0.25–0.70) | 21 / 101 |
+
+Fraction of the stronger associations at rare SNPs (minor-allele
+frequency \< 0.15) in which the minor allele lowers CTmax, observed
+vs. shuffles.
+
+No lineage shows more association signal than the shuffles: the observed
+counts of small p values sit inside, and in X below, the shuffle
+distribution at every threshold, with or without chromosome 6. The one
+marginal exception is IV, where moderately small p values (p \< 0.001)
+are more common than in 94 of 100 shuffles but the tail is not; with
+five lineages tested and the smallest sample (36 individuals, 2
+collections), this is consistent with chance. The smallest individual p
+values (down to ~10⁻⁷–10⁻⁸) are typical of the shuffles too, and the top
+SNPs share a profile – low frequency, reads in only part of the
+individuals, large estimated effects – expected from chance at weakly
+informative sites, so none is reported as a candidate.
+
+Two patterns that appeared in a first version of the scan (without the
+depth covariate, and with missing individuals given the overall rather
+than the collection mean) do not survive comparison with the shuffles.
+First, CTmax effects do not line up with the spatial or seasonal
+temperature slopes in X or S: the observed correlations (\|r\| ≤ 0.011)
+are well inside the shuffle distributions, whose spread (SD 0.01–0.05)
+is much larger than a chromosome jackknife suggests, because one shuffle
+shifts the effects of all SNPs together. Second, the excess of negative
+effects at rare SNPs (minor allele lowering CTmax) is reproduced by the
+shuffles (63–86% negative in X, S and F-FH, as observed), so it is a
+property of dosage regression at low-frequency sites, not evidence for
+deleterious rare variants; only F-N is slightly above its shuffles (0.69
+vs. 0.58, rank 4 of 101), which with five lineages tested is not
+significant.
+
+CTmax among individuals collected together therefore shows no detectable
+association with individual variants, no polygenic excess, and no link
+between the alleles that track temperature in space or season and those
+that affect CTmax. With 36–104 individuals per lineage this rules out
+only loci of large effect; it is consistent with the variance partition
+above, in which CTmax variation is dominated by lineage, acclimation and
+site.
+
+### Candidate genes: mitochondrial amino-acid differences
+
+Lineage differences in CTmax are heritable but, within lineages, no SNP
+associates with CTmax. The comparative alternative asks which protein
+differences between lineages could underlie them. Mitochondrial OXPHOS
+genes are the first candidates: they are inherited as a unit, they
+define the clades, and amino-acid changes in COX1, CYTB and other
+respiratory-chain subunits alter thermal performance in copepods
+(*Tigriopus californicus*: Willett 2010, Harada et al. 2019) and other
+ectotherms. The clade mitogenome contigs are unannotated de novo
+assemblies, so protein-coding genes were found as open reading frames
+(invertebrate mitochondrial code, ≥ 150 codons; COX1 and CYTB identified
+by conserved motifs, other ORFs by length and strand). ORFs nested
+inside an ORF on the opposite strand are flagged; one member of each
+such pair is probably not a gene. The F contig (16.1 kb) covers most of
+the mitogenome, so the four F lineages can be compared across 11 ORFs;
+the X and IV contigs (about 5 kb) cover only COX1, CYTB and one further
+ORF, so clades are compared there (`Scripts/07_mito_aa.R`).
+
+| ORF | Strand | Position (bp) | Codons | Nested antisense | Fixed nt differences | Nonsynonymous | Synonymous |
+|:---|:---|:---|---:|:---|---:|---:|---:|
+| ORF559- | \- | 788–2464 | 559 |  | 184 | 44 | 140 |
+| ORF311+ | \+ | 2901–3833 | 311 |  | 87 | 15 | 72 |
+| ORF435+ | \+ | 4259–5563 | 435 |  | 135 | 30 | 105 |
+| ORF157- | \- | 5928–6398 | 157 |  | 40 | 12 | 28 |
+| COX1 | \+ | 7456–8997 | 514 |  | 132 | 3 | 129 |
+| CYTB | \+ | 9072–10217 | 382 |  | 111 | 9 | 102 |
+| ORF129- | \- | 9536–9922 | 129 | yes | 42 | 4 | 38 |
+| ORF316+ | \+ | 11689–12636 | 316 |  | 107 | 32 | 75 |
+| ORF155- | \- | 11715–12179 | 155 | yes | 41 | 15 | 26 |
+| ORF219- | \- | 14127–14783 | 219 |  | 66 | 10 | 56 |
+| ORF216- | \- | 14950–15597 | 216 |  | 71 | 53 | 18 |
+
+Open reading frames on the F mitogenome contig and nucleotide
+differences fixed (≥ 80% of ≥ 5 called individuals) between at least two
+F lineages.
+
+| Lineage pair | Amino-acid differences | Excluding ORF216- |
+|:-------------|-----------------------:|------------------:|
+| F-FH – F-MR  |                     52 |                52 |
+| F-FH – F-N   |                     86 |                86 |
+| F-FH – F-NE  |                     89 |                89 |
+| F-MR – F-N   |                     95 |                91 |
+| F-MR – F-NE  |                    100 |                96 |
+| F-N – F-NE   |                     73 |                32 |
+
+Fixed amino-acid differences between F lineages, all ORFs on the F
+contig.
+
+| Clade pair | COX1     | CYTB     | ORF (LQDA) |
+|:-----------|:---------|:---------|:-----------|
+| F – S      | 5 / 495  | 26 / 366 | 17 / 205   |
+| F – X      | 2 / 495  | 15 / 364 | 13 / 207   |
+| F – IV     | 10 / 495 | 31 / 366 | 22 / 204   |
+| S – X      | 5 / 495  | 30 / 364 | 13 / 205   |
+| S – IV     | 11 / 495 | 39 / 367 | 18 / 202   |
+| X – IV     | 8 / 495  | 32 / 364 | 18 / 206   |
+
+Amino-acid differences between clade consensus proteins (differences /
+aligned positions) in the three genes covered by all four clade contigs.
+
+| Gene     | Position (F protein) | F, S, X | IV  | Context (F) |
+|:---------|---------------------:|:--------|:----|:------------|
+| COX1     |                  176 | M       | L   | LRSFGMVLDLM |
+| COX1     |                  415 | G       | A   | LKAQFGMMFLG |
+| COX1     |                  416 | M       | T   | KAQFGMMFLGV |
+| COX1     |                  467 | Y       | F   | VISIMYFLFIL |
+| COX1     |                  495 | Y       | F   | SSLEXYHSFPP |
+| COX1     |                  512 | I       | S   | SIPVVISK    |
+| COX1     |                  514 | K       | S   | PVVISK      |
+| CYTB     |                    7 | I       | V   | KQLKXISPVTK |
+| CYTB     |                   20 | E       | D   | FGSVVELPTPS |
+| CYTB     |                  105 | G       | S   | RGLYYGSYYFS |
+| CYTB     |                  110 | S       | T   | GSYYFSHTWLV |
+| CYTB     |                  159 | D       | E   | PYLGGDLVLWM |
+| CYTB     |                  184 | L       | F   | FSLHFLIPFVV |
+| CYTB     |                  188 | V       | I   | FLIPFVVAAMS |
+| CYTB     |                  192 | M       | L   | FVVAAMSAVHL |
+| CYTB     |                  324 | M       | T   | PLSKMMFWIQI |
+| CYTB     |                  334 | L       | M   | IXIVILLTWIG |
+| CYTB     |                  353 | I       | T   | IVIGQILSVVY |
+| CYTB     |                  360 | S       | L   | SVVYFSYYFFQ |
+| CYTB     |                  364 | F       | I   | FSYYFFQPLMM |
+| CYTB     |                  368 | M       | L   | FFQPLMMMFWD |
+| ORF_LQDA |                   66 | V       | I   | ACPSLVLLYLM |
+| ORF_LQDA |                   99 | A       | P   | YXDMIAGHQFP |
+| ORF_LQDA |                  103 | F       | S   | IAGHQFPFEFD |
+| ORF_LQDA |                  132 | T       | I   | VDXRTTLPLHV |
+| ORF_LQDA |                  135 | L       | M   | RTTLPLHVKIR |
+| ORF_LQDA |                  181 | F       | Y   | DRPGLFFGQCS |
+| ORF_LQDA |                  202 | I       | V   | PIVVEIVXVET |
+| ORF_LQDA |                  209 | Y       | F   | XVETFYAYILS |
+
+Substitutions unique to IV, the low-CTmax clade (IV differs; F, S and X
+share the state).
+
+COX1 is almost invariant: 3 nonsynonymous against 129 synonymous fixed
+differences among F lineages, and at most 11 amino-acid differences
+between any two clades. CYTB and the other ORFs carry most of the
+amino-acid divergence. 29 substitutions are unique to IV (7 in COX1, 14
+in CYTB, 8 in ORF_LQDA).
+
+These are candidates, not results. Every substitution on the branch
+leading to IV is equally consistent with IV’s low CTmax, and with one
+low-CTmax clade there is no replication to separate causal changes from
+the many neutral ones that accumulated with them. Two observations
+constrain the mitochondrial explanation. First, among F lineages, the
+southern F-MR differs from F-N at about 90 amino acids, yet with S as a
+common yardstick (both co-occur with S) F-MR is not more tolerant than
+F-N: F-MR exceeds S by 0.3 °C at MR, and F-N exceeds S by 0.8 °C in the
+Chesapeake. Large mitochondrial divergence within F does not translate
+into a CTmax difference. Second, IV is not more divergent than other
+clades in COX1, the most constrained OXPHOS gene. The useful next step
+is structural: placing the IV-specific CYTB and COX1 substitutions on
+the respiratory-complex structures (quinone-binding sites of complex
+III, the proton channels of complex IV) to see whether any sit where
+function, rather than sequence, changes. ORF216- is unreliable: it has
+no calls in F-FH or F-MR, and F-N and F-NE differ there mostly at
+nonsynonymous sites, the pattern of a misassembled or non-coding region
+rather than a gene.
+
+The nuclear part of the candidate analysis (heat-shock proteins, nuclear
+OXPHOS subunits, lipid desaturases and elongases) needs the RefSeq
+annotation of the reference genome (GCF_053477335.1), which is not yet
+in the project.
+
 ### Trait variability within clades
 
 Shown below is the trait variation (ranges) for each site. Ranges are
@@ -1165,104 +1513,93 @@ collections with both positive and negative individuals.
 
 ## 5. Partitioning vulnerability
 
-Our study examines spatial and temporal variation in upper thermal
-limits for field-acclimated individuals. Given the short generation time
-of these copepods, our results likely reflect the combined influence of
-phenotypic plasticity (acclimation to the changes in temperature), local
-adaptation (variation amongst the sites), and genetic variation between
-the clades.
+Warming tolerance (CTmax minus habitat temperature) is the usual summary
+of vulnerability, and it is usually computed from a single CTmax per
+species. The results above show that “*A. tonsa*” CTmax varies at two
+levels that a single value ignores: heritable differences between
+lineages (common garden), and acclimation within lineages, which is the
+same across sites and seasons (within/between model). Lineage make-up
+also changes through the season. Three scenarios show how much each
+level changes where the species looks vulnerable.
 
-The four clades, while morphologically difficult to differentiate, have
-distinct geographic distributions and physiological tolerances. The
-inclusion of this clade-level variation decreases the slope of the CTmax
-vs. temperature regression. Ignoring this source of variation would lead
-to an overestimated capacity for *A. tonsa* to respond to warming
-(either through acclimation or via gene flow and evolutionary rescue).
+- **Fixed CTmax:** one value for everyone, the mean of all peak-season
+  individuals.
+- **Lineage means:** each lineage’s peak-season mean CTmax (its mean
+  over all collections when it has \< 5 peak-season individuals),
+  weighted by the lineage make-up of the site’s peak collection.
+- **Lineages + acclimation:** CTmax predicted for each lineage on each
+  day from the within/between model (population-level, no site random
+  effect): lineage + within-site temperature (the day’s temperature
+  minus the site’s mean collection temperature) + between-site
+  temperature (the site’s long-term MUR mean). The day’s temperature is
+  clamped to the range of collection temperatures at which that lineage
+  was sampled, so acclimation is not extrapolated beyond the data. Same
+  peak-season make-up.
 
-<img src="../Figures/clade-trait-lat-1.png" data-fig-align="center" />
+Habitat temperature is the bias-corrected daily MUR SST, 2014–2023
+(Section 1), plus 0 or 4 °C for a uniform-warming scenario. Two
+summaries per site, over August–September (the warmest months, peak
+abundance, and the period the peak collections represent): the mean
+warming tolerance of the peak-season population, and the warming
+tolerance on the warmest August–September day of each year (averaged
+over years) for the least tolerant lineage making up ≥ 10% of the peak
+collection. Intervals are 95% ranges from 1,000 bootstrap resamples of
+individuals (fixed and lineage means) or 1,000 draws of the model’s
+fixed effects (lineages + acclimation). Individuals’ CTmax was measured
+against collection-day water temperature, while predictions use MUR SST,
+which in summer runs cooler than the in-situ collection temperatures at
+the northern sites (Section 1); the acclimation scenario therefore uses
+MUR temperatures on a model fitted to in-situ ones.
 
-We illustrate the effects of these different levels of variation by
-calculating warming tolerance for each collection (site x collection
-temperature combination) under three different scenarios.
+<img src="../Figures/wt-scenarios-plot-1.png" data-fig-align="center" />
 
-### Scenario 1 (Fixed CTmax)
+| Metric | Scenario | Range among sites (°C) | Change vs fixed CTmax |
+|:---|:---|---:|:---|
+| Aug–Sep mean | Fixed CTmax | 13.3 | – |
+| Aug–Sep mean | Lineage means | 8.5 | -36% |
+| Aug–Sep mean | Lineages + acclimation | 8.9 | -33% |
+| Aug–Sep mean | Lineages + acclimation (annual make-up) | 8.8 | -34% |
+| Warmest day, least tolerant common lineage | Fixed CTmax | 12.5 | – |
+| Warmest day, least tolerant common lineage | Lineage means | 7.9 | -37% |
+| Warmest day, least tolerant common lineage | Lineages + acclimation | 8.3 | -33% |
+| Warmest day, least tolerant common lineage | Lineages + acclimation (annual make-up) | 8.0 | -36% |
 
-Warming tolerance was calculated using the average CTmax from the peak
-season collections (across all sites and individuals regardless of
-clade). This essentially assumes a fixed CTmax that is constant across
-the geographic range examined.
+Spread of warming tolerance among sites under current conditions. The
+last scenario uses each site’s lineage make-up across all collections
+instead of the peak collection.
 
-### Scenario 2 (Clade-level variation)
+Relative to a single CTmax, lineage means change the spread of
+peak-season warming tolerance among sites by -36%, and lineages with
+acclimation by -33% (warmest-day metric: -37% and -33%). With +4 °C, the
+lowest warming tolerance on the warmest day is at MR under Fixed CTmax
+(-0.1 °C); GW under Lineage means (2.5 °C); MR under Lineages +
+acclimation (2.3 °C).
 
-Here, the same approach is taken but for each clade separately. The
-average CTmax from the peak season for each clade was used as a fixed
-CTmax value when calculating warming tolerance.
+What changes, site by site:
 
-<img src="../Figures/unnamed-chunk-6-1.png" data-fig-align="center" />
+- **A single CTmax makes the south look more vulnerable and the north
+  less vulnerable than its lineages are.** Florida’s lineages (F-FH,
+  F-MR) are the most tolerant, so lineage means raise Florida’s warming
+  tolerance by about 3 °C, enough that +4 °C warming no longer pushes
+  the warmest day to zero. The northern sites’ X and IV are less
+  tolerant than the species average, so their margin drops by about 2
+  °C. Peak-season means in the Chesapeake and Connecticut barely move,
+  because their peak-season lineages (F-N, S) are close to the average;
+  at CT the warmest-day margin still drops by 2 °C, set by the X
+  minority.
+- **Acclimation adds little at the peak and helps most under warming.**
+  The peak-season means already include acclimation to summer water, so
+  acclimation changes current warming tolerance by a few tenths of a
+  degree; with +4 °C it adds up to about 2 °C (GW), limited by the clamp
+  to sampled temperatures. Its intervals are the widest, because it
+  rests on a model rather than direct measurements.
+- **Seasonal turnover keeps the least tolerant lineage out of the
+  heat.** Using each site’s make-up over all collections instead of the
+  peak collection lowers the warmest-day margin by about 2 °C at CT and
+  TK, because IV, the least tolerant lineage, is common there only in
+  autumn. Annual composition would overstate vulnerability where
+  turnover is strongest.
 
-### Scenario 3 (Clade variation and acclimation/adaptation)
-
-Here CTmax is predicted based on the continuous temperature data and a
-model of CTmax as a function of the interaction between collection
-temperature and clade. The predicted CTmax values fall within the range
-of CTmax values observed in the field.
-
-<img src="../Figures/unnamed-chunk-7-1.png" data-fig-align="center" />
-
-### Comparing Scenarios
-
-There is strong geographic variation in the distributions of these
-clades. It does not, for example, make sense to examine warming
-tolerance of Clade X individuals in Florida, as this clade was not
-collected from lower latitudes. To incorporate this distribution
-information, simulated populations were re-assembled reflecting the
-proportional clade composition within each region (calculated across the
-entire set of collections).
-
-<img src="../Figures/region-clade-props-1.png"
-data-fig-align="center" />
-
-Warming tolerance profiles for each clade were added in these
-proportions to generation populations of 100 individuals.
-
-The warming tolerance distributions for each region and the three
-different scenarios are shown below.
-
-<img src="../Figures/peak-season-wt-1.png" data-fig-align="center" />
-
-Overall, differences were fairly minor, with slight increases in
-predicted warming tolerance in low latitude regions and slight decreases
-in higher latitude regions.
-
-We also examined potential effects of warming (a +4°C increase in
-temperature). These predictions assume clade composition does not change
-over time and that warming is constant throughout the year.
-
-Unsurprisingly warming decreases the predicted warming tolerance.
-Similar patterns are observed as in the comparison between the initial
-three scenarios - predicted warming tolerance under warming is lowest in
-Florida and highest in the high latitude regions. Similarly, including
-clade-level variation and acclimation increases warming tolerance in the
-lower latitude regions and decreases it in the higher latitude regions.
-
-<img src="../Figures/peak-season-wt-plus-warming-1.png"
-data-fig-align="center" />
-
-To simplify the comparisons, here we subset the data to just August and
-September (the warmest months and the season typically associated with
-the highest abundance of A. tonsa).
-
-<img src="../Figures/wt-range-scenarios-1.png"
-data-fig-align="center" />
-
-Changes were slight between the scenarios, with the same relative
-patterns between the current and warming scenarios. Compared to the
-fixed CTmax estimate, incorporating both genetic diversity and
-acclimation reduced the range of warming tolerance estimates across the
-samples by ~30%.
-
-| Comparison                      | WT Range | % Decrease |
-|:--------------------------------|---------:|-----------:|
-| Fixed CTmax                     |    13.05 |       0.00 |
-| Clade                           |     9.72 |      25.53 |
-| Genetic Variation & Acclimation |     8.97 |      31.26 |
+These are illustrations, not forecasts: they assume composition and the
+acclimation response stay as observed, warming is uniform through the
+season, and CTmax is the relevant limit.

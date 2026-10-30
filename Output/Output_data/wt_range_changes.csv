@@ -1,0 +1,9 @@
+Scenario,Metric,WT range among sites,Change vs fixed (%)
+Fixed CTmax,Aug–Sep mean,13.32204960067255,0
+Lineage means,Aug–Sep mean,8.540501046993732,-35.89198882308189
+Lineages + acclimation,Aug–Sep mean,8.93765849330818,-32.91078504273868
+Lineages + acclimation (annual make-up),Aug–Sep mean,8.827426584312434,-33.7382246057184
+Fixed CTmax,"Warmest day, least tolerant common lineage",12.476660256410256,0
+Lineage means,"Warmest day, least tolerant common lineage",7.857887051380654,-37.01930733151582
+Lineages + acclimation,"Warmest day, least tolerant common lineage",8.340907689121032,-33.14791364271026
+Lineages + acclimation (annual make-up),"Warmest day, least tolerant common lineage",8.020642450654591,-35.71482844109867
