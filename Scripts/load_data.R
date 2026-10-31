@@ -17,7 +17,6 @@
 #   site_temps      one row per collection (site x season)
 #   temp_summaries  collection temperatures per site, wide, with site means
 #   collections     site_temps with site codes
-#   range_changes   warming tolerance range scenarios (from report.qmd)
 #
 # Requires: here, tidyverse
 
@@ -98,5 +97,3 @@ temp_summaries <- join_data %>%
 
 collections <- site_temps
 
-range_changes <- read.csv(od("range_changes.csv"), check.names = FALSE) %>%
-  rename(Scenario = Comparison)

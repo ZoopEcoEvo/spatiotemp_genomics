@@ -24,9 +24,8 @@ process_gwas_inputs      <- FALSE # sample table -> Output_data/ctmax_gwas_pheno
 process_samples          <- FALSE # phenotypes + cluster export -> Output_data/sample_table.csv
 process_micro            <- FALSE # cluster SSU profile -> Output_data/micro_calls.csv
 process_mito_aa          <- F # mitogenome consensus + sample table -> Output_data/mito_aa/*.csv
-render_report            <- F # Output/Reports/report.qmd -> figures + report
-render_pheno_manuscript  <- FALSE # Manuscript/Sasaki_Pespeni_Phenotype.qmd -> Output/Drafts/
-render_genome_manuscript <- T # Manuscript/Sasaki_Pespeni_LCWG.qmd -> Output/Drafts/
+render_report            <- T # Output/Reports/report.qmd -> figures + report
+render_manuscript        <- T # Manuscript/Sasaki_Pespeni_LCWG.qmd -> Output/Drafts/
 
 # Which cluster export to use (a folder name in Raw_data/cluster_exports/).
 # NULL = the most recent one. Pin a folder name to freeze a manuscript's inputs.
@@ -91,11 +90,7 @@ render_draft <- function(qmd, prefix) {
   file.remove(drafts)
 }
 
-if (render_pheno_manuscript) {
-  render_draft("Sasaki_Pespeni_Phenotype.qmd", "dev_pheno_draft_")
-}
-
-if (render_genome_manuscript) {
+if (render_manuscript) {
   render_draft("Sasaki_Pespeni_LCWG.qmd", "dev_lcwg_draft_")
 }
 

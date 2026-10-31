@@ -1,14 +1,16 @@
 ---
-title: "Space does not substitute for time: cryptic lineages and plasticity, not rapid evolution, structure thermal tolerance in a coastal copepod"
+title: "Phenotypic and genomic variation diverge across space and season in a coastal copepod"
+# alternatives: "Thermal tolerance and genomic variation diverge across space and season in a coastal copepod";
+#   "Spatial temperature gradients predict seasonal change in thermal tolerance but not in the genome of a coastal copepod"
 author:
   - name: Matthew Sasaki
     affiliation: University of Massachusetts Lowell
   - name: Melissa Pespeni
     affiliation: University of Vermont
-abstract: "ABSTRACT HERE. (Draft once Results 1-7 are settled: question - design - lineages differ heritably - within-lineage CTmax tracks temperature plastically, same across space and season - no seasonal evolution beyond drift, no concordance with spatial patterns - a single CTmax misplaces vulnerability; forecasts should be built on lineages and plasticity.)"
+abstract: "ABSTRACT HERE. (Draft once Results are settled: question - design - four cryptic clades differ heritably in CTmax and turn over through the season - CTmax tracks seasonal temperature plastically, but differs among sites more than acclimation predicts - genomes are structured by site, with no seasonal evolution beyond drift and no seasonal echo of spatial temperature associations - a single CTmax misplaces vulnerability; forecasts should be built on clades, plasticity and turnover.)"
 keywords:
   - thermal tolerance
-  - cryptic lineages
+  - cryptic species
   - phenotypic plasticity
   - seasonal evolution
   - low-coverage whole-genome sequencing
@@ -50,6 +52,27 @@ format:
         \DeclareUnicodeCharacter{00D7}{\ensuremath{\times}}
         \DeclareUnicodeCharacter{00B1}{\ensuremath{\pm}}
         \DeclareUnicodeCharacter{2192}{\ensuremath{\rightarrow}}
+        \DeclareUnicodeCharacter{03C0}{\ensuremath{\pi}}
+        \DeclareUnicodeCharacter{03BB}{\ensuremath{\lambda}}
+        \DeclareUnicodeCharacter{00B5}{\ensuremath{\mu}}
+        \DeclareUnicodeCharacter{03BC}{\ensuremath{\mu}}
+        \DeclareUnicodeCharacter{03B1}{\ensuremath{\alpha}}
+        \DeclareUnicodeCharacter{03B2}{\ensuremath{\beta}}
+        \DeclareUnicodeCharacter{03C3}{\ensuremath{\sigma}}
+        \DeclareUnicodeCharacter{03C7}{\ensuremath{\chi}}
+        \DeclareUnicodeCharacter{0394}{\ensuremath{\Delta}}
+        \DeclareUnicodeCharacter{03B8}{\ensuremath{\theta}}
+        \DeclareUnicodeCharacter{207B}{\ensuremath{^{-}}}
+        \DeclareUnicodeCharacter{2070}{\ensuremath{^{0}}}
+        \DeclareUnicodeCharacter{00B9}{\ensuremath{^{1}}}
+        \DeclareUnicodeCharacter{00B2}{\ensuremath{^{2}}}
+        \DeclareUnicodeCharacter{00B3}{\ensuremath{^{3}}}
+        \DeclareUnicodeCharacter{2074}{\ensuremath{^{4}}}
+        \DeclareUnicodeCharacter{2075}{\ensuremath{^{5}}}
+        \DeclareUnicodeCharacter{2076}{\ensuremath{^{6}}}
+        \DeclareUnicodeCharacter{2077}{\ensuremath{^{7}}}
+        \DeclareUnicodeCharacter{2078}{\ensuremath{^{8}}}
+        \DeclareUnicodeCharacter{2079}{\ensuremath{^{9}}}
         \captionsetup[figure]{font=small, margin=20pt, justification=centering}
         \captionsetup[table]{font=small, margin=20pt, justification=centering}
         \usepackage{float} \floatplacement{figure}{H}
@@ -73,6 +96,12 @@ library(tidyverse)
 
 # Processed data shared with the report (sample_table, join_data, site_data, ...)
 source(here("Scripts", "load_data.R"))
+
+# Exclusion counts for the Methods text
+pheno_counts <- count(filter(sample_table, phenotyped), pheno_status)
+n_status <- function(x) sum(pheno_counts$n[pheno_counts$pheno_status == x])
+n_lin <- count(filter(join_data, clade %in% c("X", "F", "S", "IV")), clade) %>%
+  mutate(clade = factor(clade, levels = c("X", "F", "S", "IV"))) %>% arrange(clade)
 ```
 
 # Introduction
@@ -81,37 +110,64 @@ source(here("Scripts", "load_data.R"))
 
 **Organising question:** at what scale does thermal tolerance vary in a widespread coastal "species", and does variation across space predict change through time?
 
-- **Thermal tolerance can vary at four levels**, each implying a different response to warming:
+    - among cryptic clades: clades shift ranges or replace one another;
     - among cryptic lineages: lineages shift ranges;
     - among populations: local adaptation, so populations adapt in place;
     - across seasons: rapid evolution tracks warming quickly;
     - within individuals: plasticity buffers warming.
 - **Space-for-time substitution.** Forecasts often assume spatial gradients (latitude, site temperature) predict responses through time. This assumption can hold for phenotypes and fail for genomes, or the reverse, and it is rarely tested on the same organisms.
 - **Seasonal evolution has been shown in *Drosophila*** (Bergland et al. 2014; Machado et al. 2021), with seasonal allele-frequency change that parallels latitudinal clines. Short-lived marine plankton with many generations per season should be an even better candidate.
-- ***Acartia tonsa*** is a dominant coastal copepod and a standard model for thermal physiology. It has short generations (several per season) and large populations. It is also a complex of deeply divergent cryptic lineages, which is usually ignored in physiological work.
-- **The gap:** no field study has separated the lineage, population, seasonal and individual levels for the same animals, or tested space-for-time substitution at both the phenotypic and genomic levels.
-- **Why it matters for forecasts:** vulnerability is usually summarised as warming tolerance (CTmax minus habitat temperature) from a single CTmax per species. If tolerance differs among lineages and shifts with acclimation, a single value misplaces where and when populations are at risk.
-- **This study:** 9 sites from about 25°N to 47°N, sampled repeatedly through the season. Each individual's CTmax was measured on the day of collection, and the same individual was sequenced at low coverage (about 400 individuals). Pairing individual phenotypes and genomes across space and season is the methodological hook.
+- ***Acartia tonsa*** is a dominant coastal copepod and a standard model for thermal physiology. It has short generations (several per season) and large populations. It is also a complex of deeply divergent cryptic clades, which is usually ignored in physiological work.
+- **The gap:** no field study has separated the clade, population, seasonal and individual levels for the same animals, or tested space-for-time substitution at both the phenotypic and genomic levels.
+- **Hypotheses (from the phenotype draft):** thermal limits vary strongly across both space and season; accounting for clade differences and acclimation raises estimated vulnerability at high latitudes and lowers it at low latitudes.
+- **Why it matters for forecasts:** vulnerability is usually summarised as warming tolerance (CTmax minus habitat temperature) from a single CTmax per species. If tolerance differs among clades and shifts with acclimation, a single value misplaces where and when populations are at risk.
+- **This study:** eight sites from 27.5°N (Florida) to 47°N (Gulf of St. Lawrence), sampled two or three times between July and December 2023. Each individual's CTmax was measured on the day of collection, and the same individual was sequenced at low coverage (about 400 individuals). Pairing individual phenotypes and genomes across space and season is the methodological hook.
 
 # Methods
 
-<!-- Most methods text can be adapted from the report (Output/Reports/report.qmd); section names below match it. -->
+<!-- Prose below is carried over from the phenotype manuscript and updated; remaining bullet sections still to be written (adapt from Output/Reports/report.qmd). -->
 
 ## Field collections and site temperatures
-- Sites, seasons, collection temperatures. [report §1]
-- Long-term site temperatures: MUR SST 2014-2023, water pixels within 5 km. Validated against USGS, CBP, NOAA CO-OPS and DFO stations. Month-varying bias correction at GW (ET5.1); RW flagged. [report §1, "Long-term site temperatures"]
+
+Copepods were collected by surface plankton tow from eight sites along the western Atlantic and Gulf of Mexico coasts, from Florida to the Gulf of St. Lawrence, at two or three times between July and December 2023 (@tbl-sites). Water temperature and salinity were measured at the time of collection with a handheld thermometer and an optical refractometer, respectively. Collections were timed to bracket the warm season: in general, the first sample from each site was collected just after the site reached its warmest period, and the final sample after temperatures had cooled in the autumn. The exception is the two Florida sites, where only two collections (peak and late season) were obtained, the first after an extended period of high temperatures.
+
+To place the collections in a longer-term seasonal context, we used daily sea surface temperature from the Multi-scale Ultra-high Resolution (MUR) analysis (JPL MUR SST v4.1, 0.01°; 2014–2023) [REF]. For each site we averaged the water pixels within 5 km of the collection point (the nearest water pixel where none fell within that radius), which also reflects the scale over which planktonic copepods are advected. MUR temperatures were checked against continuous records from nearby monitoring stations (USGS, Chesapeake Bay Program, NOAA CO-OPS and Fisheries and Oceans Canada). Biases were within ±0.5 °C at all stations except the upper Chesapeake, where the Ganey's Wharf series was corrected month by month against station ET5.1; no station was available to verify the Ritchie Wharf series. From these records we calculated each site's long-term mean temperature, seasonal range and generation-averaged temperatures (@fig-supp-site-temps).
+
+```{r}
+#| label: tbl-sites
+#| tbl-cap: "Locations of the collection sites."
+site_data %>%
+  filter(site_code %in% unique(join_data$site_code)) %>%
+  arrange(lat) %>%
+  select("Site" = site, "Region" = region, "Lat" = lat, "Long" = long) %>%
+  knitr::kable(align = "c", digits = 2)
+```
 
 ## Thermal tolerance
-- CTmax assay on the day of collection; ramp rate; body size measured but not used as a covariate. [report §2]
 
-## Sequencing, mapping and site filtering
-- Library preparation, low-coverage sequencing, mapping to GCF_053477335.1 plus clade mitogenome contigs. Repeat, NUMT and paralog masks; per-clade depth bounds. [report §3]
+Plankton samples were held in an insulated flask to maintain them at the collection temperature. Within three hours of collection, mature *Acartia tonsa* females were sorted from the tow into a mixture of equal parts 63-µm filtered seawater and artificial seawater (bottled spring water adjusted to the collection salinity with Instant Ocean), to acclimate animals to the artificial seawater before the thermal limit assays.
+
+Critical thermal maximum (CTmax) was measured for individual copepods using a custom setup [REF], comprising a reservoir with a heating element and water pump, a clear plexiglass water bath holding thirteen 50-ml flat-bottom glass shell vials, and an Arduino temperature logger. During the assay the heating element warms water in the reservoir, which is pumped through the water bath and back. Copepods were placed individually into ten of the vials, observed through the sides of the bath; the remaining three vials held temperature sensors that recorded water temperature every five seconds.
+
+To start an assay, vials with 10 ml of the artificial seawater were placed in the water bath, adjusted to the collection temperature, and copepods were transferred individually into the vials. Control individuals were held in vials at ambient temperature throughout each assay; none showed changes in behaviour or mortality. After a brief rest, the heating element was turned on. Ramping rates started at about 0.3 °C per minute and slowed to about 0.1 °C per minute (@fig-supp-ramp), typical for CTmax assays with copepods and other small invertebrates [REF]. Copepods were monitored continuously until they no longer responded to gentle stimulus (water movement from slowly turning the vial), and the temperature at that point was taken from the continuous record as the individual's CTmax. This endpoint differs from lethal temperature: all individuals recovered after the assay.
+
+After the assay, each individual was photographed with a handheld microscope camera (Em1 600) and prosome length measured in Fiji [REF] against an image of a 1-mm scale bar. Body size is reported (@fig-supp-size) but not used as a covariate in the analyses. Each copepod was then preserved individually in 95% ethanol, kept at room temperature for several days in the field and stored at -20 °C in the laboratory. Generally about 20 individuals were measured per collection (two assays of ten). The late-season tow in Maine was dominated by the congener *Acartia hudsonica*; all *A. tonsa* recovered were assayed, but sample sizes at that time point were reduced.
+
+## DNA extraction, library preparation and sequencing
+
+DNA was extracted from each individual copepod with a modified magnetic-bead protocol [@ali2015]. Individual copepods were soaked in molecular-grade water for 1 hour at room temperature and then added, on ice, to the wells of a 96-well plate containing 100 µl of digestion buffer (90.5 µl Lifton's buffer, 7 µl of 20 mg/ml Proteinase K and 2.5 µl of 1 M DTT), making sure each copepod was fully submerged before the wells were sealed. Plates were incubated overnight at 55 °C. After incubation, 80 µl of hybridization buffer (2.5 M NaCl, 20% PEG 8000, 0.025 M DTT) and 20 µl of resuspended AMPure XP beads were added to each well; plates were briefly vortexed and incubated for five minutes at room temperature. Plates were placed on a magnetic rack, the supernatant was discarded, and the beads were washed three times with 150 µl of freshly prepared 80% ethanol. After the final wash the beads were air-dried for 11 minutes, resuspended in 20 µl low TE, incubated for five minutes at room temperature and returned to the magnetic rack, and the supernatant containing the purified DNA was transferred to a new plate.
+
+Low-coverage whole-genome libraries were prepared with Twist Bioscience 96-plex library preparation kits following the manufacturer's instructions, and sequenced by Novogene (Sacramento, CA, USA) on two lanes of an Illumina NovaSeq X Plus 25B flow cell (150-bp paired-end; 436 libraries).
+
+## Read processing, mapping and site filtering
+- Demultiplexing (fqtk) and read cleaning (fastp) [REF]; mapping to GCF_053477335.1 plus clade mitogenome contigs. Repeat, NUMT and paralog masks; per-clade depth bounds. [report §3]
 - Exclusions: *A. hudsonica*, unassigned libraries, MR_peak_2_04 and MR_peak_2_05.
 
 ## Clade and lineage assignment
-- Mitogenome assemblies (MEGAHIT, NOVOPlasty), COI tree, genome-wide PCA/admixture; lineages within F. [report §3]
 
-## Population genetics within lineages
+*Acartia tonsa* comprises several deeply divergent cryptic clades, distinguished by mitochondrial COI sequence [@figueroa2020]. Mitogenome contigs were assembled for each clade (MEGAHIT and NOVOPlasty [REF]) from individuals whose COI matched published clade haplotypes, and added to the nuclear reference so that mitochondrial reads map to their own clade's contig rather than to nuclear copies (NUMTs). Each individual was assigned to the clade whose contig received at least 90% of its reads in the COI region (at least 20 reads); libraries below this majority, which contained DNA from two individuals of different clades, were left unassigned (@fig-supp-mito-split). Clade calls agreed with genome-wide structure (PCAngsd and NGSadmix [REF]) in every retained individual. Genome-wide structure further split clade F into four geographically separated lineages (F-N, F-NE, F-FH and F-MR); relationships among lineages were estimated from the COI maximum-likelihood tree (IQ-TREE [REF]) and from genome-wide distances (neighbour-joining on net distances between lineages from the PCAngsd covariance) (@fig-supp-trees). Previous genetic and physiological work treats F as a single clade [REF], and we do the same: clade is the analysis unit throughout, and the F lineages are considered in the Discussion as a direction for future work. The exception is the within-clade association scan, which was run within lineages so that population structure within F did not confound genotype–CTmax associations.
+
+## Population genetics within clades
 - Diversity, Tajima's D, FST, LD decay, relatedness and inbreeding (ANGSD, ngsRelate, ngsLD); local PCA. [report §3]
 
 ## Seasonal allele-frequency change
@@ -121,156 +177,168 @@ source(here("Scripts", "load_data.R"))
 - Space-for-time concordance: per-SNP spatial (site-mean MUR temperature) and seasonal temperature slopes; seasonal and spatial nulls. [report §3, "Does space substitute for time?"]
 
 ## Statistical analysis of CTmax
-- CTmax ~ lineage × temperature mixed model. [report §4, "CTmax model"]
-- Within/between temperature decomposition (van de Pol & Wright 2009), with lineage-specific slopes. [report §4, "Acclimation vs. site differences"]
-- Variance partition (Nakagawa & Schielzeth 2013) with parametric bootstrap. [report §4, "Partitioning CTmax variation"]
-- Natural common garden: collections with $\geq$ 2 lineages of $\geq$ 3 individuals, CTmax ~ collection + lineage. [report §4, "Lineage differences under shared conditions"]
+
+Thermal limits were analysed for individuals verified as adult *A. tonsa* females with a clade assignment. `r sum(pheno_counts$n[pheno_counts$pheno_status != "included"])` phenotyped individuals were excluded: `r n_status("manual exclusion")` were identified after the assay as late-stage juveniles, `r n_status("failed library (no clade)") + n_status("no clade call")` could not be assigned because their sequencing libraries failed, `r n_status("A. hudsonica")` were *A. hudsonica*, and `r n_status("mixed library (unassigned)")` libraries contained DNA from two individuals of different clades. The analysis set comprised `r sum(n_lin$n)` individuals in four clades (`r paste(sprintf("%s %d", n_lin$clade, n_lin$n), collapse = ", ")`).
+
+CTmax was analysed with linear mixed-effects models (lme4 [REF]). The first model included clade, collection temperature (centred) and their interaction as fixed effects, with random intercepts for site (non-thermal variation among sites), collection (site × season), assay replicate (time between collection and assay) and vial position in the water bath ("tube"). Collection temperature varies only between collections, so the collection term prevents individuals from acting as independent replicates of temperature. Model fit was checked visually with the performance package [REF], and clade marginal means (at the mean collection temperature, 22 °C) and temperature slopes (acclimation responses) were extracted with emmeans [REF].
+
+To compare the response of CTmax to seasonal and to spatial temperature variation, each collection's temperature was split into a seasonal component, the mean collection temperature of that season (early, peak or late) across all sites, and a spatial component, the collection's deviation from that season mean, i.e. how much warmer or cooler the site was than the other sites at the same point in the season. Both components were fitted together, with clade and the random effects above, first with common slopes and then with clade-specific slopes; the difference between the spatial and seasonal slopes and its standard error were taken from the model's covariance matrix. Seasons were defined by the seasonal temperature cycle at each site rather than by calendar date, and the Florida sites were not sampled in the early season. As a sensitivity analysis we used the standard within/between-site decomposition [van de Pol & Wright 2009, REF]: each site's mean collection temperature (spatial) and each collection's deviation from it (seasonal). Variance in CTmax was partitioned among clade, spatial and seasonal temperature (the variance of each fitted fixed effect), other site and collection differences, the assay and individuals [Nakagawa & Schielzeth 2013, REF], with 95% intervals from 200 parametric bootstraps. Finally, collections containing two or more clades ($\geq$ 3 individuals each) served as natural common gardens: animals collected together share recent conditions, so clade differences estimated with collection as a fixed effect cannot reflect acclimation.
+
+Seasonal changes in clade composition were tested at each site with Fisher's exact test (clade × season, simulated p) and across sites with the sum of per-site chi-square statistics against 10,000 permutations of season labels within sites. The CTmax expected from composition alone (composition-weighted mean of temperature-adjusted clade effects) was regressed on collection temperature within sites, against 10,000 permutations of clade labels among seasons within sites.
 
 ## Genetic basis of CTmax
-- Within lineages: dosage regression on genotype posteriors, collection and log depth as covariates, within-collection permutation null. [report §4, "Genetic basis of CTmax within collections"]
-- Between lineages: mitochondrial ORF comparisons; nuclear clade consensus and clade-specific amino-acid substitutions in candidate gene sets. [report §4, "Candidate genes"; nuclear part running]
+
+Within each lineage (clades X, S and IV, and the F lineages F-N and F-FH) with at least 30 phenotyped and sequenced individuals (collections with at least 8 individuals of the lineage), CTmax was regressed on genotype dosage (the expected number of minor alleles from ANGSD genotype posteriors [REF]) at every SNP, with collection and log mean sequencing depth as covariates, so individuals were compared only with others collected at the same time and place. A genome-wide null came from 100 replicates with CTmax shuffled among individuals of the same collection. Power was estimated by simulation on each lineage's own data: for 2,000 SNPs sampled across the genome, true genotypes were drawn from each individual's genotype posterior, a causal effect of 0.25–3 °C per allele was added to within-collection-shuffled CTmax, and the scan's test was repeated against a genome-wide 5% threshold (the 5th percentile of the smallest p across SNPs in each permutation). Between clades, mitochondrial protein-coding sequences were compared among clade consensus sequences [report §4, "Candidate genes"]. [Nuclear candidates: pending the experimental-evolution gene list.]
+
+## Additional analyses
+
+Parasites and epibionts were detected from reads that did not map to the *A. tonsa* reference, by screening for small-subunit rRNA (phyloFlash [REF], SILVA 138.1 [REF]); an organism group was called present at ≥ 5 read pairs and ≥ 2 per million library pairs. Their effect on CTmax was estimated within collections with both carriers and non-carriers (CTmax ~ status + clade + (1 | collection)). To test for phenotypic signatures of seasonal selection, the spread of CTmax within clades (absolute deviation from the collection median; Brown–Forsythe) was compared among seasons within each clade × site with a mixed model (|deviation| ~ season + (1 | clade × site)). Long-term effective size was estimated from nucleotide diversity (π = 4N~e~µ) for mutation rates of 10⁻⁹–10⁻⁸ per site per generation, and compared with temporal N~e~.
+
+## Power of the seasonal tests
+
+The power of the seasonal tests was estimated by injecting selection into the observed allele frequencies (unlinked SNPs) and rerunning each test exactly as in the analysis, so that drift, sampling noise and the sampling design were those of the real data. For the seasonal GLM and temporal Fc, a random fraction of SNPs (0.1–10%) had their logit frequency shifted by a fixed amount between each site's first and last sample, in the same direction at every site. For the concordance test, the most temperature-associated SNPs across sites (top 1–100% by spatial z) were given a seasonal temperature response equal to a fraction (0.05–1) of their spatial slope. Detection meant ranking above every within-site permutation (seasonal GLM, concordance) or an added excess Fc larger than the observed excess plus 1.96 standard errors (inverse-variance pooled over sites); ten replicates per scenario.
 
 ## Warming tolerance scenarios
-- Warming tolerance = CTmax - daily habitat temperature (bias-corrected MUR SST 2014–2023, current and +4 °C uniform warming), August–September, per site [report §5].
-- Three scenarios:
-    1. Fixed CTmax: mean of all peak-season individuals.
-    2. Lineage means: each lineage's peak-season mean CTmax, weighted by the peak collection's lineage make-up.
-    3. Lineages + acclimation: daily CTmax per lineage from the within/between model (population level), with temperature clamped to each lineage's sampled range.
-- Summaries: peak-season mean, and the warmest day per year for the least tolerant lineage making up $\geq$ 10% of the peak collection. Sensitivity: annual instead of peak-season make-up.
-- 95% intervals: 1,000 bootstrap resamples of individuals (scenarios 1–2) or draws of the model's fixed effects (scenario 3).
+
+To illustrate how clade differences and acclimation change estimates of vulnerability, we calculated daily warming tolerance (CTmax minus habitat temperature [REF]) at each site from the bias-corrected MUR temperatures for August–September 2014–2023 (the warmest months and the period of peak abundance), and pooled nearby sites into six regions (Florida: MR and FH; Chesapeake: MD and GW; Connecticut; Maine; Shediac: TK; Miramichi: RW), weighting sites equally after applying each site's own composition and temperature terms. We compared three scenarios. Scenario 1 assumes a single CTmax for the species, the mean of all peak-season individuals, so variation in warming tolerance comes only from temperature. Scenario 2 uses each clade's peak-season mean CTmax (its mean across all collections when it had fewer than five peak-season individuals), weighted by the clade make-up of the site's peak-season collection. Scenario 3 adds acclimation: CTmax was predicted for each clade on each day from the within/between-site model (fixed effects only), with the day's temperature as the within-site term. To avoid extrapolating acclimation beyond the data, daily temperatures were clamped to the range of collection temperatures at which each clade was sampled. As a sensitivity analysis, scenario 3 was repeated with each site's clade make-up across all collections instead of the peak collection.
+
+For each region and scenario we summarised the mean warming tolerance of the peak-season population, and the warming tolerance on the warmest August–September day of each year (averaged over years) for the least tolerant clade making up at least 10% of the peak collection. Intervals are 95% ranges from 1,000 bootstrap resamples of individuals (scenarios 1 and 2) or 1,000 draws of the model's fixed effects (scenario 3). All scenarios were repeated with 4 °C of warming applied uniformly. These are illustrations rather than forecasts: they assume no change in clade composition and no evolutionary response, and only scenario 3 allows CTmax to respond to warming (through acclimation, up to the sampled limit).
 
 # Results
 
-## 1. *A. tonsa* is a complex of cryptic lineages that turn over along the coast and through the season
-- Four deeply divergent clades (F, S, X, IV); F splits into lineages (F-N, F-NE, F-FH, F-MR). [in hand]
-- Mitochondrial (COI) and nuclear trees agree at every level: {S, IV} vs {X, F}, X sister to F, and the same order of F lineages. The lineages are separate genetic units, not mitochondrial types on a shared nuclear background. [in hand; report "Lineage phylogeny"]
-- Lineages replace each other along the coast but co-occur at several sites and in single collections.
-- Lineage composition changes through the season at 6 of 7 sites with more than one lineage (combined permutation p < 10^-4^). Late-season (October–November, 10–15 °C) collections shift toward IV at CT, TK and ME, and toward S at MD and GW; S dominates the warm peak at MD and CT. [in hand; report "Seasonal turnover of lineages"]
-- Turnover tracks temperature: the composition-expected CTmax rises 0.04 °C per °C of collection temperature within sites (p < 0.001), about a quarter of the acclimation slope. Warm water holds more tolerant lineages, cool water more IV. Seasonal change in tolerance has a heritable component, through sorting of lineages rather than evolution within them. [in hand; report "Does lineage turnover change seasonal thermal tolerance?" - may sit better in Result 2 or 3]
+<!-- Results follow the six main figures. Status tags in [brackets]; delete outline bullets as text is written. -->
+
+## 1. Thermal limits vary across space and through the season
+
+Collection temperatures ranged from `r min(site_temps$collection_temp)` °C to `r max(site_temps$collection_temp)` °C, with strong seasonal variation at all eight sites (@fig-1; @fig-supp-lat-temp). Thermal limits varied substantially among collections. CTmax generally declined through the season, highest in the early or peak collections and markedly lower in the late collections, and was higher at the southern sites than the northern ones in every season (@fig-1 C). Body size varied less consistently: it increased through the season at several sites but peaked in an earlier collection at others (@fig-supp-size).
+
+```{r}
+#| label: fig-1
+#| fig-cap: "Collection sites and thermal limits. (A) Collection sites. (B) Water temperature at each collection. (C) CTmax of individuals (small points) and collection means ± SE (large points, connected within sites) by season. Colours: sites, south (red) to north (blue)."
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "ms-fig1-1.png"))
+```
+
+## 2. Cryptic clades are structured by site and turn over through the season
+
+Genome-wide PCA separated the four clades completely (@fig-2 A). Within clades, individuals clustered by site rather than by season (@fig-2 B; @fig-supp-clade-structure): F separated Florida (FH, MR) from the Chesapeake (MD, GW) and Connecticut, S separated the Chesapeake from Florida and Connecticut, X separated the Gulf of St. Lawrence (TK, RW) from Connecticut and Maine, and IV showed a similar north–south split. In F, this structure corresponds to four geographically separated lineages whose mitochondrial and nuclear trees agree (@fig-supp-trees).
+
+Clade composition varied strongly across both space and time (@fig-2 C). The low-latitude sites were dominated by F and S, and the northern sites by X and IV. Composition changed through the season at six of the seven sites with more than one clade (combined permutation test, p < 10^-4^; RW, p = 0.11; @fig-supp-lineage-turnover). In Connecticut the early collection contained all four clades, the peak collection was mostly S and the late collection mostly IV; at TK, X made up the early and peak collections and IV the entire late collection; in the Chesapeake, F dominated the early collections and S increased at the peak (MD) or late (GW). These seasonal shifts mirror the spatial pattern: clades common at warm sites dominate warm collections, and IV, a northern clade, dominates the cold late-season collections (@fig-supp-clade-habitat). Because the clades differ in CTmax (Result 5), turnover changes the tolerance of the community: within sites, the CTmax expected from clade composition alone rose by 0.04 °C per °C of collection temperature (permutation p < 0.001), about a quarter of the acclimation response (0.15 °C per °C; @fig-2 D).
+
 - Caveat: about 20 individuals per collection, one year of sampling.
 
 ```{r}
-#| label: fig-lineages
-#| fig-cap: "Cryptic lineages of *Acartia tonsa*. (A) Mitochondrial (COI, maximum likelihood) and nuclear (genome-wide, neighbour-joining) trees of the lineages. (B) Lineage composition of each collection, with collection temperature. (Planned: add a site map.)"
+#| label: fig-2
+#| fig-cap: "Genomic structure and clade turnover. (A) PCA of all individuals (PCAngsd), coloured by clade. (B) PCAs within each clade; labels mark the median position of each site's individuals (sites with at least three individuals). (C) Clade composition of each collection by site and season. (D) CTmax expected from clade composition alone against collection temperature, both relative to the site mean; solid line: the turnover slope; dashed line: the acclimation slope, for comparison."
 #| out-width: "100%"
-knitr::include_graphics(here("Output", "Figures", "lineage-phylogeny-1.png"))
-knitr::include_graphics(here("Output", "Figures", "lineage-turnover-1.png"))
+knitr::include_graphics(here("Output", "Figures", "ms-fig2-1.png"))
 ```
 
-## 2. Lineages differ heritably in thermal tolerance
-- Lineage explains about a quarter of CTmax variance. [in hand]
-- Natural common garden: IV is 2.5–2.9 °C less tolerant than co-occurring X or S, and F-N is 0.8 °C more tolerant than S across three Chesapeake collections. These differences cannot be acclimation. [in hand]
-- S–X shrinks from 1.0 °C across all collections to 0.4 °C (not significant) where they co-occur, so part of it reflects where each lineage was sampled.
-- Caveat: "heritable" here means not explained by shared recent conditions; it could include developmental or maternal effects.
+## 3. Thermal tolerance differs more across space than through the season
 
-```{r}
-#| label: fig-common-garden
-#| fig-cap: "CTmax of lineages collected together at the same place and time. Points are individuals, black is the mean ± SE."
-#| out-width: "100%"
-knitr::include_graphics(here("Output", "Figures", "common-garden-1.png"))
-```
+Collection temperature was split into its seasonal component (the season's mean across sites) and its spatial component (how much warmer or cooler a site was than the other sites in the same season). CTmax rose with both, but more steeply with spatial temperature: 0.25 °C per °C (SE 0.06) against 0.13 °C per °C (SE 0.02) for seasonal temperature, a difference of 0.12 °C per °C (95% CI −0.00 to 0.24, p = 0.054; @fig-3 A). The spatial slope was the steeper of the two in every clade, and clearly so in X (difference 0.22, 95% CI 0.05–0.39) and S (0.18, 0.01–0.35); the intervals for F (0.13, −0.06 to 0.31) and IV (0.16, −0.08 to 0.39) were wider. The conventional within/between-site decomposition, which compares eight site means instead of collections within seasons, gave the same direction but could not resolve the difference (0.11, −0.10 to 0.32; @tbl-supp-slopes). Sites therefore differ in CTmax by more than seasonal acclimation to their temperatures predicts, consistent with the heritable differences in thermal tolerance among populations found in laboratory common-garden experiments [REF].
 
-## 3. Within lineages, CTmax tracks temperature through plasticity, equally across space and season
-- Within-site (seasonal) slope 0.15 °C per °C; between-site slope 0.12; difference -0.02 (-0.15 to 0.11). The spatial gradient in CTmax is what acclimation predicts: for the phenotype, space substitutes for time. [in hand]
-- Variance partition: lineage 24%, site temperature 20%, other site 16%, acclimation 18%, other collection 8%, individual 14%. [in hand]
-- Cannot exclude modest local adaptation (upper CI ~0.1 °C per °C).
+Clade, temperature and site together structured most of the variation in CTmax (@fig-3 B). Without temperature terms, collection (32%), clade (35%) and site (19%) were the largest components, with 13% among individuals within a collection. With the temperature terms, spatial temperature explained 22% (95% CI 7–42%) and seasonal temperature 10% (5–22%) of CTmax variance; they absorbed most of the collection component (6% remaining), leaving 14% to other site differences. Clade accounted for 34%, with a wide interval (2–64%) because there are only four clades.
+
+- Infection does not explain CTmax variation: within collections, individuals carrying parasites (*Paradinium*, trematodes) or epibiotic ciliates, detected from unmapped reads, did not differ in CTmax from non-carriers (@tbl-supp-infection; @fig-supp-infection). [in hand]
 - Note: in summer, collection-day temperatures at northern sites run 2–6 °C warmer than MUR, which matters for interpreting acclimation. [TO CHECK]
 
 ```{r}
-#| label: fig-plasticity
-#| fig-cap: "CTmax against within-site (seasonal) and between-site (spatial) temperature, and the partition of CTmax variance."
-#| out-width: "100%"
-knitr::include_graphics(here("Output", "Figures", "within-between-plot-1.png"))
-knitr::include_graphics(here("Output", "Figures", "ctmax-variance-partition-1.png"))
+#| label: fig-3
+#| fig-cap: "Thermal tolerance responds more strongly to spatial than to seasonal temperature. (A) Difference between the spatial and seasonal CTmax slopes (°C CTmax per °C; 95% CI), for all clades together and for each clade. Collection temperature was split into the season's mean across sites (seasonal) and each collection's deviation from that mean (spatial). (B) Share of CTmax variance explained by clade, spatial and seasonal temperature, other site and collection differences, the assay and individuals, without and with the temperature terms."
+#| out-width: "90%"
+knitr::include_graphics(here("Output", "Figures", "ms-fig3-1.png"))
 ```
 
-## 4. Genomic variation within lineages is structured in space, not time
-- High diversity and a large long-term Ne in every lineage; no close kin. Lineage-specific histories: expansion in F, large stable S and IV, high diversity in northern X despite its seasonal presence. [in hand]
-- Temporal Ne is much smaller (about 750–5,400). The contrast with long-term Ne suggests sites are open: advection and mixing of water masses inflate apparent drift within a season. [in hand; interpretation for Discussion]
-- Allele-frequency variance between sites is about 13 times that between seasons in X, and about 6 times in F-N. [in hand]
+## 4. Genomic variation is spatial, and seasonal change does not echo spatial temperature associations
+
+- Allele-frequency variance between sites far exceeds that between seasons within sites (@fig-4 A): about 13 times in X (0.030 vs 0.002, scaled by $\bar{p}(1-\bar{p})$), and the seasonal component is indistinguishable from zero in S. In F, between-site variance (0.41) includes the divergence between Florida and Chesapeake populations. IV had no site sampled in two seasons. [in hand]
+- After calibrating low-coverage sampling noise, seasonal change is about what drift predicts (calibrated excess Fc 0.000–0.011; @fig-supp-split-half, @fig-supp-seasonal, @fig-supp-drift). No genome-wide excess of seasonal association in X or F, against time in season or against temperature; chr6 makes no difference; S uninformative. [in hand]
+- Concordance: alleles associated with warmer sites did not rise after warm periods. Among the 1% of SNPs with the strongest spatial temperature association, the sign of the seasonal slope matched the spatial slope in 55% (X) and 49% (F), within the range of the permutations (@fig-4 B; @fig-supp-concordance). [in hand]
+- Power is built into @fig-4 B: had these SNPs responded to seasonal temperature at only 5–10% of their spatial slope (seasonal changes of 4–14 percentage points), sign agreement would have exceeded every permutation. In F the spatial associations mostly reflect the Florida–Chesapeake split, so X is the cleaner test. [in hand]
+- Seasonal GLM power (@fig-supp-power): ≥ 80% power for changes of about 18 percentage points at ≥ 5% of SNPs or 23 points at ≥ 1% (s ≈ 0.04–0.06 per generation in F, 0.13–0.18 in X, which has fewer generations between samples); temporal Fc is less sensitive (23 points at ≥ 5% of SNPs). With 12 (X) or 24 (F) permutations, the smallest attainable p is 0.083 and 0.042. Strong seasonal selection, and any seasonal echo of the spatial temperature associations, is excluded; weak, polygenic seasonal change is not. [in hand]
+- Temporal Ne (about 200–5,400) is 23–214 times smaller than long-term Ne from nucleotide diversity, even at a high mutation rate of 10⁻⁸ (@tbl-supp-ne): within a season, local allele frequencies change far more than closed populations of the long-term size would allow, consistent with sites open to immigration and mixing of water masses. [in hand; Discussion]
+- High diversity and large long-term Ne in every clade; no close kin (@fig-supp-diversity). [in hand]
+- Phenotypic check: CTmax spread within clades did not narrow through the season, as strong selection removing intolerant individuals would cause (mean absolute deviation +0.02 °C at peak, +0.05 °C late vs early; CIs span zero; @fig-supp-ctmax-variance). [in hand]
 - chr6 structural polymorphism in northern X. [TO DECIDE: main text or supplement]
 
 ```{r}
-#| label: fig-genomic-variation
-#| fig-cap: "Genetic diversity within lineages and the partition of allele-frequency variance into spatial and seasonal components."
+#| label: fig-4
+#| fig-cap: "Genomic variation is spatial, and seasonal allele-frequency change does not echo spatial temperature associations. (A) Allele-frequency variance between sites and between seasons within sites, scaled by $\\bar{p}(1-\\bar{p})$, after removing sampling noise (unlinked SNPs; 95% CI from a chromosome jackknife); each clade on its own scale; IV had no site sampled in two seasons. (B) Agreement in sign between seasonal and spatial temperature slopes for the 1% of SNPs with the strongest spatial association, in X and F. Diamonds: observed; grey band: range under permutations of temperature among each site's collections; lines: power simulations in which these SNPs respond to seasonal temperature at a fraction of their spatial slope (square-root scale), labelled with the implied seasonal change in allele frequency (percentage points)."
 #| out-width: "100%"
-knitr::include_graphics(here("Output", "Figures", "diversity-pops-1.png"))
-knitr::include_graphics(here("Output", "Figures", "freq-variance-partition-1.png"))
+knitr::include_graphics(here("Output", "Figures", "ms-fig4-1.png"))
 ```
 
-## 5. No rapid seasonal evolution, and no concordance between space and time
-- After calibrating low-coverage sampling noise, seasonal change is about what drift predicts (calibrated excess Fc 0.000–0.011). [in hand]
-- No genome-wide excess of seasonal association in X or F, against time in season or against temperature; chr6 makes no difference; S uninformative. [in hand]
-- Concordance: alleles associated with warm sites do not rise after warm periods (X: r $\approx$ 0.04, rank 5–6 of 24 under the null). For the genome, space does not substitute for time. [in hand]
+## 5. Clades differ heritably in thermal tolerance, and IV acclimates most
+
+The clades differed strongly in thermal tolerance (@fig-5). At the mean collection temperature (22 °C), marginal mean CTmax was 35.9 °C in F (95% CI 35.0–36.8), 35.2 °C in S, 34.8 °C in X and 33.4 °C in IV; F exceeded S and X by 0.7–1.1 °C, IV was 1.5–2.5 °C below every other clade, and S and X did not differ (0.35 °C, p = 0.57). CTmax rose with collection temperature in every clade, at 0.13–0.15 °C per °C in F, S and X and about twice that in IV (0.27 °C per °C; IV vs others p = 0.01–0.02). A single regression ignoring clade gives a steeper slope (0.24 °C per °C) than any clade except IV, because the more tolerant clades were collected in warmer water.
+
+Because clades occupy different sites and seasons, these comparisons could partly reflect the conditions each was collected in. Collections containing two or more clades resolve this (@fig-supp-common-garden): IV was 2.5 °C less tolerant than X (three shared collections) and 2.8 °C less tolerant than S (one), and F was 0.6 °C more tolerant than S (five) and 1.0 °C more tolerant than X (one). The S–X difference was small and not significant within shared collections (0.4 °C, two collections), as in the model. Clade differences in CTmax are therefore not explained by recent conditions.
+
+- Caveat: "heritable" here means not explained by shared recent conditions; it could include developmental or maternal effects.
 
 ```{r}
-#| label: fig-seasonal
-#| fig-cap: "Seasonal allele-frequency change against the drift expectation, per-SNP seasonal tests against their permutation null, and spatial–seasonal concordance."
+#| label: fig-5
+#| fig-cap: "Clade differences in thermal tolerance. (A) CTmax against collection temperature (points: individuals; lines and bands: fitted values and 95% CI from the mixed model with clade × temperature, over each clade's sampled range). (B) Marginal mean CTmax at the mean collection temperature (22 °C; top) and acclimation slope (bottom) for each clade, with 95% CI."
 #| out-width: "100%"
-knitr::include_graphics(here("Output", "Figures", "seasonal-change-1.png"))
-knitr::include_graphics(here("Output", "Figures", "concordance-1.png"))
+knitr::include_graphics(here("Output", "Figures", "ms-fig5-1.png"))
 ```
 
-## 6. The genetic basis of tolerance lies between lineages, not within them
-- Within lineages: no SNP associates with CTmax beyond what within-collection shuffles produce, once sequencing depth is controlled. [in hand; TO DO: power statement, i.e. the per-SNP effect detectable in each lineage]
-- Between lineages, mitochondrial: COX1 nearly invariant; 29 substitutions unique to IV (7 COX1, 14 CYTB, 8 in a third ORF). Large mitochondrial divergence within F does not track CTmax. [in hand; X and IV contigs cover only ~a third of the mitogenome]
-- Between lineages, nuclear: clade-specific amino-acid substitutions in heat-shock, nuclear OXPHOS and lipid genes against the genome background. [running]
+## 6. Genetic basis of thermal tolerance
 
-```{r}
-#| label: fig-genetic-basis
-#| fig-cap: "CTmax association within lineages against within-collection shuffles. (Planned: add the candidate-gene summary and a summary diagram of the scales of variation.)"
-#| out-width: "100%"
-knitr::include_graphics(here("Output", "Figures", "gwas-qq-1.png"))
-```
+- Within lineages (exploratory): no SNP was associated with CTmax beyond what within-collection permutations produced (@fig-supp-gwas), but the scan could detect only loci of roughly 2–3 °C per allele in the two largest groups (X, F-N; 50% power at minor-allele frequency 0.3–0.5) and essentially none in S, F-FH and IV (@tbl-supp-gwas-power). Genotype accuracy at < 1x coverage was r^2^ = 0.39–0.47. The scan therefore does not constrain the polygenic basis of within-clade variation. Detecting a locus explaining 5% of within-collection variance would need roughly 2,000 individuals per group at this coverage. [in hand]
+- Between clades, mitochondrial: COX1 nearly invariant; 29 substitutions unique to IV, the least tolerant clade (7 COX1, 14 CYTB, 8 in a third ORF) (@tbl-supp-mito-pairs, @tbl-supp-mito-iv). [in hand; X and IV contigs cover only ~a third of the mitogenome]
+- Between clades, nuclear: candidate genes from the experimental-evolution study. [pending gene list]
+- Summary of the scales of variation: @tbl-scales.
 
 ```{r}
 #| label: tbl-scales
 #| tbl-cap: "Summary of the scales of variation in thermal tolerance (draft)."
 tibble::tribble(
   ~Scale, ~`CTmax varies?`, ~`Genomic signal?`, ~Interpretation,
-  "Lineage", "Yes, up to ~3 °C", "Deep divergence; candidates under test", "Heritable; range shifts",
-  "Site within lineage", "Yes, as acclimation predicts", "Strong differentiation, not linked to CTmax", "Mostly plasticity",
-  "Season within site", "Yes, through acclimation", "Change about equal to drift; no concordance", "No rapid evolution",
-  "Individual", "Yes", "No within-lineage associations", "Plasticity / small effects"
+  "Clade", "Yes, up to ~2.5 °C at a common temperature", "Deep divergence", "Heritable; range shifts and seasonal turnover",
+  "Site within clade", "Yes, more than seasonal acclimation predicts", "Strong differentiation among sites", "Plasticity plus a persistent site-level component",
+  "Season within site", "Yes, through acclimation and clade turnover", "Drift only; no seasonal echo of spatial associations", "No detectable seasonal evolution",
+  "Individual", "Yes", "Not resolvable at this sample size and coverage", "Genetic basis unknown"
 ) %>% knitr::kable()
 ```
 
-## 7. Accounting for lineages, acclimation and turnover changes where *A. tonsa* is vulnerable
-- A single CTmax makes Florida look most vulnerable and the north least. Lineage means raise Florida's margin by about 3 °C (F-FH, F-MR are the most tolerant lineages) and lower the northern sites' by about 2 °C (X, IV); Chesapeake and Connecticut peak-season means barely change. [in hand; report §5]
-- The spread of warming tolerance among sites shrinks by about a third (30–37% depending on scenario and metric).
-- With +4 °C, the fixed CTmax puts Florida's warmest days at zero warming tolerance; lineage-specific CTmax keeps them about 2.5 °C above.
-- Acclimation changes little at the peak (peak means already include it) and adds up to ~2 °C under warming; it is the least certain scenario.
-- Seasonal turnover matters: annual instead of peak-season make-up lowers the warmest-day margin by ~2 °C at CT and TK, because IV is common there only in autumn. Links Result 7 to Result 1.
-- Ties the paper together: lineages (Results 1–2) and plasticity (Result 3) are what matter for forecasts; rapid evolution (Result 5) adds nothing detectable.
+## 7. Accounting for clades, acclimation and turnover changes where *A. tonsa* is vulnerable
+
+With clade-specific CTmax and acclimation, daily warming tolerance over the sampled season was lowest in Florida and the Chesapeake, where the warmest days came within a few degrees of zero under 4 °C of warming, and highest in Maine and the Gulf of St. Lawrence (@fig-6 A). The scenarios differed most on the warmest days (@fig-6 B; @fig-supp-wt-scenarios, @fig-supp-wt-distributions). With a single CTmax for the species, peak-season warming tolerance ranged 13 °C across regions, from 5.8 °C in Florida to 18.8 °C in Maine. Clade-specific CTmax narrowed this range by 31% (@tbl-wt-range), raising warming tolerance in Florida by 1.9 °C and in the Chesapeake by 1.1 °C (F and S are the most tolerant clades) and lowering it in Maine and the Gulf of St. Lawrence by about 2 °C (X and IV are less tolerant than the species average). Adding acclimation left the range 30% narrower than with a single CTmax; the warmest-day metric gave similar reductions (29–30%). With 4 °C of warming, the single-CTmax scenario brought warming tolerance on Florida's warmest days to zero (−0.2 °C), whereas clade-specific CTmax kept it 1.7 °C above, and 2.6 °C with acclimation. Using each site's clade make-up across all collections, instead of the peak-season collection, lowered the warmest-day margin by about 2 °C in Connecticut, Maine and Shediac, because IV, the least tolerant clade, is common there only in autumn.
+
 - Caveat: MUR summer temperatures run below in-situ collection temperatures at the northern sites; the acclimation model was fitted to in-situ temperatures.
 
 ```{r}
-#| label: fig-vulnerability
-#| fig-cap: "Warming tolerance (CTmax - habitat temperature) in August–September at each site under three scenarios: a single fixed CTmax, lineage-specific mean CTmax weighted by peak-season lineage make-up, and lineage-specific CTmax with acclimation. Circles: peak-season mean; triangles: warmest day, least tolerant common lineage. Current conditions and +4 °C uniform warming; bars are 95% intervals."
+#| label: fig-6
+#| fig-cap: "Warming tolerance (CTmax − habitat temperature). (A) Distribution of daily warming tolerance in each region over the sampled season (July–November, MUR SST 2014–2023) with clade-specific CTmax and acclimation; days weighted by the clade make-up of the matching collection. Dark: current conditions; pale: +4 °C uniform warming. (B) Warming tolerance on the warmest August–September day (mean over years) for the least tolerant clade making up at least 10% of the peak collection, under a single fixed CTmax, clade means, and clades with acclimation; 95% intervals."
 #| out-width: "100%"
-knitr::include_graphics(here("Output", "Figures", "wt-scenarios-plot-1.png"))
+knitr::include_graphics(here("Output", "Figures", "ms-fig6-1.png"))
 ```
 
 ```{r}
 #| label: tbl-wt-range
-#| tbl-cap: "Spread of warming tolerance among sites under current conditions, and its change relative to a fixed CTmax. The last scenario uses annual instead of peak-season lineage make-up."
+#| tbl-cap: "Spread of warming tolerance among regions under current conditions, and its change relative to a fixed CTmax. The last scenario uses annual instead of peak-season clade make-up."
 read_csv(here("Output", "Output_data", "wt_range_changes.csv"), show_col_types = FALSE) %>%
   mutate(`Change vs fixed (%)` = if_else(Scenario == "Fixed CTmax", "–", sprintf("%+.0f", `Change vs fixed (%)`))) %>%
-  knitr::kable(digits = 1, col.names = c("Scenario", "Metric", "Range among sites (°C)", "Change vs fixed (%)"))
+  knitr::kable(digits = 1, col.names = c("Scenario", "Metric", "Range among regions (°C)", "Change vs fixed (%)"))
 ```
 
 # Discussion
 
-- **Main message:** thermal tolerance in this "species" is structured by cryptic lineages (heritable) and plasticity (within lineages), not by rapid evolution. Space substitutes for time in phenotype but not in genome.
-- **Why no rapid seasonal evolution, despite short generations?**
+- **Main message:** thermal tolerance in this "species" is structured by cryptic clades (heritable), by plasticity, and by persistent differences among sites, not by seasonal evolution. Phenotype and genome agree that sites differ, but diverge through the season: CTmax changes plastically and through clade turnover, while allele frequencies change only by drift.
+- **Space vs season in the phenotype.** CTmax rises about twice as steeply with spatial as with seasonal temperature. The spatial component beyond acclimation is consistent with heritable population differences shown in common-garden experiments [REF], though developmental plasticity and longer-term acclimatisation may contribute. Spatial gradients in CTmax therefore overstate the short-term plastic response to warming within a site.
+- **Why no strong seasonal evolution, despite short generations?**
     - Open populations: advection and mixing reset local allele frequencies; the gap between long-term and temporal Ne.
     - Overlapping generations and egg banks slow the response to selection within a season.
     - Plasticity absorbs seasonal temperature change, weakening selection on tolerance.
     - Contrast with *Drosophila* (Bergland et al. 2014; Machado et al. 2021).
-- **Lineage turnover as the seasonal response.** Composition shifts with temperature and adds about a quarter to the seasonal CTmax change from acclimation. The community responds to season through sorting of heritably different lineages (cf. seasonal species succession in plankton), not through allele-frequency change within them. Where do lineages go between seasons: resting eggs, advection from offshore or other estuaries?
-- **Implications for forecasting:** model lineages separately, treat within-lineage spatial variation as plastic, and do not expect within-season evolutionary rescue. A single species-level CTmax overstates vulnerability in warm regions and understates it in cool ones (Result 7); seasonal lineage turnover means peak-season composition, not annual composition, sets exposure.
-- **Implications for lab studies:** experiments that treat "*A. tonsa*" as one unit can mix lineages that differ by ~3 °C in CTmax.
-- **Caveats:** low-coverage power for small-effect loci; CTmax as one measure of tolerance; collection-day temperature vs MUR; partial mitogenomes for X and IV; F consensus pools four lineages.
+- **Clade turnover as the seasonal response.** Composition shifts with temperature and adds about a quarter to the seasonal CTmax change from acclimation. The community responds to season through sorting of heritably different clades (cf. seasonal species succession in plankton), not through allele-frequency change within them. Where do clades go between seasons: resting eggs, advection from offshore or other estuaries?
+- **Implications for forecasting:** model clades separately, account for acclimation and turnover, and do not expect within-season evolutionary rescue. A single species-level CTmax overstates vulnerability in warm regions and understates it in cool ones (Result 7); seasonal turnover means peak-season composition, not annual composition, sets exposure.
+- **Implications for lab studies:** experiments that treat "*A. tonsa*" as one unit can mix clades that differ by up to ~2.5 °C in CTmax.
+- **Space-for-time predictions and ecological acclimation:** relate the composition result to community-level 'ecological acclimation' through species turnover (Stemkovski et al. [REF]); here the turnover happens among cryptic clades within a single nominal species.
+- **Future directions: structure within clade F.** F comprises four geographically separated lineages with concordant mitochondrial and nuclear trees (@fig-supp-trees), and the Florida lineages had the highest CTmax in the dataset. Whether these are locally adapted populations or incipient cryptic species, and whether they differ in thermal physiology under common-garden conditions, is an open question; here they were analysed together, as in previous work.
+- **Caveats:** the seasonal tests detect only strong selection (roughly 10–20 percentage-point seasonal changes), and few sites and seasons cap the permutation p values (0.083 for X); the spatial–seasonal slope difference rests on three phenological seasons and is marginal overall (p = 0.054), though consistent across clades; the within-clade genetic basis of CTmax was beyond reach at this sample size and coverage (the association scan is reported for completeness, with its power); CTmax as one measure of tolerance; collection-day temperature vs MUR; partial mitogenomes for X and IV.
 
 
 <!-- References are printed here, before the supplementary material.
@@ -302,6 +370,212 @@ read_csv(here("Output", "Output_data", "wt_range_changes.csv"), show_col_types =
      seasonal-glm, mito amino-acid tables, gwas tables. -->
 
 ```{r}
+#| label: fig-supp-lineage-turnover
+#| fig-cap: "Clade composition of each collection, with collection temperature (top) and individuals sequenced (bottom)."
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "lineage-turnover-1.png"))
+```
+
+```{r}
+#| label: fig-supp-within-between
+#| fig-cap: "Sensitivity analysis: CTmax against the within-site (seasonal) and between-site (spatial) components of collection temperature from the site-mean decomposition, by clade."
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "within-between-plot-1.png"))
+```
+
+```{r}
+#| label: tbl-supp-slopes
+#| tbl-cap: "Seasonal and spatial CTmax slopes (°C per °C, ± SE) and their difference under two decompositions of collection temperature. Season-mean split (main text): seasonal = the season's mean collection temperature across sites; spatial = a collection's deviation from it. Site-mean split: spatial = the site's mean collection temperature; seasonal = a collection's deviation from it. All models include clade and random intercepts for site, collection, assay replicate and tube."
+read_csv(here("Output", "Output_data", "ctmax_slope_differences.csv"), show_col_types = FALSE) %>%
+  transmute(Decomposition = split, Group = group,
+            `Seasonal slope` = sprintf("%.2f ± %.2f", seasonal, seasonal_se),
+            `Spatial slope` = sprintf("%.2f ± %.2f", spatial, spatial_se),
+            `Spatial − seasonal (95% CI)` = sprintf("%.2f (%.2f, %.2f)", diff, lo, hi),
+            p = signif(p, 2)) %>%
+  knitr::kable()
+```
+
+```{r}
+#| label: fig-supp-common-garden
+#| fig-cap: "Natural common gardens: CTmax of clades collected together at the same place and time (collections with at least two clades of at least three individuals). Points are individuals; black is the mean ± SE."
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "common-garden-1.png"))
+```
+
+```{r}
+#| label: fig-supp-diversity
+#| fig-cap: "Genetic diversity within populations of each clade (F shown by lineage)."
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "diversity-pops-1.png"))
+```
+
+```{r}
+#| label: fig-supp-seasonal
+#| fig-cap: "Seasonal allele-frequency change within sites against the drift expectation after calibrating sampling noise."
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "seasonal-change-1.png"))
+```
+
+```{r}
+#| label: fig-supp-drift
+#| fig-cap: "Temporal F~c~ between each site's first and last sample, minus sampling noise, against the number of generations between samples. Open: assuming two chromosomes sampled per individual; filled: calibrated from split halves, with 95% CI."
+#| out-width: "75%"
+knitr::include_graphics(here("Output", "Figures", "ms-figS-drift-1.png"))
+```
+
+```{r}
+#| label: fig-supp-concordance
+#| fig-cap: "Concordance of spatial and seasonal temperature associations against seasonal and spatial nulls."
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "concordance-1.png"))
+```
+
+```{r}
+#| label: tbl-supp-ne
+#| tbl-cap: "Long-term effective size from nucleotide diversity (π = 4Neµ; µ = 10⁻⁸ to 10⁻⁹ per site per generation) against the temporal (within-season) Ne estimated from calibrated F~c~."
+ne_f <- here("Output", "Output_data", "ne_comparison.csv")
+if (file.exists(ne_f)) {
+  read_csv(ne_f, show_col_types = FALSE) %>%
+    transmute(Group = group, `π (median)` = signif(pi, 2),
+              `Long-term Ne` = sprintf("%s – %s", format(signif(ne_long_1e8, 2), big.mark = ",", trim = TRUE),
+                                       format(signif(ne_long_1e9, 2), big.mark = ",", trim = TRUE)),
+              `Temporal Ne, median (range)` = sprintf("%s (%s – %s)", format(round(ne_temporal), big.mark = ",", trim = TRUE),
+                                                      format(round(ne_min), big.mark = ",", trim = TRUE), format(round(ne_max), big.mark = ",", trim = TRUE)),
+              `Ratio (µ = 10⁻⁸)` = sprintf("%.0f×", ratio_low)) %>%
+    knitr::kable()
+}
+```
+
+```{r}
+#| label: fig-supp-ctmax-variance
+#| fig-cap: "Spread of CTmax within clades through the season: standard deviation of CTmax in each collection, for each clade at each site sampled in two or more seasons (collections with at least five individuals of the clade)."
+#| out-width: "75%"
+knitr::include_graphics(here("Output", "Figures", "ctmax-variance-season-1.png"))
+```
+
+```{r}
+#| label: fig-supp-infection
+#| fig-cap: "CTmax and body size of individuals carrying parasites or epibionts (positive) and non-carriers (negative) within the same collections (collections with at least two of each)."
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "infection-traits-1.png"))
+```
+
+```{r}
+#| label: tbl-supp-infection
+#| tbl-cap: "Effect of carrying a parasite or epibiont on CTmax and body size within collections (trait ~ status + clade + (1 | collection))."
+inf_f <- here("Output", "Output_data", "infection_traits.csv")
+if (file.exists(inf_f)) {
+  read_csv(inf_f, show_col_types = FALSE) %>%
+    mutate(covariate = recode(covariate, parasite_any = "Parasite", epibiont_any = "Epibiont"),
+           trait = recode(trait, ctmax = "CTmax (°C)", size = "Prosome length (mm)")) %>%
+    knitr::kable(digits = 3, col.names = c("Carrier of", "Trait", "Collections", "Carriers", "Effect", "SE"))
+}
+```
+
+```{r}
+#| label: tbl-supp-mito-pairs
+#| tbl-cap: "Amino-acid differences between clade consensus proteins (differences / aligned positions) in the three mitochondrial genes covered by all four clade contigs."
+mp_f <- here("Output", "Output_data", "mito_aa", "clade_aa_pairs.csv")
+if (file.exists(mp_f)) {
+  read_csv(mp_f, show_col_types = FALSE) %>%
+    mutate(value = sprintf("%d / %d", differences, aligned_aa), pair = str_replace(pair, "-", " – ")) %>%
+    select(gene, pair, value) %>% pivot_wider(names_from = gene, values_from = value) %>%
+    rename(`Clade pair` = pair, `ORF (LQDA)` = ORF_LQDA) %>%
+    knitr::kable()
+}
+```
+
+```{r}
+#| label: tbl-supp-mito-iv
+#| tbl-cap: "Mitochondrial amino-acid substitutions unique to IV, the least tolerant clade (IV differs; F, S and X share the state). Positions are in the F protein."
+mi_f <- here("Output", "Output_data", "mito_aa", "IV_specific_aa.csv")
+if (file.exists(mi_f)) {
+  read_csv(mi_f, show_col_types = FALSE) %>%
+    rename(Gene = gene, Position = pos_F, `F, S, X` = F_S_X, `Context (F)` = context_F) %>%
+    knitr::kable()
+}
+```
+
+```{r}
+#| label: fig-supp-power
+#| fig-cap: "Power of the seasonal tests, from selection injected into the observed allele frequencies. (A) Share of replicates detected by the seasonal GLM and the temporal Fc test, by the fraction of SNPs under selection and their change in allele frequency between first and last samples (from 50%). (B) Concordance test: detection when the most temperature-associated SNPs respond to seasonal temperature at a fraction λ of their spatial slope, with the implied seasonal change."
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "power-seasonal-1.png"))
+```
+
+```{r}
+#| label: fig-supp-gwas
+#| fig-cap: "CTmax association within lineages (clades X, S and IV, and the F lineages F-N and F-FH): SNPs below each p-value threshold, observed vs the mean of 100 within-collection shuffles of CTmax and the uniform expectation."
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "gwas-qq-1.png"))
+```
+
+```{r}
+#| label: tbl-supp-gwas-power
+#| tbl-cap: "Power of the within-lineage CTmax association scan: share of simulated causal SNPs detected at the genome-wide 5% threshold, by effect size (°C per allele) and minor-allele frequency 0.3–0.5. Numbers in parentheses: mean share of within-collection CTmax variance explained by the causal locus. r^2^: squared correlation between expected dosage and true genotype."
+pw_files <- Sys.glob(cx("results", "16_gwas", "*.power.tsv"))
+if (length(pw_files)) {
+  map_dfr(pw_files, read_tsv, show_col_types = FALSE) %>%
+    filter(str_detect(maf_bin, "^\\(0\\.3")) %>%
+    group_by(lineage) %>% mutate(r2 = sprintf("%.2f", mean(r2))) %>% ungroup() %>%
+    transmute(lineage, r2, beta = paste0(beta, " °C"), v = sprintf("%.2f (%.0f%%)", power, 100 * pve)) %>%
+    pivot_wider(names_from = beta, values_from = v) %>%
+    mutate(lineage = factor(lineage, levels = c("X", "F-N", "S", "F-FH", "IV"))) %>% arrange(lineage) %>%
+    rename(Lineage = lineage, `r^2^` = r2) %>%
+    knitr::kable()
+}
+```
+
+```{r}
+#| label: fig-supp-wt-scenarios
+#| fig-cap: "Warming tolerance in August–September in each region under the three scenarios: peak-season mean (circles) and warmest day for the least tolerant common clade (triangles); current conditions and +4 °C; 95% intervals."
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "wt-scenarios-plot-1.png"))
+```
+
+```{r}
+#| label: fig-supp-wt-distributions
+#| fig-cap: "Distributions of daily warming tolerance in each region (July–November) under all three scenarios. Dark: current conditions; pale: +4 °C."
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "wt-histograms-1.png"))
+```
+
+```{r}
+#| label: fig-supp-ramp
+#| fig-cap: "Recorded heating rates during the CTmax assays."
+#| out-width: "80%"
+knitr::include_graphics(here("Output", "Figures", "ramp-record-plot-1.png"))
+```
+
+```{r}
+#| label: fig-supp-size
+#| fig-cap: "CTmax (A) and body size (prosome length; B) by season at each site."
+#| out-width: "90%"
+knitr::include_graphics(here("Output", "Figures", "size-and-ctmax-season-1.png"))
+```
+
+```{r}
+#| label: fig-supp-lat-temp
+#| fig-cap: "Seasonal range of collection temperatures against latitude."
+#| out-width: "70%"
+knitr::include_graphics(here("Output", "Figures", "lat-temp-range-plot-1.png"))
+```
+
+```{r}
+#| label: fig-supp-clade-habitat
+#| fig-cap: "Proportion of each clade in a collection against collection temperature."
+#| out-width: "70%"
+knitr::include_graphics(here("Output", "Figures", "clade-hab-patterns-1.png"))
+```
+
+```{r}
+#| label: fig-supp-mito-split
+#| fig-cap: "Share of each individual's COI-region reads mapping to each clade's mitogenome contig, used for clade assignment."
+#| out-width: "90%"
+knitr::include_graphics(here("Output", "Figures", "mito-read-split-1.png"))
+```
+
+```{r}
 #| label: fig-supp-site-temps
 #| fig-cap: "Long-term (MUR SST 2014–2023) temperature cycles at each site."
 #| out-width: "100%"
@@ -313,6 +587,13 @@ knitr::include_graphics(here("Output", "Figures", "site-temperature-cycle-1.png"
 #| fig-cap: "Genome-wide structure and mitochondrial clades."
 #| out-width: "100%"
 knitr::include_graphics(here("Output", "Figures", "clade-structure-1.png"))
+```
+
+```{r}
+#| label: fig-supp-trees
+#| fig-cap: "Relationships among clades and the lineages within F. (A) Mitochondrial (COI, maximum likelihood, rooted on *A. hudsonica*) and (B) nuclear (genome-wide net distances, neighbour-joining, midpoint-rooted) trees; numbers are bootstrap support. Both trees separate {S, IV} from {X, F}, place X as sister to F, and order the four F lineages identically (F-MR, F-FH, then F-N with F-NE)."
+#| out-width: "100%"
+knitr::include_graphics(here("Output", "Figures", "ms-figS-trees-1.png"))
 ```
 
 ```{r}

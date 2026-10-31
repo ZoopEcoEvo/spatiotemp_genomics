@@ -1,129 +1,97 @@
-est,lo,hi,metric,site_code,scenario,warming
-14.536953872526897,14.193262036032328,14.89440741233395,Aug–Sep mean,CT,Fixed CTmax,0
-12.35354328806503,12.009851451570459,12.710996827872082,"Warmest day, least tolerant common lineage",CT,Fixed CTmax,0
-5.5711848418782886,5.227493005383718,5.9286383816853405,Aug–Sep mean,FH,Fixed CTmax,0
-3.9612389402389425,3.617547103744372,4.3186924800459945,"Warmest day, least tolerant common lineage",FH,Fixed CTmax,0
-9.287979569787431,8.944287733292862,9.645433109594483,Aug–Sep mean,GW,Fixed CTmax,0
-6.237551147953571,5.893859311459,6.595004687760623,"Warmest day, least tolerant common lineage",GW,Fixed CTmax,0
-9.459528021587534,9.115836185092965,9.816981561394586,Aug–Sep mean,MD,Fixed CTmax,0
-6.870603091182339,6.526911254687769,7.228056630989391,"Warmest day, least tolerant common lineage",MD,Fixed CTmax,0
-18.854118175211617,18.51042633871705,19.21157171501867,Aug–Sep mean,ME,Fixed CTmax,0
-16.351622273572275,16.007930437077704,16.709075813379325,"Warmest day, least tolerant common lineage",ME,Fixed CTmax,0
-5.532068574539068,5.1883767380444965,5.88952211434612,Aug–Sep mean,MR,Fixed CTmax,0
-3.8749620171620194,3.5312701806674487,4.232415556969071,"Warmest day, least tolerant common lineage",MR,Fixed CTmax,0
-18.19465697302583,17.85096513653126,18.55211051283288,Aug–Sep mean,RW,Fixed CTmax,0
-15.623688940238942,15.279997103744373,15.981142480045994,"Warmest day, least tolerant common lineage",RW,Fixed CTmax,0
-17.319612442474412,16.97592060597984,17.677065982281462,Aug–Sep mean,TK,Fixed CTmax,0
-15.032818940238943,14.689127103744372,15.390272480045995,"Warmest day, least tolerant common lineage",TK,Fixed CTmax,0
-14.406359053910066,14.159618537117408,14.640932427372986,Aug–Sep mean,CT,Lineage means,0
-10.350419410793425,9.889271831100384,10.759059746441581,"Warmest day, least tolerant common lineage",CT,Lineage means,0
-8.523308252829832,8.430049251920433,8.615071945372813,Aug–Sep mean,FH,Lineage means,0
-6.913362351190486,6.820103350281089,7.005126043733467,"Warmest day, least tolerant common lineage",FH,Lineage means,0
-9.541039766753876,9.2381249799348,9.862982341684729,Aug–Sep mean,GW,Lineage means,0
-6.490611344920016,6.18769655810094,6.812553919850867,"Warmest day, least tolerant common lineage",GW,Lineage means,0
-9.828274285278642,9.551655388193296,10.090763744604045,Aug–Sep mean,MD,Lineage means,0
-7.239349354873447,6.9627304577881,7.50183881419885,"Warmest day, least tolerant common lineage",MD,Lineage means,0
-16.741296992250064,16.305899212850193,17.13275294726752,Aug–Sep mean,ME,Lineage means,0
-14.34849839630067,13.887350816607631,14.757138731948825,"Warmest day, least tolerant common lineage",ME,Lineage means,0
-8.200795945256331,7.988042313050607,8.398101994688421,Aug–Sep mean,MR,Lineage means,0
-6.525977135364641,6.2994611172031165,6.736492832232882,"Warmest day, least tolerant common lineage",MR,Lineage means,0
-16.087930084824823,15.651515502076037,16.480976577419582,Aug–Sep mean,RW,Lineage means,0
-13.620565062967337,13.159417483274298,14.029205398615492,"Warmest day, least tolerant common lineage",RW,Lineage means,0
-15.218338344322323,14.781013990156085,15.610945910014708,Aug–Sep mean,TK,Lineage means,0
-13.029695062967338,12.5685474832743,13.438335398615493,"Warmest day, least tolerant common lineage",TK,Lineage means,0
-14.469923189365876,13.657529568812155,15.325955140980643,Aug–Sep mean,CT,Lineages + acclimation,0
-11.787451538931837,10.938946677720697,12.691634596306912,"Warmest day, least tolerant common lineage",CT,Lineages + acclimation,0
-7.514924339767031,5.835278676010133,9.272667913012945,Aug–Sep mean,FH,Lineages + acclimation,0
-6.140934251252688,4.460506734841572,7.915697793977932,"Warmest day, least tolerant common lineage",FH,Lineages + acclimation,0
-10.745744441996507,9.826272770858715,11.6499191306661,Aug–Sep mean,GW,Lineages + acclimation,0
-8.128592262096564,7.203281599152182,9.040768944412697,"Warmest day, least tolerant common lineage",GW,Lineages + acclimation,0
-9.784199249535515,8.936617634801472,10.632160824490986,Aug–Sep mean,MD,Lineages + acclimation,0
-7.572502058293253,6.703240796358404,8.42066571988231,"Warmest day, least tolerant common lineage",MD,Lineages + acclimation,0
-16.372053890907747,15.447823422349293,17.393352572725075,Aug–Sep mean,ME,Lineages + acclimation,0
-14.3441956780907,13.410765711952513,15.359806772808543,"Warmest day, least tolerant common lineage",ME,Lineages + acclimation,0
-7.434395397599566,5.9718320730661745,8.979412818808374,Aug–Sep mean,MR,Lineages + acclimation,0
-6.003287988969667,4.511575290914605,7.612611869891267,"Warmest day, least tolerant common lineage",MR,Lineages + acclimation,0
-15.657109992681175,14.51936967263567,16.94466663368099,Aug–Sep mean,RW,Lineages + acclimation,0
-13.5648223175546,12.443356905722077,14.858549625098316,"Warmest day, least tolerant common lineage",RW,Lineages + acclimation,0
-15.03650019347982,13.948258119301633,16.277777032533333,Aug–Sep mean,TK,Lineages + acclimation,0
-13.181376164157111,12.087786688207379,14.431030115616469,"Warmest day, least tolerant common lineage",TK,Lineages + acclimation,0
-13.586298156975952,12.781864029048025,14.452960945476072,Aug–Sep mean,CT,Lineages + acclimation (annual make-up),0
-9.95368601384234,9.099292458959432,10.914863851400174,"Warmest day, least tolerant common lineage",CT,Lineages + acclimation (annual make-up),0
-7.514924339767031,5.835278676010133,9.272667913012945,Aug–Sep mean,FH,Lineages + acclimation (annual make-up),0
-6.140934251252688,4.460506734841572,7.915697793977932,"Warmest day, least tolerant common lineage",FH,Lineages + acclimation (annual make-up),0
-10.637591567275908,9.745177686184388,11.559348113120699,Aug–Sep mean,GW,Lineages + acclimation (annual make-up),0
-7.201567621634286,6.336291564977613,8.092842518831011,"Warmest day, least tolerant common lineage",GW,Lineages + acclimation (annual make-up),0
-10.170459516394798,9.341170571675717,10.99462143102041,Aug–Sep mean,MD,Lineages + acclimation (annual make-up),0
-7.572502058293253,6.703240796358404,8.42066571988231,"Warmest day, least tolerant common lineage",MD,Lineages + acclimation (annual make-up),0
-16.194700801178957,15.256448114301842,17.2224094878094,Aug–Sep mean,ME,Lineages + acclimation (annual make-up),0
-12.510430153001202,11.57558304484668,13.506182692859163,"Warmest day, least tolerant common lineage",ME,Lineages + acclimation (annual make-up),0
-7.367274216866522,5.911494318645346,8.884976488954042,Aug–Sep mean,MR,Lineages + acclimation (annual make-up),0
-5.544179866900009,4.010055483656634,7.080140889789613,"Warmest day, least tolerant common lineage",MR,Lineages + acclimation (annual make-up),0
-15.585989107536195,14.447093035339545,16.869018401601906,Aug–Sep mean,RW,Lineages + acclimation (annual make-up),0
-13.5648223175546,12.443356905722077,14.858549625098316,"Warmest day, least tolerant common lineage",RW,Lineages + acclimation (annual make-up),0
-14.318007268444756,13.206595788643869,15.535499661991594,Aug–Sep mean,TK,Lineages + acclimation (annual make-up),0
-11.347610639067614,10.239972874667435,12.57951961253155,"Warmest day, least tolerant common lineage",TK,Lineages + acclimation (annual make-up),0
-10.536953872526897,10.193262036032328,10.89440741233395,Aug–Sep mean,CT,Fixed CTmax,4
-8.35354328806503,8.009851451570459,8.710996827872082,"Warmest day, least tolerant common lineage",CT,Fixed CTmax,4
-1.571184841878285,1.2274930053837145,1.928638381685337,Aug–Sep mean,FH,Fixed CTmax,4
--0.03876105976105748,-0.3824528962556281,0.31869248004599443,"Warmest day, least tolerant common lineage",FH,Fixed CTmax,4
-5.2879795697874314,4.94428773329286,5.645433109594483,Aug–Sep mean,GW,Fixed CTmax,4
-2.2375511479535675,1.893859311458997,2.595004687760619,"Warmest day, least tolerant common lineage",GW,Fixed CTmax,4
-5.459528021587538,5.115836185092967,5.81698156139459,Aug–Sep mean,MD,Fixed CTmax,4
-2.870603091182339,2.5269112546877683,3.228056630989391,"Warmest day, least tolerant common lineage",MD,Fixed CTmax,4
-14.854118175211621,14.51042633871705,15.211571715018671,Aug–Sep mean,ME,Fixed CTmax,4
-12.351622273572275,12.007930437077706,12.709075813379327,"Warmest day, least tolerant common lineage",ME,Fixed CTmax,4
-1.5320685745390676,1.188376738044497,1.8895221143461196,Aug–Sep mean,MR,Fixed CTmax,4
--0.12503798283798062,-0.46872981933255126,0.2324155569690713,"Warmest day, least tolerant common lineage",MR,Fixed CTmax,4
-14.194656973025829,13.850965136531258,14.55211051283288,Aug–Sep mean,RW,Fixed CTmax,4
-11.623688940238942,11.279997103744373,11.981142480045994,"Warmest day, least tolerant common lineage",RW,Fixed CTmax,4
-13.319612442474412,12.975920605979843,13.677065982281462,Aug–Sep mean,TK,Fixed CTmax,4
-11.032818940238943,10.689127103744372,11.390272480045995,"Warmest day, least tolerant common lineage",TK,Fixed CTmax,4
-10.406359053910066,10.159618537117407,10.640932427372988,Aug–Sep mean,CT,Lineage means,4
-6.350419410793425,5.889271831100385,6.75905974644158,"Warmest day, least tolerant common lineage",CT,Lineage means,4
-4.523308252829828,4.4300492519204315,4.615071945372811,Aug–Sep mean,FH,Lineage means,4
-2.913362351190486,2.820103350281089,3.0051260437334677,"Warmest day, least tolerant common lineage",FH,Lineage means,4
-5.541039766753876,5.238124979934801,5.862982341684727,Aug–Sep mean,GW,Lineage means,4
-2.490611344920012,2.187696558100937,2.8125539198508633,"Warmest day, least tolerant common lineage",GW,Lineage means,4
-5.8282742852786456,5.551655388193299,6.0907637446040495,Aug–Sep mean,MD,Lineage means,4
-3.239349354873447,2.9627304577881013,3.5018388141988503,"Warmest day, least tolerant common lineage",MD,Lineage means,4
-12.741296992250062,12.305899212850193,13.132752947267518,Aug–Sep mean,ME,Lineage means,4
-10.34849839630067,9.887350816607631,10.757138731948825,"Warmest day, least tolerant common lineage",ME,Lineage means,4
-4.200795945256332,3.988042313050607,4.39810199468842,Aug–Sep mean,MR,Lineage means,4
-2.5259771353646414,2.2994611172031165,2.736492832232882,"Warmest day, least tolerant common lineage",MR,Lineage means,4
-12.087930084824823,11.651515502076037,12.480976577419579,Aug–Sep mean,RW,Lineage means,4
-9.620565062967337,9.159417483274298,10.029205398615492,"Warmest day, least tolerant common lineage",RW,Lineage means,4
-11.218338344322323,10.781013990156085,11.61094591001471,Aug–Sep mean,TK,Lineage means,4
-9.029695062967338,8.5685474832743,9.438335398615493,"Warmest day, least tolerant common lineage",TK,Lineage means,4
-11.051092125918125,10.222747964712037,11.915220065285771,Aug–Sep mean,CT,Lineages + acclimation,4
-8.176514520907507,7.318862243558061,9.08854475268382,"Warmest day, least tolerant common lineage",CT,Lineages + acclimation,4
-4.099655274148169,2.4354454712423688,5.892336807176959,Aug–Sep mean,FH,Lineages + acclimation,4
-2.707642947291127,1.0343125015579246,4.506088854026494,"Warmest day, least tolerant common lineage",FH,Lineages + acclimation,4
-7.168871866016538,6.244166201307144,8.08057230149033,Aug–Sep mean,GW,Lineages + acclimation,4
-4.236758290900504,3.309724418222458,5.154010808659094,"Warmest day, least tolerant common lineage",GW,Lineages + acclimation,4
-6.2455800430040185,5.379089488658802,7.092115898099359,Aug–Sep mean,MD,Lineages + acclimation,4
-3.760620162528369,2.8977251880116226,4.612940946639143,"Warmest day, least tolerant common lineage",MD,Lineages + acclimation,4
-12.958299212280943,12.008376911353484,13.977484438942385,Aug–Sep mean,ME,Lineages + acclimation,4
-10.930440999463897,9.96995772070902,11.961342508842268,"Warmest day, least tolerant common lineage",ME,Lineages + acclimation,4
-3.9618259952157375,2.496055223539762,5.530486273267778,Aug–Sep mean,MR,Lineages + acclimation,4
-2.336308025960257,0.8417929248465583,3.944875922981335,"Warmest day, least tolerant common lineage",MR,Lineages + acclimation,4
-12.243355314054371,11.113840590249357,13.532370580401208,Aug–Sep mean,RW,Lineages + acclimation,4
-10.151067638927799,9.021170564413461,11.439039735502073,"Warmest day, least tolerant common lineage",RW,Lineages + acclimation,4
-11.62274551485302,10.520992086713626,12.866306463220395,Aug–Sep mean,TK,Lineages + acclimation,4
-9.76762148553031,8.651886438614211,11.005826795839821,"Warmest day, least tolerant common lineage",TK,Lineages + acclimation,4
-10.137675553298441,9.313870797019858,10.99861511087689,Aug–Sep mean,CT,Lineages + acclimation (annual make-up),4
-6.34274899581801,5.473143094598676,7.304334096682187,"Warmest day, least tolerant common lineage",CT,Lineages + acclimation (annual make-up),4
-4.099655274148169,2.4354454712423688,5.892336807176959,Aug–Sep mean,FH,Lineages + acclimation (annual make-up),4
-2.707642947291127,1.0343125015579246,4.506088854026494,"Warmest day, least tolerant common lineage",FH,Lineages + acclimation (annual make-up),4
-7.060718991295938,6.172267233776057,7.98506262645667,Aug–Sep mean,GW,Lineages + acclimation (annual make-up),4
-3.3097336504382255,2.439124534318678,4.20626230863761,"Warmest day, least tolerant common lineage",GW,Lineages + acclimation (annual make-up),4
-6.631840309863302,5.799875146138021,7.4855524517340895,Aug–Sep mean,MD,Lineages + acclimation (annual make-up),4
-3.760620162528369,2.8977251880116226,4.612940946639143,"Warmest day, least tolerant common lineage",MD,Lineages + acclimation (annual make-up),4
-12.766261999733146,11.821341832243554,13.778040516683946,Aug–Sep mean,ME,Lineages + acclimation (annual make-up),4
-9.0966754743744,8.147788450293872,10.121380691505996,"Warmest day, least tolerant common lineage",ME,Lineages + acclimation (annual make-up),4
-3.790757436025009,2.330433871432036,5.342152195438647,Aug–Sep mean,MR,Lineages + acclimation (annual make-up),4
-1.5441798669000093,0.010055483656634253,3.089582209409131,"Warmest day, least tolerant common lineage",MR,Lineages + acclimation (annual make-up),4
-12.172234428909393,11.040250876665853,13.462249342168093,Aug–Sep mean,RW,Lineages + acclimation (annual make-up),4
-10.151067638927799,9.021170564413461,11.439039735502073,"Warmest day, least tolerant common lineage",RW,Lineages + acclimation (annual make-up),4
-10.904252589817954,9.79766514863144,12.117829862334261,Aug–Sep mean,TK,Lineages + acclimation (annual make-up),4
-7.9338559604408125,6.81244773585277,9.167792996940266,"Warmest day, least tolerant common lineage",TK,Lineages + acclimation (annual make-up),4
+est,lo,hi,metric,region,scenario,warming
+9.373753795687483,9.030061959192912,9.731207335494535,Aug–Sep mean,Chesapeake,Fixed CTmax,0
+6.554077119567955,6.210385283073384,6.911530659375007,"Warmest day, least tolerant common clade",Chesapeake,Fixed CTmax,0
+14.536953872526897,14.193262036032328,14.89440741233395,Aug–Sep mean,Connecticut,Fixed CTmax,0
+12.35354328806503,12.009851451570459,12.710996827872082,"Warmest day, least tolerant common clade",Connecticut,Fixed CTmax,0
+5.551626708208678,5.207934871714108,5.90908024801573,Aug–Sep mean,Florida,Fixed CTmax,0
+3.918100478700481,3.5744086422059103,4.275554018507533,"Warmest day, least tolerant common clade",Florida,Fixed CTmax,0
+18.854118175211617,18.51042633871705,19.21157171501867,Aug–Sep mean,Maine,Fixed CTmax,0
+16.351622273572275,16.007930437077704,16.709075813379325,"Warmest day, least tolerant common clade",Maine,Fixed CTmax,0
+18.19465697302583,17.85096513653126,18.55211051283288,Aug–Sep mean,Miramichi,Fixed CTmax,0
+15.623688940238942,15.279997103744373,15.981142480045994,"Warmest day, least tolerant common clade",Miramichi,Fixed CTmax,0
+17.319612442474412,16.97592060597984,17.677065982281462,Aug–Sep mean,Shediac,Fixed CTmax,0
+15.032818940238943,14.689127103744372,15.390272480045995,"Warmest day, least tolerant common clade",Shediac,Fixed CTmax,0
+10.509197588690194,10.274774878643818,10.734721298410825,Aug–Sep mean,Chesapeake,Clade means,0
+7.689520912570666,7.455098202524291,7.915044622291298,"Warmest day, least tolerant common clade",Chesapeake,Clade means,0
+14.406359053910066,14.170116873528018,14.658220028085632,Aug–Sep mean,Connecticut,Clade means,0
+10.350419410793425,9.88088196962033,10.816506787878666,"Warmest day, least tolerant common clade",Connecticut,Clade means,0
+7.453768030522992,7.083918307272737,7.804396809476966,Aug–Sep mean,Florida,Clade means,0
+5.820241801014795,5.45039207776454,6.170870579968769,"Warmest day, least tolerant common clade",Florida,Clade means,0
+16.741296992250064,16.29831822007372,17.18590280053986,Aug–Sep mean,Maine,Clade means,0
+14.34849839630067,13.878960955127575,14.814585773385911,"Warmest day, least tolerant common clade",Maine,Clade means,0
+16.087930084824823,15.644078068843706,16.532382770008493,Aug–Sep mean,Miramichi,Clade means,0
+13.620565062967337,13.151027621794242,14.086652440052578,"Warmest day, least tolerant common clade",Miramichi,Clade means,0
+15.218338344322323,14.773705004936927,15.662654024621556,Aug–Sep mean,Shediac,Clade means,0
+13.029695062967338,12.560157621794243,13.49578244005258,"Warmest day, least tolerant common clade",Shediac,Clade means,0
+10.088130994182885,9.332496771106657,10.821433789834668,Aug–Sep mean,Chesapeake,Clades + acclimation,0
+7.685309342050912,6.888394244469299,8.433133984898419,"Warmest day, least tolerant common clade",Chesapeake,Clades + acclimation,0
+13.360328177774589,12.090379538654762,14.47386356125355,Aug–Sep mean,Connecticut,Clades + acclimation,0
+11.104154930573312,9.858924562653243,12.185630461212472,"Warmest day, least tolerant common clade",Connecticut,Clades + acclimation,0
+7.526873438538809,6.288518282220746,8.604791565822504,Aug–Sep mean,Florida,Clades + acclimation,0
+6.1354913046313015,4.875328581871166,7.209916960102523,"Warmest day, least tolerant common clade",Florida,Clades + acclimation,0
+16.9163369868245,16.117927970834057,17.678124262784223,Aug–Sep mean,Maine,Clades + acclimation,0
+14.90044669796967,14.097295078984043,15.633838196506824,"Warmest day, least tolerant common clade",Maine,Clades + acclimation,0
+16.212154831219106,15.279038042003993,17.014373256552034,Aug–Sep mean,Miramichi,Clades + acclimation,0
+14.131517269808924,13.203636163931153,14.931490036381867,"Warmest day, least tolerant common clade",Miramichi,Clades + acclimation,0
+15.416732646476497,14.397407161624288,16.244225588129492,Aug–Sep mean,Shediac,Clades + acclimation,0
+13.572396575547717,12.577183976225946,14.40957619890971,"Warmest day, least tolerant common clade",Shediac,Clades + acclimation,0
+10.181880733777481,9.428839807137933,10.914795343047524,Aug–Sep mean,Chesapeake,Clades + acclimation (annual make-up),0
+7.364962074568025,6.541437676822909,8.151594320239154,"Warmest day, least tolerant common clade",Chesapeake,Clades + acclimation (annual make-up),0
+12.585823789216988,11.361603940538526,13.664522715693035,Aug–Sep mean,Connecticut,Clades + acclimation (annual make-up),0
+9.1380933099835,7.900194708772154,10.272466928705292,"Warmest day, least tolerant common clade",Connecticut,Clades + acclimation (annual make-up),0
+7.452442318339973,6.209002343630535,8.525426528448158,Aug–Sep mean,Florida,Clades + acclimation (annual make-up),0
+5.6947362852085135,4.452745907627253,6.782448284928731,"Warmest day, least tolerant common clade",Florida,Clades + acclimation (annual make-up),0
+16.670480863017286,15.888264227748712,17.40806933821059,Aug–Sep mean,Maine,Clades + acclimation (annual make-up),0
+12.934385077379858,12.115418753745663,13.661004621462151,"Warmest day, least tolerant common clade",Maine,Clades + acclimation (annual make-up),0
+16.13590296543103,15.209229666217142,16.933228018927966,Aug–Sep mean,Miramichi,Clades + acclimation (annual make-up),0
+14.131517269808924,13.203636163931153,14.931490036381867,"Warmest day, least tolerant common clade",Miramichi,Clades + acclimation (annual make-up),0
+14.646404409169381,13.659997900709984,15.482862554896105,Aug–Sep mean,Shediac,Clades + acclimation (annual make-up),0
+11.606334954957905,10.612786285808276,12.472296638522458,"Warmest day, least tolerant common clade",Shediac,Clades + acclimation (annual make-up),0
+5.373753795687485,5.030061959192913,5.7312073354945365,Aug–Sep mean,Chesapeake,Fixed CTmax,4
+2.5540771195679532,2.2103852830733826,2.911530659375005,"Warmest day, least tolerant common clade",Chesapeake,Fixed CTmax,4
+10.536953872526897,10.193262036032328,10.89440741233395,Aug–Sep mean,Connecticut,Fixed CTmax,4
+8.35354328806503,8.009851451570459,8.710996827872082,"Warmest day, least tolerant common clade",Connecticut,Fixed CTmax,4
+1.5516267082086763,1.2079348717141059,1.9090802480157283,Aug–Sep mean,Florida,Fixed CTmax,4
+-0.08189952129951905,-0.4255913577940897,0.27555401850753286,"Warmest day, least tolerant common clade",Florida,Fixed CTmax,4
+14.854118175211621,14.51042633871705,15.211571715018671,Aug–Sep mean,Maine,Fixed CTmax,4
+12.351622273572275,12.007930437077706,12.709075813379327,"Warmest day, least tolerant common clade",Maine,Fixed CTmax,4
+14.194656973025829,13.850965136531258,14.55211051283288,Aug–Sep mean,Miramichi,Fixed CTmax,4
+11.623688940238942,11.279997103744373,11.981142480045994,"Warmest day, least tolerant common clade",Miramichi,Fixed CTmax,4
+13.319612442474412,12.975920605979843,13.677065982281462,Aug–Sep mean,Shediac,Fixed CTmax,4
+11.032818940238943,10.689127103744372,11.390272480045995,"Warmest day, least tolerant common clade",Shediac,Fixed CTmax,4
+6.509197588690196,6.274774878643821,6.734721298410827,Aug–Sep mean,Chesapeake,Clade means,4
+3.6895209125706643,3.4550982025242893,3.9150446222912962,"Warmest day, least tolerant common clade",Chesapeake,Clade means,4
+10.406359053910066,10.170116873528016,10.658220028085632,Aug–Sep mean,Connecticut,Clade means,4
+6.350419410793425,5.880881969620329,6.816506787878667,"Warmest day, least tolerant common clade",Connecticut,Clade means,4
+3.4537680305229905,3.083918307272735,3.8043968094769647,Aug–Sep mean,Florida,Clade means,4
+1.8202418010147952,1.4503920777645396,2.1708705799687693,"Warmest day, least tolerant common clade",Florida,Clade means,4
+12.741296992250062,12.298318220073723,13.185902800539864,Aug–Sep mean,Maine,Clade means,4
+10.34849839630067,9.878960955127575,10.814585773385911,"Warmest day, least tolerant common clade",Maine,Clade means,4
+12.087930084824823,11.644078068843706,12.53238277000849,Aug–Sep mean,Miramichi,Clade means,4
+9.620565062967337,9.151027621794242,10.086652440052578,"Warmest day, least tolerant common clade",Miramichi,Clade means,4
+11.218338344322323,10.773705004936929,11.662654024621556,Aug–Sep mean,Shediac,Clade means,4
+9.029695062967338,8.560157621794243,9.49578244005258,"Warmest day, least tolerant common clade",Shediac,Clade means,4
+6.617922136700315,5.810699847695643,7.382694797306861,Aug–Sep mean,Chesapeake,Clades + acclimation,4
+4.076909816843127,3.2272719883335617,4.864057676641673,"Warmest day, least tolerant common clade",Chesapeake,Clades + acclimation,4
+9.948129780903166,8.644686046580773,11.075240336104986,Aug–Sep mean,Connecticut,Clades + acclimation,4
+7.497658144767772,6.258560229786865,8.619113117951594,"Warmest day, least tolerant common clade",Connecticut,Clades + acclimation,4
+4.118157505843044,2.823131949729387,5.222726709137786,Aug–Sep mean,Florida,Clades + acclimation,4
+2.707172185044911,1.417479581346687,3.856892043854552,"Warmest day, least tolerant common clade",Florida,Clades + acclimation,4
+13.509272909680409,12.71319730319687,14.233128094943364,Aug–Sep mean,Maine,Clades + acclimation,4
+11.493382620825578,10.675450959808051,12.231224852740697,"Warmest day, least tolerant common clade",Maine,Clades + acclimation,4
+12.805090754075012,11.882042507812631,13.592643276625685,Aug–Sep mean,Miramichi,Clades + acclimation,4
+10.724453192664825,9.806736580063168,11.553252193545463,"Warmest day, least tolerant common clade",Miramichi,Clades + acclimation,4
+12.009668569332407,11.035262603619438,12.848770643060126,Aug–Sep mean,Shediac,Clades + acclimation,4
+10.165332498403618,9.177394540308342,11.028679243109817,"Warmest day, least tolerant common clade",Shediac,Clades + acclimation,4
+6.728358397169382,5.93087310562099,7.477430193515559,Aug–Sep mean,Chesapeake,Clades + acclimation (annual make-up),4
+3.5147948318167863,2.674831499851915,4.333280218084661,"Warmest day, least tolerant common clade",Chesapeake,Clades + acclimation (annual make-up),4
+9.165694702052454,7.909935350649476,10.301961771144523,Aug–Sep mean,Connecticut,Clades + acclimation (annual make-up),4
+5.53159652417796,4.2876374414141925,6.728114146625687,"Warmest day, least tolerant common clade",Connecticut,Clades + acclimation (annual make-up),4
+3.985505136193013,2.6989716708276976,5.0845706031728515,Aug–Sep mean,Florida,Clades + acclimation (annual make-up),4
+1.9813244518218802,0.7126191826449483,3.0922399158322293,"Warmest day, least tolerant common clade",Florida,Clades + acclimation (annual make-up),4
+13.263414914515247,12.484877218563195,13.973549389647001,Aug–Sep mean,Maine,Clades + acclimation (annual make-up),4
+9.527321000235766,8.668347910214234,10.279396330173267,"Warmest day, least tolerant common clade",Maine,Clades + acclimation (annual make-up),4
+12.728838888286937,11.800646710527849,13.50868022290565,Aug–Sep mean,Miramichi,Clades + acclimation (annual make-up),4
+10.724453192664825,9.806736580063168,11.553252193545463,"Warmest day, least tolerant common clade",Miramichi,Clades + acclimation (annual make-up),4
+11.239340332025288,10.258173553061484,12.077626426155495,Aug–Sep mean,Shediac,Clades + acclimation (annual make-up),4
+8.199270877813806,7.165834454329163,9.11745303864952,"Warmest day, least tolerant common clade",Shediac,Clades + acclimation (annual make-up),4

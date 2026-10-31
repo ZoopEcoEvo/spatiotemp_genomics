@@ -1391,13 +1391,13 @@ Lineage composition is compared among the collections at each site (sequenced in
 #| fig-width: 11
 #| fig-height: 5
 season_levels <- c("early", "peak", "late")
-lin_levels <- c("X", "S", "IV", "F-N", "F-NE", "F-FH", "F-MR")
-lin_col <- c(X = clade_cols[["X"]], S = clade_cols[["S"]], IV = clade_cols[["IV"]],
-             `F-N` = f_shades[1], `F-NE` = f_shades[2], `F-FH` = f_shades[3], `F-MR` = f_shades[4])
+# analysis unit = clade (the F lineages are analysed together); column kept as `lineage` for the code below
+unit_levels <- tonsa_clades
+unit_col <- clade_cols[tonsa_clades]
 comp <- seq_data %>%
-  filter(lineage %in% lin_levels, !sample_id %in% c("MR_peak_2_04", "MR_peak_2_05")) %>%
+  filter(clade %in% unit_levels, !sample_id %in% c("MR_peak_2_04", "MR_peak_2_05")) %>%
   mutate(season = factor(season, levels = season_levels),
-         lineage = factor(lineage, levels = lin_levels),
+         lineage = factor(clade, levels = unit_levels),
          site_code = factor(site_code, levels = site_order))
 coll_temp <- comp %>% group_by(site_code, season) %>%
   summarise(temp = mean(collection_temp, na.rm = TRUE), n = n(), .groups = "drop")
@@ -1426,7 +1426,7 @@ ggplot(comp, aes(x = season, fill = lineage)) +
   geom_text(data = coll_temp, aes(x = season, y = -0.06, label = paste0("n=", n)),
             inherit.aes = FALSE, size = 3) +
   facet_wrap(~ site_code, nrow = 1) +
-  scale_fill_manual(values = lin_col, drop = FALSE) +
+  scale_fill_manual(values = unit_col, drop = FALSE) +
   scale_y_continuous(breaks = seq(0, 1, 0.25), limits = c(-0.1, 1.1)) +
   labs(x = NULL, y = "Proportion of sequenced individuals", fill = "Lineage",
        caption = "Labels: collection temperature (top) and individuals sequenced (bottom).") +
@@ -2160,6 +2160,40 @@ if (exists("temporal")) {
 ```
 
 ```{r}
+#| label: ne-comparison
+# Long-term Ne from nucleotide diversity (pi = 4 Ne mu) vs short-term (temporal) Ne within a season.
+# No mutation rate is known for Acartia: long-term Ne is shown for a range of plausible
+# arthropod rates (1e-9 to 1e-8 per site per generation).
+div_file <- here("Output", "Output_data", "diversity_populations.csv")
+if (exists("temporal") && file.exists(div_file)) {
+  lin_of_site <- c(MR = "F-MR", FH = "F-FH", MD = "F-N", GW = "F-N")
+  dv <- read_csv(div_file, show_col_types = FALSE) %>%
+    mutate(group = if_else(clade == "F", unname(lin_of_site[site]), clade)) %>%
+    filter(!is.na(group)) %>%
+    group_by(group) %>% summarise(pi = median(pi), populations = n(), .groups = "drop")
+  tn <- temporal %>%
+    mutate(group = if_else(clade == "F", unname(lin_of_site[site]), as.character(clade))) %>%
+    group_by(group) %>%
+    summarise(ne_temporal = median(ne[is.finite(ne)]), ne_min = min(ne[is.finite(ne)]),
+              ne_max = max(ne[is.finite(ne)]), pairs = n(), .groups = "drop")
+  ne_cmp <- inner_join(dv, tn, by = "group") %>%
+    mutate(ne_long_1e9 = pi / (4 * 1e-9), ne_long_1e8 = pi / (4 * 1e-8),
+           ratio_low = ne_long_1e8 / ne_temporal)
+  write_csv(ne_cmp, here("Output", "Output_data", "ne_comparison.csv"))
+  ne_cmp %>%
+    transmute(Group = group, `π (median)` = signif(pi, 2),
+              `Long-term Ne (µ = 10⁻⁸ – 10⁻⁹)` = sprintf("%s – %s", format(signif(ne_long_1e8, 2), big.mark = ","),
+                                                        format(signif(ne_long_1e9, 2), big.mark = ",")),
+              `Temporal Ne (median; range)` = sprintf("%s (%s – %s)", format(round(ne_temporal), big.mark = ","),
+                                                      format(round(ne_min), big.mark = ","), format(round(ne_max), big.mark = ",")),
+              `Seasonal pairs` = pairs,
+              `Long-term / temporal (µ = 10⁻⁸)` = sprintf("%.0f×", ratio_low)) %>%
+    knitr::kable(caption = "Long-term effective size from nucleotide diversity (π = 4Neµ, for mutation rates of 10⁻⁸ and 10⁻⁹ per site per generation) against the temporal (within-season) Ne. Even at the higher mutation rate, long-term Ne exceeds the temporal estimate by two orders of magnitude: within a season, local allele frequencies change far more than a closed population of the long-term size would allow, as expected if sites are open to immigration and mixing of water masses.")
+}
+```
+
+
+```{r}
 #| label: seasonal-parallel
 if (exists("temporal")) {
   # parallel change: correlation of early→peak changes between X sites
@@ -2257,7 +2291,7 @@ if (length(freq_files) == 0 || is.null(split_half)) {
 } else {
   # population sets (clade.prefix = which frequency table): F-N = F populations at MD and GW;
   # F as a whole spans three lineages (its between-site component includes lineage divergence)
-  vp_sets <- list(X = c("X", NA), S = c("S", NA), IV = c("IV", NA), `F-N` = c("F", "MD|GW"), `F (all lineages)` = c("F", NA))
+  vp_sets <- list(X = c("X", NA), S = c("S", NA), IV = c("IV", NA), F = c("F", NA))
   vp_freq <- map_dfr(names(vp_sets), function(nm) {
     cl <- vp_sets[[nm]][1]; site_pat <- vp_sets[[nm]][2]
     f <- cx("results", "09_stage34", paste0(cl, ".freqs.unlinked.tsv.gz"))
@@ -2411,6 +2445,90 @@ if (length(conc_files) > 0) {
 }
 ```
 
+### Power of the genomic tests
+
+How much seasonal selection could these tests have detected? Selection was injected into the observed allele frequencies (unlinked SNPs) and each test rerun exactly as above (cluster target `power`; `results/18_power/`), so drift, sampling noise and the sampling design are those of the real data.
+
+- **Seasonal GLM and temporal Fc:** a random fraction of SNPs (0.1–10%) had their logit frequency shifted by δ between each site's first and last sample, in the same direction at every site. δ is shown below as the change in allele frequency for an allele starting at 50%, and as selection per generation using the generations between each clade's first and last samples. A replicate counts as detected when the observed number of SNPs with p < 10⁻³ exceeds every within-site permutation (the smallest attainable p is 1/12 for X and 1/24 for F), or, for Fc, when the added excess exceeds the observed excess plus 1.96 SE (inverse-variance pooled over each site's first → last pair).
+- **Concordance:** the most temperature-associated SNPs across sites (top 1–100% by spatial z) were given a seasonal response equal to a fraction λ of their spatial slope; detection = ranking above every seasonal permutation.
+
+With strong injected responses (λ ≥ 0.5) the sign-agreement statistic saturates at 1 in the permutations too, so those cells can show as undetected in F; the relevant region is the weak-response end, where both clades detect responses of a tenth (X) or a twentieth (F) of the spatial slope.
+
+```{r}
+#| label: power-seasonal
+#| fig-width: 12
+#| fig-height: 8.5
+pw_dir <- cx("results", "18_power")
+pw_clades <- intersect(c("X", "F"), sub("\\.seasonal_glm\\.tsv$", "", dir(pw_dir, "seasonal_glm")))
+have_pw <- length(pw_clades) > 0 && exists("temporal")
+if (!have_pw) {
+  cat("Power results (results/18_power/) are not in this export yet.")
+} else {
+  pts <- function(d) 100 * (plogis(d) - 0.5)                         # pp change from 50%
+  gen_first_last <- temporal %>% group_by(clade = as.character(clade), site) %>%
+    summarise(gens = max(gens), .groups = "drop") %>% group_by(clade) %>% summarise(gens = mean(gens))
+  glm_pw <- map_dfr(pw_clades, ~ read_tsv(file.path(pw_dir, paste0(.x, ".seasonal_glm.tsv")), col_types = cols(clade = "c", .default = col_guess()))) %>%
+    group_by(clade, delta, frac) %>% summarise(power = mean(rank == 1), .groups = "drop") %>%
+    mutate(test = "Seasonal GLM: count of SNPs p < 0.001")
+  obs_pairs <- temporal %>% mutate(clade = as.character(clade)) %>% select(clade, site, from, to, excess, se)
+  fc_pw <- map_dfr(pw_clades, ~ read_tsv(file.path(pw_dir, paste0(.x, ".seasonal_fc.tsv")), col_types = cols(clade = "c", site = "c", .default = col_guess()))) %>%
+    inner_join(obs_pairs, by = c("clade", "site", "from", "to")) %>%
+    mutate(w = 1 / se^2) %>%
+    group_by(clade, delta, frac, rep) %>%
+    summarise(added = sum(w * added_excess) / sum(w), obs = sum(w * excess) / sum(w), se = 1 / sqrt(sum(w)), .groups = "drop") %>%
+    group_by(clade, delta, frac) %>% summarise(power = mean(added > obs + 1.96 * se), .groups = "drop") %>%
+    mutate(test = "Temporal Fc: excess above observed")
+  pw_long <- bind_rows(glm_pw, fc_pw) %>%
+    left_join(gen_first_last, by = "clade") %>%
+    mutate(clade = factor(clade, levels = c("X", "F")),
+           dlab = factor(sprintf("%.0f pp", pts(delta)), levels = sprintf("%.0f pp", pts(sort(unique(delta))))),
+           flab = factor(paste0(100 * frac, "%"), levels = paste0(100 * sort(unique(frac)), "%")))
+  p_sea <- ggplot(pw_long, aes(x = dlab, y = flab, fill = power)) +
+    geom_tile(colour = "white") +
+    geom_text(aes(label = sprintf("%.1f", power), colour = power > 0.5), size = 3) +
+    facet_grid(clade ~ test) +
+    scale_fill_gradient(low = "#F2F2F0", high = "#2B2B29", limits = c(0, 1), name = "Power") +
+    scale_colour_manual(values = c(`TRUE` = "white", `FALSE` = "grey20"), guide = "none") +
+    labs(x = "Seasonal change in allele frequency at selected SNPs (from 50%, first to last sample)",
+         y = "SNPs under selection") +
+    theme_matt_facets(base_size = 11) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+  conc_pw <- map_dfr(pw_clades, ~ read_tsv(file.path(pw_dir, paste0(.x, ".concordance.tsv")), col_types = cols(clade = "c", .default = col_guess()))) %>%
+    mutate(clade = factor(clade, levels = c("X", "F")),
+           detected = pmin(conc_rank, r_rank) == 1,
+           lab = sprintf("%s\n%.0f pp", if_else(conc_rank == 1, "conc", if_else(r_rank == 1, "r", "–")), pts(seasonal_logit_change)),
+           flab = factor(paste0("top ", 100 * frac, "%"), levels = paste0("top ", 100 * sort(unique(frac)), "%")),
+           llab = factor(paste0("λ = ", lambda), levels = paste0("λ = ", sort(unique(lambda)))))
+  p_conc <- ggplot(conc_pw, aes(x = llab, y = flab, fill = detected)) +
+    geom_tile(colour = "white") +
+    geom_text(aes(label = lab), size = 2.8, lineheight = 0.85) +
+    facet_wrap(~ clade, nrow = 1) +
+    scale_fill_manual(values = c(`TRUE` = "grey55", `FALSE` = "#F2F2F0"), labels = c(`TRUE` = "detected", `FALSE` = "not detected"), name = NULL) +
+    labs(x = "Seasonal response as a fraction of the spatial slope", y = "Temperature-associated SNPs",
+         caption = "Cells: statistic ranking first (conc: sign agreement, top 1%; r: correlation) and implied seasonal change.") +
+    theme_matt_facets(base_size = 11)
+  ggarrange(p_sea, p_conc, ncol = 1, heights = c(1.25, 1), labels = c("A", "B"))
+}
+```
+
+```{r}
+#| label: power-seasonal-table
+if (have_pw) {
+  thr_tab <- glm_pw %>% filter(power >= 0.8) %>% group_by(clade, frac) %>% summarise(delta = min(delta), .groups = "drop") %>%
+    mutate(test = "Seasonal GLM") %>%
+    bind_rows(fc_pw %>% filter(power >= 0.8) %>% group_by(clade, frac) %>% summarise(delta = min(delta), .groups = "drop") %>%
+                mutate(test = "Temporal Fc")) %>%
+    left_join(gen_first_last, by = "clade") %>%
+    transmute(Test = test, Clade = clade, `SNPs under selection` = paste0(100 * frac, "%"),
+              `Smallest change detected (pp from 50%)` = round(pts(delta)),
+              `Selection per generation (s)` = signif(delta / gens, 2)) %>%
+    arrange(Test, Clade, parse_number(`SNPs under selection`))
+  knitr::kable(thr_tab, caption = "Smallest injected seasonal change detected with ≥ 80% power, by test, clade and fraction of SNPs under selection (combinations not listed were not detected at any tested strength). s = change in logit frequency divided by the mean generations between each site's first and last sample.")
+}
+```
+
+
 In clade X the spatial and seasonal responses point weakly in the same direction: across all SNPs the two slopes are slightly positively correlated (r ≈ 0.04), and among the 1% of SNPs with the strongest spatial slopes about 55% change in the same direction through the season. But the real temperatures rank only 5th–6th of 24 orderings (p ≈ 0.2), 8th–12th on the unlinked set, and the smaller spatial null (6 orderings) cannot go below p ≈ 0.17; removing chromosome 6 changes nothing. So there is no detectable genome-wide concordance between spatial and seasonal temperature responses. Two limits shape this answer. First, the spatial temperature contrast within X is short (7.1–9.9 °C long-term mean across ME, TK and RW), and the spatial slope is mostly ME against the two Gulf of St. Lawrence sites, so it also carries their geographic separation. Second, the null rests on only 24 orderings. A modest true concordance, of the size seen here, could go undetected. Clade F shows the opposite tendency (its observed concordance is the lowest of 48 orderings for the top-1% statistic), but because its spatial contrast is a contrast between lineages (Florida lineages vs F-N) it is not interpreted as a temperature response. Clade S has no usable seasonal null.
 
 In contrast to CTmax, whose between-site slope matches the within-site (acclimation) slope (Section 4), allele frequencies give no evidence that the response to temperature across sites predicts the response through the season. The genomic side of the space-for-time question therefore remains unresolved rather than negative: the data are consistent with no shared response and with a weak one.
@@ -2434,10 +2552,12 @@ filtered_data = join_data %>%
          size_cent = scale(size, scale = F)[,1],
          sal_cent = scale(collection_salinity, scale = F)[,1],
          sal_type = if_else(collection_salinity > 15, "High", "Low"), 
-         replicate = factor(replicate))
+         replicate = factor(replicate),
+         collection = paste(site_code, season, sep = "_"))
 
+# collection temperature varies only between collections, so collection is a random effect
 ctmax.model = lme4::lmer(data = filtered_data, 
-                         ctmax ~ clade * temp_cent + (1 | site) + (1 | replicate) + (1|tube))
+                         ctmax ~ clade * temp_cent + (1 | site) + (1 | collection) + (1 | replicate) + (1|tube))
 
 performance::check_model(ctmax.model)
 
@@ -2530,11 +2650,21 @@ wb_events <- filtered_data %>%
   distinct(site, site_code, season, collection_temp) %>%
   group_by(site, site_code) %>%
   summarise(site_mean_collection = mean(collection_temp), .groups = "drop")
-if (file.exists(wb_clim_file)) {
+wb_mur_file <- here("Output", "Output_data", "mur_sst_daily_corrected.csv")
+# site temperature for the between-site term: "collection" = mean of the site's collection temperatures
+# (same temperatures as the within-site term); "sst" = 2014-2023 June-October MUR mean (sensitivity)
+wb_site_scale <- "collection"
+if (wb_site_scale == "collection") {
+  wb_events <- mutate(wb_events, site_temp = site_mean_collection)
+  wb_source <- "mean of the site's collection temperatures"
+} else if (file.exists(wb_mur_file)) {
+  # site temperature on the same scale as collection temperatures: 2014-2023 June-October mean SST
   wb_events <- wb_events %>%
-    left_join(read_csv(wb_clim_file, show_col_types = FALSE) %>% select(site_code, site_temp = temp_mean),
+    left_join(read_csv(wb_mur_file, show_col_types = FALSE) %>%
+                filter(lubridate::month(date) %in% 6:10) %>%
+                group_by(site_code) %>% summarise(site_temp = mean(sst_c, na.rm = TRUE)),
               by = "site_code")
-  wb_source <- "long-term MUR SST mean"
+  wb_source <- "2014–2023 June–October MUR SST mean"
 } else {
   wb_events <- mutate(wb_events, site_temp = site_mean_collection)
   wb_source <- "mean of the site's collection temperatures"
@@ -2544,8 +2674,8 @@ wb_data <- filtered_data %>%
   mutate(t_within = collection_temp - site_mean_collection,
          t_between = site_temp - mean(wb_events$site_temp))
 
-wb_data <- wb_data %>% filter(!is.na(lineage))
-lin_order <- c("F-MR", "F-FH", "F-N", "F-NE", "S", "IV", "X")
+wb_data <- wb_data %>% filter(clade %in% tonsa_clades) %>% mutate(lineage = clade)
+lin_order <- tonsa_clades
 lin_n <- wb_data %>%
   group_by(lineage) %>%
   summarise(n = n(),
@@ -2557,13 +2687,47 @@ est_b <- lin_n$lineage[lin_n$sites >= 3]
 wb_data <- wb_data %>%
   mutate(lineage = factor(lineage, levels = intersect(lin_order, unique(lineage))),
          lin_w = factor(if_else(lineage %in% est_w, as.character(lineage), "other")),
-         lin_b = factor(if_else(lineage %in% est_b, as.character(lineage), "other")))
+         lin_b = factor(if_else(lineage %in% est_b, as.character(lineage), "other")),
+         collection = paste(site_code, season, sep = "_"))
+# second decomposition (season-mean split): the season's mean collection temperature across sites
+# (time) and each collection's deviation from it (space: warmer or cooler than other sites at the
+# same point in the season)
+wb_season_means <- wb_data %>% distinct(site_code, season, collection_temp) %>%
+  group_by(season) %>% summarise(season_mean = mean(collection_temp), n_sites = n(), .groups = "drop")
+wb_data <- wb_data %>% left_join(wb_season_means %>% select(season, season_mean), by = "season") %>%
+  mutate(t_time = season_mean - mean(wb_season_means$season_mean),
+         t_space = collection_temp - season_mean)
 
-# overall slopes (lineage as intercept only) and lineage-specific slopes
+# overall slopes (clade as intercept only) and clade-specific slopes. Temperature varies only between
+# collections, so collection is a random effect (otherwise individuals act as temperature replicates)
 wb_add <- lme4::lmer(ctmax ~ lineage + t_within + t_between +
-                       (1 | site) + (1 | replicate) + (1 | tube), data = wb_data)
+                       (1 | site) + (1 | collection) + (1 | replicate) + (1 | tube), data = wb_data)
 wb_int <- lme4::lmer(ctmax ~ lineage + lin_w:t_within + lin_b:t_between +
-                       (1 | site) + (1 | replicate) + (1 | tube), data = wb_data)
+                       (1 | site) + (1 | collection) + (1 | replicate) + (1 | tube), data = wb_data)
+wb_sm_add <- lme4::lmer(ctmax ~ lineage + t_time + t_space +
+                          (1 | site) + (1 | collection) + (1 | replicate) + (1 | tube), data = wb_data)
+wb_sm_int <- lme4::lmer(ctmax ~ lineage + lineage:t_time + lineage:t_space +
+                          (1 | site) + (1 | collection) + (1 | replicate) + (1 | tube), data = wb_data)
+wb_wbint <- lme4::lmer(ctmax ~ lineage + lineage:t_within + lineage:t_between +
+                         (1 | site) + (1 | collection) + (1 | replicate) + (1 | tube), data = wb_data)
+# spatial slope - seasonal slope, overall and per clade, under both splits
+slope_diff <- function(m, a, b, group) {
+  bb <- lme4::fixef(m); V <- as.matrix(vcov(m))
+  se_d <- sqrt(V[a, a] + V[b, b] - 2 * V[a, b])
+  tibble(group = group, seasonal = bb[[a]], seasonal_se = sqrt(V[a, a]), spatial = bb[[b]],
+         spatial_se = sqrt(V[b, b]), diff = bb[[b]] - bb[[a]], diff_se = se_d,
+         lo = diff - 1.96 * se_d, hi = diff + 1.96 * se_d, p = 2 * pnorm(-abs(diff / se_d)))
+}
+wb_diff <- bind_rows(
+  bind_rows(slope_diff(wb_sm_add, "t_time", "t_space", "All clades"),
+            map_dfr(levels(wb_data$lineage), ~ slope_diff(wb_sm_int, paste0("lineage", .x, ":t_time"),
+                                                          paste0("lineage", .x, ":t_space"), .x))) %>%
+    mutate(split = "Season-mean split"),
+  bind_rows(slope_diff(wb_add, "t_within", "t_between", "All clades"),
+            map_dfr(levels(wb_data$lineage), ~ slope_diff(wb_wbint, paste0("lineage", .x, ":t_within"),
+                                                          paste0("lineage", .x, ":t_between"), .x))) %>%
+    mutate(split = "Site-mean split"))
+write_csv(wb_diff, here("Output", "Output_data", "ctmax_slope_differences.csv"))
 
 b <- lme4::fixef(wb_add); V <- as.matrix(vcov(wb_add))
 diff_est <- b[["t_between"]] - b[["t_within"]]
@@ -2584,7 +2748,7 @@ wb_clade <- tibble(term = names(bi)) %>%
   left_join(lin_n %>% transmute(lineage = as.character(lineage), sites, n), by = "lineage") %>%
   mutate(sites = if_else(lineage == "other", NA_integer_, sites),
          n = if_else(lineage == "other", NA_integer_, n),
-         lineage = if_else(lineage == "other", "other lineages (pooled)", lineage))
+         lineage = if_else(lineage == "other", "other clades (pooled)", lineage))
 
 knitr::kable(wb_overall, digits = 3,
              caption = paste0("CTmax slopes (°C per °C) for within-site and between-site temperature, all lineages (site temperature: ",
@@ -2599,6 +2763,63 @@ wb_clade %>%
   pivot_wider(names_from = Component, values_from = `Slope (95% CI)`, values_fill = "–") %>%
   knitr::kable(caption = "Lineage-specific CTmax slopes. Sites = sites with ≥ 5 individuals of the lineage. Between-site slopes are estimated only for lineages at ≥ 3 sites and rest on few sites; lineages without their own slope share the pooled slope.")
 ```
+
+```{r}
+#| label: within-between-splits-table
+wb_diff %>%
+  transmute(Split = split, Group = group,
+            `Seasonal slope` = sprintf("%.3f ± %.3f", seasonal, seasonal_se),
+            `Spatial slope` = sprintf("%.3f ± %.3f", spatial, spatial_se),
+            `Spatial − seasonal (95% CI)` = sprintf("%.2f (%.2f, %.2f)", diff, lo, hi),
+            p = signif(p, 2)) %>%
+  knitr::kable(caption = "Seasonal and spatial CTmax slopes (°C per °C, ± SE) under two decompositions of collection temperature. Season-mean split: season = the season's mean collection temperature across sites; space = a collection's deviation from it. Site-mean split: space = the site's mean collection temperature; season = a collection's deviation from it. All models include clade, site, collection, replicate and tube.")
+```
+
+#### Does genetic differentiation predict site differences in CTmax?
+
+If the spatial CTmax differences beyond acclimation (Fig. 3A) have a genetic basis that accumulates with isolation, pairs of sites that are more differentiated within a clade might differ more in CTmax. For each clade × site, CTmax was adjusted to a common temperature with the within-site (acclimation) slope, and the absolute difference in adjusted CTmax between genotyped site pairs was compared with F<sub>ST</sub>/(1 − F<sub>ST</sub>) (from the isolation-by-distance pairs above). Significance: Spearman ρ against all exact permutations of adjusted CTmax among each clade's genotyped sites. With 13 site pairs this is a weak test, and neutral F<sub>ST</sub> reflects drift and gene flow, not selection on CTmax.
+
+```{r}
+#| label: gendist-ctmax
+permn <- function(x) if (length(x) <= 1) list(x) else
+  do.call(c, lapply(seq_along(x), function(i) lapply(permn(x[-i]), function(r) c(x[i], r))))
+gd_acc <- lme4::fixef(wb_add)[["t_within"]]
+gd_adj <- wb_data %>%
+  mutate(clade = as.character(lineage), ct_adj = ctmax - gd_acc * (collection_temp - mean(collection_temp))) %>%
+  group_by(clade, site_code = as.character(site_code)) %>% summarise(ct_adj = mean(ct_adj), n = n(), .groups = "drop")
+gd_pairs <- ibd %>% transmute(clade = as.character(clade), a, b, fst_lin, dist_km) %>%
+  left_join(rename(gd_adj, a = site_code, ct_a = ct_adj, n_a = n), by = c("clade", "a")) %>%
+  left_join(rename(gd_adj, b = site_code, ct_b = ct_adj, n_b = n), by = c("clade", "b")) %>%
+  left_join(transmute(wb_events, a = site_code, Ta = site_mean_collection), by = "a") %>%
+  left_join(transmute(wb_events, b = site_code, Tb = site_mean_collection), by = "b") %>%
+  filter(!is.na(ct_a), !is.na(ct_b)) %>%
+  mutate(d_ct = abs(ct_a - ct_b), d_T = abs(Ta - Tb))
+gd_sites <- gd_pairs %>% select(clade, a, b) %>% pivot_longer(c(a, b), values_to = "site") %>% distinct(clade, site)
+gd_perm <- map(set_names(unique(gd_sites$clade)), function(cl) {
+  s <- gd_sites$site[gd_sites$clade == cl]
+  v <- gd_adj$ct_adj[match(paste(cl, s), paste(gd_adj$clade, gd_adj$site_code))]
+  map(permn(seq_along(s)), ~ setNames(v[.x], s))
+})
+gd_grid <- expand.grid(map(gd_perm, seq_along))
+gd_test <- function(xvar, keep, label) {
+  obs <- cor(gd_pairs$d_ct[keep], gd_pairs[[xvar]][keep], method = "spearman")
+  null <- apply(gd_grid, 1, function(g) {
+    d <- map_dbl(seq_len(nrow(gd_pairs)), function(i) {
+      v <- gd_perm[[gd_pairs$clade[i]]][[g[[gd_pairs$clade[i]]]]]; abs(v[[gd_pairs$a[i]]] - v[[gd_pairs$b[i]]]) })
+    cor(d[keep], gd_pairs[[xvar]][keep], method = "spearman") })
+  tibble(Predictor = label, `Site pairs` = sum(keep), rho = round(obs, 2), `p (one-sided, ρ > 0)` = round(mean(null >= obs - 1e-12), 2),
+         Permutations = length(null))
+}
+gd_res <- bind_rows(
+  gd_test("fst_lin", rep(TRUE, nrow(gd_pairs)), "FST/(1 − FST), all pairs"),
+  gd_test("fst_lin", gd_pairs$clade != "F", "FST/(1 − FST), without F"),
+  gd_test("d_T", rep(TRUE, nrow(gd_pairs)), "Difference in mean collection temperature"),
+  gd_test("dist_km", rep(TRUE, nrow(gd_pairs)), "Distance (km)"))
+write_csv(gd_pairs, here("Output", "Output_data", "gendist_ctmax_pairs.csv"))
+knitr::kable(gd_res, caption = "Association between the difference in acclimation-adjusted CTmax of two sites (same clade) and their genetic differentiation, temperature difference or distance.")
+```
+
+`r sprintf("Adjusted CTmax differences were not larger between more differentiated sites (ρ = %.2f, p = %.2f), nor between sites with more different temperatures (ρ = %.2f). The spatial CTmax component is therefore not explained by genome-wide differentiation, which is expected if it is shaped by selection at few loci, by developmental plasticity, or both; the test has little power.", gd_res$rho[1], gd_res[[4]][1], gd_res$rho[3])`
 
 ```{r}
 #| label: within-between-plot
@@ -2862,18 +3083,19 @@ How much of the variation in CTmax among individuals is due to lineage, to the s
 vp_data <- wb_data %>% mutate(collection = paste(site_code, season, sep = "_"))
 vp_m0 <- lme4::lmer(ctmax ~ 1 + (1 | lineage) + (1 | site) + (1 | collection) + (1 | replicate) + (1 | tube),
                     data = vp_data)
-vp_m1 <- lme4::lmer(ctmax ~ t_within + t_between + (1 | lineage) + (1 | site) + (1 | collection) +
+vp_m1 <- lme4::lmer(ctmax ~ t_time + t_space + (1 | lineage) + (1 | site) + (1 | collection) +
                       (1 | replicate) + (1 | tube), data = vp_data)
 
 vp_shares <- function(m) {
   vc <- as.data.frame(lme4::VarCorr(m))
   re <- setNames(vc$vcov, vc$grp)
   b <- lme4::fixef(m)
-  fx <- c(t_within = NA_real_, t_between = NA_real_)
-  if ("t_within" %in% names(b)) fx <- c(t_within = var(b[["t_within"]] * m@frame$t_within),
-                                        t_between = var(b[["t_between"]] * m@frame$t_between))
-  comp <- c(Lineage = re[["lineage"]], `Site temperature` = unname(fx["t_between"]),
-            `Site (other)` = re[["site"]], `Acclimation (within-site temperature)` = unname(fx["t_within"]),
+  # season-mean split (as in Fig. 3A): seasonal = season mean across sites, spatial = deviation within season
+  fx <- c(t_time = NA_real_, t_space = NA_real_)
+  if ("t_time" %in% names(b)) fx <- c(t_time = var(b[["t_time"]] * m@frame$t_time),
+                                      t_space = var(b[["t_space"]] * m@frame$t_space))
+  comp <- c(Clade = re[["lineage"]], `Spatial temperature` = unname(fx["t_space"]),
+            `Site (other)` = re[["site"]], `Seasonal temperature` = unname(fx["t_time"]),
             `Collection (other)` = re[["collection"]],
             Assay = re[["replicate"]] + re[["tube"]], Individual = re[["Residual"]])
   comp[is.na(comp)] <- 0
@@ -2886,12 +3108,12 @@ vp_boot <- function(m) {
          lo = apply(bt$t, 2, quantile, 0.025, na.rm = TRUE), hi = apply(bt$t, 2, quantile, 0.975, na.rm = TRUE))
 }
 vp_tab <- bind_rows(vp_boot(vp_m0) %>% mutate(model = "Without temperature"),
-                    vp_boot(vp_m1) %>% mutate(model = "With within/between temperature")) %>%
+                    vp_boot(vp_m1) %>% mutate(model = "With seasonal and spatial temperature")) %>%
   mutate(component = factor(component, levels = names(vp_shares(vp_m1))),
-         model = factor(model, levels = c("Without temperature", "With within/between temperature")))
+         model = factor(model, levels = c("Without temperature", "With seasonal and spatial temperature")))
 
-vp_cols <- c(Lineage = "#555555", `Site temperature` = unname(lat_gradient["MR"]), `Site (other)` = "#E8B4A6",
-             `Acclimation (within-site temperature)` = unname(lat_gradient["X"]), `Collection (other)` = "#A9BCD9",
+vp_cols <- c(Clade = "#555555", `Spatial temperature` = unname(lat_gradient["MR"]), `Site (other)` = "#E8B4A6",
+             `Seasonal temperature` = unname(lat_gradient["X"]), `Collection (other)` = "#A9BCD9",
              Assay = "#D0D0D0", Individual = "#EDEDED")
 ggplot(filter(vp_tab, share > 0), aes(x = model, y = share, fill = component)) +
   geom_col(width = 0.6, colour = "white") +
@@ -2912,16 +3134,16 @@ vp_tab %>%
   select(component, model, value) %>%
   pivot_wider(names_from = model, values_from = value, values_fill = "–") %>%
   arrange(component) %>%
-  knitr::kable(col.names = c("Component", "Without temperature", "With within/between temperature"),
+  knitr::kable(col.names = c("Component", "Without temperature", "With seasonal and spatial temperature"),
                caption = "Share of CTmax variance (95% parametric bootstrap interval).")
 ```
 
 ```{r}
 #| include: false
-vc <- function(comp, mod = "With within/between temperature") round(100 * filter(vp_tab, component == comp, model == mod)$share)
+vc <- function(comp, mod = "With seasonal and spatial temperature") round(100 * filter(vp_tab, component == comp, model == mod)$share)
 ```
 
-Without temperature terms, the largest components are collection (`r vc("Collection (other)", "Without temperature")`%), lineage (`r vc("Lineage", "Without temperature")`%) and site (`r vc("Site (other)", "Without temperature")`%), with `r vc("Individual", "Without temperature")`% among individuals within a collection. Adding the temperature terms, within-site temperature (acclimation) explains `r vc("Acclimation (within-site temperature)")`% of all CTmax variance and absorbs most of the collection component (which drops to `r vc("Collection (other)")`%), while long-term site temperature explains `r vc("Site temperature")`% and the remaining site component is `r vc("Site (other)")`%. Lineage accounts for `r vc("Lineage")`%. Thermal tolerance in this complex is therefore structured roughly equally by lineage, by acclimation to recent conditions, and by site (temperature plus other site differences), with little left to the assay. The intervals are wide because lineage and site have few levels (7 lineages, 8 sites).
+Without temperature terms, the largest components are collection (`r vc("Collection (other)", "Without temperature")`%), clade (`r vc("Clade", "Without temperature")`%) and site (`r vc("Site (other)", "Without temperature")`%), with `r vc("Individual", "Without temperature")`% among individuals within a collection. The temperature terms follow the season-mean split of Fig. 3A: seasonal temperature (the season's mean collection temperature across sites) explains `r vc("Seasonal temperature")`% of all CTmax variance, and spatial temperature (a collection's deviation from that season mean) `r vc("Spatial temperature")`%; together they absorb most of the collection component (which drops to `r vc("Collection (other)")`%), leaving `r vc("Site (other)")`% to other site differences. Clade accounts for `r vc("Clade")`%. The intervals are wide because clade and site have few levels (4 clades, 8 sites).
 
 
 
@@ -2972,7 +3194,7 @@ ggplot(cg_plot, aes(x = lineage, y = ctmax, colour = clade)) +
   stat_summary(fun.data = mean_se, colour = "black", size = 0.4) +
   facet_wrap(~ collection, nrow = 1, scales = "free_x") +
   scale_colour_manual(values = clade_cols[tonsa_clades], guide = "none") +
-  labs(x = NULL, y = "CTmax (°C)", caption = "Collections with ≥ 2 lineages of ≥ 3 individuals; black = mean ± SE.") +
+  labs(x = NULL, y = "CTmax (°C)", caption = "Collections with ≥ 2 clades of ≥ 3 individuals; black = mean ± SE.") +
   theme_matt_facets(base_size = 11) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
@@ -3161,6 +3383,31 @@ if (exists("gwas_sign")) {
 }
 ```
 
+```{r}
+#| label: gwas-power
+#| fig-width: 10
+#| fig-height: 4
+gw_pw_files <- Sys.glob(cx("results", "16_gwas", "*.power.tsv"))
+if (length(gw_pw_files) == 0) {
+  cat("Association-scan power (results/16_gwas/*.power.tsv) is not in this export yet.")
+} else {
+  gw_pw <- map_dfr(gw_pw_files, read_tsv, show_col_types = FALSE) %>%
+    mutate(lineage = factor(lineage, levels = c("X", "F-N", "S", "F-FH", "IV")),
+           maf_bin = factor(maf_bin, levels = unique(maf_bin[order(parse_number(maf_bin))])))
+  ggplot(gw_pw, aes(x = beta, y = power, colour = maf_bin)) +
+    geom_hline(yintercept = 0.8, colour = "grey60", linetype = "dashed") +
+    geom_line(linewidth = 0.9) + geom_point(size = 1.6) +
+    facet_wrap(~ lineage, nrow = 1) +
+    scale_colour_manual(values = c("grey70", "grey45", "black"), name = "Minor-allele\nfrequency") +
+    scale_y_continuous(limits = c(0, 1)) +
+    labs(x = "Effect of the causal allele on CTmax (°C per allele)", y = "Power (genome-wide 5%)") +
+    theme_matt_facets(base_size = 11)
+}
+```
+
+Power was simulated on each lineage's own data (cluster target `gwas_power`): for 2,000 SNPs sampled across the genome, true genotypes were drawn from each individual's genotype posterior, a causal effect was added to CTmax shuffled within collections, and the scan's test was repeated against the genome-wide 5% threshold from its own permutations. `r if (length(gw_pw_files)) { g <- gw_pw %>% filter(str_detect(maf_bin, "^\\(0\\.3")); sprintf("Genotype accuracy was low (r² between expected dosage and true genotype %.2f–%.2f), and the scan reached 50%% power only for loci of about 2 °C per allele in F-N and 3 °C in X (explaining most of the within-collection CTmax variance); in S, F-FH and IV it never did. The scan rules out only loci of very large effect and does not constrain a polygenic basis of within-lineage variation; it is reported for completeness.", min(gw_pw$r2), max(gw_pw$r2)) } else ""`
+
+
 No lineage shows more association signal than the shuffles: the observed counts of small p values sit inside, and in X below, the shuffle distribution at every threshold, with or without chromosome 6. The one marginal exception is IV, where moderately small p values (p < 0.001) are more common than in 94 of 100 shuffles but the tail is not; with five lineages tested and the smallest sample (36 individuals, 2 collections), this is consistent with chance. The smallest individual p values (down to ~10⁻⁷–10⁻⁸) are typical of the shuffles too, and the top SNPs share a profile – low frequency, reads in only part of the individuals, large estimated effects – expected from chance at weakly informative sites, so none is reported as a candidate.
 
 Two patterns that appeared in a first version of the scan (without the depth covariate, and with missing individuals given the overall rather than the collection mean) do not survive comparison with the shuffles. First, CTmax effects do not line up with the spatial or seasonal temperature slopes in X or S: the observed correlations (|r| ≤ 0.011) are well inside the shuffle distributions, whose spread (SD 0.01–0.05) is much larger than a chromosome jackknife suggests, because one shuffle shifts the effects of all SNPs together. Second, the excess of negative effects at rare SNPs (minor allele lowering CTmax) is reproduced by the shuffles (63–86% negative in X, S and F-FH, as observed), so it is a property of dosage regression at low-frequency sites, not evidence for deleterious rare variants; only F-N is slightly above its shuffles (0.69 vs. 0.58, rank 4 of 101), which with five lineages tested is not significant.
@@ -3317,6 +3564,50 @@ ggarrange(ctmax_var_temp, size_var_temp, common.legend = T, legend = "right")
 
 Changes in trait variance may be indicative of phenotypic selection. If selection (as opposed to acclimation) are driving seasonal changes, we may expect to see a reduction in variance in the peak samples relative to the early season samples. Note that early season collection temperatures this year were higher than expected, driven by fairly strong heatwaves across the North Atlantic. As shown in the temperature profiles for each site, the 'early' samples were collected just after high temperatures were reached, while 'peak' samples were collected after sites had experienced high temperatures for several weeks (generations). As warming tolerances were fairly high throughout this period, we will assume that selection was weak before the early samples. If the early onset of high temperatures filtered out vulnerable genotypes prior to our sampling, the results will be a conservative estimate of the effects of selection on trait variance.
 
+### CTmax variance through the season
+
+If seasonal selection on thermal tolerance were strong, it should remove the least tolerant individuals and narrow CTmax variation within lineages over the season. Within each lineage at each site sampled in two or more seasons (collections with ≥ 5 individuals of the lineage), spread was measured as each individual's absolute deviation from its collection median (Brown–Forsythe), modelled as |deviation| ~ season + (1 | lineage:site), with early season as the reference.
+
+```{r}
+#| label: ctmax-variance-season
+#| fig-width: 10
+#| fig-height: 4.5
+vs <- join_data %>%
+  filter(clade %in% tonsa_clades) %>% mutate(lineage = clade) %>%
+  group_by(lineage, site_code, season) %>% filter(n() >= 5) %>%
+  mutate(absdev = abs(ctmax - median(ctmax))) %>% ungroup() %>%
+  group_by(lineage, site_code) %>% filter(n_distinct(season) >= 2) %>% ungroup() %>%
+  mutate(season = factor(season, levels = season_order), unit = paste(lineage, site_code))
+vs_m <- lme4::lmer(absdev ~ season + (1 | unit), data = vs)
+vs_tab <- as_tibble(summary(vs_m)$coefficients, rownames = "term") %>%
+  filter(term != "(Intercept)") %>%
+  transmute(contrast = sub("season", "", term) %>% paste("vs early"), estimate = Estimate, se = `Std. Error`,
+            lo = estimate - 1.96 * se, hi = estimate + 1.96 * se)
+vs_sd <- vs %>% group_by(unit, lineage, site_code, season) %>%
+  summarise(sd = sd(ctmax), n = n(), .groups = "drop")
+write_csv(vs_tab, here("Output", "Output_data", "ctmax_variance_season.csv"))
+write_csv(vs_sd, here("Output", "Output_data", "ctmax_sd_by_collection.csv"))
+ggplot(vs_sd, aes(x = season, y = sd, group = unit)) +
+  geom_line(colour = "grey55") +
+  geom_point(aes(size = n), colour = "grey20") +
+  geom_text(data = ~ group_by(.x, unit) %>% slice_max(as.integer(season), n = 1), aes(label = unit),
+            hjust = -0.15, size = 3) +
+  scale_size_continuous(range = c(1.5, 3.5), name = "Individuals") +
+  scale_x_discrete(expand = expansion(add = c(0.3, 1))) +
+  labs(x = NULL, y = "SD of CTmax within the collection (°C)") +
+  theme_matt(base_size = 12)
+```
+
+```{r}
+#| label: ctmax-variance-season-table
+knitr::kable(vs_tab, digits = 3, col.names = c("Contrast", "Change in mean |deviation| (°C)", "SE", "95% lower", "95% upper"),
+             caption = sprintf("Change in the spread of CTmax within lineage × site units (%d units, %d individuals), relative to the early season.",
+                               n_distinct(vs$unit), nrow(vs)))
+```
+
+`r sprintf("CTmax spread did not narrow through the season: relative to early-season collections, the mean absolute deviation changed by %+.2f °C at the peak and %+.2f °C in the late season (95%% CIs %.2f to %.2f and %.2f to %.2f). This phenotypic check agrees with the genomic one: there is no sign of strong seasonal selection on thermal tolerance within lineages. It is a weak test, however: spread also reflects assay noise and the mix of acclimation histories within a collection, and immigration can replenish variation.", vs_tab$estimate[1], vs_tab$estimate[2], vs_tab$lo[1], vs_tab$hi[1], vs_tab$lo[2], vs_tab$hi[2])`
+
+
 ### Parasites, epibionts and thermal limits
 
 Infected and uninfected individuals are compared within the same collection (same site, date and collection temperature), so differences are not confounded with acclimation temperature. Only collections with at least two positive and two negative individuals are shown.
@@ -3372,7 +3663,9 @@ infection_fit <- function(var) {
            n_positive = sum(d$status), effect = co[["Estimate"]], se = co[["Std. Error"]])
   })
 }
-bind_rows(infection_fit("parasite_any"), infection_fit("epibiont_any")) %>%
+inf_tab <- bind_rows(infection_fit("parasite_any"), infection_fit("epibiont_any"))
+write_csv(inf_tab, here("Output", "Output_data", "infection_traits.csv"))
+inf_tab %>%
   knitr::kable(digits = 3,
                caption = "Effect of carrying a parasite or epibiont on CTmax and size, within collections (trait ~ status + clade + (1 | collection)); only collections with both positive and negative individuals.")
 ```
@@ -3382,10 +3675,10 @@ bind_rows(infection_fit("parasite_any"), infection_fit("epibiont_any")) %>%
 Warming tolerance (CTmax minus habitat temperature) is the usual summary of vulnerability, and it is usually computed from a single CTmax per species. The results above show that "*A. tonsa*" CTmax varies at two levels that a single value ignores: heritable differences between lineages (common garden), and acclimation within lineages, which is the same across sites and seasons (within/between model). Lineage make-up also changes through the season. Three scenarios show how much each level changes where the species looks vulnerable.
 
 - **Fixed CTmax:** one value for everyone, the mean of all peak-season individuals.
-- **Lineage means:** each lineage's peak-season mean CTmax (its mean over all collections when it has < 5 peak-season individuals), weighted by the lineage make-up of the site's peak collection.
-- **Lineages + acclimation:** CTmax predicted for each lineage on each day from the within/between model (population-level, no site random effect): lineage + within-site temperature (the day's temperature minus the site's mean collection temperature) + between-site temperature (the site's long-term MUR mean). The day's temperature is clamped to the range of collection temperatures at which that lineage was sampled, so acclimation is not extrapolated beyond the data. Same peak-season make-up.
+- **Clade means:** each clade's peak-season mean CTmax (its mean over all collections when it has < 5 peak-season individuals), weighted by the clade make-up of the site's peak collection.
+- **Clades + acclimation:** CTmax predicted for each clade on each day from the within/between model (population-level, no site random effect): lineage + within-site temperature (the day's temperature minus the site's mean collection temperature) + between-site temperature (the site's long-term MUR mean). The day's temperature is clamped to the range of collection temperatures at which that lineage was sampled, so acclimation is not extrapolated beyond the data. Same peak-season make-up.
 
-Habitat temperature is the bias-corrected daily MUR SST, 2014–2023 (Section 1), plus 0 or 4 °C for a uniform-warming scenario. Two summaries per site, over August–September (the warmest months, peak abundance, and the period the peak collections represent): the mean warming tolerance of the peak-season population, and the warming tolerance on the warmest August–September day of each year (averaged over years) for the least tolerant lineage making up ≥ 10% of the peak collection. Intervals are 95% ranges from 1,000 bootstrap resamples of individuals (fixed and lineage means) or 1,000 draws of the model's fixed effects (lineages + acclimation). Individuals' CTmax was measured against collection-day water temperature, while predictions use MUR SST, which in summer runs cooler than the in-situ collection temperatures at the northern sites (Section 1); the acclimation scenario therefore uses MUR temperatures on a model fitted to in-situ ones.
+Habitat temperature is the bias-corrected daily MUR SST, 2014–2023 (Section 1), plus 0 or 4 °C for a uniform-warming scenario. Sites are pooled into six regions (Florida: MR, FH; Chesapeake: MD, GW; Connecticut; Maine; Shediac: TK; Miramichi: RW), each site weighted equally; composition and acclimation terms are applied site by site before pooling. Two summaries per region, over August–September (the warmest months, peak abundance, and the period the peak collections represent): the mean warming tolerance of the peak-season population, and the warming tolerance on the warmest August–September day of each year (averaged over years) for the least tolerant lineage making up ≥ 10% of the peak collection. Intervals are 95% ranges from 1,000 bootstrap resamples of individuals (fixed and lineage means) or 1,000 draws of the model's fixed effects (lineages + acclimation). Individuals' CTmax was measured against collection-day water temperature, while predictions use MUR SST, which in summer runs cooler than the in-situ collection temperatures at the northern sites (Section 1); the acclimation scenario therefore uses MUR temperatures on a model fitted to in-situ ones.
 
 ```{r}
 #| label: wt-scenarios
@@ -3402,7 +3695,10 @@ if (!have_mur) cat("MUR daily temperatures (Output_data/mur_sst_daily_corrected.
 if (have_mur) {
   B <- 1000
   set.seed(5)
-  scen_levels <- c("Fixed CTmax", "Lineage means", "Lineages + acclimation")
+  scen_levels <- c("Fixed CTmax", "Clade means", "Clades + acclimation")
+  # nearby sites are pooled into regions (each site weighted equally within its region)
+  wt_region <- c(MR = "Florida", FH = "Florida", MD = "Chesapeake", GW = "Chesapeake",
+                 CT = "Connecticut", ME = "Maine", TK = "Shediac", RW = "Miramichi")
   wt_lin <- levels(wb_data$lineage)
   peak_days <- read_csv(mur_file, show_col_types = FALSE) %>%
     filter(site_code %in% site_order, month(date) %in% 8:9) %>%
@@ -3446,14 +3742,14 @@ if (have_mur) {
   beta <- rbind(fe, MASS::mvrnorm(B, fe, as.matrix(vcov(wb_add))))
   lin_int <- function(l) beta[, "(Intercept)"] + if (paste0("lineage", l) %in% colnames(beta)) beta[, paste0("lineage", l)] else 0
 
-  # warming tolerance draws for one site: mean (composition-weighted) and warmest-day (least tolerant common lineage)
+  # warming tolerance draws for one site: mean (composition-weighted) and warmest-day (least tolerant common clade)
   site_wt <- function(a, scenario) {
     wt <- map(seq_len(nrow(a)), function(i) {
       r <- a[i, ]
       ct_m <- switch(scenario,
-        "Fixed CTmax" = ct_fixed, "Lineage means" = ct_lin[[r$lineage]],
-        "Lineages + acclimation" = lin_int(r$lineage) + beta[, "t_within"] * (r$mTc - r$smc) + beta[, "t_between"] * r$tb)
-      ct_h <- if (scenario == "Lineages + acclimation")
+        "Fixed CTmax" = ct_fixed, "Clade means" = ct_lin[[r$lineage]],
+        "Clades + acclimation" = lin_int(r$lineage) + beta[, "t_within"] * (r$mTc - r$smc) + beta[, "t_between"] * r$tb)
+      ct_h <- if (scenario == "Clades + acclimation")
         lin_int(r$lineage) + beta[, "t_within"] * (r$hTc - r$smc) + beta[, "t_between"] * r$tb else ct_m
       list(mean = ct_m - r$mT, hot = ct_h - r$hT)
     })
@@ -3464,30 +3760,32 @@ if (have_mur) {
   summ <- function(v) tibble(est = v[1], lo = quantile(v[-1], 0.025), hi = quantile(v[-1], 0.975))
 
   wt_res <- map_dfr(c(0, 4), function(dw) {
-    map_dfr(c(scen_levels, "Lineages + acclimation (annual make-up)"), function(sc) {
+    map_dfr(c(scen_levels, "Clades + acclimation (annual make-up)"), function(sc) {
       compo <- if (grepl("annual", sc)) comp_annual else comp_peak
       ag <- temp_agg(dw, compo)
-      map_dfr(split(ag, ag$site_code), function(a) {
-        w <- site_wt(a, sub(" \\(annual make-up\\)", "", sc))
-        bind_rows(mutate(summ(w$mean), metric = "Aug–Sep mean"),
-                  mutate(summ(w$hot), metric = "Warmest day, least tolerant common lineage")) %>%
-          mutate(site_code = a$site_code[1])
+      by_site <- map(split(ag, ag$site_code), ~ site_wt(.x, sub(" \\(annual make-up\\)", "", sc)))
+      map_dfr(split(names(by_site), wt_region[names(by_site)]), function(sites) {
+        w_mean <- Reduce(`+`, map(by_site[sites], "mean")) / length(sites)
+        w_hot <- Reduce(`+`, map(by_site[sites], "hot")) / length(sites)
+        bind_rows(mutate(summ(w_mean), metric = "Aug–Sep mean"),
+                  mutate(summ(w_hot), metric = "Warmest day, least tolerant common clade")) %>%
+          mutate(region = unname(wt_region[sites[1]]))
       }) %>% mutate(scenario = sc, warming = dw)
     })
   }) %>%
-    mutate(site_code = factor(site_code, levels = site_order))
+    mutate(region = factor(region, levels = region_order))
   write_csv(wt_res, here("Output", "Output_data", "wt_scenarios.csv"))
 
-  # spread among sites, current conditions, with bootstrap intervals for the change vs fixed CTmax
+  # spread among regions, current conditions, with bootstrap intervals for the change vs fixed CTmax
   wt_range <- wt_res %>% filter(warming == 0) %>%
     group_by(scenario, metric) %>%
     summarise(range = max(est) - min(est), .groups = "drop") %>%
     group_by(metric) %>%
     mutate(change = 100 * (range / range[scenario == "Fixed CTmax"] - 1)) %>%
     ungroup() %>%
-    mutate(scenario = factor(scenario, levels = c(scen_levels, "Lineages + acclimation (annual make-up)"))) %>%
+    mutate(scenario = factor(scenario, levels = c(scen_levels, "Clades + acclimation (annual make-up)"))) %>%
     arrange(metric, scenario)
-  write_csv(wt_range %>% transmute(Scenario = scenario, Metric = metric, `WT range among sites` = range,
+  write_csv(wt_range %>% transmute(Scenario = scenario, Metric = metric, `WT range among regions` = range,
                                    `Change vs fixed (%)` = change),
             here("Output", "Output_data", "wt_range_changes.csv"))
 }
@@ -3507,13 +3805,72 @@ if (have_mur) {
     geom_hline(yintercept = 0, colour = "grey40") +
     geom_line(position = position_dodge(width = 0.5), alpha = 0.6) +
     geom_pointrange(position = position_dodge(width = 0.5), size = 0.45) +
-    facet_wrap(~ site_code, nrow = 2) +
+    facet_wrap(~ region, nrow = 2) +
     scale_colour_manual(values = c(Current = "darkslategray", `+4 °C` = "darksalmon"), name = NULL) +
     scale_shape_manual(values = c(16, 17), name = NULL) +
-    scale_x_discrete(labels = c("Fixed", "Lineage\nmeans", "Lineages +\nacclimation")) +
+    scale_x_discrete(labels = c("Fixed", "Clade\nmeans", "Clades +\nacclimation")) +
     labs(x = NULL, y = "Warming tolerance, August–September (°C)") +
     theme_matt_facets(base_size = 12) +
     theme(legend.position = "bottom", legend.box = "vertical")
+}
+```
+
+The figure below shows the full distribution of daily warming tolerance in each region behind these summaries, over the whole sampled season (July–November, 2014–2023). Each day is weighted by the lineage make-up of the matching collection: July by the early collection, August–September by the peak collection, October–November by the late collection, using the nearest available collection where one is missing (the Florida sites have no early collection). Point estimates only; current conditions solid, +4 °C pale.
+
+```{r}
+#| label: wt-histograms
+#| fig-width: 11
+#| fig-height: 10
+if (have_mur) {
+  season_of <- function(m) case_when(m == 7 ~ "early", m %in% 8:9 ~ "peak", m %in% 10:11 ~ "late")
+  season_days <- read_csv(mur_file, show_col_types = FALSE) %>%
+    filter(site_code %in% site_order, month(date) %in% 7:11) %>%
+    transmute(site_code, date, season = season_of(month(date)), temp = sst_c)
+  comp_season <- comp %>%
+    count(site_code, season, lineage) %>%
+    group_by(site_code, season) %>% mutate(p = n / sum(n)) %>% ungroup() %>%
+    mutate(across(c(site_code, season, lineage), as.character))
+  # nearest available collection when a site lacks one (early -> peak, late -> peak, peak -> late)
+  fallback <- list(early = c("early", "peak", "late"), peak = c("peak", "late", "early"),
+                   late = c("late", "peak", "early"))
+  comp_for <- function(site, sea) {
+    for (s2 in fallback[[sea]]) {
+      x <- filter(comp_season, site_code == site, season == s2)
+      if (nrow(x)) return(x)
+    }
+  }
+  day_comp <- season_days %>% distinct(site_code, season) %>%
+    pmap_dfr(function(site_code, season) comp_for(site_code, season) %>% mutate(day_season = season, season = NULL) %>%
+               rename(season = day_season))
+  bw_hat <- fe[["t_within"]]; bb_hat <- fe[["t_between"]]
+  int_hat <- set_names(map_dbl(wt_lin, ~ lin_int(.x)[1]), wt_lin)
+  wt_days <- season_days %>%
+    inner_join(day_comp, by = c("site_code", "season"), relationship = "many-to-many") %>%
+    inner_join(lin_trange, by = "lineage") %>%
+    inner_join(site_terms, by = "site_code") %>%
+    crossing(warming = c(0, 4)) %>%
+    mutate(T = temp + warming, Tc = pmin(pmax(T, tmin), tmax),
+           `Fixed CTmax` = ct_fixed[1] - T,
+           `Clade means` = map_dbl(lineage, ~ ct_lin[[.x]][1]) - T,
+           `Clades + acclimation` = int_hat[lineage] + bw_hat * (Tc - smc) + bb_hat * tb - T) %>%
+    pivot_longer(all_of(scen_levels), names_to = "scenario", values_to = "wt") %>%
+    group_by(site_code, scenario, warming) %>% mutate(w = p / n_distinct(date)) %>% ungroup() %>%
+    mutate(region = factor(wt_region[site_code], levels = region_order)) %>%
+    group_by(region, scenario, warming) %>% mutate(w = w / n_distinct(site_code)) %>% ungroup() %>%
+    mutate(scenario = factor(scenario, levels = scen_levels),
+           warming = factor(if_else(warming == 0, "Current", "+4 °C"), levels = c("+4 °C", "Current")))
+
+  ggplot(wt_days, aes(x = wt, weight = w, fill = region, alpha = warming)) +
+    geom_vline(xintercept = 0, colour = "grey30") +
+    geom_histogram(binwidth = 1, boundary = 0, position = "identity") +
+    facet_grid(region ~ scenario, scales = "free_y") +
+    scale_fill_manual(values = region_cols[region_order], guide = "none") +
+    scale_alpha_manual(values = c("+4 °C" = 0.35, Current = 0.9), name = NULL) +
+    scale_x_continuous(breaks = seq(-5, 40, 5)) +
+    labs(x = "Daily warming tolerance, July–November (°C)", y = "Share of individual-days") +
+    theme_matt_facets(base_size = 11) +
+    theme(axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+          strip.text.y = element_text(angle = 0), legend.position = "bottom")
 }
 ```
 
@@ -3521,9 +3878,9 @@ if (have_mur) {
 #| label: wt-scenarios-table
 if (have_mur) {
   wt_range %>%
-    transmute(Metric = metric, Scenario = scenario, `Range among sites (°C)` = round(range, 1),
+    transmute(Metric = metric, Scenario = scenario, `Range among regions (°C)` = round(range, 1),
               `Change vs fixed CTmax` = if_else(scenario == "Fixed CTmax", "–", sprintf("%+.0f%%", change))) %>%
-    knitr::kable(caption = "Spread of warming tolerance among sites under current conditions. The last scenario uses each site's lineage make-up across all collections instead of the peak collection.")
+    knitr::kable(caption = "Spread of warming tolerance among regions under current conditions. The last scenario uses each site's lineage make-up across all collections instead of the peak collection.")
 }
 ```
 
@@ -3531,18 +3888,359 @@ if (have_mur) {
 #| label: wt-scenarios-text
 #| include: false
 if (have_mur) {
-  g <- function(sc, mt, site, dw = 0) wt_res %>% filter(scenario == sc, metric == mt, site_code == site, warming == dw)
-  wt_sites_low <- wt_res %>% filter(warming == 4, metric == "Warmest day, least tolerant common lineage") %>%
+    wt_sites_low <- wt_res %>% filter(warming == 4, metric == "Warmest day, least tolerant common clade") %>%
     filter(scenario %in% scen_levels) %>% group_by(scenario) %>% slice_min(est, n = 1) %>% ungroup()
 }
 ```
 
-`r if (have_mur) { r <- filter(wt_range, metric == "Aug–Sep mean"); h <- filter(wt_range, metric != "Aug–Sep mean"); sprintf("Relative to a single CTmax, lineage means change the spread of peak-season warming tolerance among sites by %+.0f%%, and lineages with acclimation by %+.0f%% (warmest-day metric: %+.0f%% and %+.0f%%). With +4 °C, the lowest warming tolerance on the warmest day is at %s.", r$change[r$scenario == 'Lineage means'], r$change[r$scenario == 'Lineages + acclimation'], h$change[h$scenario == 'Lineage means'], h$change[h$scenario == 'Lineages + acclimation'], paste(sprintf('%s under %s (%.1f °C)', wt_sites_low$site_code, wt_sites_low$scenario, wt_sites_low$est), collapse = '; ')) } else ""`
+`r if (have_mur) { r <- filter(wt_range, metric == "Aug–Sep mean"); h <- filter(wt_range, metric != "Aug–Sep mean"); sprintf("Relative to a single CTmax, clade means change the spread of peak-season warming tolerance among regions by %+.0f%%, and clades with acclimation by %+.0f%% (warmest-day metric: %+.0f%% and %+.0f%%). With +4 °C, the lowest warming tolerance on the warmest day is at %s.", r$change[r$scenario == 'Clade means'], r$change[r$scenario == 'Clades + acclimation'], h$change[h$scenario == 'Clade means'], h$change[h$scenario == 'Clades + acclimation'], paste(sprintf('%s under %s (%.1f °C)', wt_sites_low$region, wt_sites_low$scenario, wt_sites_low$est), collapse = '; ')) } else ""`
 
-What changes, site by site:
+What changes, region by region:
 
-- **A single CTmax makes the south look more vulnerable and the north less vulnerable than its lineages are.** Florida's lineages (F-FH, F-MR) are the most tolerant, so lineage means raise Florida's warming tolerance by about 3 °C, enough that +4 °C warming no longer pushes the warmest day to zero. The northern sites' X and IV are less tolerant than the species average, so their margin drops by about 2 °C. Peak-season means in the Chesapeake and Connecticut barely move, because their peak-season lineages (F-N, S) are close to the average; at CT the warmest-day margin still drops by 2 °C, set by the X minority.
-- **Acclimation adds little at the peak and helps most under warming.** The peak-season means already include acclimation to summer water, so acclimation changes current warming tolerance by a few tenths of a degree; with +4 °C it adds up to about 2 °C (GW), limited by the clamp to sampled temperatures. Its intervals are the widest, because it rests on a model rather than direct measurements.
-- **Seasonal turnover keeps the least tolerant lineage out of the heat.** Using each site's make-up over all collections instead of the peak collection lowers the warmest-day margin by about 2 °C at CT and TK, because IV, the least tolerant lineage, is common there only in autumn. Annual composition would overstate vulnerability where turnover is strongest.
+- **A single CTmax makes the south look more vulnerable and the north less vulnerable than its lineages are.** Florida's lineages (F-FH, F-MR) are the most tolerant, so lineage means raise Florida's warming tolerance by about 3 °C, enough that +4 °C warming no longer pushes the warmest day to zero. The northern sites' X and IV are less tolerant than the species average, so their margin drops by about 2 °C. Peak-season means in the Chesapeake and Connecticut barely move, because their peak-season lineages (F-N, S) are close to the average; in Connecticut the warmest-day margin still drops by 2 °C, set by the X minority.
+- **Acclimation adds little at the peak and helps most under warming.** The peak-season means already include acclimation to summer water, so acclimation changes current warming tolerance by a few tenths of a degree; with +4 °C it adds about 1 °C in the Chesapeake, limited by the clamp to sampled temperatures. Its intervals are the widest, because it rests on a model rather than direct measurements.
+- **Seasonal turnover keeps the least tolerant lineage out of the heat.** Using each site's make-up over all collections instead of the peak collection lowers the warmest-day margin by about 2 °C in Connecticut, Maine and Shediac, because IV, the least tolerant lineage, is common there only in autumn. Annual composition would overstate vulnerability where turnover is strongest.
 
 These are illustrations, not forecasts: they assume composition and the acclimation response stay as observed, warming is uniform through the season, and CTmax is the relevant limit.
+
+## 6. Manuscript figures
+
+Main-text figures for the merged manuscript, assembled from the analyses above (saved as `Output/Figures/ms-fig<N>-1.png` / `.pdf`).
+
+```{r}
+#| label: ms-fig-helpers
+#| include: false
+# rectangular phylogram as ggplot layers
+tree_df <- function(tr) {
+  tr <- ape::ladderize(tr)
+  n <- ape::Ntip(tr)
+  x <- ape::node.depth.edgelength(tr)
+  y <- rep(NA_real_, n + tr$Nnode)
+  tips <- tr$edge[tr$edge[, 2] <= n, 2]
+  y[tips] <- rev(seq_along(tips))
+  kids <- split(tr$edge[, 2], tr$edge[, 1])
+  y_of <- function(nd) { if (!is.na(y[nd])) return(y[nd]); v <- mean(sapply(kids[[as.character(nd)]], y_of)); y[nd] <<- v; v }
+  invisible(y_of(n + 1))
+  edges <- tibble(p = tr$edge[, 1], c = tr$edge[, 2]) %>% mutate(x0 = x[p], x1 = x[c], y = y[c])
+  verts <- map_dfr(names(kids), function(nd) { yy <- y[kids[[nd]]]; tibble(x = x[as.integer(nd)], y0 = min(yy), y1 = max(yy)) })
+  nodes <- tibble(node = (n + 1):(n + tr$Nnode), x = x[node], y = y[node],
+                  label = if (is.null(tr$node.label)) "" else as.character(tr$node.label))
+  list(edges = edges, verts = verts, nodes = nodes,
+       tips = tibble(label = tr$tip.label, x = x[1:n], y = y[1:n]), depth = max(x))
+}
+gg_tree <- function(tr, title, cols) {
+  d <- tree_df(tr)
+  ggplot() +
+    geom_segment(data = d$edges, aes(x = x0, xend = x1, y = y, yend = y), linewidth = 0.8) +
+    geom_segment(data = d$verts, aes(x = x, xend = x, y = y0, yend = y1), linewidth = 0.8) +
+    geom_text(data = filter(d$nodes, label != "", label != "NA"), aes(x = x, y = y, label = label),
+              hjust = 1.15, vjust = -0.4, size = 2.8) +
+    geom_text(data = d$tips, aes(x = x + d$depth * 0.03, y = y, label = label, colour = label,
+                                 fontface = if_else(grepl("^A\\.", label), "italic", "bold")),
+              hjust = 0, size = 3.6) +
+    scale_colour_manual(values = cols, guide = "none") +
+    scale_x_continuous(expand = expansion(mult = c(0.02, 0.45))) +
+    labs(title = title) +
+    theme_void(base_size = 11) +
+    theme(plot.title = element_text(size = 11, hjust = 0.5))
+}
+ms_save_note <- "Main-text figure."
+```
+
+```{r}
+#| label: ms-fig1
+#| fig-width: 10
+#| fig-height: 7.5
+# Figure 1: sites, collection temperatures, CTmax by season
+coords <- site_data %>% filter(site_code %in% site_order) %>% distinct(site, site_code, long, lat)
+m1_map <- map_data("world") %>%
+  filter(region %in% c("USA", "Canada")) %>%
+  ggplot() +
+  geom_polygon(aes(x = long, y = lat, group = group), fill = "grey85", colour = "grey70", linewidth = 0.2) +
+  geom_point(data = coords, aes(x = long, y = lat, colour = site), size = 3) +
+  ggrepel::geom_text_repel(data = coords, aes(x = long, y = lat, label = site_code), size = 3.2,
+                           min.segment.length = 0, box.padding = 0.3, seed = 1) +
+  coord_map(xlim = c(-86, -60), ylim = c(25, 49)) +
+  scale_colour_manual(values = site_cols, guide = "none") +
+  labs(x = NULL, y = NULL) +
+  theme_matt(base_size = 11)
+m1_temp <- site_temps %>%
+  mutate(site = factor(site, levels = names(site_cols))) %>%
+  ggplot(aes(x = as.Date(doy - 1, origin = "2023-01-01"), y = collection_temp, colour = site)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2.5) +
+  scale_colour_manual(values = site_cols, name = NULL) +
+  scale_x_date(date_labels = "%b", date_breaks = "1 month") +
+  labs(x = NULL, y = "Collection temperature (°C)") +
+  theme_matt(base_size = 11)
+m1_ctmax <- join_data %>%
+  mutate(season = factor(season, levels = season_order), site = factor(site, levels = names(site_cols))) %>%
+  ggplot(aes(x = season, y = ctmax, colour = site, group = site)) +
+  geom_point(position = position_jitterdodge(jitter.width = 0.12, dodge.width = 0.7, seed = 1),
+             alpha = 0.35, size = 1.2) +
+  stat_summary(fun = mean, geom = "line", position = position_dodge(width = 0.7), linewidth = 0.9) +
+  stat_summary(fun.data = mean_se, geom = "pointrange", position = position_dodge(width = 0.7), size = 0.35) +
+  scale_colour_manual(values = site_cols, name = NULL) +
+  labs(x = "Season", y = "CTmax (°C)") +
+  theme_matt(base_size = 11)
+ggarrange(m1_map, ggarrange(m1_temp, m1_ctmax, ncol = 1, labels = c("B", "C"), common.legend = TRUE, legend = "right"),
+          nrow = 1, widths = c(0.8, 1.2), labels = c("A", ""))
+```
+
+```{r}
+#| label: ms-fig2
+#| fig-width: 11
+#| fig-height: 10
+# Figure 2: genome-wide structure (PCA), clade composition, and the CTmax shift from lineage turnover
+# Supplementary: genome-wide PCA of all individuals, and PCAs within each clade
+m3_all <- ggplot(pca_all, aes(x = PC1, y = PC2, colour = clade, shape = clade)) +
+  geom_point(size = 2, alpha = 0.8) +
+  scale_colour_manual(values = clade_cols[tonsa_clades], name = "Clade") +
+  scale_shape_manual(values = clade_shapes[tonsa_clades], name = "Clade") +
+  labs(x = sprintf("PC1 (%.1f%%)", ve[1]), y = sprintf("PC2 (%.1f%%)", ve[2])) +
+  theme_matt(base_size = 11) +
+  theme(legend.position = "bottom")
+wpc <- wpca %>%
+  mutate(clade = factor(str_extract(panel, "^[A-Z]+"), levels = tonsa_clades),
+         lab = sprintf("%s: PC1 %s, PC2 %s", clade, str_extract(panel, "(?<=PC1 )[0-9.]+%"),
+                       str_extract(panel, "(?<=PC2 )[0-9.]+%")))
+wpc_lab <- wpc %>% group_by(lab, clade, site) %>% summarise(PC1 = median(PC1), PC2 = median(PC2), n = n(), .groups = "drop") %>%
+  filter(n >= 3)
+m3_within <- ggplot(wpc, aes(x = PC1, y = PC2, colour = clade)) +
+  geom_point(size = 1.4, alpha = 0.6) +
+  ggrepel::geom_label_repel(data = wpc_lab, aes(label = site), colour = "grey15", size = 2.8, label.size = 0,
+                            label.padding = unit(0.08, "lines"), fill = alpha("white", 0.75),
+                            min.segment.length = 0, box.padding = 0.15, seed = 1) +
+  facet_wrap(~ lab, scales = "free", nrow = 2) +
+  scale_colour_manual(values = clade_cols[tonsa_clades], guide = "none") +
+  labs(x = "PC1", y = "PC2") +
+  theme_matt_facets(base_size = 10) +
+  theme(axis.text = element_blank(), axis.ticks = element_blank())
+clade_comp <- seq_data %>%
+  filter(clade %in% tonsa_clades, !sample_id %in% c("MR_peak_2_04", "MR_peak_2_05")) %>%
+  mutate(clade = factor(clade, levels = tonsa_clades), season = factor(season, levels = season_order),
+         site_code = factor(site_code, levels = site_order))
+m2_comp <- ggplot(clade_comp, aes(x = season, fill = clade)) +
+  geom_bar(position = "fill", width = 0.8) +
+  facet_wrap(~ site_code, nrow = 1) +
+  scale_fill_manual(values = clade_cols[tonsa_clades], name = "Clade") +
+  scale_x_discrete(drop = FALSE) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(x = NULL, y = "Share of individuals") +
+  theme_matt_facets(base_size = 11) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "bottom")
+# turnover: expected CTmax from composition vs collection temperature, both relative to the site mean
+turn_dev <- ce_obs %>% group_by(site_code) %>% filter(n() > 1) %>%
+  mutate(d_ct = exp_ctmax - weighted.mean(exp_ctmax, n), d_t = temp - weighted.mean(temp, n)) %>% ungroup()
+m2_turn <- ggplot(turn_dev, aes(x = d_t, y = d_ct)) +
+  geom_hline(yintercept = 0, colour = "grey80") + geom_vline(xintercept = 0, colour = "grey80") +
+  geom_abline(slope = slope_obs, intercept = 0, linewidth = 1) +
+  geom_abline(slope = acc_slope, intercept = 0, linetype = "dashed", colour = "grey50") +
+  geom_point(aes(size = n), colour = "grey20", alpha = 0.8) +
+  ggrepel::geom_text_repel(data = ~ filter(.x, abs(d_ct) > 0.35), aes(label = paste(site_code, season)),
+                           size = 2.6, colour = "grey30", seed = 1, min.segment.length = 0.2) +
+  scale_size_continuous(range = c(1.2, 3), guide = "none") +
+  annotate("text", x = -Inf, y = Inf, hjust = -0.05, vjust = 1.2, size = 3,
+           label = sprintf("turnover %.2f °C/°C (solid)\nacclimation %.2f °C/°C (dashed)", slope_obs, acc_slope)) +
+  labs(x = "Temperature − site mean (°C)", y = "Expected CTmax from\ncomposition − site mean (°C)") +
+  theme_matt(base_size = 11)
+m3_all <- m3_all + theme(legend.position = "none")
+ggarrange(ggarrange(m3_all, m3_within, nrow = 1, widths = c(0.8, 1.2), labels = c("A", "B")),
+          ggarrange(m2_comp, m2_turn, nrow = 1, widths = c(1.75, 1), labels = c("C", "D")),
+          ncol = 1, heights = c(1, 0.95))
+```
+
+```{r}
+#| label: ms-fig3
+#| fig-width: 10
+#| fig-height: 8
+# Figure 3: phenotype - CTmax differs more per degree between sites (space) than through the season
+ci_tab <- function(m, terms) {
+  b <- lme4::fixef(m); se <- sqrt(diag(as.matrix(vcov(m))))
+  tibble(term = terms, est = b[terms], lo = b[terms] - 1.96 * se[terms], hi = b[terms] + 1.96 * se[terms])
+}
+diff_dat <- wb_diff %>% filter(split == "Season-mean split") %>%
+  mutate(group = factor(group, levels = rev(c("All clades", tonsa_clades))), all = group == "All clades")
+m3_slopes <- ggplot(diff_dat, aes(x = diff, y = group, colour = group, shape = all)) +
+  geom_vline(xintercept = 0, colour = "grey50", linetype = "dashed") +
+  geom_pointrange(aes(xmin = lo, xmax = hi), size = 0.6, linewidth = 0.9) +
+  scale_colour_manual(values = c(clade_cols[tonsa_clades], `All clades` = "black"), guide = "none") +
+  scale_shape_manual(values = c(`FALSE` = 16, `TRUE` = 18), guide = "none") +
+  labs(x = "Spatial slope − seasonal slope (°C CTmax per °C)", y = NULL) +
+  theme_matt(base_size = 11)
+m4_ctmax <- ggplot(filter(vp_tab, share > 0), aes(x = model, y = share, fill = component)) +
+  geom_col(width = 0.6, colour = "white") +
+  coord_flip() +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = vp_cols, name = NULL) +
+  guides(fill = guide_legend(nrow = 3)) +
+  labs(x = NULL, y = "Share of CTmax variance") +
+  theme_matt(base_size = 11) +
+  theme(legend.position = "bottom")
+ggarrange(m3_slopes, m4_ctmax, ncol = 1, heights = c(0.8, 1), labels = c("A", "B"))
+```
+
+```{r}
+#| label: ms-fig4
+#| fig-width: 11
+#| fig-height: 4.8
+# Figure 4: genome - variation lies between sites, not seasons; seasonal change does not echo spatial temperature associations
+# F spans divergent populations (Florida vs Chesapeake), so its between-site variance is ~10x the
+# other clades': one panel per clade, each on its own scale
+m4_freq_n <- ggplot(filter(vp_freq, !is.na(value)) %>% mutate(group = factor(group, levels = tonsa_clades)),
+                    aes(x = component, y = value, shape = component, colour = component)) +
+  geom_hline(yintercept = 0, colour = "grey60") +
+  geom_pointrange(aes(ymin = lo, ymax = hi), size = 0.5) +
+  facet_wrap(~ group, nrow = 1, scales = "free_y") +
+  scale_x_discrete(labels = NULL, breaks = NULL) +
+  scale_colour_manual(values = c(`Between sites` = "black", `Between seasons (within site)` = "grey55"), name = NULL) +
+  scale_shape_manual(values = c(16, 17), name = NULL) +
+  labs(x = NULL, y = expression("Variance / " * bar(p) * "(1 - " * bar(p) * ")")) +
+  guides(colour = guide_legend(nrow = 2), shape = guide_legend(nrow = 2)) +
+  theme_matt_facets(base_size = 11) +
+  theme(legend.position = "bottom")
+# concordance sensitivity: injected seasonal response (fraction of the spatial slope, top 1% SNPs) vs sign agreement
+conc_null <- conc %>% filter(snp_set == "all chr.", null == "seasonal", snps_used == "unlinked") %>%
+  mutate(clade = as.character(clade)) %>% filter(clade %in% c("X", "F")) %>%
+  group_by(clade) %>% summarise(lo = min(conc_top1[!observed]), hi = max(conc_top1[!observed]),
+                                obs = conc_top1[observed][1], .groups = "drop")
+conc_inj <- map_dfr(c("X", "F"), ~ read_tsv(cx("results", "18_power", paste0(.x, ".concordance.tsv")),
+                                           col_types = cols(clade = "c", .default = col_guess()))) %>%
+  filter(frac == 0.01) %>% select(clade, lambda, conc_top1, seasonal_logit_change) %>%
+  bind_rows(transmute(conc_null, clade, lambda = 0, conc_top1 = obs, seasonal_logit_change = 0)) %>%
+  arrange(clade, lambda)
+conc_plot_dat <- conc_inj %>% mutate(clade = factor(clade, levels = c("X", "F")))
+conc_null <- conc_null %>% mutate(clade = factor(clade, levels = c("X", "F")))
+m4_conc <- ggplot(conc_plot_dat, aes(x = lambda, y = conc_top1, colour = clade)) +
+  geom_rect(data = conc_null, aes(xmin = 0, xmax = 1, ymin = lo, ymax = hi), inherit.aes = FALSE,
+            fill = "grey85", alpha = 0.6) +
+  geom_hline(yintercept = 0.5, colour = "grey50", linetype = "dashed") +
+  geom_line(data = ~ filter(.x, lambda > 0), linewidth = 0.9) +
+  geom_point(data = ~ filter(.x, lambda > 0), size = 2) +
+  geom_point(data = ~ filter(.x, lambda == 0), size = 4, shape = 18) +
+  ggrepel::geom_text_repel(data = ~ filter(.x, lambda %in% c(0.05, 0.1)),
+                           aes(label = sprintf("%.0f pp", 100 * (plogis(seasonal_logit_change) - 0.5))),
+                           size = 2.8, show.legend = FALSE, seed = 1, nudge_x = 0.05) +
+  facet_wrap(~ clade, nrow = 1) +
+  scale_colour_manual(values = clade_cols[c("X", "F")], guide = "none") +
+  scale_x_sqrt(breaks = c(0, 0.1, 0.25, 0.5, 1), labels = c("0", "0.1", "0.25", "0.5", "1")) +
+  coord_cartesian(ylim = c(0.4, 1)) +
+  labs(x = "Seasonal response of temperature-associated SNPs\n(fraction of their spatial effect)",
+       y = "Sign agreement, top 1% SNPs") +
+  theme_matt_facets(base_size = 11)
+ggarrange(m4_freq_n + theme(legend.position = "top", legend.direction = "vertical", legend.title = element_blank()),
+          m4_conc, nrow = 1, widths = c(0.85, 1.15), labels = c("A", "B"))
+```
+
+```{r}
+#| label: ms-figS-drift
+#| fig-width: 8
+#| fig-height: 4.5
+# Supplementary: seasonal allele-frequency change against the drift expectation
+m4_drift <- temporal %>%
+  mutate(uncal = Fc - sampling_2n, clade = factor(as.character(clade), levels = tonsa_clades)) %>%
+  ggplot(aes(x = gens, colour = clade)) +
+  geom_hline(yintercept = 0, colour = "grey50") +
+  geom_point(aes(y = uncal), shape = 1, size = 2.3, alpha = 0.7) +
+  geom_pointrange(aes(y = excess, ymin = excess - 1.96 * se, ymax = excess + 1.96 * se), size = 0.45) +
+  scale_colour_manual(values = clade_cols[tonsa_clades], name = "Clade", drop = TRUE) +
+  labs(x = "Generations between samples", y = expression(F[c] - "sampling noise"),
+       caption = "Open: assuming 2 chromosomes per individual; filled: calibrated, 95% CI.") +
+  theme_matt(base_size = 11) +
+  theme(legend.position = "bottom")
+m4_drift
+```
+
+```{r}
+#| label: ms-fig5
+#| fig-width: 11
+#| fig-height: 5
+# Figure 5: clade differences in CTmax and acclimation, from ctmax ~ clade * temperature (+ site, replicate, tube)
+t_off <- mean(filtered_data$collection_temp - filtered_data$temp_cent)
+ci_cols <- function(d) c(intersect(c("lower.CL", "asymp.LCL"), names(d))[1], intersect(c("upper.CL", "asymp.UCL"), names(d))[1])
+clade_rng <- filtered_data %>% filter(clade %in% tonsa_clades) %>%
+  group_by(clade) %>% summarise(lo = min(temp_cent), hi = max(temp_cent), .groups = "drop")
+pred5 <- pmap_dfr(clade_rng, function(clade, lo, hi) {
+  as_tibble(summary(emmeans::emmeans(ctmax.model, ~ clade | temp_cent,
+                                     at = list(clade = clade, temp_cent = seq(lo, hi, length.out = 30)))))
+}) %>% mutate(clade = factor(as.character(clade), levels = tonsa_clades), temp = temp_cent + t_off)
+cc <- ci_cols(pred5)
+pt5 <- filtered_data %>% filter(clade %in% tonsa_clades) %>% mutate(clade = factor(clade, levels = tonsa_clades))
+m5a <- ggplot() +
+  geom_point(data = pt5, aes(x = collection_temp, y = ctmax, colour = clade), alpha = 0.3, size = 1.3,
+             position = position_jitter(width = 0.25, height = 0, seed = 1)) +
+  geom_ribbon(data = pred5, aes(x = temp, ymin = .data[[cc[1]]], ymax = .data[[cc[2]]], fill = clade), alpha = 0.25) +
+  geom_line(data = pred5, aes(x = temp, y = emmean, colour = clade), linewidth = 1.3) +
+  scale_colour_manual(values = clade_cols[tonsa_clades], name = "Clade") +
+  scale_fill_manual(values = clade_cols[tonsa_clades], name = "Clade") +
+  labs(x = "Collection temperature (°C)", y = "CTmax (°C)") +
+  theme_matt(base_size = 11) +
+  theme(legend.position = "bottom")
+mm <- as_tibble(summary(emmeans::emmeans(ctmax.model, ~ clade), infer = TRUE))
+tr <- as_tibble(summary(emmeans::emtrends(ctmax.model, ~ clade, var = "temp_cent"), infer = TRUE))
+m5b <- bind_rows(
+  transmute(mm, clade, est = emmean, lo = .data[[ci_cols(mm)[1]]], hi = .data[[ci_cols(mm)[2]]],
+            panel = sprintf("CTmax at %.0f °C (°C)", t_off)),
+  transmute(tr, clade, est = temp_cent.trend, lo = .data[[ci_cols(tr)[1]]], hi = .data[[ci_cols(tr)[2]]],
+            panel = "Acclimation slope (°C per °C)")) %>%
+  mutate(clade = factor(as.character(clade), levels = tonsa_clades), panel = factor(panel, levels = unique(panel))) %>%
+  ggplot(aes(x = clade, y = est, ymin = lo, ymax = hi, colour = clade)) +
+  geom_pointrange(size = 0.6, linewidth = 1) +
+  facet_wrap(~ panel, scales = "free_y", ncol = 1, strip.position = "left") +
+  scale_colour_manual(values = clade_cols[tonsa_clades], guide = "none") +
+  labs(x = "Clade", y = NULL) +
+  theme_matt_facets(base_size = 11) +
+  theme(strip.placement = "outside", strip.background = element_blank())
+ggarrange(m5a, m5b, nrow = 1, widths = c(1.4, 1), labels = c("A", "B"))
+```
+
+```{r}
+#| label: ms-figS-trees
+#| fig-width: 11
+#| fig-height: 5.5
+# Supplementary: lineage trees, mitochondrial (COI ML) and nuclear (NJ on net distances)
+tip_cols <- c(lin_col, `A. hudsonica` = "grey40", `A. lilljeborgi` = "grey40")
+m2_coi <- gg_tree(coi_red, "Mitochondrial (COI, maximum likelihood)", tip_cols)
+m2_nuc <- gg_tree(nuc_tr, "Nuclear (genome-wide, neighbour-joining)", tip_cols)
+ggarrange(m2_coi, m2_nuc, nrow = 1, labels = c("A", "B"))
+```
+
+```{r}
+#| label: ms-fig6
+#| fig-width: 10
+#| fig-height: 5.5
+# Figure 6: warming tolerance with lineages + acclimation (distribution), and the warmest day under each scenario
+if (have_mur) {
+  hist6 <- wt_days %>%
+    filter(scenario == "Clades + acclimation") %>%
+    mutate(bin = floor(wt)) %>%
+    group_by(region, warming, bin) %>% summarise(w = sum(w), .groups = "drop") %>%
+    group_by(region) %>% mutate(h = 0.9 * w / max(w)) %>% ungroup() %>%
+    mutate(y0 = as.integer(region) - 1)
+  m6_hist <- ggplot(hist6) +
+    geom_hline(aes(yintercept = y0), data = distinct(hist6, region, y0), colour = "grey80") +
+    geom_vline(xintercept = 0, colour = "grey30") +
+    geom_rect(aes(xmin = bin, xmax = bin + 1, ymin = y0, ymax = y0 + h, fill = region, alpha = warming)) +
+    scale_fill_manual(values = region_cols[region_order], guide = "none") +
+    scale_alpha_manual(values = c(`+4 °C` = 0.35, Current = 0.9), name = NULL) +
+    scale_y_continuous(breaks = seq_along(region_order) - 1 + 0.35, labels = region_order, expand = expansion(add = c(0.1, 0.2))) +
+    labs(x = "Daily warming tolerance, July–November (°C)", y = NULL) +
+    theme_matt(base_size = 11) +
+    theme(legend.position = "bottom", axis.ticks.y = element_blank())
+  m6_hot <- wt_res %>%
+    filter(scenario %in% scen_levels, metric != "Aug–Sep mean") %>%
+    mutate(scenario = factor(scenario, levels = scen_levels),
+           warming = factor(if_else(warming == 0, "Current", "+4 °C"), levels = c("Current", "+4 °C"))) %>%
+    ggplot(aes(x = region, y = est, ymin = lo, ymax = hi, colour = scenario, shape = scenario)) +
+    geom_hline(yintercept = 0, colour = "grey30") +
+    geom_pointrange(position = position_dodge(width = 0.6), size = 0.4) +
+    facet_wrap(~ warming, ncol = 1) +
+    scale_colour_manual(values = c(`Fixed CTmax` = "grey65", `Clade means` = "grey35", `Clades + acclimation` = "black"),
+                        name = NULL) +
+    scale_shape_manual(values = c(`Fixed CTmax` = 15, `Clade means` = 17, `Clades + acclimation` = 16), name = NULL) +
+    labs(x = NULL, y = "Warming tolerance on the warmest day (°C)") +
+    theme_matt_facets(base_size = 11) +
+    theme(legend.position = "bottom", axis.text.x = element_text(angle = 35, hjust = 1))
+  ggarrange(m6_hist, m6_hot, nrow = 1, widths = c(1, 1), labels = c("A", "B"))
+}
+```

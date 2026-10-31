@@ -1,0 +1,45 @@
+gene	protein	product	set	clade	codon	shared_aa	clade_aa
+CCT8	XP_080012570.1	chaperonin containing TCP1 subunit 8	heat_shock	F	188	I	V
+CCT8	XP_080012570.1	chaperonin containing TCP1 subunit 8	heat_shock	IV	331	I	V
+CCT8	XP_080012570.1	chaperonin containing TCP1 subunit 8	heat_shock	IV	349	K	N
+SdhA	XP_080012695.1	succinate dehydrogenase, subunit A (flavoprotein) isoform X1	oxphos_nuclear	IV	506	V	I
+SdhA	XP_080012695.1	succinate dehydrogenase, subunit A (flavoprotein) isoform X1	oxphos_nuclear	X	573	V	I
+SdhA	XP_080012695.1	succinate dehydrogenase, subunit A (flavoprotein) isoform X1	oxphos_nuclear	X	613	M	V
+l(3)80Fg	XP_080028839.1	dnaJ homolog subfamily C member 16 l(3)80Fg	heat_shock	S	12	V	A
+LOC145322362	XP_080020472.1	heat shock protein 83-like	heat_shock	IV	355	E	D
+LOC145322936	XP_080021448.1	cytochrome c oxidase subunit 4 isoform 1, mitochondrial-like	oxphos_nuclear	S	74	A	V
+LOC145331005	XP_080031726.1	dnaJ homolog subfamily C member 9-like	heat_shock	S	49	E	D
+Cox10	XP_080007804.1	cytochrome c oxidase assembly factor 10	oxphos_nuclear	IV	69	F	L
+Cox10	XP_080007804.1	cytochrome c oxidase assembly factor 10	oxphos_nuclear	IV	70	T	S
+Cox10	XP_080007804.1	cytochrome c oxidase assembly factor 10	oxphos_nuclear	X	192	M	I
+LOC145311755	XP_080006858.1	lysophospholipid acyltransferase 5-like	lipid	S	43	T	S
+LOC145311755	XP_080006858.1	lysophospholipid acyltransferase 5-like	lipid	F	44	T	S
+LOC145311755	XP_080006858.1	lysophospholipid acyltransferase 5-like	lipid	IV	164	V	I
+mrj	XP_080007596.1	dnaJ heat shock protein family (Hsp40) member B6 mrj	heat_shock	S	216	S	T
+ox	XP_080008511.1	ubiquinol-cytochrome C reductase complex subunit oxen	oxphos_nuclear	IV	36	T	S
+LOC145314485	XP_080010528.1	dnaJ homolog subfamily C member 5-like	heat_shock	X	25	V	L
+LOC145316040	XP_080012451.1	lysophosphatidylcholine acyltransferase-like	lipid	F	172	V	I
+CCT4	XP_080012459.1	chaperonin containing TCP1 subunit 4	heat_shock	X	81	K	M
+CCT4	XP_080012459.1	chaperonin containing TCP1 subunit 4	heat_shock	S	120	E	D
+CCT4	XP_080012459.1	chaperonin containing TCP1 subunit 4	heat_shock	IV	293	A	S
+LOC145318006	XP_080015442.1	cytochrome c oxidase assembly protein COX18, mitochondrial	oxphos_nuclear	F	302	V	I
+ND-B12	XP_080012913.1	NADH dehydrogenase [ubiquinone] 1 beta subcomplex subunit 3	oxphos_nuclear	S	57	P	A
+ND-B12	XP_080012913.1	NADH dehydrogenase [ubiquinone] 1 beta subcomplex subunit 3	oxphos_nuclear	S	70	P	S
+ATPsynB	XP_080013672.1	ATP synthase subunit b, mitochondrial	oxphos_nuclear	X	84	A	T
+ATPsynB	XP_080013672.1	ATP synthase subunit b, mitochondrial	oxphos_nuclear	F	164	V	I
+ATPsynB	XP_080013672.1	ATP synthase subunit b, mitochondrial	oxphos_nuclear	S	164	T	I
+ND-ASHI	XP_080020195.1	NADH:ubiquinone oxidoreductase subunit ASHI	oxphos_nuclear	X	11	A	T
+LOC145323727	XP_080022337.1	heat shock 70 kDa protein-like	heat_shock	X	99	G	S
+LOC145323727	XP_080022337.1	heat shock 70 kDa protein-like	heat_shock	X	328	L	M
+LOC145326394	XP_080025857.1	heat shock 70 kDa protein-like	heat_shock	F	590	E	D
+LOC145326398	XP_080025860.1	heat shock protein 105 kDa-like	heat_shock	IV	43	D	E
+LOC145326398	XP_080025860.1	heat shock protein 105 kDa-like	heat_shock	IV	130	E	D
+LOC145326398	XP_080025860.1	heat shock protein 105 kDa-like	heat_shock	IV	571	E	V
+Grp170	XP_080034225.1	hypoxia up-regulated Grp170 co-chaperone protein isoform X1	heat_shock	F	915	T	R
+LOC145331990	XP_080033014.1	phosphatidylcholine:ceramide cholinephosphotransferase 2-like isoform X1	lipid	IV	85	R	T
+Hsp110	XP_080036807.1	heat shock protein 70Cb	heat_shock	S	802	D	E
+LOC145305225	XP_080002942.1	heat shock protein 83-like	heat_shock	IV	443	A	V
+LOC145305225	XP_080002942.1	heat shock protein 83-like	heat_shock	IV	657	V	I
+LOC145305225	XP_080002942.1	heat shock protein 83-like	heat_shock	IV	676	E	D
+LOC145305304	XP_080003040.1	heat shock 70 kDa protein 1-like	heat_shock	X	110	E	K
+LOC145305304	XP_080003040.1	heat shock 70 kDa protein 1-like	heat_shock	X	614	A	T

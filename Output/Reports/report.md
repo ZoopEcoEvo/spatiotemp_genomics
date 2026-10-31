@@ -1,6 +1,6 @@
 # Comparing seasonal and latitudinal patterns in thermal adaptation
 
-2026-10-30
+2026-10-31
 
 - [Main Message](#main-message)
 - [1. Collections and environment](#1-collections-and-environment)
@@ -34,6 +34,7 @@
     variation](#spatial-vs-seasonal-genetic-variation)
   - [Does space substitute for time? Concordance of temperature
     responses](#does-space-substitute-for-time-concordance-of-temperature-responses)
+  - [Power of the genomic tests](#power-of-the-genomic-tests)
 - [4. Clade-specific physiological
   patterns](#4-clade-specific-physiological-patterns)
   - [CTmax model](#ctmax-model)
@@ -47,9 +48,12 @@
   - [Candidate genes: mitochondrial amino-acid
     differences](#candidate-genes-mitochondrial-amino-acid-differences)
   - [Trait variability within clades](#trait-variability-within-clades)
+  - [CTmax variance through the
+    season](#ctmax-variance-through-the-season)
   - [Parasites, epibionts and thermal
     limits](#parasites-epibionts-and-thermal-limits)
 - [5. Partitioning vulnerability](#5-partitioning-vulnerability)
+- [6. Manuscript figures](#6-manuscript-figures)
 
 ## Main Message
 
@@ -359,7 +363,7 @@ Novogene (436 libraries). Read processing, mapping, site filtering,
 clade assignment and population genomic analyses were run on the Unity
 cluster (Snakemake project `aton_lcwg`). The figures in this section are
 built from the exported result tables (`Raw_data/cluster_exports/`;
-export in use: aton_lcwg_tables_2026-10-30). *Acartia hudsonica*
+export in use: aton_lcwg_tables_2026-10-31). *Acartia hudsonica*
 libraries are excluded throughout.
 
 ### Sequencing summary
@@ -463,14 +467,14 @@ permutations); sites with a single lineage contribute nothing.
 
 | Site | Seasons | Lineages | Individuals | Fisher p | Composition |
 |:---|---:|---:|---:|:---|:---|
-| MR | 2 | 3 | 37 | 0.0030 | peak: F-FH 1, F-MR 16; late: S 8, F-MR 12 |
-| FH | 2 | 1 | 39 | – | peak: F-FH 19; late: F-FH 20 |
-| MD | 3 | 2 | 60 | \<1e-04 | early: S 3, F-N 17; peak: S 20; late: S 12, F-N 8 |
-| GW | 3 | 2 | 60 | 0.0140 | early: S 1, F-N 19; peak: F-N 20; late: S 6, F-N 14 |
-| CT | 3 | 4 | 56 | \<1e-04 | early: X 7, S 3, IV 2, F-NE 5; peak: X 4, S 15; late: S 3, IV 17 |
-| ME | 3 | 4 | 39 | 0.0064 | early: X 10, S 1, IV 2, F-NE 1; peak: X 16, IV 1; late: X 3, IV 5 |
+| MR | 2 | 2 | 37 | 0.0039 | peak: F 17; late: F 12, S 8 |
+| FH | 2 | 1 | 39 | – | peak: F 19; late: F 20 |
+| MD | 3 | 2 | 60 | \<1e-04 | early: F 17, S 3; peak: S 20; late: F 8, S 12 |
+| GW | 3 | 2 | 60 | 0.0132 | early: F 19, S 1; peak: F 20; late: F 14, S 6 |
+| CT | 3 | 4 | 56 | \<1e-04 | early: X 7, F 5, S 3, IV 2; peak: X 4, S 15; late: S 3, IV 17 |
+| ME | 3 | 4 | 39 | 0.0081 | early: X 10, F 1, S 1, IV 2; peak: X 16, IV 1; late: X 3, IV 5 |
 | TK | 3 | 2 | 54 | \<1e-04 | early: X 12, IV 3; peak: X 18, IV 1; late: IV 20 |
-| RW | 3 | 2 | 53 | 0.1195 | early: X 16; peak: X 17, IV 1; late: X 15, IV 4 |
+| RW | 3 | 2 | 53 | 0.1141 | early: X 16; peak: X 17, IV 1; late: X 15, IV 4 |
 
 Lineage composition by season at each site. Combined test across sites:
 χ² = 166, permutation p \<1e-04.
@@ -754,6 +758,22 @@ sampling noise calibrated by the split-half c. CI from a
 delete-one-chromosome jackknife of the excess; ∞ = excess not
 distinguishable from zero.
 
+| Group | π (median) | Long-term Ne (µ = 10⁻⁸ – 10⁻⁹) | Temporal Ne (median; range) | Seasonal pairs | Long-term / temporal (µ = 10⁻⁸) |
+|:---|---:|:---|:---|---:|:---|
+| F-FH | 0.0050 | 120,000 – 1,200,000 | 5,398 (5,398 – 5,398) | 1 | 23× |
+| F-MR | 0.0077 | 190,000 – 1,900,000 | 1,735 (1,735 – 1,735) | 1 | 111× |
+| F-N | 0.0038 | 95,000 – 950,000 | 1,113 ( 838 – 1,450) | 4 | 85× |
+| S | 0.0073 | 180,000 – 1,800,000 | 1,029 (1,029 – 1,029) | 1 | 178× |
+| X | 0.0075 | 190,000 – 1,900,000 | 880 ( 225 – 2,459) | 5 | 214× |
+
+Long-term effective size from nucleotide diversity (π = 4Neµ, for
+mutation rates of 10⁻⁸ and 10⁻⁹ per site per generation) against the
+temporal (within-season) Ne. Even at the higher mutation rate, long-term
+Ne exceeds the temporal estimate by two orders of magnitude: within a
+season, local allele frequencies change far more than a closed
+population of the long-term size would allow, as expected if sites are
+open to immigration and mixing of water masses.
+
 | comparison |  snps |      r |    se |
 |:-----------|------:|-------:|------:|
 | ME vs TK   | 40454 | -0.013 | 0.006 |
@@ -903,8 +923,7 @@ data-fig-align="center" />
 | X | 3 | 3 | 7 | 38543 | 0.0301 (0.0269, 0.0333) | 0.0023 (0.0012, 0.0034) | 13 |
 | S | 3 | 1 | 4 | 16025 | 0.0298 (0.0231, 0.0365) | -0.0020 (-0.0044, 0.0004) | – |
 | IV | 2 | 0 | 2 | 28489 | 0.0390 (0.0335, 0.0445) | – | – |
-| F-N | 2 | 2 | 5 | 18186 | 0.0145 (0.0066, 0.0224) | 0.0026 (0.0012, 0.0040) | 6 |
-| F (all lineages) | 4 | 4 | 9 | 24494 | 0.4088 (0.3829, 0.4347) | 0.0014 (0.0006, 0.0022) | 289 |
+| F | 4 | 4 | 9 | 24494 | 0.4088 (0.3829, 0.4347) | 0.0014 (0.0006, 0.0022) | 289 |
 
 Allele-frequency variance between sites and between seasons within
 sites, relative to p̄(1 − p̄), after removing sampling noise (95% CI).
@@ -913,16 +932,16 @@ Ratio shown only where the seasonal component is clearly above zero.
 Allele frequencies differ far more between sites than between seasons at
 the same site. In clade X, the between-site variance (0.030) is about 13
 times the seasonal variance (0.0023); in F-N (MD vs. GW) the ratio is
-about 6. The seasonal component is small but above zero in X and F-N,
+about . The seasonal component is small but above zero in X and F-N,
 consistent with the temporal F<sub>c</sub> excess above (drift over a
 season with N<sub>e</sub> in the high hundreds to thousands); in S, with
 one seasonal site, it is indistinguishable from zero. Across the F
-lineages the between-site component (0.41) is an order of magnitude
-larger, because it measures divergence between lineages rather than
-among populations of one lineage. Seasonal change in allele frequencies
-is therefore a small fraction of the spatial differentiation it would
-have to reproduce for seasonal evolution to mirror spatial adaptation,
-which fits the absence of concordance below.
+lineages the between-site component () is an order of magnitude larger,
+because it measures divergence between lineages rather than among
+populations of one lineage. Seasonal change in allele frequencies is
+therefore a small fraction of the spatial differentiation it would have
+to reproduce for seasonal evolution to mirror spatial adaptation, which
+fits the absence of concordance below.
 
 ### Does space substitute for time? Concordance of temperature responses
 
@@ -971,6 +990,66 @@ a single alternative ordering.
 Concordance of spatial and seasonal temperature slopes. Rank = position
 of the observed value among all seasonal-null orderings (1 = higher than
 every permutation).
+
+### Power of the genomic tests
+
+How much seasonal selection could these tests have detected? Selection
+was injected into the observed allele frequencies (unlinked SNPs) and
+each test rerun exactly as above (cluster target `power`;
+`results/18_power/`), so drift, sampling noise and the sampling design
+are those of the real data.
+
+- **Seasonal GLM and temporal Fc:** a random fraction of SNPs (0.1–10%)
+  had their logit frequency shifted by δ between each site’s first and
+  last sample, in the same direction at every site. δ is shown below as
+  the change in allele frequency for an allele starting at 50%, and as
+  selection per generation using the generations between each clade’s
+  first and last samples. A replicate counts as detected when the
+  observed number of SNPs with p \< 10⁻³ exceeds every within-site
+  permutation (the smallest attainable p is 1/12 for X and 1/24 for F),
+  or, for Fc, when the added excess exceeds the observed excess plus
+  1.96 SE (inverse-variance pooled over each site’s first → last pair).
+- **Concordance:** the most temperature-associated SNPs across sites
+  (top 1–100% by spatial z) were given a seasonal response equal to a
+  fraction λ of their spatial slope; detection = ranking above every
+  seasonal permutation.
+
+With strong injected responses (λ ≥ 0.5) the sign-agreement statistic
+saturates at 1 in the permutations too, so those cells can show as
+undetected in F; the relevant region is the weak-response end, where
+both clades detect responses of a tenth (X) or a twentieth (F) of the
+spatial slope.
+
+<img src="../Figures/power-seasonal-1.png" data-fig-align="center" />
+
+| Test | Clade | SNPs under selection | Smallest change detected (pp from 50%) | Selection per generation (s) |
+|:---|:---|:---|---:|---:|
+| Seasonal GLM | F | 0.1% | 38 | 0.110 |
+| Seasonal GLM | F | 0.5% | 32 | 0.083 |
+| Seasonal GLM | F | 1% | 23 | 0.056 |
+| Seasonal GLM | F | 2% | 23 | 0.056 |
+| Seasonal GLM | F | 5% | 18 | 0.042 |
+| Seasonal GLM | F | 10% | 18 | 0.042 |
+| Seasonal GLM | X | 0.1% | 38 | 0.350 |
+| Seasonal GLM | X | 0.5% | 32 | 0.260 |
+| Seasonal GLM | X | 1% | 23 | 0.180 |
+| Seasonal GLM | X | 2% | 23 | 0.180 |
+| Seasonal GLM | X | 5% | 18 | 0.130 |
+| Seasonal GLM | X | 10% | 18 | 0.130 |
+| Temporal Fc | F | 1% | 45 | 0.170 |
+| Temporal Fc | F | 2% | 38 | 0.110 |
+| Temporal Fc | F | 5% | 23 | 0.056 |
+| Temporal Fc | F | 10% | 18 | 0.042 |
+| Temporal Fc | X | 1% | 45 | 0.530 |
+| Temporal Fc | X | 2% | 32 | 0.260 |
+| Temporal Fc | X | 5% | 23 | 0.180 |
+| Temporal Fc | X | 10% | 18 | 0.130 |
+
+Smallest injected seasonal change detected with ≥ 80% power, by test,
+clade and fraction of SNPs under selection (combinations not listed were
+not detected at any tested strength). s = change in logit frequency
+divided by the mean generations between each site’s first and last
+sample.
 
 In clade X the spatial and seasonal responses point weakly in the same
 direction: across all SNPs the two slopes are slightly positively
@@ -1047,40 +1126,89 @@ seasonal variation in collection temperature, and lineage-specific
 between-site slopes only for lineages sampled at ≥ 3 sites (X, S, IV);
 the remaining lineages share a pooled slope.
 
-| term                      |  slope |    se |     lo |    hi |
-|:--------------------------|-------:|------:|-------:|------:|
-| Within site (acclimation) |  0.147 | 0.008 |  0.130 | 0.163 |
-| Between sites             |  0.125 | 0.067 | -0.006 | 0.256 |
-| Between − within          | -0.022 | 0.067 | -0.152 | 0.109 |
+| term                      | slope |    se |     lo |    hi |
+|:--------------------------|------:|------:|-------:|------:|
+| Within site (acclimation) | 0.148 | 0.022 |  0.104 | 0.192 |
+| Between sites             | 0.260 | 0.105 |  0.054 | 0.466 |
+| Between − within          | 0.112 | 0.107 | -0.098 | 0.321 |
 
 CTmax slopes (°C per °C) for within-site and between-site temperature,
-all lineages (site temperature: long-term MUR SST mean). 95% CI = ± 1.96
-SE.
+all lineages (site temperature: mean of the site’s collection
+temperatures). 95% CI = ± 1.96 SE.
 
-| Lineage | Sites | Individuals | Within site | Between sites |
-|:---|---:|---:|:---|:---|
-| F-FH | 1 | 39 | 0.12 (0.08, 0.16) | – |
-| F-MR | 1 | 28 | 0.12 (0.08, 0.17) | – |
-| F-N | 2 | 78 | 0.16 (0.13, 0.19) | – |
-| IV | 4 | 55 | 0.22 (0.16, 0.28) | -0.21 (-0.52, 0.09) |
-| S | 4 | 71 | 0.16 (0.13, 0.20) | 0.19 (0.03, 0.35) |
-| X | 4 | 118 | 0.10 (0.06, 0.14) | 0.25 (-0.06, 0.55) |
-| other lineages (pooled) | NA | NA | – | -0.19 (-0.84, 0.47) |
+| Lineage | Sites | Individuals | Within site       | Between sites      |
+|:--------|------:|------------:|:------------------|:-------------------|
+| F       |     5 |         151 | 0.13 (0.07, 0.18) | 0.24 (0.00, 0.47)  |
+| IV      |     4 |          55 | 0.26 (0.18, 0.35) | 0.45 (-0.08, 0.97) |
+| S       |     4 |          71 | 0.13 (0.07, 0.20) | 0.27 (0.03, 0.51)  |
+| X       |     4 |         118 | 0.14 (0.05, 0.23) | 0.24 (-0.22, 0.69) |
 
 Lineage-specific CTmax slopes. Sites = sites with ≥ 5 individuals of the
 lineage. Between-site slopes are estimated only for lineages at ≥ 3
 sites and rest on few sites; lineages without their own slope share the
 pooled slope.
 
+| Split | Group | Seasonal slope | Spatial slope | Spatial − seasonal (95% CI) | p |
+|:---|:---|:---|:---|:---|---:|
+| Season-mean split | All clades | 0.129 ± 0.024 | 0.249 ± 0.055 | 0.12 (-0.00, 0.24) | 0.054 |
+| Season-mean split | X | 0.129 ± 0.040 | 0.350 ± 0.089 | 0.22 (0.05, 0.39) | 0.010 |
+| Season-mean split | F | 0.105 ± 0.035 | 0.230 ± 0.074 | 0.13 (-0.06, 0.31) | 0.190 |
+| Season-mean split | S | 0.099 ± 0.036 | 0.277 ± 0.072 | 0.18 (0.01, 0.35) | 0.036 |
+| Season-mean split | IV | 0.256 ± 0.039 | 0.413 ± 0.118 | 0.16 (-0.08, 0.39) | 0.190 |
+| Site-mean split | All clades | 0.148 ± 0.022 | 0.260 ± 0.105 | 0.11 (-0.10, 0.32) | 0.300 |
+| Site-mean split | X | 0.142 ± 0.045 | 0.238 ± 0.233 | 0.10 (-0.37, 0.56) | 0.690 |
+| Site-mean split | F | 0.127 ± 0.028 | 0.237 ± 0.120 | 0.11 (-0.13, 0.35) | 0.370 |
+| Site-mean split | S | 0.131 ± 0.033 | 0.269 ± 0.122 | 0.14 (-0.10, 0.38) | 0.260 |
+| Site-mean split | IV | 0.262 ± 0.044 | 0.447 ± 0.268 | 0.19 (-0.36, 0.73) | 0.510 |
+
+Seasonal and spatial CTmax slopes (°C per °C, ± SE) under two
+decompositions of collection temperature. Season-mean split: season =
+the season’s mean collection temperature across sites; space = a
+collection’s deviation from it. Site-mean split: space = the site’s mean
+collection temperature; season = a collection’s deviation from it. All
+models include clade, site, collection, replicate and tube.
+
+#### Does genetic differentiation predict site differences in CTmax?
+
+If the spatial CTmax differences beyond acclimation (Fig. 3A) have a
+genetic basis that accumulates with isolation, pairs of sites that are
+more differentiated within a clade might differ more in CTmax. For each
+clade × site, CTmax was adjusted to a common temperature with the
+within-site (acclimation) slope, and the absolute difference in adjusted
+CTmax between genotyped site pairs was compared with F<sub>ST</sub>/(1 −
+F<sub>ST</sub>) (from the isolation-by-distance pairs above).
+Significance: Spearman ρ against all exact permutations of adjusted
+CTmax among each clade’s genotyped sites. With 13 site pairs this is a
+weak test, and neutral F<sub>ST</sub> reflects drift and gene flow, not
+selection on CTmax.
+
+| Predictor | Site pairs | rho | p (one-sided, ρ \> 0) | Permutations |
+|:---|---:|---:|---:|---:|
+| FST/(1 − FST), all pairs | 13 | -0.30 | 0.72 | 1728 |
+| FST/(1 − FST), without F | 7 | -0.32 | 0.75 | 1728 |
+| Difference in mean collection temperature | 13 | -0.37 | 0.65 | 1728 |
+| Distance (km) | 13 | 0.09 | 0.08 | 1728 |
+
+Association between the difference in acclimation-adjusted CTmax of two
+sites (same clade) and their genetic differentiation, temperature
+difference or distance.
+
+Adjusted CTmax differences were not larger between more differentiated
+sites (ρ = -0.30, p = 0.72), nor between sites with more different
+temperatures (ρ = -0.37). The spatial CTmax component is therefore not
+explained by genome-wide differentiation, which is expected if it is
+shaped by selection at few loci, by developmental plasticity, or both;
+the test has little power.
+
 <img src="../Figures/within-between-plot-1.png"
 data-fig-align="center" />
 
 CTmax rises by 0.15 °C for every 1 °C of within-site temperature change
-(95% CI 0.13–0.16), with lineage-specific acclimation slopes of 0.10 to
-0.22. The between-site slope is 0.13 (CI -0.01 to 0.26; site
-temperature: long-term MUR SST mean), and the difference between the two
-is -0.02 (CI -0.15 to 0.11). If that interval includes zero, CTmax
-differences between sites within a lineage are consistent with
+(95% CI 0.10–0.19), with lineage-specific acclimation slopes of 0.13 to
+0.26. The between-site slope is 0.26 (CI 0.05 to 0.47; site temperature:
+mean of the site’s collection temperatures), and the difference between
+the two is 0.11 (CI -0.10 to 0.32). If that interval includes zero,
+CTmax differences between sites within a lineage are consistent with
 acclimation to each site’s temperature, with no detectable local
 adaptation beyond it; with only 1–5 sites per lineage, the test can rule
 out only large differences between the slopes. Panel B shows the
@@ -1151,29 +1279,28 @@ Intervals are from 200 parametric bootstrap replicates.
 <img src="../Figures/ctmax-variance-partition-1.png"
 data-fig-align="center" />
 
-| Component | Without temperature | With within/between temperature |
+| Component | Without temperature | With seasonal and spatial temperature |
 |:---|:---|:---|
-| Lineage | 29% (7–52) | 24% (3–48) |
-| Site temperature | – | 20% (2–48) |
-| Site (other) | 21% (0–55) | 16% (0–36) |
-| Acclimation (within-site temperature) | – | 18% (9–34) |
-| Collection (other) | 35% (15–66) | 8% (3–18) |
+| Clade | 35% (3–66) | 34% (2–64) |
+| Spatial temperature | – | 22% (7–42) |
+| Site (other) | 19% (0–54) | 14% (1–33) |
+| Seasonal temperature | – | 10% (5–22) |
+| Collection (other) | 32% (11–63) | 6% (2–14) |
 | Assay | 0% (0–1) | 0% (0–1) |
-| Individual | 14% (9–26) | 14% (9–23) |
+| Individual | 13% (7–23) | 13% (8–23) |
 
 Share of CTmax variance (95% parametric bootstrap interval).
 
-Without temperature terms, the largest components are collection (35%),
-lineage (29%) and site (21%), with 14% among individuals within a
-collection. Adding the temperature terms, within-site temperature
-(acclimation) explains 18% of all CTmax variance and absorbs most of the
-collection component (which drops to 8%), while long-term site
-temperature explains 20% and the remaining site component is 16%.
-Lineage accounts for 24%. Thermal tolerance in this complex is therefore
-structured roughly equally by lineage, by acclimation to recent
-conditions, and by site (temperature plus other site differences), with
-little left to the assay. The intervals are wide because lineage and
-site have few levels (7 lineages, 8 sites).
+Without temperature terms, the largest components are collection (32%),
+clade (35%) and site (19%), with 13% among individuals within a
+collection. The temperature terms follow the season-mean split of Fig.
+3A: seasonal temperature (the season’s mean collection temperature
+across sites) explains 10% of all CTmax variance, and spatial
+temperature (a collection’s deviation from that season mean) 22%;
+together they absorb most of the collection component (which drops to
+6%), leaving 14% to other site differences. Clade accounts for 34%. The
+intervals are wide because clade and site have few levels (4 clades, 8
+sites).
 
 ### Lineage differences under shared conditions (natural common garden)
 
@@ -1196,13 +1323,11 @@ recent conditions.
 
 | Lineage pair (first − second) | Shared collections | Within shared collections | p | All collections (temperature-adjusted) |
 |:---|---:|:---|---:|:---|
-| F-MR – S | 1 | 0.34 (-0.53, 1.22) | 0.4400 | 0.21 (-0.57, 0.98) |
-| F-N – S | 3 | 0.78 (0.21, 1.34) | 0.0075 | 0.93 (0.50, 1.36) |
-| F-NE – S | 1 | 0.54 (-0.62, 1.71) | 0.3600 | 0.63 (-0.25, 1.51) |
-| F-NE – X | 1 | 0.94 (-0.14, 2.01) | 0.0860 | 1.67 (0.81, 2.52) |
-| IV – S | 1 | -2.85 (-3.66, -2.04) | 0.0000 | -2.87 (-3.42, -2.33) |
-| S – X | 2 | 0.39 (-0.32, 1.11) | 0.2800 | 1.04 (0.49, 1.59) |
-| IV – X | 3 | -2.46 (-3.09, -1.82) | 0.0000 | -1.83 (-2.19, -1.48) |
+| F – X | 1 | 1.01 (0.28, 1.73) | 0.0066 | 1.13 (0.56, 1.69) |
+| S – X | 2 | 0.37 (-0.29, 1.03) | 0.2700 | 0.50 (-0.01, 1.01) |
+| IV – X | 3 | -2.46 (-3.09, -1.83) | 0.0000 | -1.97 (-2.38, -1.55) |
+| F – S | 5 | 0.63 (0.20, 1.07) | 0.0048 | 0.63 (0.25, 1.00) |
+| IV – S | 1 | -2.83 (-3.61, -2.06) | 0.0000 | -2.47 (-3.03, -1.91) |
 
 CTmax differences (°C, 95% CI) between lineages that co-occur in at
 least one collection: estimated only within shared collections, and from
@@ -1242,7 +1367,7 @@ lineages but removing their timing.
 Composition alone shifts expected CTmax by 0.04 °C per °C of collection
 temperature within sites (permutation p \< 0.001), compared with an
 acclimation slope of 0.15 °C per °C within lineages: turnover adds about
-27% to the seasonal change that acclimation produces. Collections are
+26% to the seasonal change that acclimation produces. Collections are
 dominated by more tolerant lineages when the water is warm and by less
 tolerant lineages (above all IV) when it is cool, so turnover reinforces
 acclimation rather than opposing it. This is a seasonal change in
@@ -1307,6 +1432,21 @@ shuffles (two-sided rank).
 Fraction of the stronger associations at rare SNPs (minor-allele
 frequency \< 0.15) in which the minor allele lowers CTmax, observed
 vs. shuffles.
+
+<img src="../Figures/gwas-power-1.png" data-fig-align="center" />
+
+Power was simulated on each lineage’s own data (cluster target
+`gwas_power`): for 2,000 SNPs sampled across the genome, true genotypes
+were drawn from each individual’s genotype posterior, a causal effect
+was added to CTmax shuffled within collections, and the scan’s test was
+repeated against the genome-wide 5% threshold from its own permutations.
+Genotype accuracy was low (r² between expected dosage and true genotype
+0.39–0.47), and the scan reached 50% power only for loci of about 2 °C
+per allele in F-N and 3 °C in X (explaining most of the
+within-collection CTmax variance); in S, F-FH and IV it never did. The
+scan rules out only loci of very large effect and does not constrain a
+polygenic basis of within-lineage variation; it is reported for
+completeness.
 
 No lineage shows more association signal than the shuffles: the observed
 counts of small p values sit inside, and in X below, the shuffle
@@ -1491,6 +1631,36 @@ If the early onset of high temperatures filtered out vulnerable
 genotypes prior to our sampling, the results will be a conservative
 estimate of the effects of selection on trait variance.
 
+### CTmax variance through the season
+
+If seasonal selection on thermal tolerance were strong, it should remove
+the least tolerant individuals and narrow CTmax variation within
+lineages over the season. Within each lineage at each site sampled in
+two or more seasons (collections with ≥ 5 individuals of the lineage),
+spread was measured as each individual’s absolute deviation from its
+collection median (Brown–Forsythe), modelled as \|deviation\| ~ season +
+(1 \| lineage:site), with early season as the reference.
+
+<img src="../Figures/ctmax-variance-season-1.png"
+data-fig-align="center" />
+
+| Contrast      | Change in mean \|deviation\| (°C) |    SE | 95% lower | 95% upper |
+|:--------------|----------------------------------:|------:|----------:|----------:|
+| peak vs early |                             0.018 | 0.072 |    -0.124 |      0.16 |
+| late vs early |                             0.053 | 0.080 |    -0.103 |      0.21 |
+
+Change in the spread of CTmax within lineage × site units (8 units, 280
+individuals), relative to the early season.
+
+CTmax spread did not narrow through the season: relative to early-season
+collections, the mean absolute deviation changed by +0.02 °C at the peak
+and +0.05 °C in the late season (95% CIs -0.12 to 0.16 and -0.10 to
+0.21). This phenotypic check agrees with the genomic one: there is no
+sign of strong seasonal selection on thermal tolerance within lineages.
+It is a weak test, however: spread also reflects assay noise and the mix
+of acclimation histories within a collection, and immigration can
+replenish variation.
+
 ### Parasites, epibionts and thermal limits
 
 Infected and uninfected individuals are compared within the same
@@ -1524,11 +1694,11 @@ level changes where the species looks vulnerable.
 
 - **Fixed CTmax:** one value for everyone, the mean of all peak-season
   individuals.
-- **Lineage means:** each lineage’s peak-season mean CTmax (its mean
-  over all collections when it has \< 5 peak-season individuals),
-  weighted by the lineage make-up of the site’s peak collection.
-- **Lineages + acclimation:** CTmax predicted for each lineage on each
-  day from the within/between model (population-level, no site random
+- **Clade means:** each clade’s peak-season mean CTmax (its mean over
+  all collections when it has \< 5 peak-season individuals), weighted by
+  the clade make-up of the site’s peak collection.
+- **Clades + acclimation:** CTmax predicted for each clade on each day
+  from the within/between model (population-level, no site random
   effect): lineage + within-site temperature (the day’s temperature
   minus the site’s mean collection temperature) + between-site
   temperature (the site’s long-term MUR mean). The day’s temperature is
@@ -1537,45 +1707,60 @@ level changes where the species looks vulnerable.
   peak-season make-up.
 
 Habitat temperature is the bias-corrected daily MUR SST, 2014–2023
-(Section 1), plus 0 or 4 °C for a uniform-warming scenario. Two
-summaries per site, over August–September (the warmest months, peak
-abundance, and the period the peak collections represent): the mean
-warming tolerance of the peak-season population, and the warming
-tolerance on the warmest August–September day of each year (averaged
-over years) for the least tolerant lineage making up ≥ 10% of the peak
-collection. Intervals are 95% ranges from 1,000 bootstrap resamples of
-individuals (fixed and lineage means) or 1,000 draws of the model’s
-fixed effects (lineages + acclimation). Individuals’ CTmax was measured
-against collection-day water temperature, while predictions use MUR SST,
-which in summer runs cooler than the in-situ collection temperatures at
-the northern sites (Section 1); the acclimation scenario therefore uses
-MUR temperatures on a model fitted to in-situ ones.
+(Section 1), plus 0 or 4 °C for a uniform-warming scenario. Sites are
+pooled into six regions (Florida: MR, FH; Chesapeake: MD, GW;
+Connecticut; Maine; Shediac: TK; Miramichi: RW), each site weighted
+equally; composition and acclimation terms are applied site by site
+before pooling. Two summaries per region, over August–September (the
+warmest months, peak abundance, and the period the peak collections
+represent): the mean warming tolerance of the peak-season population,
+and the warming tolerance on the warmest August–September day of each
+year (averaged over years) for the least tolerant lineage making up ≥
+10% of the peak collection. Intervals are 95% ranges from 1,000
+bootstrap resamples of individuals (fixed and lineage means) or 1,000
+draws of the model’s fixed effects (lineages + acclimation).
+Individuals’ CTmax was measured against collection-day water
+temperature, while predictions use MUR SST, which in summer runs cooler
+than the in-situ collection temperatures at the northern sites (Section
+1); the acclimation scenario therefore uses MUR temperatures on a model
+fitted to in-situ ones.
 
 <img src="../Figures/wt-scenarios-plot-1.png" data-fig-align="center" />
 
-| Metric | Scenario | Range among sites (°C) | Change vs fixed CTmax |
+The figure below shows the full distribution of daily warming tolerance
+in each region behind these summaries, over the whole sampled season
+(July–November, 2014–2023). Each day is weighted by the lineage make-up
+of the matching collection: July by the early collection,
+August–September by the peak collection, October–November by the late
+collection, using the nearest available collection where one is missing
+(the Florida sites have no early collection). Point estimates only;
+current conditions solid, +4 °C pale.
+
+<img src="../Figures/wt-histograms-1.png" data-fig-align="center" />
+
+| Metric | Scenario | Range among regions (°C) | Change vs fixed CTmax |
 |:---|:---|---:|:---|
 | Aug–Sep mean | Fixed CTmax | 13.3 | – |
-| Aug–Sep mean | Lineage means | 8.5 | -36% |
-| Aug–Sep mean | Lineages + acclimation | 8.9 | -33% |
-| Aug–Sep mean | Lineages + acclimation (annual make-up) | 8.8 | -34% |
-| Warmest day, least tolerant common lineage | Fixed CTmax | 12.5 | – |
-| Warmest day, least tolerant common lineage | Lineage means | 7.9 | -37% |
-| Warmest day, least tolerant common lineage | Lineages + acclimation | 8.3 | -33% |
-| Warmest day, least tolerant common lineage | Lineages + acclimation (annual make-up) | 8.0 | -36% |
+| Aug–Sep mean | Clade means | 9.3 | -30% |
+| Aug–Sep mean | Clades + acclimation | 9.4 | -29% |
+| Aug–Sep mean | Clades + acclimation (annual make-up) | 9.2 | -31% |
+| Warmest day, least tolerant common clade | Fixed CTmax | 12.4 | – |
+| Warmest day, least tolerant common clade | Clade means | 8.5 | -31% |
+| Warmest day, least tolerant common clade | Clades + acclimation | 8.8 | -30% |
+| Warmest day, least tolerant common clade | Clades + acclimation (annual make-up) | 8.4 | -32% |
 
-Spread of warming tolerance among sites under current conditions. The
+Spread of warming tolerance among regions under current conditions. The
 last scenario uses each site’s lineage make-up across all collections
 instead of the peak collection.
 
-Relative to a single CTmax, lineage means change the spread of
-peak-season warming tolerance among sites by -36%, and lineages with
-acclimation by -33% (warmest-day metric: -37% and -33%). With +4 °C, the
-lowest warming tolerance on the warmest day is at MR under Fixed CTmax
-(-0.1 °C); GW under Lineage means (2.5 °C); MR under Lineages +
-acclimation (2.3 °C).
+Relative to a single CTmax, clade means change the spread of peak-season
+warming tolerance among regions by -30%, and clades with acclimation by
+-29% (warmest-day metric: -31% and -30%). With +4 °C, the lowest warming
+tolerance on the warmest day is at Florida under Clade means (1.8 °C);
+Florida under Clades + acclimation (2.7 °C); Florida under Fixed CTmax
+(-0.1 °C).
 
-What changes, site by site:
+What changes, region by region:
 
 - **A single CTmax makes the south look more vulnerable and the north
   less vulnerable than its lineages are.** Florida’s lineages (F-FH,
@@ -1585,21 +1770,42 @@ What changes, site by site:
   tolerant than the species average, so their margin drops by about 2
   °C. Peak-season means in the Chesapeake and Connecticut barely move,
   because their peak-season lineages (F-N, S) are close to the average;
-  at CT the warmest-day margin still drops by 2 °C, set by the X
-  minority.
+  in Connecticut the warmest-day margin still drops by 2 °C, set by the
+  X minority.
 - **Acclimation adds little at the peak and helps most under warming.**
   The peak-season means already include acclimation to summer water, so
   acclimation changes current warming tolerance by a few tenths of a
-  degree; with +4 °C it adds up to about 2 °C (GW), limited by the clamp
-  to sampled temperatures. Its intervals are the widest, because it
-  rests on a model rather than direct measurements.
+  degree; with +4 °C it adds about 1 °C in the Chesapeake, limited by
+  the clamp to sampled temperatures. Its intervals are the widest,
+  because it rests on a model rather than direct measurements.
 - **Seasonal turnover keeps the least tolerant lineage out of the
   heat.** Using each site’s make-up over all collections instead of the
-  peak collection lowers the warmest-day margin by about 2 °C at CT and
-  TK, because IV, the least tolerant lineage, is common there only in
-  autumn. Annual composition would overstate vulnerability where
-  turnover is strongest.
+  peak collection lowers the warmest-day margin by about 2 °C in
+  Connecticut, Maine and Shediac, because IV, the least tolerant
+  lineage, is common there only in autumn. Annual composition would
+  overstate vulnerability where turnover is strongest.
 
 These are illustrations, not forecasts: they assume composition and the
 acclimation response stay as observed, warming is uniform through the
 season, and CTmax is the relevant limit.
+
+## 6. Manuscript figures
+
+Main-text figures for the merged manuscript, assembled from the analyses
+above (saved as `Output/Figures/ms-fig<N>-1.png` / `.pdf`).
+
+<img src="../Figures/ms-fig1-1.png" data-fig-align="center" />
+
+<img src="../Figures/ms-fig2-1.png" data-fig-align="center" />
+
+<img src="../Figures/ms-fig3-1.png" data-fig-align="center" />
+
+<img src="../Figures/ms-fig4-1.png" data-fig-align="center" />
+
+<img src="../Figures/ms-figS-drift-1.png" data-fig-align="center" />
+
+<img src="../Figures/ms-fig5-1.png" data-fig-align="center" />
+
+<img src="../Figures/ms-figS-trees-1.png" data-fig-align="center" />
+
+<img src="../Figures/ms-fig6-1.png" data-fig-align="center" />
