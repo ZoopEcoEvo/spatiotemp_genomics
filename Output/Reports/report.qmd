@@ -98,11 +98,14 @@ Collections aimed to obtain copepods near the onset of peak temperatures, after 
 #| label: continuous-temps
 #| fig-width: 10
 #| fig-height: 6
+
 mur_2023 <- read_csv(od("mur_sst_daily_corrected.csv"), show_col_types = FALSE) %>%
   filter(site_code %in% site_order, date >= as.Date("2023-06-01"), date <= as.Date("2023-12-24")) %>%
   mutate(doy = lubridate::yday(date), site = factor(site_names[site_code], levels = site_names))
+
 coll_2023 <- site_temps %>%
   mutate(site = factor(as.character(site), levels = site_names))
+
 ggplot(mur_2023, aes(x = doy, y = sst_c)) +
   geom_line(colour = "grey35") +
   geom_point(data = coll_2023, aes(x = doy, y = collection_temp, colour = site), size = 3) +
