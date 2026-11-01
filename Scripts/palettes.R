@@ -28,7 +28,6 @@ clade_shapes <- c("X" = 17, "F" = 15, "S" = 16, "IV" = 18, "A_hudsonica" = 3)   
 # Sites, south -> north (latitude order)
 site_order <- c("MR", "FH", "MD", "GW", "CT", "ME", "TK", "RW")
 pop_cols <- lat_gradient[site_order]
-pop_cols <- c("KL" = "#5E0F1F", pop_cols)    # KL: south of MR, not sequenced
 
 site_names <- c("MR" = "Manatee River", "FH" = "Ft. Hamer", "MD" = "Tyler Cove",
                 "GW" = "Ganey's Wharf", "CT" = "Esker Point", "ME" = "Sawyer Park",

@@ -43,8 +43,8 @@ library(tidyverse) # last, so dplyr::select() masks MASS::select() (loaded by me
 source(here("Scripts", "themes.R"))
 source(here("Scripts", "palettes.R"))
 
-# Processed data: site_data, sample_table, all_data, join_data, temp_profiles,
-# temp_record, ramp_record, site_temps, temp_summaries, collections, range_changes
+# Processed data: site_data, sample_table, all_data, join_data,
+# temp_record, ramp_record, site_temps, temp_summaries, collections
 source(here("Scripts", "load_data.R"))
 # Chunk options (figure path, echo, ...) are set in the YAML header above
 ```
@@ -67,8 +67,7 @@ Copepods were collected by surface tow from sites across the Western Atlantic at
 #| fig-height: 6
 coords = site_data %>%
   dplyr::select(site, long, lat) %>%
-  distinct() %>% 
-  filter(site != "Key Largo")
+  distinct()
 
 site_map = map_data("world") %>% 
   filter(region %in% c("USA", "Canada")) %>% 
@@ -97,44 +96,27 @@ site_temp_plot = ggplot(site_temps, aes(x = doy, y = collection_temp, colour = s
 ggarrange(site_map, site_temp_plot, common.legend = T, legend = "bottom")
 ```
 
-Collections aimed to obtain copepods near the onset of peak temperatures, after peak temperatures, and then after temperatures cooled during the Fall. To put the collections into this larger seasonal context, we examined continuous temperature records for each site. Continuous data is not available for all sites, however, so here we've pieced together daily temperature values from either local temperature sensors (sites in Florida and the Chesapeake) and high resolution satellite temperature data (Connecticut, Maine, and the Canadian sites). This satellite data comes from the NOAA 1/4° Daily Optimum Interpolation Sea Surface Temperature (OISST).
-
-These temperature profiles are shown below, with the temperatures measured during the time of collection included for comparison While collection temperatures in Maine did not always match the recorded daily averages, across all sites the temperature records do give a general sense of the timing of seasonal maxima (and the proximity of collections to the seasonal maximum temperature). In general, the first sample from each site fell just after the site reached the warmest period. The exception to that pattern is in Florida, where collections occurred after an extended period of high temperatures.
+Collections aimed to obtain copepods near the onset of peak temperatures, after peak temperatures, and then after temperatures cooled during the Fall. To put the collections into this larger seasonal context, the figure below shows daily sea surface temperature at each site through the 2023 sampling season from the MUR analysis (0.01°, bias-corrected; the same record used for the site climatology and the generation-averaged temperatures, Section 1 below), with the temperatures measured at each collection. In general, the first sample from each site fell just after the site reached its warmest period; the exception is Florida, where collections occurred after an extended period of high temperatures. Temperatures measured at collection were often warmer than the MUR daily mean, by about 3–5 °C at the Florida peak collections and 2–8 °C in the early and peak collections in Maine and the Gulf of St. Lawrence, as expected for shallow nearshore surface water in the afternoon relative to a satellite average over a 5 km radius; late-season collections matched MUR closely.
 
 ```{r}
 #| label: continuous-temps
-#| fig-width: 8
+#| fig-width: 10
 #| fig-height: 6
-temp_profiles = temp_profiles %>% 
-  filter(doy > 100) %>% 
-  mutate(region = fct_relevel(region, "Florida", "Chesapeake", "Connecticut",
-                              "Maine", "Shediac", "Miramichi"))
-
-site_temps2 = site_temps %>% 
-  mutate(region = case_when(
-    site == "Manatee River" ~ "Florida",
-    site == "Ft. Hamer" ~ "Florida",
-    site == "Tyler Cove" ~ "Chesapeake",
-    site == "Ganey's Wharf" ~ "Chesapeake",
-    site == "Esker Point" ~ "Connecticut",
-    site == "Sawyer Park" ~ "Maine",
-    site == "St. Thomas de Kent Wharf" ~ "Shediac",
-    site == "Ritchie Wharf" ~ "Miramichi"),
-    region = fct_relevel(region, "Florida", "Chesapeake", "Connecticut",
-                         "Maine", "Shediac", "Miramichi"))
-
-ggplot(temp_profiles, aes(x = doy, y = temp_c)) + 
-  facet_wrap(region~.) + 
-  geom_point(data = site_temps2,
-             aes(x = doy, y = collection_temp, colour = site),
-             size = 3) +
-  geom_line() + 
-  scale_colour_manual(values = site_cols) + 
-  labs(x = "Day of the Year", 
-       y = "Mean Daily Temp. (°C)") + 
-  theme_matt_facets() + 
-  theme(legend.position = "none", 
-        axis.text.x = element_text(angle = 320, hjust = 0, vjust = 0.5))
+mur_2023 <- read_csv(od("mur_sst_daily_corrected.csv"), show_col_types = FALSE) %>%
+  filter(site_code %in% site_order, date >= as.Date("2023-06-01"), date <= as.Date("2023-12-24")) %>%
+  mutate(doy = lubridate::yday(date), site = factor(site_names[site_code], levels = site_names))
+coll_2023 <- site_temps %>%
+  mutate(site = factor(as.character(site), levels = site_names))
+ggplot(mur_2023, aes(x = doy, y = sst_c)) +
+  geom_line(colour = "grey35") +
+  geom_point(data = coll_2023, aes(x = doy, y = collection_temp, colour = site), size = 3) +
+  facet_wrap(~ site, nrow = 2, labeller = label_wrap_gen(18)) +
+  scale_colour_manual(values = site_cols) +
+  scale_x_continuous(breaks = c(152, 213, 274, 335), labels = c("Jun", "Aug", "Oct", "Dec")) +
+  labs(x = NULL, y = "Temperature (°C)",
+       caption = "Line: MUR daily SST, 2023 (bias-corrected, within 5 km of each site).\nPoints: temperature measured at collection.") +
+  theme_matt_facets(base_size = 12) +
+  theme(legend.position = "none", plot.caption = element_text(hjust = 0))
 ```
 
 Exact locations for the sites are provided here:
@@ -189,7 +171,7 @@ site_temps %>%
 
 ### Long-term site temperatures (MUR SST)
 
-Daily sea-surface temperature for 2014–2023 was taken from the MUR SST analysis (GHRSST Level 4, ~1 km) for each site, averaging the water pixels within 5 km of the site (`Scripts/05_site_environment.R`). Where MUR has no water near a site (Ganey's Wharf, Ritchie Wharf), the water within 5 km of the nearest water pixel (14–19 km away) was used. MUR agreed closely with nearby monitoring stations wherever it resolves the site's own water (mean bias −0.4 to +0.4 °C at Noank, New London, Gooses Reef, Port Manatee, Portland and the Manatee River gauge). At Ganey's Wharf, Chesapeake Bay Program station ET5.1 (at the wharf) is 2–4 °C warmer than MUR in spring and 1–1.7 °C colder in autumn, as expected for a shallow upper estuary, so Ganey's Wharf uses MUR corrected by the station's smoothed monthly bias. Ritchie Wharf has no station within 50 km and is flagged. Temperatures measured at collection (shallow wharf water, often at midday) run 2–6 °C warmer than MUR in summer at the northern sites; MUR describes the water mass the plankton live in and is used for site climatology and the genomic analyses, while the measured temperatures are used for acclimation in the CTmax models.
+Daily sea-surface temperature for 2014–2023 was taken from the MUR SST analysis (GHRSST Level 4, ~1 km) for each site, averaging the water pixels within 5 km of the site (`Scripts/01_site_environment.R`). Where MUR has no water near a site (Ganey's Wharf, Ritchie Wharf), the water within 5 km of the nearest water pixel (14–19 km away) was used. MUR agreed closely with nearby monitoring stations wherever it resolves the site's own water (mean bias −0.4 to +0.4 °C at Noank, New London, Gooses Reef, Port Manatee, Portland and the Manatee River gauge). At Ganey's Wharf, Chesapeake Bay Program station ET5.1 (at the wharf) is 2–4 °C warmer than MUR in spring and 1–1.7 °C colder in autumn, as expected for a shallow upper estuary, so Ganey's Wharf uses MUR corrected by the station's smoothed monthly bias. Ritchie Wharf has no station within 50 km and is flagged. Temperatures measured at collection (shallow wharf water, often at midday) run 2–6 °C warmer than MUR in summer at the northern sites; MUR describes the water mass the plankton live in and is used for site climatology and the genomic analyses, while the measured temperatures are used for acclimation in the CTmax models.
 
 ```{r}
 #| label: site-temperature-cycle
@@ -198,11 +180,11 @@ Daily sea-surface temperature for 2014–2023 was taken from the MUR SST analysi
 mur_file <- od("mur_sst_daily_corrected.csv")
 if (!file.exists(mur_file)) mur_file <- od("mur_sst_daily.csv")
 if (!file.exists(mur_file)) {
-  cat("MUR SST is not in Output_data yet (run Scripts/05_site_environment.R).")
+  cat("MUR SST is not in Output_data yet (run Scripts/01_site_environment.R).")
 } else {
   mur_daily <- read_csv(mur_file, show_col_types = FALSE) %>%
     mutate(doy = lubridate::yday(date), year = lubridate::year(date))
-  site_lab <- c(KL = "Key Largo", site_names)
+  site_lab <- site_names
   site_lvls <- names(site_lab)[names(site_lab) %in% unique(mur_daily$site_code)]
   mur_cycle <- mur_daily %>%
     filter(doy <= 365) %>%
@@ -225,8 +207,9 @@ if (!file.exists(mur_file)) {
     scale_fill_manual(values = pop_cols, guide = "none") +
     scale_x_continuous(breaks = c(1, 91, 182, 274), labels = c("Jan", "Apr", "Jul", "Oct")) +
     labs(x = NULL, y = "SST (°C)",
-         caption = "Line: 2014–2023 mean for each day of the year; band: range across years.\nPoints: 2023 collections. Filled = MUR mean over the generation before collection (seasonal genomic model); open = temperature measured at collection.") +
-    theme_matt_facets(base_size = 11)
+         caption = "Line: 2014–2023 mean for each day of the year; band: range across years. Points: 2023 collections.\nFilled: MUR mean over the generation before collection (seasonal genomic model); open: temperature measured at collection.") +
+    theme_matt_facets(base_size = 11) +
+    theme(plot.caption = element_text(hjust = 0))
   if (!is.null(coll)) {
     p_cycle <- p_cycle +
       geom_point(data = coll, aes(y = temp_c, shape = season), size = 2.5, fill = "grey20") +
@@ -425,7 +408,7 @@ Critical thermal maxima (CTmax) was measured using a custom setup. The method us
 
 Individuals were rested for one hour after collection before the assay. During the assay, copepods were held in artificial seawater, composed of bottled spring water and Instant Ocean salt mix adjusted to match collection salinities. During the assay, several 'control' individuals were maintained in this solution at ambient temperatures without the temperature ramp to ensure that there was no background changes in behavior or mortality. When sorting individuals from the plankton tow contents, they were held in a 50:50 mix of 60 um filtered water from the collection site and artificial seawater as an additional acclimation step.
 
-Sample sizes varied slightly across experiments, but generally \~20 individuals were measured per season at each site. The major exceptions were the early samples from the Florida sites and the late sample from Sawyer Park (Maine). Only two sets of samples (peak and late) were collected from Fort Hamer and Manatee River. The late season collection from Sawyer Park occurred after *Acartia tonsa* abundance decreased, and samples were dominated by *Acartia hudsonica*. Thermal limits were measured for all *A. tonsa* individuals recovered. No samples were collected from Key Largo for this project, as *Acartia tonsa* wasn't present in the water during the peak season, likely due to a recent extreme heat event.
+Sample sizes varied slightly across experiments, but generally \~20 individuals were measured per season at each site. The major exceptions were the early samples from the Florida sites and the late sample from Sawyer Park (Maine). Only two sets of samples (peak and late) were collected from Fort Hamer and Manatee River. The late season collection from Sawyer Park occurred after *Acartia tonsa* abundance decreased, and samples were dominated by *Acartia hudsonica*. Thermal limits were measured for all *A. tonsa* individuals recovered.
 
 ```{r}
 join_data %>%  
@@ -3418,7 +3401,7 @@ CTmax among individuals collected together therefore shows no detectable associa
 
 ### Candidate genes: mitochondrial amino-acid differences
 
-Lineage differences in CTmax are heritable but, within lineages, no SNP associates with CTmax. The comparative alternative asks which protein differences between lineages could underlie them. Mitochondrial OXPHOS genes are the first candidates: they are inherited as a unit, they define the clades, and amino-acid changes in COX1, CYTB and other respiratory-chain subunits alter thermal performance in copepods (*Tigriopus californicus*: Willett 2010, Harada et al. 2019) and other ectotherms. The clade mitogenome contigs are unannotated de novo assemblies, so protein-coding genes were found as open reading frames (invertebrate mitochondrial code, ≥ 150 codons; COX1 and CYTB identified by conserved motifs, other ORFs by length and strand). ORFs nested inside an ORF on the opposite strand are flagged; one member of each such pair is probably not a gene. The F contig (16.1 kb) covers most of the mitogenome, so the four F lineages can be compared across 11 ORFs; the X and IV contigs (about 5 kb) cover only COX1, CYTB and one further ORF, so clades are compared there (`Scripts/07_mito_aa.R`).
+Lineage differences in CTmax are heritable but, within lineages, no SNP associates with CTmax. The comparative alternative asks which protein differences between lineages could underlie them. Mitochondrial OXPHOS genes are the first candidates: they are inherited as a unit, they define the clades, and amino-acid changes in COX1, CYTB and other respiratory-chain subunits alter thermal performance in copepods (*Tigriopus californicus*: Willett 2010, Harada et al. 2019) and other ectotherms. The clade mitogenome contigs are unannotated de novo assemblies, so protein-coding genes were found as open reading frames (invertebrate mitochondrial code, ≥ 150 codons; COX1 and CYTB identified by conserved motifs, other ORFs by length and strand). ORFs nested inside an ORF on the opposite strand are flagged; one member of each such pair is probably not a gene. The F contig (16.1 kb) covers most of the mitogenome, so the four F lineages can be compared across 11 ORFs; the X and IV contigs (about 5 kb) cover only COX1, CYTB and one further ORF, so clades are compared there (`Scripts/06_mito_aa.R`).
 
 ```{r}
 #| label: mito-aa
@@ -3492,6 +3475,205 @@ if (have_mito) {
 These are candidates, not results. Every substitution on the branch leading to IV is equally consistent with IV's low CTmax, and with one low-CTmax clade there is no replication to separate causal changes from the many neutral ones that accumulated with them. Two observations constrain the mitochondrial explanation. First, among F lineages, the southern F-MR differs from F-N at about 90 amino acids, yet with S as a common yardstick (both co-occur with S) F-MR is not more tolerant than F-N: F-MR exceeds S by 0.3 °C at MR, and F-N exceeds S by 0.8 °C in the Chesapeake. Large mitochondrial divergence within F does not translate into a CTmax difference. Second, IV is not more divergent than other clades in COX1, the most constrained OXPHOS gene. The useful next step is structural: placing the IV-specific CYTB and COX1 substitutions on the respiratory-complex structures (quinone-binding sites of complex III, the proton channels of complex IV) to see whether any sit where function, rather than sequence, changes. ORF216- is unreliable: it has no calls in F-FH or F-MR, and F-N and F-NE differ there mostly at nonsynonymous sites, the pattern of a misassembled or non-coding region rather than a gene.
 
 The nuclear part of the candidate analysis (heat-shock proteins, nuclear OXPHOS subunits, lipid desaturases and elongases) needs the RefSeq annotation of the reference genome (GCF_053477335.1), which is not yet in the project.
+
+
+### Candidate genes from experimental evolution
+
+Fifteen transcripts that responded to selection in an experimental-evolution study of *A. tonsa* [REF] were placed on the reference genome with megablast (cluster target `candidates`, rules `expevol_blast` and `expevol_map`): each transcript's best locus (74–100% of the transcript aligned, 93–99% identity) and the RefSeq genes it overlaps. Three transcripts span two neighbouring genes, giving 18 genes, among them a mitochondrial HSP90 (Trap1), an HSP90 co-chaperone (AHSA1), complex I and III subunits or assembly factors (ND-49, UQCC2), vitellogenin and its receptor, and growth-signalling, transcription and ribosome-biogenesis genes. Three of the 15 transcripts map to chromosome 6 (NC_137265.1), which carries the structural polymorphism in northern X.
+
+Two tests asked whether these genes behave differently from the rest of the genome in the field. (1) SNPs within the genes (± 2 kb) were compared with SNPs in random sets of the same number of other genes (1,000 sets) for the spatial temperature association, seasonal change (time in season and temperature), sign agreement of seasonal and spatial slopes, and the within-lineage CTmax association (all SNPs, not only unlinked ones). (2) Clade-specific amino-acid substitutions in the genes were compared with the genome background (the gene-set test above, codons called in at least three clades).
+
+```{r}
+#| label: expevol-map
+ev_map_f <- cx("results", "17_candidates", "expevol_map.tsv")
+if (!file.exists(ev_map_f)) {
+  cat("Experimental-evolution candidate results are not in this export yet.")
+} else {
+  read_tsv(ev_map_f, show_col_types = FALSE) %>%
+    group_by(transcript, chrom, query_cov, pident) %>%
+    summarise(genes = paste(sprintf("%s (%s)", gene, product), collapse = "; "), .groups = "drop") %>%
+    transmute(Transcript = transcript, Chromosome = chrom, `Aligned share` = query_cov, `Identity (%)` = pident,
+              `Gene(s)` = genes) %>%
+    knitr::kable(caption = "Placement of the experimental-evolution candidate transcripts on the reference genome.")
+}
+```
+
+```{r}
+#| label: expevol-snps
+ev_snp_f <- cx("results", "17_candidates", "expevol_snps.tsv")
+if (file.exists(ev_snp_f)) {
+  read_tsv(ev_snp_f, show_col_types = FALSE) %>%
+    transmute(Test = recode(test, seasonal_time = "Seasonal change (time)", seasonal_temp = "Seasonal change (temperature)",
+                            spatial = "Spatial temperature association", concordance = "Seasonal-spatial sign agreement",
+                            gwas = "CTmax association (within lineage)"),
+              Group = str_remove(group, "^conc_"), Genes = candidate_genes, SNPs = candidate_snps, Statistic = statistic,
+              Candidates = round(observed, 3), `Other genes` = round(background, 3), p = round(p_greater, 2)) %>%
+    knitr::kable(caption = "SNP-level signals in the experimental-evolution candidate genes against random sets of other genes (one-sided p, larger in the candidates).")
+}
+```
+
+```{r}
+#| label: expevol-aa
+ev_aa_f <- cx("results", "17_candidates", "sets.tsv")
+if (file.exists(ev_aa_f)) {
+  read_tsv(ev_aa_f, show_col_types = FALSE) %>%
+    filter(set %in% c("expevol", "heat_shock", "oxphos_nuclear")) %>%
+    transmute(Set = recode(set, expevol = "Experimental-evolution genes", heat_shock = "Heat-shock genes (by name)",
+                           oxphos_nuclear = "Nuclear OXPHOS subunits (by name)"),
+              Genes = genes, Clade = clade, N = nonsyn, S = syn, `N/(N+S)` = round(nonsyn_frac, 3),
+              Background = round(background_frac, 3), p = signif(p_two_sided, 2)) %>%
+    knitr::kable(caption = "Clade-specific amino-acid substitutions in candidate gene sets against random background gene sets (two-sided permutation p).")
+}
+```
+
+Neither test found anything. At the SNP level the candidate genes were indistinguishable from other genes for every statistic and group (p = 0.17–0.84): genes that responded to selection in the laboratory show no excess spatial, seasonal or CTmax-associated variation in the field. At the protein level, 12 of the 18 genes had enough coverage, and no clade had an excess of amino-acid substitutions in them (p = 0.13–0.96). The core thermal candidates (Trap1, AHSA1, ND-49, UQCC2, vitellogenin) could not be compared: at < 1x coverage against a single reference, too few of their codons were called in three clades (S and IV, the clades most divergent from the reference, are under-called in coding sequence). Heat-shock genes as a class were strongly conserved: N/(N+S) was 0.05–0.11 on every branch against 0.18–0.21 genome-wide (p = 0.002–0.008 in F, S and IV; 0.10 in X).
+
+### Clade-specific protein divergence and gene function
+
+Which kinds of genes have diverged most between the clades at the protein level? For every RefSeq gene with at least 50 codons called in at least three clades (cluster target `candidates`, `nuclear_aa`), substitutions unique to one clade were counted as nonsynonymous (N) or synonymous (S) on that clade's branch. Genes were annotated with GO terms and KEGG pathways by eggNOG-mapper (target `function`; GO terms propagated to their ancestors). Two statistics were tested for every GO term and KEGG pathway with at least 10 tested genes and 20 substitutions:
+
+- **Amino-acid divergence:** nonsynonymous substitutions per codon compared, summed over all four branches (how much the term's proteins differ among clades).
+- **Branch-specific nonsynonymous fraction:** N / (N + S) on one clade's branch, compared with that clade's own genome-wide value. An excess means more protein change than expected from the clade's overall divergence (positive selection or relaxed constraint); a deficit means stronger conservation.
+
+For a term of k genes, the pooled ratio (sum of N over sum of codons, or of N + S) was compared with the ratio over all genes annotated in the same ontology (unannotated genes, often lineage-specific or poorly predicted, have about twice the nonsynonymous fraction of annotated genes and are excluded from the background) using the sampling variance of a ratio estimator for random sets of k genes (finite-population corrected); p values are two-sided, with Benjamini–Hochberg FDR within each statistic, clade and ontology. Terms with q < 0.1 were checked against 2,000 random gene sets of the same size. Coverage differs among clades (S and IV are under-called in coding sequence, which maps less well to the single reference), so each clade is compared only with its own background. Caveats: substitution counts per gene are small, GO terms overlap heavily, and an excess N/(N + S) can reflect relaxed constraint as well as positive selection.
+
+```{r}
+#| label: fn-enrichment
+fn_files <- c(go = cx("results", "19_function", "gene_go.tsv.gz"), go_terms = cx("results", "19_function", "go_terms.tsv"),
+              kegg = cx("results", "19_function", "gene_kegg.tsv.gz"), kegg_terms = cx("results", "19_function", "kegg_pathways.tsv"),
+              ann = cx("results", "19_function", "gene_annotation.tsv.gz"), aa = cx("results", "17_candidates", "genes.tsv.gz"))
+have_fn <- all(file.exists(fn_files))
+if (!have_fn) {
+  cat("Functional annotation (results/19_function) or gene-level substitution counts are not in this export yet.")
+} else {
+  fn_clades <- c("X", "F", "S", "IV")
+  aa_genes <- read_tsv(fn_files[["aa"]], show_col_types = FALSE) %>%
+    filter(codons_compared >= 50) %>% distinct(gene, .keep_all = TRUE)
+  aa_genes <- aa_genes %>%
+    mutate(N_all = rowSums(across(all_of(paste0("N_", fn_clades)))))
+  sets <- bind_rows(
+    read_tsv(fn_files[["go"]], col_types = cols(.default = "c")) %>% rename(term = go) %>%
+      left_join(read_tsv(fn_files[["go_terms"]], col_types = cols(.default = "c")) %>%
+                  transmute(term = go, name, ontology = recode(namespace, biological_process = "GO:BP",
+                                                               molecular_function = "GO:MF", cellular_component = "GO:CC")),
+                by = "term"),
+    read_tsv(fn_files[["kegg"]], col_types = cols(.default = "c")) %>% rename(term = pathway) %>%
+      left_join(read_tsv(fn_files[["kegg_terms"]], col_types = cols(.default = "c")) %>% transmute(term = pathway, name, ontology = "KEGG"),
+                by = "term")) %>%
+    filter(gene %in% aa_genes$gene)
+  fn_ann <- read_tsv(fn_files[["ann"]], col_types = cols(.default = "c"))
+
+  # ratio-estimator test: pooled sum(num) / sum(den) of a term's genes vs the genome-wide ratio
+  # background = genes annotated in the same ontology (unannotated genes, often lineage-specific or
+  # misannotated, have about twice the nonsynonymous fraction and would make every term look conserved)
+  ratio_test <- function(num, den, term_df, label) {
+    keep <- den > 0 & aa_genes$gene %in% unique(term_df$gene)
+    g <- aa_genes$gene[keep]; num <- num[keep]; den <- den[keep]
+    M <- length(g); p0 <- sum(num) / sum(den); dbar <- mean(den)
+    s2 <- var(num - p0 * den)
+    idx <- split(match(term_df$gene, g), term_df$term)
+    idx <- lapply(idx, function(i) i[!is.na(i)])
+    k <- lengths(idx)
+    tibble(term = names(idx), genes = k,
+           num = vapply(idx, function(i) sum(num[i]), 0), den = vapply(idx, function(i) sum(den[i]), 0)) %>%
+      mutate(statistic = label, background = p0, observed = num / den,
+             se = sqrt((1 - genes / M) * s2 / (genes * dbar^2)),
+             z = (observed - background) / se, p = 2 * pnorm(-abs(z)))
+  }
+  run_ont <- function(df) {
+    bind_rows(
+      ratio_test(aa_genes$N_all, aa_genes$codons_compared, df, "aa divergence (all branches)") %>%
+        mutate(clade = "all", subs = num),
+      map_dfr(fn_clades, function(cl) {
+        n <- aa_genes[[paste0("N_", cl)]]; s <- aa_genes[[paste0("S_", cl)]]
+        ratio_test(n, n + s, df, "N/(N+S) on branch") %>% mutate(clade = cl, subs = den)
+      }))
+  }
+  fn_res <- sets %>% group_by(ontology) %>% group_modify(~ run_ont(.x)) %>% ungroup() %>%
+    mutate(universe = "genes annotated in the ontology") %>%
+    filter(genes >= 10, subs >= 20) %>%
+    group_by(ontology, statistic, clade) %>% mutate(q = p.adjust(p, "BH")) %>% ungroup() %>%
+    left_join(distinct(sets, term, name), by = "term") %>%
+    mutate(direction = if_else(observed > background, "excess", "deficit"))
+
+  # permutation check of the q < 0.1 terms: one null per (statistic, clade, set size), shared by
+  # all terms of that size; 2,000 random gene sets each
+  set.seed(1)
+  null_cache <- new.env()
+  ont_genes <- split(sets$gene, sets$ontology) %>% lapply(unique)
+  perm_null <- function(cl, k, ont) {
+    key <- paste(cl, k, ont)
+    if (!is.null(null_cache[[key]])) return(null_cache[[key]])
+    if (cl == "all") { num <- aa_genes$N_all; den <- aa_genes$codons_compared }
+    else { num <- aa_genes[[paste0("N_", cl)]]; den <- num + aa_genes[[paste0("S_", cl)]] }
+    keep <- which(den > 0 & aa_genes$gene %in% ont_genes[[ont]])
+    idx <- matrix(replicate(2000, sample(keep, k)), nrow = k)
+    null_cache[[key]] <- colSums(matrix(num[idx], nrow = k)) / colSums(matrix(den[idx], nrow = k))
+    null_cache[[key]]
+  }
+  fn_top <- fn_res %>% filter(q < 0.1)
+  fn_top$p_perm <- if (nrow(fn_top)) map_dbl(seq_len(nrow(fn_top)), function(i) {
+    null <- perm_null(fn_top$clade[i], fn_top$genes[i], fn_top$ontology[i])
+    (sum(abs(null - mean(null)) >= abs(fn_top$observed[i] - mean(null))) + 1) / (length(null) + 1)
+  }) else numeric(0)
+  write_csv(fn_res, here("Output", "Output_data", "function_enrichment.csv"))
+
+  # genes behind each significant term, and per-gene branch outliers
+  term_index <- split(sets$gene, sets$term)
+  term_genes <- function(t, cl) {
+    gs <- term_index[[t]]
+    d <- aa_genes %>% filter(gene %in% gs)
+    v <- if (cl == "all") d$N_all else d[[paste0("N_", cl)]]
+    top <- d$gene[order(-v)][seq_len(min(5, sum(v > 0)))]
+    nm <- fn_ann$preferred_name[match(top, fn_ann$gene)]
+    paste(ifelse(is.na(nm) | nm == "-", top, nm), collapse = ", ")
+  }
+  fn_top$top_genes <- if (nrow(fn_top)) map2_chr(fn_top$term, fn_top$clade, term_genes) else character(0)
+  # per-gene branch-specific acceleration: is the clade's N/(N+S) higher than the same gene's on the
+  # other three branches? (one-sided Fisher test, hypergeometric). Genes that are fast on every
+  # branch (lineage-specific, low-complexity or mis-predicted genes) do not count.
+  gene_out <- map_dfr(fn_clades, function(cl) {
+    n <- aa_genes[[paste0("N_", cl)]]; s <- aa_genes[[paste0("S_", cl)]]
+    oth <- setdiff(fn_clades, cl)
+    no <- rowSums(as.matrix(aa_genes[paste0("N_", oth)])); so <- rowSums(as.matrix(aa_genes[paste0("S_", oth)]))
+    tibble(gene = aa_genes$gene, clade = cl, N = n, S = s, N_other = no, S_other = so,
+           codons = aa_genes$codons_compared,
+           p = phyper(n - 1, n + no, s + so, n + s, lower.tail = FALSE)) %>%
+      filter(N + S > 0, N >= 3) %>% mutate(q = p.adjust(p, "BH"))
+  }) %>% left_join(fn_ann %>% select(gene, product, preferred_name, description), by = "gene")
+  write_csv(gene_out, here("Output", "Output_data", "gene_branch_outliers.csv"))
+
+  fn_res %>% count(ontology, statistic, clade, sig = q < 0.1) %>%
+    pivot_wider(names_from = sig, values_from = n, values_fill = 0, names_prefix = "q<0.1: ") %>%
+    knitr::kable(caption = sprintf("Terms tested and terms with q < 0.1 (%d genes with substitution counts; %d with at least one GO term or KEGG pathway).",
+                                   nrow(aa_genes), n_distinct(sets$gene)))
+}
+```
+
+```{r}
+#| label: fn-enrichment-table
+if (have_fn) {
+  if (nrow(fn_top) == 0) cat("No GO term or KEGG pathway reached q < 0.1.") else
+  fn_top %>% arrange(statistic, clade, q) %>%
+    transmute(Statistic = statistic, Clade = clade, Ontology = ontology, Term = paste0(name, " (", term, ")"),
+              Genes = genes, Direction = direction, Observed = round(observed, 3), Background = round(background, 3),
+              q = signif(q, 2), `p (permutation)` = signif(p_perm, 2), `Top genes` = top_genes) %>%
+    knitr::kable(caption = "GO terms and KEGG pathways with q < 0.1. Top genes: up to five genes with the most nonsynonymous substitutions (eggNOG preferred names).")
+}
+```
+
+```{r}
+#| label: fn-gene-outliers
+if (have_fn) {
+  gene_out %>% filter(q < 0.1) %>% arrange(clade, q) %>%
+    transmute(Clade = clade, Gene = gene, Product = product, `eggNOG name` = preferred_name,
+              N, S, `N other` = N_other, `S other` = S_other, Codons = codons, q = signif(q, 2)) %>%
+    { if (nrow(.) == 0) cat("No gene shows branch-specific acceleration on any clade (q < 0.1).") else
+        knitr::kable(., caption = "Genes with branch-specific acceleration: a higher N/(N+S) on one clade's branch than on the same gene's other three branches (one-sided Fisher test, genes with at least 3 nonsynonymous substitutions on the branch; q < 0.1).") }
+}
+```
+
+Protein divergence among clades followed functional class, and almost identically on every branch. Ribosome biogenesis, rRNA processing, the nucleolus and mitochondrial gene expression carried more nonsynonymous change than other annotated genes on all four branches (q < 0.03), while neuronal, developmental, cytoskeletal and vesicle-trafficking genes were conserved (100–190 terms per clade). This is the familiar ranking of protein evolutionary rates by function, not clade-specific adaptation. Genes annotated to the response to heat or temperature, protein folding, heat-shock protein binding, oxidative phosphorylation and the respiratory chain showed no excess on any branch (N/(N+S) at or below background). The only clearly clade-specific signal was in S, with an excess in nuclear-encoded mitochondrial ribosomal proteins and mitochondrial protein complexes (mitochondrial large ribosomal subunit 0.43 vs 0.14, q = 0.001), a pattern expected from mitonuclear coevolution and of interest because mitonuclear compatibility affects thermal performance in other copepods [REF: *Tigriopus*]. Weaker clade-specific terms (immune regulation in X; DNA repair and apoptosis in IV; q = 0.005–0.04) are not interpreted. At the gene level, branch-specific acceleration was no more common than chance (3 genes at q < 0.1, all uncharacterized). Unannotated genes, which have about twice the nonsynonymous fraction of annotated genes (0.28–0.32 vs 0.16–0.19), were excluded from the background so that annotated terms are compared with annotated genes. Clade differences in CTmax are heritable (natural common gardens) but cannot be traced to accelerated protein change in thermal-function genes with these data, which points to regulatory or highly polygenic differences.
 
 
 ### Trait variability within clades
@@ -3903,344 +4085,18 @@ What changes, region by region:
 
 These are illustrations, not forecasts: they assume composition and the acclimation response stay as observed, warming is uniform through the season, and CTmax is the relevant limit.
 
-## 6. Manuscript figures
+## 6. Objects for the manuscript figures
 
-Main-text figures for the merged manuscript, assembled from the analyses above (saved as `Output/Figures/ms-fig<N>-1.png` / `.pdf`).
-
-```{r}
-#| label: ms-fig-helpers
-#| include: false
-# rectangular phylogram as ggplot layers
-tree_df <- function(tr) {
-  tr <- ape::ladderize(tr)
-  n <- ape::Ntip(tr)
-  x <- ape::node.depth.edgelength(tr)
-  y <- rep(NA_real_, n + tr$Nnode)
-  tips <- tr$edge[tr$edge[, 2] <= n, 2]
-  y[tips] <- rev(seq_along(tips))
-  kids <- split(tr$edge[, 2], tr$edge[, 1])
-  y_of <- function(nd) { if (!is.na(y[nd])) return(y[nd]); v <- mean(sapply(kids[[as.character(nd)]], y_of)); y[nd] <<- v; v }
-  invisible(y_of(n + 1))
-  edges <- tibble(p = tr$edge[, 1], c = tr$edge[, 2]) %>% mutate(x0 = x[p], x1 = x[c], y = y[c])
-  verts <- map_dfr(names(kids), function(nd) { yy <- y[kids[[nd]]]; tibble(x = x[as.integer(nd)], y0 = min(yy), y1 = max(yy)) })
-  nodes <- tibble(node = (n + 1):(n + tr$Nnode), x = x[node], y = y[node],
-                  label = if (is.null(tr$node.label)) "" else as.character(tr$node.label))
-  list(edges = edges, verts = verts, nodes = nodes,
-       tips = tibble(label = tr$tip.label, x = x[1:n], y = y[1:n]), depth = max(x))
-}
-gg_tree <- function(tr, title, cols) {
-  d <- tree_df(tr)
-  ggplot() +
-    geom_segment(data = d$edges, aes(x = x0, xend = x1, y = y, yend = y), linewidth = 0.8) +
-    geom_segment(data = d$verts, aes(x = x, xend = x, y = y0, yend = y1), linewidth = 0.8) +
-    geom_text(data = filter(d$nodes, label != "", label != "NA"), aes(x = x, y = y, label = label),
-              hjust = 1.15, vjust = -0.4, size = 2.8) +
-    geom_text(data = d$tips, aes(x = x + d$depth * 0.03, y = y, label = label, colour = label,
-                                 fontface = if_else(grepl("^A\\.", label), "italic", "bold")),
-              hjust = 0, size = 3.6) +
-    scale_colour_manual(values = cols, guide = "none") +
-    scale_x_continuous(expand = expansion(mult = c(0.02, 0.45))) +
-    labs(title = title) +
-    theme_void(base_size = 11) +
-    theme(plot.title = element_text(size = 11, hjust = 0.5))
-}
-ms_save_note <- "Main-text figure."
-```
+The manuscript figures are built in `Manuscript/ms_figures.qmd`, which renders in seconds because it only plots. It reads the model results and summaries saved here, so after changing an analysis, render this report first and then `ms_figures.qmd` (`00_controller.R` steps 7 and 8); to change only how a figure looks, render `ms_figures.qmd` alone.
 
 ```{r}
-#| label: ms-fig1
-#| fig-width: 10
-#| fig-height: 7.5
-# Figure 1: sites, collection temperatures, CTmax by season
-coords <- site_data %>% filter(site_code %in% site_order) %>% distinct(site, site_code, long, lat)
-m1_map <- map_data("world") %>%
-  filter(region %in% c("USA", "Canada")) %>%
-  ggplot() +
-  geom_polygon(aes(x = long, y = lat, group = group), fill = "grey85", colour = "grey70", linewidth = 0.2) +
-  geom_point(data = coords, aes(x = long, y = lat, colour = site), size = 3) +
-  ggrepel::geom_text_repel(data = coords, aes(x = long, y = lat, label = site_code), size = 3.2,
-                           min.segment.length = 0, box.padding = 0.3, seed = 1) +
-  coord_map(xlim = c(-86, -60), ylim = c(25, 49)) +
-  scale_colour_manual(values = site_cols, guide = "none") +
-  labs(x = NULL, y = NULL) +
-  theme_matt(base_size = 11)
-m1_temp <- site_temps %>%
-  mutate(site = factor(site, levels = names(site_cols))) %>%
-  ggplot(aes(x = as.Date(doy - 1, origin = "2023-01-01"), y = collection_temp, colour = site)) +
-  geom_line(linewidth = 1) +
-  geom_point(size = 2.5) +
-  scale_colour_manual(values = site_cols, name = NULL) +
-  scale_x_date(date_labels = "%b", date_breaks = "1 month") +
-  labs(x = NULL, y = "Collection temperature (°C)") +
-  theme_matt(base_size = 11)
-m1_ctmax <- join_data %>%
-  mutate(season = factor(season, levels = season_order), site = factor(site, levels = names(site_cols))) %>%
-  ggplot(aes(x = season, y = ctmax, colour = site, group = site)) +
-  geom_point(position = position_jitterdodge(jitter.width = 0.12, dodge.width = 0.7, seed = 1),
-             alpha = 0.35, size = 1.2) +
-  stat_summary(fun = mean, geom = "line", position = position_dodge(width = 0.7), linewidth = 0.9) +
-  stat_summary(fun.data = mean_se, geom = "pointrange", position = position_dodge(width = 0.7), size = 0.35) +
-  scale_colour_manual(values = site_cols, name = NULL) +
-  labs(x = "Season", y = "CTmax (°C)") +
-  theme_matt(base_size = 11)
-ggarrange(m1_map, ggarrange(m1_temp, m1_ctmax, ncol = 1, labels = c("B", "C"), common.legend = TRUE, legend = "right"),
-          nrow = 1, widths = c(0.8, 1.2), labels = c("A", ""))
-```
-
-```{r}
-#| label: ms-fig2
-#| fig-width: 11
-#| fig-height: 10
-# Figure 2: genome-wide structure (PCA), clade composition, and the CTmax shift from lineage turnover
-# Supplementary: genome-wide PCA of all individuals, and PCAs within each clade
-m3_all <- ggplot(pca_all, aes(x = PC1, y = PC2, colour = clade, shape = clade)) +
-  geom_point(size = 2, alpha = 0.8) +
-  scale_colour_manual(values = clade_cols[tonsa_clades], name = "Clade") +
-  scale_shape_manual(values = clade_shapes[tonsa_clades], name = "Clade") +
-  labs(x = sprintf("PC1 (%.1f%%)", ve[1]), y = sprintf("PC2 (%.1f%%)", ve[2])) +
-  theme_matt(base_size = 11) +
-  theme(legend.position = "bottom")
-wpc <- wpca %>%
-  mutate(clade = factor(str_extract(panel, "^[A-Z]+"), levels = tonsa_clades),
-         lab = sprintf("%s: PC1 %s, PC2 %s", clade, str_extract(panel, "(?<=PC1 )[0-9.]+%"),
-                       str_extract(panel, "(?<=PC2 )[0-9.]+%")))
-wpc_lab <- wpc %>% group_by(lab, clade, site) %>% summarise(PC1 = median(PC1), PC2 = median(PC2), n = n(), .groups = "drop") %>%
-  filter(n >= 3)
-m3_within <- ggplot(wpc, aes(x = PC1, y = PC2, colour = clade)) +
-  geom_point(size = 1.4, alpha = 0.6) +
-  ggrepel::geom_label_repel(data = wpc_lab, aes(label = site), colour = "grey15", size = 2.8, label.size = 0,
-                            label.padding = unit(0.08, "lines"), fill = alpha("white", 0.75),
-                            min.segment.length = 0, box.padding = 0.15, seed = 1) +
-  facet_wrap(~ lab, scales = "free", nrow = 2) +
-  scale_colour_manual(values = clade_cols[tonsa_clades], guide = "none") +
-  labs(x = "PC1", y = "PC2") +
-  theme_matt_facets(base_size = 10) +
-  theme(axis.text = element_blank(), axis.ticks = element_blank())
-clade_comp <- seq_data %>%
-  filter(clade %in% tonsa_clades, !sample_id %in% c("MR_peak_2_04", "MR_peak_2_05")) %>%
-  mutate(clade = factor(clade, levels = tonsa_clades), season = factor(season, levels = season_order),
-         site_code = factor(site_code, levels = site_order))
-m2_comp <- ggplot(clade_comp, aes(x = season, fill = clade)) +
-  geom_bar(position = "fill", width = 0.8) +
-  facet_wrap(~ site_code, nrow = 1) +
-  scale_fill_manual(values = clade_cols[tonsa_clades], name = "Clade") +
-  scale_x_discrete(drop = FALSE) +
-  scale_y_continuous(labels = scales::percent) +
-  labs(x = NULL, y = "Share of individuals") +
-  theme_matt_facets(base_size = 11) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "bottom")
-# turnover: expected CTmax from composition vs collection temperature, both relative to the site mean
-turn_dev <- ce_obs %>% group_by(site_code) %>% filter(n() > 1) %>%
-  mutate(d_ct = exp_ctmax - weighted.mean(exp_ctmax, n), d_t = temp - weighted.mean(temp, n)) %>% ungroup()
-m2_turn <- ggplot(turn_dev, aes(x = d_t, y = d_ct)) +
-  geom_hline(yintercept = 0, colour = "grey80") + geom_vline(xintercept = 0, colour = "grey80") +
-  geom_abline(slope = slope_obs, intercept = 0, linewidth = 1) +
-  geom_abline(slope = acc_slope, intercept = 0, linetype = "dashed", colour = "grey50") +
-  geom_point(aes(size = n), colour = "grey20", alpha = 0.8) +
-  ggrepel::geom_text_repel(data = ~ filter(.x, abs(d_ct) > 0.35), aes(label = paste(site_code, season)),
-                           size = 2.6, colour = "grey30", seed = 1, min.segment.length = 0.2) +
-  scale_size_continuous(range = c(1.2, 3), guide = "none") +
-  annotate("text", x = -Inf, y = Inf, hjust = -0.05, vjust = 1.2, size = 3,
-           label = sprintf("turnover %.2f °C/°C (solid)\nacclimation %.2f °C/°C (dashed)", slope_obs, acc_slope)) +
-  labs(x = "Temperature − site mean (°C)", y = "Expected CTmax from\ncomposition − site mean (°C)") +
-  theme_matt(base_size = 11)
-m3_all <- m3_all + theme(legend.position = "none")
-ggarrange(ggarrange(m3_all, m3_within, nrow = 1, widths = c(0.8, 1.2), labels = c("A", "B")),
-          ggarrange(m2_comp, m2_turn, nrow = 1, widths = c(1.75, 1), labels = c("C", "D")),
-          ncol = 1, heights = c(1, 0.95))
-```
-
-```{r}
-#| label: ms-fig3
-#| fig-width: 10
-#| fig-height: 8
-# Figure 3: phenotype - CTmax differs more per degree between sites (space) than through the season
-ci_tab <- function(m, terms) {
-  b <- lme4::fixef(m); se <- sqrt(diag(as.matrix(vcov(m))))
-  tibble(term = terms, est = b[terms], lo = b[terms] - 1.96 * se[terms], hi = b[terms] + 1.96 * se[terms])
-}
-diff_dat <- wb_diff %>% filter(split == "Season-mean split") %>%
-  mutate(group = factor(group, levels = rev(c("All clades", tonsa_clades))), all = group == "All clades")
-m3_slopes <- ggplot(diff_dat, aes(x = diff, y = group, colour = group, shape = all)) +
-  geom_vline(xintercept = 0, colour = "grey50", linetype = "dashed") +
-  geom_pointrange(aes(xmin = lo, xmax = hi), size = 0.6, linewidth = 0.9) +
-  scale_colour_manual(values = c(clade_cols[tonsa_clades], `All clades` = "black"), guide = "none") +
-  scale_shape_manual(values = c(`FALSE` = 16, `TRUE` = 18), guide = "none") +
-  labs(x = "Spatial slope − seasonal slope (°C CTmax per °C)", y = NULL) +
-  theme_matt(base_size = 11)
-m4_ctmax <- ggplot(filter(vp_tab, share > 0), aes(x = model, y = share, fill = component)) +
-  geom_col(width = 0.6, colour = "white") +
-  coord_flip() +
-  scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values = vp_cols, name = NULL) +
-  guides(fill = guide_legend(nrow = 3)) +
-  labs(x = NULL, y = "Share of CTmax variance") +
-  theme_matt(base_size = 11) +
-  theme(legend.position = "bottom")
-ggarrange(m3_slopes, m4_ctmax, ncol = 1, heights = c(0.8, 1), labels = c("A", "B"))
-```
-
-```{r}
-#| label: ms-fig4
-#| fig-width: 11
-#| fig-height: 4.8
-# Figure 4: genome - variation lies between sites, not seasons; seasonal change does not echo spatial temperature associations
-# F spans divergent populations (Florida vs Chesapeake), so its between-site variance is ~10x the
-# other clades': one panel per clade, each on its own scale
-m4_freq_n <- ggplot(filter(vp_freq, !is.na(value)) %>% mutate(group = factor(group, levels = tonsa_clades)),
-                    aes(x = component, y = value, shape = component, colour = component)) +
-  geom_hline(yintercept = 0, colour = "grey60") +
-  geom_pointrange(aes(ymin = lo, ymax = hi), size = 0.5) +
-  facet_wrap(~ group, nrow = 1, scales = "free_y") +
-  scale_x_discrete(labels = NULL, breaks = NULL) +
-  scale_colour_manual(values = c(`Between sites` = "black", `Between seasons (within site)` = "grey55"), name = NULL) +
-  scale_shape_manual(values = c(16, 17), name = NULL) +
-  labs(x = NULL, y = expression("Variance / " * bar(p) * "(1 - " * bar(p) * ")")) +
-  guides(colour = guide_legend(nrow = 2), shape = guide_legend(nrow = 2)) +
-  theme_matt_facets(base_size = 11) +
-  theme(legend.position = "bottom")
-# concordance sensitivity: injected seasonal response (fraction of the spatial slope, top 1% SNPs) vs sign agreement
-conc_null <- conc %>% filter(snp_set == "all chr.", null == "seasonal", snps_used == "unlinked") %>%
-  mutate(clade = as.character(clade)) %>% filter(clade %in% c("X", "F")) %>%
-  group_by(clade) %>% summarise(lo = min(conc_top1[!observed]), hi = max(conc_top1[!observed]),
-                                obs = conc_top1[observed][1], .groups = "drop")
-conc_inj <- map_dfr(c("X", "F"), ~ read_tsv(cx("results", "18_power", paste0(.x, ".concordance.tsv")),
-                                           col_types = cols(clade = "c", .default = col_guess()))) %>%
-  filter(frac == 0.01) %>% select(clade, lambda, conc_top1, seasonal_logit_change) %>%
-  bind_rows(transmute(conc_null, clade, lambda = 0, conc_top1 = obs, seasonal_logit_change = 0)) %>%
-  arrange(clade, lambda)
-conc_plot_dat <- conc_inj %>% mutate(clade = factor(clade, levels = c("X", "F")))
-conc_null <- conc_null %>% mutate(clade = factor(clade, levels = c("X", "F")))
-m4_conc <- ggplot(conc_plot_dat, aes(x = lambda, y = conc_top1, colour = clade)) +
-  geom_rect(data = conc_null, aes(xmin = 0, xmax = 1, ymin = lo, ymax = hi), inherit.aes = FALSE,
-            fill = "grey85", alpha = 0.6) +
-  geom_hline(yintercept = 0.5, colour = "grey50", linetype = "dashed") +
-  geom_line(data = ~ filter(.x, lambda > 0), linewidth = 0.9) +
-  geom_point(data = ~ filter(.x, lambda > 0), size = 2) +
-  geom_point(data = ~ filter(.x, lambda == 0), size = 4, shape = 18) +
-  ggrepel::geom_text_repel(data = ~ filter(.x, lambda %in% c(0.05, 0.1)),
-                           aes(label = sprintf("%.0f pp", 100 * (plogis(seasonal_logit_change) - 0.5))),
-                           size = 2.8, show.legend = FALSE, seed = 1, nudge_x = 0.05) +
-  facet_wrap(~ clade, nrow = 1) +
-  scale_colour_manual(values = clade_cols[c("X", "F")], guide = "none") +
-  scale_x_sqrt(breaks = c(0, 0.1, 0.25, 0.5, 1), labels = c("0", "0.1", "0.25", "0.5", "1")) +
-  coord_cartesian(ylim = c(0.4, 1)) +
-  labs(x = "Seasonal response of temperature-associated SNPs\n(fraction of their spatial effect)",
-       y = "Sign agreement, top 1% SNPs") +
-  theme_matt_facets(base_size = 11)
-ggarrange(m4_freq_n + theme(legend.position = "top", legend.direction = "vertical", legend.title = element_blank()),
-          m4_conc, nrow = 1, widths = c(0.85, 1.15), labels = c("A", "B"))
-```
-
-```{r}
-#| label: ms-figS-drift
-#| fig-width: 8
-#| fig-height: 4.5
-# Supplementary: seasonal allele-frequency change against the drift expectation
-m4_drift <- temporal %>%
-  mutate(uncal = Fc - sampling_2n, clade = factor(as.character(clade), levels = tonsa_clades)) %>%
-  ggplot(aes(x = gens, colour = clade)) +
-  geom_hline(yintercept = 0, colour = "grey50") +
-  geom_point(aes(y = uncal), shape = 1, size = 2.3, alpha = 0.7) +
-  geom_pointrange(aes(y = excess, ymin = excess - 1.96 * se, ymax = excess + 1.96 * se), size = 0.45) +
-  scale_colour_manual(values = clade_cols[tonsa_clades], name = "Clade", drop = TRUE) +
-  labs(x = "Generations between samples", y = expression(F[c] - "sampling noise"),
-       caption = "Open: assuming 2 chromosomes per individual; filled: calibrated, 95% CI.") +
-  theme_matt(base_size = 11) +
-  theme(legend.position = "bottom")
-m4_drift
-```
-
-```{r}
-#| label: ms-fig5
-#| fig-width: 11
-#| fig-height: 5
-# Figure 5: clade differences in CTmax and acclimation, from ctmax ~ clade * temperature (+ site, replicate, tube)
-t_off <- mean(filtered_data$collection_temp - filtered_data$temp_cent)
-ci_cols <- function(d) c(intersect(c("lower.CL", "asymp.LCL"), names(d))[1], intersect(c("upper.CL", "asymp.UCL"), names(d))[1])
-clade_rng <- filtered_data %>% filter(clade %in% tonsa_clades) %>%
-  group_by(clade) %>% summarise(lo = min(temp_cent), hi = max(temp_cent), .groups = "drop")
-pred5 <- pmap_dfr(clade_rng, function(clade, lo, hi) {
-  as_tibble(summary(emmeans::emmeans(ctmax.model, ~ clade | temp_cent,
-                                     at = list(clade = clade, temp_cent = seq(lo, hi, length.out = 30)))))
-}) %>% mutate(clade = factor(as.character(clade), levels = tonsa_clades), temp = temp_cent + t_off)
-cc <- ci_cols(pred5)
-pt5 <- filtered_data %>% filter(clade %in% tonsa_clades) %>% mutate(clade = factor(clade, levels = tonsa_clades))
-m5a <- ggplot() +
-  geom_point(data = pt5, aes(x = collection_temp, y = ctmax, colour = clade), alpha = 0.3, size = 1.3,
-             position = position_jitter(width = 0.25, height = 0, seed = 1)) +
-  geom_ribbon(data = pred5, aes(x = temp, ymin = .data[[cc[1]]], ymax = .data[[cc[2]]], fill = clade), alpha = 0.25) +
-  geom_line(data = pred5, aes(x = temp, y = emmean, colour = clade), linewidth = 1.3) +
-  scale_colour_manual(values = clade_cols[tonsa_clades], name = "Clade") +
-  scale_fill_manual(values = clade_cols[tonsa_clades], name = "Clade") +
-  labs(x = "Collection temperature (°C)", y = "CTmax (°C)") +
-  theme_matt(base_size = 11) +
-  theme(legend.position = "bottom")
-mm <- as_tibble(summary(emmeans::emmeans(ctmax.model, ~ clade), infer = TRUE))
-tr <- as_tibble(summary(emmeans::emtrends(ctmax.model, ~ clade, var = "temp_cent"), infer = TRUE))
-m5b <- bind_rows(
-  transmute(mm, clade, est = emmean, lo = .data[[ci_cols(mm)[1]]], hi = .data[[ci_cols(mm)[2]]],
-            panel = sprintf("CTmax at %.0f °C (°C)", t_off)),
-  transmute(tr, clade, est = temp_cent.trend, lo = .data[[ci_cols(tr)[1]]], hi = .data[[ci_cols(tr)[2]]],
-            panel = "Acclimation slope (°C per °C)")) %>%
-  mutate(clade = factor(as.character(clade), levels = tonsa_clades), panel = factor(panel, levels = unique(panel))) %>%
-  ggplot(aes(x = clade, y = est, ymin = lo, ymax = hi, colour = clade)) +
-  geom_pointrange(size = 0.6, linewidth = 1) +
-  facet_wrap(~ panel, scales = "free_y", ncol = 1, strip.position = "left") +
-  scale_colour_manual(values = clade_cols[tonsa_clades], guide = "none") +
-  labs(x = "Clade", y = NULL) +
-  theme_matt_facets(base_size = 11) +
-  theme(strip.placement = "outside", strip.background = element_blank())
-ggarrange(m5a, m5b, nrow = 1, widths = c(1.4, 1), labels = c("A", "B"))
-```
-
-```{r}
-#| label: ms-figS-trees
-#| fig-width: 11
-#| fig-height: 5.5
-# Supplementary: lineage trees, mitochondrial (COI ML) and nuclear (NJ on net distances)
-tip_cols <- c(lin_col, `A. hudsonica` = "grey40", `A. lilljeborgi` = "grey40")
-m2_coi <- gg_tree(coi_red, "Mitochondrial (COI, maximum likelihood)", tip_cols)
-m2_nuc <- gg_tree(nuc_tr, "Nuclear (genome-wide, neighbour-joining)", tip_cols)
-ggarrange(m2_coi, m2_nuc, nrow = 1, labels = c("A", "B"))
-```
-
-```{r}
-#| label: ms-fig6
-#| fig-width: 10
-#| fig-height: 5.5
-# Figure 6: warming tolerance with lineages + acclimation (distribution), and the warmest day under each scenario
-if (have_mur) {
-  hist6 <- wt_days %>%
-    filter(scenario == "Clades + acclimation") %>%
-    mutate(bin = floor(wt)) %>%
-    group_by(region, warming, bin) %>% summarise(w = sum(w), .groups = "drop") %>%
-    group_by(region) %>% mutate(h = 0.9 * w / max(w)) %>% ungroup() %>%
-    mutate(y0 = as.integer(region) - 1)
-  m6_hist <- ggplot(hist6) +
-    geom_hline(aes(yintercept = y0), data = distinct(hist6, region, y0), colour = "grey80") +
-    geom_vline(xintercept = 0, colour = "grey30") +
-    geom_rect(aes(xmin = bin, xmax = bin + 1, ymin = y0, ymax = y0 + h, fill = region, alpha = warming)) +
-    scale_fill_manual(values = region_cols[region_order], guide = "none") +
-    scale_alpha_manual(values = c(`+4 °C` = 0.35, Current = 0.9), name = NULL) +
-    scale_y_continuous(breaks = seq_along(region_order) - 1 + 0.35, labels = region_order, expand = expansion(add = c(0.1, 0.2))) +
-    labs(x = "Daily warming tolerance, July–November (°C)", y = NULL) +
-    theme_matt(base_size = 11) +
-    theme(legend.position = "bottom", axis.ticks.y = element_blank())
-  m6_hot <- wt_res %>%
-    filter(scenario %in% scen_levels, metric != "Aug–Sep mean") %>%
-    mutate(scenario = factor(scenario, levels = scen_levels),
-           warming = factor(if_else(warming == 0, "Current", "+4 °C"), levels = c("Current", "+4 °C"))) %>%
-    ggplot(aes(x = region, y = est, ymin = lo, ymax = hi, colour = scenario, shape = scenario)) +
-    geom_hline(yintercept = 0, colour = "grey30") +
-    geom_pointrange(position = position_dodge(width = 0.6), size = 0.4) +
-    facet_wrap(~ warming, ncol = 1) +
-    scale_colour_manual(values = c(`Fixed CTmax` = "grey65", `Clade means` = "grey35", `Clades + acclimation` = "black"),
-                        name = NULL) +
-    scale_shape_manual(values = c(`Fixed CTmax` = 15, `Clade means` = 17, `Clades + acclimation` = 16), name = NULL) +
-    labs(x = NULL, y = "Warming tolerance on the warmest day (°C)") +
-    theme_matt_facets(base_size = 11) +
-    theme(legend.position = "bottom", axis.text.x = element_text(angle = 35, hjust = 1))
-  ggarrange(m6_hist, m6_hot, nrow = 1, widths = c(1, 1), labels = c("A", "B"))
-}
+#| label: ms-objects
+ms_objects <- c("acc_slope", "slope_obs", "ce_obs", "coi_red", "nuc_tr", "lin_col", "conc", "ctmax.model",
+                "filtered_data", "pca_all", "ve", "wpca", "region_cols", "region_order", "scen_levels",
+                "temporal", "vp_cols", "vp_freq", "vp_tab", "wb_diff", "wt_days", "wt_res", "have_mur")
+missing <- setdiff(ms_objects, ls())
+if (length(missing)) warning("Not created in this render: ", paste(missing, collapse = ", "))
+saveRDS(mget(intersect(ms_objects, ls())), here("Output", "Output_data", "ms_objects.rds"))
+cat(sprintf("Saved %d objects to Output/Output_data/ms_objects.rds (%s)", length(intersect(ms_objects, ls())),
+            format(structure(file.size(here("Output", "Output_data", "ms_objects.rds")), class = "object_size"), units = "MB")))
 ```

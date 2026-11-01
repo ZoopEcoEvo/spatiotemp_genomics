@@ -2,44 +2,125 @@ gene	protein	product	set	clade	codon	shared_aa	clade_aa
 CCT8	XP_080012570.1	chaperonin containing TCP1 subunit 8	heat_shock	F	188	I	V
 CCT8	XP_080012570.1	chaperonin containing TCP1 subunit 8	heat_shock	IV	331	I	V
 CCT8	XP_080012570.1	chaperonin containing TCP1 subunit 8	heat_shock	IV	349	K	N
+SdhA	XP_080012695.1	succinate dehydrogenase, subunit A (flavoprotein) isoform X1	oxphos_nuclear	F	278	D	G
 SdhA	XP_080012695.1	succinate dehydrogenase, subunit A (flavoprotein) isoform X1	oxphos_nuclear	IV	506	V	I
 SdhA	XP_080012695.1	succinate dehydrogenase, subunit A (flavoprotein) isoform X1	oxphos_nuclear	X	573	V	I
 SdhA	XP_080012695.1	succinate dehydrogenase, subunit A (flavoprotein) isoform X1	oxphos_nuclear	X	613	M	V
 l(3)80Fg	XP_080028839.1	dnaJ homolog subfamily C member 16 l(3)80Fg	heat_shock	S	12	V	A
 LOC145322362	XP_080020472.1	heat shock protein 83-like	heat_shock	IV	355	E	D
 LOC145322936	XP_080021448.1	cytochrome c oxidase subunit 4 isoform 1, mitochondrial-like	oxphos_nuclear	S	74	A	V
+LOC145330791	XP_080031586.1	ribosome biogenesis protein BOP1 homolog	expevol	S	272	E	Q
+LOC145330791	XP_080031586.1	ribosome biogenesis protein BOP1 homolog	expevol	S	317	E	D
+LOC145330791	XP_080031586.1	ribosome biogenesis protein BOP1 homolog	expevol	S	403	S	N
+LOC145330791	XP_080031586.1	ribosome biogenesis protein BOP1 homolog	expevol	IV	624	T	S
+Ack-like	XP_080031548.1	activated Cdc42 kinase-like	expevol	F	869	M	I
 LOC145331005	XP_080031726.1	dnaJ homolog subfamily C member 9-like	heat_shock	S	49	E	D
-Cox10	XP_080007804.1	cytochrome c oxidase assembly factor 10	oxphos_nuclear	IV	69	F	L
-Cox10	XP_080007804.1	cytochrome c oxidase assembly factor 10	oxphos_nuclear	IV	70	T	S
-Cox10	XP_080007804.1	cytochrome c oxidase assembly factor 10	oxphos_nuclear	X	192	M	I
 LOC145311755	XP_080006858.1	lysophospholipid acyltransferase 5-like	lipid	S	43	T	S
 LOC145311755	XP_080006858.1	lysophospholipid acyltransferase 5-like	lipid	F	44	T	S
 LOC145311755	XP_080006858.1	lysophospholipid acyltransferase 5-like	lipid	IV	164	V	I
+P58IPK	XP_080007406.1	dnaJ homolog subfamily C member P58IPK	heat_shock	IV	32	S	G
+ATPsynbeta	XP_080007402.1	ATP synthase, beta subunit	oxphos_nuclear	IV	108	V	I
+ATPsynbeta	XP_080007402.1	ATP synthase, beta subunit	oxphos_nuclear	F	114	M	L
+ATPsynbeta	XP_080007402.1	ATP synthase, beta subunit	oxphos_nuclear	F	114	M	I
+ATPsynbeta	XP_080007402.1	ATP synthase, beta subunit	oxphos_nuclear	IV	136	V	I
 mrj	XP_080007596.1	dnaJ heat shock protein family (Hsp40) member B6 mrj	heat_shock	S	216	S	T
 ox	XP_080008511.1	ubiquinol-cytochrome C reductase complex subunit oxen	oxphos_nuclear	IV	36	T	S
+ATPsyngamma	XP_080008908.1	ATP synthase, gamma subunit	oxphos_nuclear	IV	85	T	S
+ATPsyngamma	XP_080008908.1	ATP synthase, gamma subunit	oxphos_nuclear	IV	237	S	T
+LOC145313843	XP_080009614.1	heat shock 70 kDa protein 1-like	heat_shock	F	571	Q	L
 LOC145314485	XP_080010528.1	dnaJ homolog subfamily C member 5-like	heat_shock	X	25	V	L
+LOC145314619	XP_080010737.1	cytochrome c oxidase subunit 6A2, mitochondrial-like	oxphos_nuclear	F	49	I	V
+LOC145315635	XP_080011748.1	polyamine-transporting ATPase 13A3-like isoform X1	expevol	F	1276	A	T
+LOC145315635	XP_080011748.1	polyamine-transporting ATPase 13A3-like isoform X1	expevol	X	1471	T	A
 LOC145316040	XP_080012451.1	lysophosphatidylcholine acyltransferase-like	lipid	F	172	V	I
 CCT4	XP_080012459.1	chaperonin containing TCP1 subunit 4	heat_shock	X	81	K	M
 CCT4	XP_080012459.1	chaperonin containing TCP1 subunit 4	heat_shock	S	120	E	D
 CCT4	XP_080012459.1	chaperonin containing TCP1 subunit 4	heat_shock	IV	293	A	S
-LOC145318006	XP_080015442.1	cytochrome c oxidase assembly protein COX18, mitochondrial	oxphos_nuclear	F	302	V	I
 ND-B12	XP_080012913.1	NADH dehydrogenase [ubiquinone] 1 beta subcomplex subunit 3	oxphos_nuclear	S	57	P	A
+ND-B12	XP_080012913.1	NADH dehydrogenase [ubiquinone] 1 beta subcomplex subunit 3	oxphos_nuclear	IV	66	I	L
 ND-B12	XP_080012913.1	NADH dehydrogenase [ubiquinone] 1 beta subcomplex subunit 3	oxphos_nuclear	S	70	P	S
+UQCR-C2	XP_080013184.1	ubiquinol-cytochrome c reductase core protein 2	oxphos_nuclear	X	193	K	N
+UQCR-C2	XP_080013184.1	ubiquinol-cytochrome c reductase core protein 2	oxphos_nuclear	F	368	V	A
 ATPsynB	XP_080013672.1	ATP synthase subunit b, mitochondrial	oxphos_nuclear	X	84	A	T
+ATPsynB	XP_080013672.1	ATP synthase subunit b, mitochondrial	oxphos_nuclear	F	99	I	V
+ATPsynB	XP_080013672.1	ATP synthase subunit b, mitochondrial	oxphos_nuclear	S	162	I	V
 ATPsynB	XP_080013672.1	ATP synthase subunit b, mitochondrial	oxphos_nuclear	F	164	V	I
 ATPsynB	XP_080013672.1	ATP synthase subunit b, mitochondrial	oxphos_nuclear	S	164	T	I
+SdhC	XP_080014408.1	succinate dehydrogenase, subunit C	oxphos_nuclear	S	162	S	A
+LOC145317633	XP_080014907.1	dnaJ homolog l(2)tid, mitochondrial-like	heat_shock	F	149	E	D
 ND-ASHI	XP_080020195.1	NADH:ubiquinone oxidoreductase subunit ASHI	oxphos_nuclear	X	11	A	T
+LOC145322399	XP_080020514.1	activator of 90 kDa heat shock protein ATPase homolog 1 isoform X1	expevol	F	192	V	A
+LOC145322399	XP_080020514.1	activator of 90 kDa heat shock protein ATPase homolog 1 isoform X1	expevol	F	255	A	S
+Taf2	XP_080020647.1	TATA-box binding protein associated factor 2	expevol	IV	707	S	A
+Taf2	XP_080020647.1	TATA-box binding protein associated factor 2	expevol	IV	711	S	T
+Taf2	XP_080020647.1	TATA-box binding protein associated factor 2	expevol	IV	931	M	L
+Taf2	XP_080020647.1	TATA-box binding protein associated factor 2	expevol	IV	992	V	L
+Taf2	XP_080020647.1	TATA-box binding protein associated factor 2	expevol	X	1094	H	L
+Taf2	XP_080020647.1	TATA-box binding protein associated factor 2	expevol	S	1107	M	L
+Taf2	XP_080020647.1	TATA-box binding protein associated factor 2	expevol	F	1124	A	S
+Taf2	XP_080020647.1	TATA-box binding protein associated factor 2	expevol	F	1138	S	P
+Taf2	XP_080020647.1	TATA-box binding protein associated factor 2	expevol	S	1237	A	V
+LOC145325204	XP_080024221.1	ATP synthase subunit alpha, mitochondrial-like	oxphos_nuclear	F	20	N	K
+LOC145325204	XP_080024221.1	ATP synthase subunit alpha, mitochondrial-like	oxphos_nuclear	F	53	N	Y
+LOC145325204	XP_080024221.1	ATP synthase subunit alpha, mitochondrial-like	oxphos_nuclear	S	538	Y	H
 LOC145323727	XP_080022337.1	heat shock 70 kDa protein-like	heat_shock	X	99	G	S
 LOC145323727	XP_080022337.1	heat shock 70 kDa protein-like	heat_shock	X	328	L	M
 LOC145326394	XP_080025857.1	heat shock 70 kDa protein-like	heat_shock	F	590	E	D
 LOC145326398	XP_080025860.1	heat shock protein 105 kDa-like	heat_shock	IV	43	D	E
 LOC145326398	XP_080025860.1	heat shock protein 105 kDa-like	heat_shock	IV	130	E	D
+LOC145326398	XP_080025860.1	heat shock protein 105 kDa-like	heat_shock	X	499	S	G
+LOC145326398	XP_080025860.1	heat shock protein 105 kDa-like	heat_shock	IV	538	E	V
 LOC145326398	XP_080025860.1	heat shock protein 105 kDa-like	heat_shock	IV	571	E	V
+LOC145326398	XP_080025860.1	heat shock protein 105 kDa-like	heat_shock	IV	721	S	R
+LOC145327000	XP_080026600.1	heat shock cognate 71 kDa protein-like	heat_shock	X	79	D	E
+Hsc70-3	XP_080028851.1	heat shock protein 70 cognate 3	heat_shock	F	637	A	S
+Droj2	XP_080029460.1	dnaJ heat shock protein family (Hsp40) member A4-like	heat_shock	S	390	D	E
+LOC145329345	XP_080029532.1	hsp70-binding protein 1	heat_shock	IV	4	G	A
+ND-19	XP_080029598.1	NADH dehydrogenase [ubiquinone] 1 alpha subcomplex subunit 8	oxphos_nuclear	IV	190	G	S
+Grp170	XP_080034225.1	hypoxia up-regulated Grp170 co-chaperone protein isoform X1	heat_shock	IV	605	A	S
+Grp170	XP_080034225.1	hypoxia up-regulated Grp170 co-chaperone protein isoform X1	heat_shock	X	823	D	E
 Grp170	XP_080034225.1	hypoxia up-regulated Grp170 co-chaperone protein isoform X1	heat_shock	F	915	T	R
+Grp170	XP_080034225.1	hypoxia up-regulated Grp170 co-chaperone protein isoform X1	heat_shock	IV	925	D	E
 LOC145331990	XP_080033014.1	phosphatidylcholine:ceramide cholinephosphotransferase 2-like isoform X1	lipid	IV	85	R	T
+LOC145334047	XP_080035451.1	uncharacterized protein LOC145334047	expevol	F	717	T	S
+LOC145334047	XP_080035451.1	uncharacterized protein LOC145334047	expevol	F	731	N	S
+LOC145334046	XP_080035450.1	ribosome biogenesis protein BMS1 homolog	expevol	S	570	E	V
+LOC145334046	XP_080035450.1	ribosome biogenesis protein BMS1 homolog	expevol	F	580	N	D
+LOC145334046	XP_080035450.1	ribosome biogenesis protein BMS1 homolog	expevol	IV	582	E	K
+LOC145334046	XP_080035450.1	ribosome biogenesis protein BMS1 homolog	expevol	F	594	S	C
+LOC145304132	XP_080002019.1	cytochrome c oxidase subunit 6B1-like	oxphos_nuclear	IV	30	S	T
+Hsp110	XP_080036807.1	heat shock protein 70Cb	heat_shock	IV	328	G	A
 Hsp110	XP_080036807.1	heat shock protein 70Cb	heat_shock	S	802	D	E
+LOC145305225	XP_080002942.1	heat shock protein 83-like	heat_shock	S	2	A	S
 LOC145305225	XP_080002942.1	heat shock protein 83-like	heat_shock	IV	443	A	V
 LOC145305225	XP_080002942.1	heat shock protein 83-like	heat_shock	IV	657	V	I
 LOC145305225	XP_080002942.1	heat shock protein 83-like	heat_shock	IV	676	E	D
+yl	XP_080003454.1	putative vitellogenin receptor yl	expevol	F	1433	I	S
+yl	XP_080003454.1	putative vitellogenin receptor yl	expevol	IV	1453	K	N
+yl	XP_080003454.1	putative vitellogenin receptor yl	expevol	IV	1552	V	M
 LOC145305304	XP_080003040.1	heat shock 70 kDa protein 1-like	heat_shock	X	110	E	K
 LOC145305304	XP_080003040.1	heat shock 70 kDa protein 1-like	heat_shock	X	614	A	T
+LOC145305377	XP_080003120.1	uncharacterized protein LOC145305377	expevol	F	57	N	K
+LOC145305377	XP_080003120.1	uncharacterized protein LOC145305377	expevol	F	60	T	A
+LOC145305377	XP_080003120.1	uncharacterized protein LOC145305377	expevol	F	1087	N	D
+LOC145305377	XP_080003120.1	uncharacterized protein LOC145305377	expevol	S	1103	G	S
+LOC145305377	XP_080003120.1	uncharacterized protein LOC145305377	expevol	X	1297	G	S
+LOC145305862	XP_080003821.1	uncharacterized protein LOC145305862	expevol	S	32	G	R
+LOC145305862	XP_080003821.1	uncharacterized protein LOC145305862	expevol	IV	140	Q	H
+LOC145305862	XP_080003821.1	uncharacterized protein LOC145305862	expevol	IV	144	L	S
+LOC145305862	XP_080003821.1	uncharacterized protein LOC145305862	expevol	F	160	S	G
+LOC145305862	XP_080003821.1	uncharacterized protein LOC145305862	expevol	IV	263	R	H
+LOC145305862	XP_080003821.1	uncharacterized protein LOC145305862	expevol	S	753	A	T
+LOC145305862	XP_080003821.1	uncharacterized protein LOC145305862	expevol	IV	757	P	Q
+LOC145305862	XP_080003821.1	uncharacterized protein LOC145305862	expevol	S	953	E	D
+LOC145305862	XP_080003821.1	uncharacterized protein LOC145305862	expevol	IV	1105	G	S
+LOC145306851	XP_080005301.1	dnaJ homolog subfamily C member 21	heat_shock	X	15	V	I
+LOC145307654	XP_080006263.1	endoplasmic reticulum disulfide reductase DNAJC10-like	heat_shock	IV	601	H	D
+LOC145307654	XP_080006263.1	endoplasmic reticulum disulfide reductase DNAJC10-like	heat_shock	IV	602	L	V
+MBD-R2	XP_080005976.1	PHD finger protein MBD-R2 isoform X1	expevol	IV	14	H	P
+MBD-R2	XP_080005976.1	PHD finger protein MBD-R2 isoform X1	expevol	S	35	A	E
+MBD-R2	XP_080005976.1	PHD finger protein MBD-R2 isoform X1	expevol	F	44	T	A
+MBD-R2	XP_080005976.1	PHD finger protein MBD-R2 isoform X1	expevol	S	939	S	N
+MBD-R2	XP_080005976.1	PHD finger protein MBD-R2 isoform X1	expevol	IV	1426	A	D
+MBD-R2	XP_080005976.1	PHD finger protein MBD-R2 isoform X1	expevol	IV	1683	E	K
+MBD-R2	XP_080005976.1	PHD finger protein MBD-R2 isoform X1	expevol	IV	1703	V	A

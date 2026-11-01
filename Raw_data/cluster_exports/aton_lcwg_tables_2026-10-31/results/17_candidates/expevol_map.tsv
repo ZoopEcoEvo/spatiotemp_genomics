@@ -1,0 +1,19 @@
+transcript	qlen	chrom	start	end	strand	hsps	query_cov	pident	gene_id	gene	product	relation	distance
+TRINITY_DN149855_c0_g15	1259	NC_137270.1	41432541	41435400	-	8	0.963	97.97	gene-LOC145332331	LOC145332331	vitellogenin-like isoform X1	overlap	0
+TRINITY_DN151024_c6_g2	4859	NC_137273.1	39836979	39850947	-	23	0.803	95.2	gene-LOC145305862	LOC145305862	uncharacterized protein LOC145305862	overlap	0
+TRINITY_DN151056_c4_g4	4366	NC_137263.1	1769417	1800672	-	19	0.912	96.19	gene-LOC145315635	LOC145315635	polyamine-transporting ATPase 13A3-like isoform X2	overlap	0
+TRINITY_DN149301_c0_g7	1022	NC_137265.1	35439990	35447024	+	11	1.0	98.1	gene-Trap1	Trap1	TNF receptor associated protein 1 isoform X1	overlap	0
+TRINITY_DN148665_c4_g2	2065	NC_137271.1	45260836	45277382	+	15	0.821	97.19	gene-LOC145334047	LOC145334047	uncharacterized protein LOC145334047	overlap	0
+TRINITY_DN148665_c4_g2	2065	NC_137271.1	45260836	45277382	+	15	0.821	97.19	gene-LOC145334046	LOC145334046	ribosome biogenesis protein BMS1 homolog	overlap	0
+TRINITY_DN149639_c2_g19	1019	NC_137274.1	18796633	18807452	+	8	0.837	95.67	gene-MBD-R2	MBD-R2	PHD finger protein MBD-R2 isoform X2	overlap	0
+TRINITY_DN151143_c1_g7	2310	NC_137265.1	35019788	35027047	+	6	0.994	95.29	gene-DCTN4-p62	DCTN4-p62	dynactin subunit 4	overlap	0
+TRINITY_DN151143_c1_g7	2310	NC_137265.1	35019788	35027047	+	6	0.994	95.29	gene-Taf2	Taf2	TATA-box binding protein associated factor 2	overlap	0
+TRINITY_DN141181_c1_g5	968	NC_137269.1	43590489	43599372	-	8	0.802	99.13	gene-TfIIFalpha	TfIIFalpha	transcription factor IIFalpha isoform X1	overlap	0
+TRINITY_DN119996_c0_g1	596	NC_137262.1	17859360	17861774	-	5	0.872	97.22	gene-LOC145313523	LOC145313523	ubiquinol-cytochrome-c reductase complex assembly factor 2	overlap	0
+TRINITY_DN141476_c0_g3	1011	NC_137272.1	43703920	43711642	-	10	0.987	98.26	gene-ND-49	ND-49	NADH dehydrogenase (ubiquinone) 49 kDa subunit isoform X4	overlap	0
+TRINITY_DN150080_c2_g2	5899	NC_137273.1	14949142	14982346	+	39	0.916	97.98	gene-yl	yl	putative vitellogenin receptor yl	overlap	0
+TRINITY_DN147803_c0_g1	6809	NC_137273.1	25272068	25365471	-	41	0.952	98.16	gene-LOC145305377	LOC145305377	uncharacterized protein LOC145305377	overlap	0
+TRINITY_DN147294_c5_g2	3253	NC_137265.1	32006561	32018145	+	15	0.745	93.19	gene-LOC145322399	LOC145322399	activator of 90 kDa heat shock protein ATPase homolog 1 isoform X1	overlap	0
+TRINITY_DN146090_c0_g4	3186	NC_137273.1	4893309	4920287	-	27	0.9	98.39	gene-S6kII	S6kII	ribosomal protein S6 kinase II	overlap	0
+TRINITY_DN144102_c0_g16	2148	NC_137260.1	51402345	51420783	-	13	0.946	98.76	gene-LOC145330791	LOC145330791	ribosome biogenesis protein BOP1 homolog	overlap	0
+TRINITY_DN144102_c0_g16	2148	NC_137260.1	51402345	51420783	-	13	0.946	98.76	gene-Ack-like	Ack-like	activated Cdc42 kinase-like	overlap	0

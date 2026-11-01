@@ -12,7 +12,6 @@
 #   seq_data        sequenced libraries, A. hudsonica removed
 #   cx(...)         path inside the cluster export in use (export_name)
 #   (sample_table also carries micro-screen calls when micro_calls.csv exists)
-#   temp_profiles   daily temperature per region (01_site_temps.R)
 #   temp_record     CTmax assay logger data; ramp_record: ramping rates
 #   site_temps      one row per collection (site x season)
 #   temp_summaries  collection temperatures per site, wide, with site means
@@ -27,7 +26,9 @@ source(here("Scripts", "palettes.R"))
 
 od <- function(...) here("Output", "Output_data", ...)
 
+# Key Largo (KL) is in site_data.csv but is not part of this dataset
 site_data <- read.csv(here("Raw_data", "site_data.csv")) %>%
+  filter(site_code %in% site_order) %>%
   mutate(site = fct_reorder(site, lat))
 
 sample_table <- read.csv(od("sample_table.csv")) %>%
@@ -35,7 +36,7 @@ sample_table <- read.csv(od("sample_table.csv")) %>%
          exp_date = as.Date(exp_date),
          doy = lubridate::yday(collection_date),
          site = factor(site, levels = levels(site_data$site)),
-         site_code = factor(site_code, levels = c("KL", site_order)),
+         site_code = factor(site_code, levels = site_order),
          season = factor(season, levels = season_order),
          # names used by the older report code
          ind_id = str_replace_all(paste(site, season, replicate, tube, sep = "_"), " ", "_"),
@@ -66,15 +67,19 @@ seq_data <- filter(sample_table, sequenced, !(species %in% "A_hudsonica"),
                    library_failed | clade %in% tonsa_clades) %>% droplevels()
 
 # Cluster export, for figures built directly from cluster tables. The controller
-# passes its choice through CLUSTER_EXPORT; otherwise the most recent export.
+# passes its choice through CLUSTER_EXPORT; otherwise the most recent complete export
+# (a folder holding results/00_qc/fastp_summary.tsv directly; tarballs and nested or
+# partial folders are skipped).
 export_root <- here("Raw_data", "cluster_exports")
 export_name <- Sys.getenv("CLUSTER_EXPORT")
-if (export_name == "") export_name <- tail(sort(dir(export_root)), 1)
+if (export_name == "") {
+  dirs <- sort(list.dirs(export_root, full.names = FALSE, recursive = FALSE))
+  complete <- Filter(function(d) file.exists(file.path(export_root, d, "results", "00_qc", "fastp_summary.tsv")), dirs)
+  if (!length(complete)) stop("No complete cluster export in ", export_root)
+  export_name <- tail(complete, 1)
+}
+message("Cluster export: ", export_name)
 cx <- function(...) file.path(export_root, export_name, ...)
-
-temp_profiles <- read.csv(od("temp_profiles.csv")) %>%
-  mutate(date = lubridate::as_datetime(date),
-         doy = lubridate::yday(date))
 
 temp_record <- read.csv(od("temp_record.csv"))
 ramp_record <- read.csv(od("ramp_record.csv"))

@@ -1,9 +1,9 @@
 Scenario,Metric,WT range among regions,Change vs fixed (%)
 Fixed CTmax,Aug–Sep mean,13.30249146700294,0
 Clade means,Aug–Sep mean,9.287528961727071,-30.182034059071206
-Clades + acclimation,Aug–Sep mean,9.389463548285692,-29.41575214254849
-Clades + acclimation (annual make-up),Aug–Sep mean,9.218038544677313,-30.704420539995702
+Clades + acclimation,Aug–Sep mean,9.389463547028997,-29.415752151995555
+Clades + acclimation (annual make-up),Aug–Sep mean,9.218038543389579,-30.704420549676104
 Fixed CTmax,"Warmest day, least tolerant common clade",12.433521794871794,0
 Clade means,"Warmest day, least tolerant common clade",8.528256595285875,-31.409163582249445
-Clades + acclimation,"Warmest day, least tolerant common clade",8.764955393338369,-29.505448754242146
-Clades + acclimation (annual make-up),"Warmest day, least tolerant common clade",8.43678098460041,-32.144881202684175
+Clades + acclimation,"Warmest day, least tolerant common clade",8.76495539211762,-29.50544876406035
+Clades + acclimation (annual make-up),"Warmest day, least tolerant common clade",8.436780983713124,-32.14488120982042

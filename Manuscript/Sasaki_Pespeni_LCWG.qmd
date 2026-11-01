@@ -188,7 +188,11 @@ Seasonal changes in clade composition were tested at each site with Fisher's exa
 
 ## Genetic basis of CTmax
 
-Within each lineage (clades X, S and IV, and the F lineages F-N and F-FH) with at least 30 phenotyped and sequenced individuals (collections with at least 8 individuals of the lineage), CTmax was regressed on genotype dosage (the expected number of minor alleles from ANGSD genotype posteriors [REF]) at every SNP, with collection and log mean sequencing depth as covariates, so individuals were compared only with others collected at the same time and place. A genome-wide null came from 100 replicates with CTmax shuffled among individuals of the same collection. Power was estimated by simulation on each lineage's own data: for 2,000 SNPs sampled across the genome, true genotypes were drawn from each individual's genotype posterior, a causal effect of 0.25–3 °C per allele was added to within-collection-shuffled CTmax, and the scan's test was repeated against a genome-wide 5% threshold (the 5th percentile of the smallest p across SNPs in each permutation). Between clades, mitochondrial protein-coding sequences were compared among clade consensus sequences [report §4, "Candidate genes"]. [Nuclear candidates: pending the experimental-evolution gene list.]
+Within each lineage (clades X, S and IV, and the F lineages F-N and F-FH) with at least 30 phenotyped and sequenced individuals (collections with at least 8 individuals of the lineage), CTmax was regressed on genotype dosage (the expected number of minor alleles from ANGSD genotype posteriors [REF]) at every SNP, with collection and log mean sequencing depth as covariates, so individuals were compared only with others collected at the same time and place. A genome-wide null came from 100 replicates with CTmax shuffled among individuals of the same collection. Power was estimated by simulation on each lineage's own data: for 2,000 SNPs sampled across the genome, true genotypes were drawn from each individual's genotype posterior, a causal effect of 0.25–3 °C per allele was added to within-collection-shuffled CTmax, and the scan's test was repeated against a genome-wide 5% threshold (the 5th percentile of the smallest p across SNPs in each permutation). Between clades, mitochondrial protein-coding sequences were compared among clade consensus sequences [report §4, "Candidate genes"].
+
+For nuclear genes, a consensus sequence was called for each clade from all of its individuals' reads (ANGSD -doFasta 2 [REF], at least three reads, within the final site list and the clade's depth bounds). For the longest protein of every RefSeq gene, codons called in at least three of the four clades were compared, and a nucleotide difference carried by one clade while the other called clades shared the base was assigned to that clade's branch as nonsynonymous (N) or synonymous (S). Requiring all four clades would have excluded many genes, because reads from S and IV, the clades most divergent from the reference, map less often in coding sequence. Genes were annotated with GO terms and KEGG pathways by eggNOG-mapper v2.1.12 (DIAMOND, more-sensitive mode; eggNOG 5.0 [REF]), with GO terms propagated to their ancestors. For each GO term and KEGG pathway with at least 10 genes and 20 substitutions, we tested (i) amino-acid divergence (N per codon compared, summed over branches) and (ii) N/(N + S) on each clade's branch, against genes annotated in the same ontology, using the sampling variance of a ratio estimator for random gene sets of the same size; p values were adjusted by Benjamini–Hochberg within each test, and significant terms were checked against 2,000 random gene sets. Branch-specific acceleration of single genes was tested by comparing N/(N + S) on one branch with the same gene's other branches (one-sided Fisher test).
+
+Fifteen transcripts that responded to selection in experimental evolution of *A. tonsa* [REF] were placed on the reference genome with megablast and assigned to the RefSeq genes they overlap (18 genes). SNPs in these genes (± 2 kb) were compared with SNPs in 1,000 random sets of the same number of other genes for the spatial temperature association, seasonal change, sign agreement of seasonal and spatial slopes, and the within-lineage CTmax association; clade-specific amino-acid substitutions in the genes were compared with random background gene sets.
 
 ## Additional analyses
 
@@ -288,7 +292,8 @@ knitr::include_graphics(here("Output", "Figures", "ms-fig5-1.png"))
 
 - Within lineages (exploratory): no SNP was associated with CTmax beyond what within-collection permutations produced (@fig-supp-gwas), but the scan could detect only loci of roughly 2–3 °C per allele in the two largest groups (X, F-N; 50% power at minor-allele frequency 0.3–0.5) and essentially none in S, F-FH and IV (@tbl-supp-gwas-power). Genotype accuracy at < 1x coverage was r^2^ = 0.39–0.47. The scan therefore does not constrain the polygenic basis of within-clade variation. Detecting a locus explaining 5% of within-collection variance would need roughly 2,000 individuals per group at this coverage. [in hand]
 - Between clades, mitochondrial: COX1 nearly invariant; 29 substitutions unique to IV, the least tolerant clade (7 COX1, 14 CYTB, 8 in a third ORF) (@tbl-supp-mito-pairs, @tbl-supp-mito-iv). [in hand; X and IV contigs cover only ~a third of the mitogenome]
-- Between clades, nuclear: candidate genes from the experimental-evolution study. [pending gene list]
+- Candidate genes from experimental evolution: 15 transcripts that responded to selection in the laboratory [REF] map to 18 genes, including a mitochondrial HSP90 (Trap1), an HSP90 co-chaperone (AHSA1), complex I and III genes and vitellogenin. In the field these genes showed no excess spatial, seasonal or CTmax-associated SNP variation (17 tests, p = 0.17–0.84; @tbl-supp-expevol), and no clade had an excess of amino-acid substitutions in the 12 with enough coverage (@tbl-supp-candidate-aa). The core thermal candidates had too few codons called across clades to compare. [in hand]
+- Genome-wide, protein divergence among clades followed functional class in the same way on every branch: fast in ribosome biogenesis and mitochondrial translation, slow in neuronal and developmental genes (@tbl-supp-function). Genes annotated to heat response, protein folding and oxidative phosphorylation showed no excess of amino-acid change in any clade, and heat-shock genes were strongly conserved (N/(N + S) 0.05–0.11 vs 0.18–0.21 genome-wide). The only clade-specific signal was an excess in nuclear-encoded mitochondrial ribosomal proteins in S (q = 0.001), as expected from mitonuclear coevolution [REF: *Tigriopus*]. Branch-specific acceleration of single genes was no more common than chance. Heritable clade differences in CTmax therefore cannot be traced to protein change in thermal-function genes with these data, pointing to regulatory or polygenic differences. [in hand]
 - Summary of the scales of variation: @tbl-scales.
 
 ```{r}
@@ -338,7 +343,7 @@ read_csv(here("Output", "Output_data", "wt_range_changes.csv"), show_col_types =
 - **Implications for lab studies:** experiments that treat "*A. tonsa*" as one unit can mix clades that differ by up to ~2.5 °C in CTmax.
 - **Space-for-time predictions and ecological acclimation:** relate the composition result to community-level 'ecological acclimation' through species turnover (Stemkovski et al. [REF]); here the turnover happens among cryptic clades within a single nominal species.
 - **Future directions: structure within clade F.** F comprises four geographically separated lineages with concordant mitochondrial and nuclear trees (@fig-supp-trees), and the Florida lineages had the highest CTmax in the dataset. Whether these are locally adapted populations or incipient cryptic species, and whether they differ in thermal physiology under common-garden conditions, is an open question; here they were analysed together, as in previous work.
-- **Caveats:** the seasonal tests detect only strong selection (roughly 10–20 percentage-point seasonal changes), and few sites and seasons cap the permutation p values (0.083 for X); the spatial–seasonal slope difference rests on three phenological seasons and is marginal overall (p = 0.054), though consistent across clades; the within-clade genetic basis of CTmax was beyond reach at this sample size and coverage (the association scan is reported for completeness, with its power); CTmax as one measure of tolerance; collection-day temperature vs MUR; partial mitogenomes for X and IV.
+- **Caveats:** the seasonal tests detect only strong selection (roughly 10–20 percentage-point seasonal changes), and few sites and seasons cap the permutation p values (0.083 for X); the spatial–seasonal slope difference rests on three phenological seasons and is marginal overall (p = 0.054), though consistent across clades; the within-clade genetic basis of CTmax was beyond reach at this sample size and coverage (the association scan is reported for completeness, with its power); CTmax as one measure of tolerance; collection-day temperature vs MUR; partial mitogenomes for X and IV; clade consensus sequences at < 1x coverage against a single reference under-call S and IV in coding sequence, which limits the protein comparisons.
 
 
 <!-- References are printed here, before the supplementary material.
@@ -492,6 +497,67 @@ mi_f <- here("Output", "Output_data", "mito_aa", "IV_specific_aa.csv")
 if (file.exists(mi_f)) {
   read_csv(mi_f, show_col_types = FALSE) %>%
     rename(Gene = gene, Position = pos_F, `F, S, X` = F_S_X, `Context (F)` = context_F) %>%
+    knitr::kable()
+}
+```
+
+```{r}
+#| label: tbl-supp-expevol
+#| tbl-cap: "SNP-level signals in genes that responded to selection in experimental evolution [REF] against random sets of the same number of other genes (one-sided p for a larger value in the candidates). Statistics are the mean squared z (or t) over SNPs in the genes, or the share of SNPs whose seasonal and spatial slopes have the same sign."
+ev_f <- cx("results", "17_candidates", "expevol_snps.tsv")
+if (file.exists(ev_f)) {
+  read_tsv(ev_f, show_col_types = FALSE) %>%
+    transmute(Test = recode(test, seasonal_time = "Seasonal change (time)", seasonal_temp = "Seasonal change (temperature)",
+                            spatial = "Spatial temperature association", concordance = "Seasonal–spatial sign agreement",
+                            gwas = "CTmax association"),
+              Group = str_remove(group, "^conc_"), Genes = candidate_genes, SNPs = candidate_snps,
+              Candidates = round(observed, 3), `Other genes` = round(background, 3), p = round(p_greater, 2)) %>%
+    knitr::kable()
+}
+```
+
+```{r}
+#| label: tbl-supp-candidate-aa
+#| tbl-cap: "Clade-specific amino-acid substitutions (N, nonsynonymous; S, synonymous) in the experimental-evolution genes and in heat-shock and nuclear OXPHOS genes (selected by product name), against random background gene sets of the same size (two-sided permutation p). Genes with at least 50 codons called in at least three clades."
+aa_f <- cx("results", "17_candidates", "sets.tsv")
+if (file.exists(aa_f)) {
+  read_tsv(aa_f, show_col_types = FALSE) %>%
+    filter(set %in% c("expevol", "heat_shock", "oxphos_nuclear")) %>%
+    transmute(Set = recode(set, expevol = "Experimental evolution", heat_shock = "Heat shock", oxphos_nuclear = "Nuclear OXPHOS"),
+              Genes = genes, Clade = clade, N = nonsyn, S = syn, `N/(N+S)` = round(nonsyn_frac, 2),
+              Background = round(background_frac, 2), p = signif(p_two_sided, 2)) %>%
+    knitr::kable()
+}
+```
+
+```{r}
+#| label: tbl-supp-function
+#| tbl-cap: "Nonsynonymous fraction N/(N + S) on each clade's branch for selected GO terms and KEGG pathways, with q values in parentheses, against genes annotated in the same ontology (bottom row). The full results are in the report (function_enrichment.csv)."
+fe_f <- here("Output", "Output_data", "function_enrichment.csv")
+if (file.exists(fe_f)) {
+  fe <- read_csv(fe_f, show_col_types = FALSE) %>% filter(statistic == "N/(N+S) on branch")
+  pick <- tribble(~name, ~ontology, ~group,
+    "ribosome biogenesis", "GO:BP", "Fast on all branches",
+    "nucleolus", "GO:CC", "Fast on all branches",
+    "mitochondrial gene expression", "GO:BP", "Fast on all branches",
+    "neuron projection", "GO:CC", "Conserved on all branches",
+    "cellular anatomical entity morphogenesis", "GO:BP", "Conserved on all branches",
+    "response to heat", "GO:BP", "Thermal function",
+    "protein folding", "GO:BP", "Thermal function",
+    "heat shock protein binding", "GO:MF", "Thermal function",
+    "Oxidative phosphorylation", "KEGG", "Thermal function",
+    "respiratory chain complex", "GO:CC", "Thermal function",
+    "mitochondrial large ribosomal subunit", "GO:CC", "Clade-specific (S)",
+    "mitochondrial protein-containing complex", "GO:CC", "Clade-specific (S)")
+  tab <- pick %>% left_join(fe, by = c("name", "ontology")) %>%
+    mutate(cell = sprintf("%.2f (%s)", observed, ifelse(q < 0.001, "<0.001", sprintf("%.2g", q))),
+           clade = factor(clade, levels = c("X", "F", "S", "IV"))) %>%
+    select(Group = group, Term = name, Source = ontology, clade, cell) %>%
+    pivot_wider(names_from = clade, values_from = cell)
+  bg <- fe %>% filter(ontology == "GO:BP") %>% distinct(clade, background) %>%
+    mutate(clade = factor(clade, levels = c("X", "F", "S", "IV"))) %>% arrange(clade)
+  bind_rows(tab, tibble(Group = "", Term = "Background (annotated genes, GO:BP)", Source = "",
+                        !!!setNames(as.list(sprintf("%.2f", bg$background)), as.character(bg$clade)))) %>%
     knitr::kable()
 }
 ```

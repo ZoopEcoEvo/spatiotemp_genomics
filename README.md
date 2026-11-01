@@ -1,100 +1,115 @@
-# Spatial and seasonal adaptation across cryptic clades of *Acartia tonsa*
+# Phenotypic and genomic variation diverge across space and season in a coastal copepod
 
 Matthew Sasaki<sup>1</sup>, Melissa Pespeni<sup>2</sup>
 
 1. University of Massachusetts Lowell
 2. University of Vermont
 
-*Acartia tonsa* females were collected by surface tow at eight sites along the western Atlantic coast, from Florida to New Brunswick (Manatee River, Ft. Hamer, Tyler Cove, Ganey's Wharf, Esker Point, Sawyer Park, St. Thomas de Kent Wharf, Ritchie Wharf), up to three times over the 2023 season (early, peak and late). Thermal limits (CTmax) and body size were measured for each individual, and each individual was then sequenced by low-coverage whole-genome sequencing (436 libraries). The project compares spatial and seasonal patterns in thermal limits and in the genome across four deeply diverged cryptic clades (X, F, S, IV).
+*Acartia tonsa* females were collected by surface tow at eight sites along the western Atlantic coast, from Florida to New Brunswick (Manatee River, Ft. Hamer, Tyler Cove, Ganey's Wharf, Esker Point, Sawyer Park, St. Thomas de Kent Wharf, Ritchie Wharf), two or three times over the 2023 season (early, peak and late). Thermal limits (CTmax) and body size were measured for each individual, and each individual was then sequenced by low-coverage whole-genome sequencing (436 libraries). The project compares spatial and seasonal variation in thermal limits and in the genome across four deeply divergent cryptic clades (X, F, S, IV), and asks what they imply for warming vulnerability.
 
 <a href="DOI LINK GOES HERE"><img src="https://img.shields.io/badge/Publication%20Here-Here?style=for-the-badge&labelColor=grey&color=577D58"/></a>    <a href="PREPRINT LINK GOES HERE"><img src="https://img.shields.io/badge/Preprint%20Here-Here?style=for-the-badge&labelColor=grey&color=6F92B8"/></a>    <a href="DATA LINK GOES HERE"><img src="https://img.shields.io/badge/Dataset%20Here-Here?style=for-the-badge&labelColor=grey&color=EAB221"/></a>
 
-## Directory Structure
+## Two projects
 
-The root directory contains this README, the license, and the `.Rproj` file, along with five sub-directories.
+The genomic processing (read cleaning, mapping, site filtering, clade assignment, population genomics, seasonal and spatial tests, the association scan and functional annotation) runs on the Unity HPC cluster in a separate Snakemake project, `aton_lcwg`. This R project holds the phenotype data, environmental data, the statistical analyses of CTmax, all figures and the manuscript. It reads only small result tables exported from the cluster (see *Cluster exports* below) and never runs genomic tools itself.
 
--   `Background/` contains the analysis plan (`analysis_plan.qmd`).
+## Directory structure
 
--   `Raw_data/` contains the raw data used in this analysis. Files here are never modified by the scripts.
+The root directory contains this README, the license and the `.Rproj` file, and these sub-directories:
 
--   `Scripts/` contains the R scripts.
-    -   `00_controller.R` runs the project workflow. Use it rather than running scripts or rendering documents individually.
-    -   `01_site_temps.R` downloads and compiles continuous temperature records for each region (needs internet).
-    -   `02_pheno_processing.R` estimates CTmax for each individual from the assay observation and temperature logger files.
-    -   `03_sample_table.R` combines phenotypes, sequencing QC and clade calls from the cluster into one table, with flags for which individuals go into the phenotype and genomic analyses.
-    -   `04_micro_calls.R` calls parasites and epibionts per individual from the cluster's SSU rRNA profile (micro screen).
-    -   `load_data.R` reads the processed data; sourced by the report and manuscripts.
-    -   `themes.R` defines the ggplot2 themes used for all figures.
-    -   `palettes.R` defines the clade, site, region and season colours (identical hex values are used in the cluster's Python figure scripts).
+-   `Background/` - the original analysis plan (`analysis_plan.qmd`).
 
--   `Manuscript/` contains the Quarto files (`Sasaki_Pespeni_Phenotype.qmd`, `Sasaki_Pespeni_LCWG.qmd`) and bibliography used to produce the manuscripts, along with the files that format them: the LaTeX template and BibTeX style for the PDF (`preprint_template.tex`, `bib-style.bst`), and the Word template, citation style, and filter for the Word version (`word_template.docx`, `lab_style.csl`, `word_frontmatter.lua`).
+-   `Raw_data/` - inputs. Files here are never modified by the scripts.
+    -   `pheno_data/`, `temp_data/` - CTmax assay records and temperature-logger files (one pair per assay run).
+    -   `site_data.csv`, `sample_exclusions.csv` - site table and hand exclusions.
+    -   `site_temps/` - Chesapeake Bay Interpretive Buoy System record (Gooses Reef, 2023), used to check MUR SST.
+    -   `outside_sources/` - download caches written by `01_site_environment.R` (MUR SST per site and year; monitoring stations; DFO southern Gulf of St. Lawrence temperatures, downloaded by hand).
+    -   `cluster_exports/<export>/` - result tables exported from the cluster, unchanged.
 
--   `Output/` contains the products of the project.
-    -   `Output_data/` holds processed data (see below).
-    -   `Figures/` holds figures (PNG and PDF) generated by the report.
-    -   `Reports/` holds `report.qmd`, which produces the figures and a summary of the analyses. `Reports/legacy/` keeps the pre-migration report for reference; it is not run.
-    -   `Drafts/` holds rendered manuscript drafts (PDF and Word).
-    -   `Presentations/` holds slides and posters.
+-   `Scripts/` - R scripts, run through the controller.
+    -   `00_controller.R` - runs the workflow; use it rather than running scripts or rendering documents individually.
+    -   `01_site_environment.R` - daily MUR SST for each site (2014-2023), checks against monitoring stations, bias corrections, site climatology and the temperature before each collection (needs internet; downloads are cached).
+    -   `02_pheno_processing.R` - CTmax for each individual from the assay observation and logger files.
+    -   `03_sample_table.R` - combines phenotypes, sequencing QC and clade calls from the cluster export into one table, with flags for which individuals enter the phenotype and genomic analyses.
+    -   `04_micro_calls.R` - presence calls for parasites and epibionts from the cluster's small-subunit rRNA screen.
+    -   `05_ctmax_gwas_inputs.R` - phenotype table for the cluster's CTmax association scan (copied to the cluster as `metadata/ctmax_gwas_pheno.tsv`).
+    -   `06_mito_aa.R` - mitochondrial amino-acid differences among clades and lineages.
+    -   `load_data.R` - reads the processed data and picks the cluster export; sourced by every document.
+    -   `themes.R`, `palettes.R` - ggplot2 themes and the clade, site, region and season colours (the same hex values are used in the cluster's Python figure scripts).
 
-## Data Description
+-   `Manuscript/` - the manuscript and everything needed to build it.
+    -   `Sasaki_Pespeni_LCWG.qmd` - the manuscript (PDF and Word).
+    -   `ms_figures.qmd` - builds the manuscript figures (plots only; see *Workflow*).
+    -   `preprint_template.tex`, `word_template.docx`, `word_frontmatter.lua`, `bib-style.bst`, `lab_style.csl`, `references.bib` - templates, citation styles and bibliography.
+
+-   `Output/` - products of the project, all regenerated by the workflow.
+    -   `Output_data/` - processed data and analysis results (see below).
+    -   `Figures/` - figures (PNG and PDF), named after the code chunk that makes them; `ms-fig*` are the manuscript figures.
+    -   `Reports/` - `report.qmd`, the full analysis report (HTML, plus a Markdown version for GitHub), and the rendered figure preview `ms_figures.html`.
+    -   `Drafts/` - dated manuscript drafts (PDF and Word).
+    -   `Presentations/` - slides and posters.
+
+-   `Archive/` - retired files kept for reference (earlier report versions, raw files no longer used). Nothing in the workflow reads it.
+
+## Data description
 
 ### Phenotypes and environment
 
 -   `Raw_data/pheno_data/<yyyy_mm_dd_run>_obs.csv` - one file per CTmax assay run (two runs per collection).
-    -   *collection_date* - Date of the plankton tow (m/d/yy)
-    -   *site* - Collection site (full name)
-    -   *season* - Collection (early, peak, late)
-    -   *collection_temp* - Surface water temperature at collection (°C)
-    -   *collection_salinity* - Surface salinity at collection (psu)
-    -   *replicate* - Assay run within the collection (1 or 2)
-    -   *tube* - Individual position within the run (1-10)
-    -   *ctmax_minute*, *ctmax_second* - Time at which the individual reached CTmax
-    -   *size* - Prosome length (mm)
--   `Raw_data/temp_data/<run>_temp.CSV` - temperature logger data for each run (three sensors, 5-s intervals).
--   `Raw_data/site_data.csv` - site name, site code (`site_code`, matches the sequencing sample IDs), region, latitude and longitude.
--   `Raw_data/site_temps/` - buoy and gauge records used for the temperature profiles (NOAA Chesapeake Bay Interpretive Buoy System; NDBC stations CASM1 and PMAF1).
--   `Raw_data/outside_sources/key_largo_winter.csv` - CTmax data from Key Largo (February 2023; phenotyped only, not sequenced).
--   `Raw_data/sample_exclusions.csv` - individuals excluded by hand, with the reason. *exclude_from* is `phenotype`, `genomic` or `all`. Species (*A. hudsonica*) and failed libraries are handled automatically in `03_sample_table.R` and are not listed here.
+    -   *collection_date* - date of the plankton tow (m/d/yy)
+    -   *site* - collection site (full name)
+    -   *season* - collection (early, peak, late)
+    -   *collection_temp* - surface water temperature at collection (°C)
+    -   *collection_salinity* - surface salinity at collection (psu)
+    -   *replicate* - assay run within the collection (1 or 2)
+    -   *tube* - individual position within the run (1-10)
+    -   *ctmax_minute*, *ctmax_second* - time at which the individual reached CTmax
+    -   *size* - prosome length (mm)
+-   `Raw_data/temp_data/<run>_temp.CSV` - temperature-logger data for each run (three sensors, 5-s intervals).
+-   `Raw_data/site_data.csv` - site name, site code (`site_code`, matches the sequencing sample IDs), region, latitude and longitude. It also lists Key Largo (KL), which is not part of this dataset; the scripts drop it.
+-   `Raw_data/sample_exclusions.csv` - individuals excluded by hand, with the reason. *exclude_from* is `phenotype`, `genomic` or `all`. *A. hudsonica* and failed libraries are handled automatically in `03_sample_table.R` and are not listed here.
 
 ### Cluster exports
 
-Read processing, mapping, site filtering, clade assignment and population genomic analyses run on the Unity cluster (Snakemake project `aton_lcwg`). Its small result tables are bundled on the cluster with `bash workflow/export_tables.sh` and unpacked, unchanged, into `Raw_data/cluster_exports/<date>/`, so paths inside each export mirror the cluster project (`config/samples.tsv`, `metadata/sample_metadata.tsv`, `results/00_qc/sample_summary.tsv`, ...). Exports are never edited; a newer export is a new folder. `03_sample_table.R` uses the most recent export unless one is pinned in `00_controller.R` (`options(cluster_export = "<folder>")`).
+On the cluster, `bash workflow/export_tables.sh` bundles the small result tables; the bundle is unpacked, unchanged, into `Raw_data/cluster_exports/<export>/`, so paths inside each export mirror the cluster project (`config/`, `metadata/`, `results/...`). Exports are never edited; a newer export is a new folder. `load_data.R` uses the most recent complete export (one with `results/00_qc/fastp_summary.tsv`), unless one is pinned in `00_controller.R` (`options(cluster_export = "<folder>")`).
 
 ### Processed data (`Output/Output_data/`)
 
--   `full_data.csv` - CTmax, body size and assay details for every phenotyped individual. `ctmax_runs/` holds the same per assay run.
--   `temp_record.csv`, `ramp_record.csv` - assay logger data and ramping rates.
--   `temp_profiles.csv` - daily temperature per region (`01_site_temps.R`).
+-   `full_data.csv` - CTmax, body size and assay details for every phenotyped individual; `ctmax_runs/` holds the same per assay run.
+-   `temp_record.csv`, `ramp_record.csv` - assay logger data and heating rates.
 -   `sample_table.csv` - one row per individual (phenotyped and/or sequenced), keyed by the cluster `sample_id` (e.g. `CT_early_1_02`):
     -   *phenotyped*, *sequenced*, *library_kept*, *library_failed* - data availability
-    -   *clade*, *clade_source* - clade call and where it came from (`prior_coi` before Stage 1; `stage1` after)
+    -   *clade*, *lineage*, *clade_source* - clade and lineage calls and their source
     -   *include_pheno* - used in phenotype analyses (A. tonsa, clade assigned, not excluded)
     -   *include_genomic* - used in genomic analyses (library kept, A. tonsa, not excluded)
     -   *pheno_status* - why a phenotyped individual is or is not included
     -   phenotype columns from `full_data.csv` and sequencing QC columns from the cluster export
 -   `sample_table_summary.txt` - counts written each time the sample table is rebuilt.
--   `micro_calls.csv` - per library: read pairs, pairs per million and presence call for each organism group (call = at least 5 pairs and 2 per million), plus `parasite_any` and `epibiont_any`. `micro_groups.csv` lists the groups and their roles.
--   `range_changes.csv` - warming tolerance range under the three vulnerability scenarios (written by the report; Table 2 of the phenotype manuscript).
+-   `mur_sst_daily.csv`, `mur_sst_daily_corrected.csv` - daily MUR SST per site (raw and bias-corrected); `mur_pixels.csv`, `mur_sites.csv` - pixels used per site; `station_daily.csv`, `mur_check_*.csv` - comparisons with monitoring stations; `site_climatology.csv` - long-term site temperatures; `seasonal_temperature.tsv` - temperature over the generations before each collection (also copied to the cluster).
+-   `micro_calls.csv`, `micro_groups.csv` - parasite and epibiont calls; `ctmax_gwas_pheno.tsv` - association-scan phenotypes; `mito_aa/` - mitochondrial amino-acid tables.
+-   Written by the report: model and test summaries used in the manuscript (e.g. `ctmax_slope_differences.csv`, `wt_scenarios.csv`, `wt_range_changes.csv`, `ne_comparison.csv`, `function_enrichment.csv`) and `ms_objects.rds`, the model results and summaries that `ms_figures.qmd` plots.
 
 ## Workflow
 
-Open the project in RStudio (via its `.Rproj` file), then run `Scripts/00_controller.R`. File paths are built with the `here` package relative to the project root. At the top of the controller you can choose whether to:
+Open the project in RStudio (via its `.Rproj` file) and run `Scripts/00_controller.R`. File paths are built with the `here` package relative to the project root. At the top of the controller, choose the steps to run:
 
-1. Rebuild the site temperature profiles (`01_site_temps.R`; downloads data).
-2. Reprocess the phenotype data (`02_pheno_processing.R`).
-3. Rebuild the sample table from the phenotypes and the latest cluster export (`03_sample_table.R`).
-4. Render the report (`Output/Reports/report.qmd`), which generates the figures used in the manuscripts, plus an HTML report and a GitHub-flavored markdown version.
-5. Render either manuscript into PDF and Word drafts in `Output/Drafts/`.
+1. Site environment: MUR SST and station checks (`01_site_environment.R`; downloads data).
+2. Phenotypes: CTmax per individual (`02_pheno_processing.R`).
+3. Sample table from the phenotypes and the latest cluster export (`03_sample_table.R`).
+4. Parasite and epibiont calls (`04_micro_calls.R`).
+5. Phenotype table for the cluster's association scan (`05_ctmax_gwas_inputs.R`).
+6. Mitochondrial amino-acid tables (`06_mito_aa.R`).
+7. Render the analysis report (`Output/Reports/report.qmd`): runs the statistical analyses, writes the report figures and the results used by the manuscript. Takes several minutes.
+8. Render the manuscript figures (`Manuscript/ms_figures.qmd`): plots only, from the results saved in step 7; takes seconds. To change only how a figure looks, run this step alone.
+9. Render the manuscript to PDF and Word drafts in `Output/Drafts/`.
 
-Documents are rendered with [Quarto](https://quarto.org) (bundled with recent versions of RStudio) through the `quarto` R package.
+Each step runs in its own clean R session, so each script and document loads its own packages and reads its own input files.
 
-Each step runs in its own clean environment, so each script and document loads its own packages and reads its own input files.
+## Software
 
-## Software and Package Versions
+Each run of the controller writes the R session information (R and package versions) and the Quarto version to `Output/session_info.txt`.
 
-Package versions are recorded with [renv](https://rstudio.github.io/renv/) in `renv.lock`. To restore the exact package versions used here, open the project and run `renv::restore()`. Each run of the controller also writes the full R session information to `Output/session_info.txt`.
-
-Packages: here, quarto, rmarkdown, tidyverse, ggpubr, monochromeR, lme4, lmerTest, merTools, car, emmeans, performance (+ see), ggridges, janitor, maps; dataRetrieval and rerddap for `01_site_temps.R`; the Quarto command-line tool (bundled with RStudio, or quarto.org) and a LaTeX installation for the PDF manuscripts (`quarto install tinytex`).
+R packages: here, quarto, tidyverse, ggpubr, ggrepel, lme4, merTools, emmeans, performance (+ see), ape, maps, janitor; rerddap and dataRetrieval for `01_site_environment.R`. Quarto and a LaTeX installation are needed for the PDF manuscript.
 
 ## Funding
 

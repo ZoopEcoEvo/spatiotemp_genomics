@@ -1,0 +1,377 @@
+---
+title: "Manuscript figures"
+date: today
+date-format: "YYYY-MM-DD"
+
+execute:
+  message: false
+  warning: false
+knitr:
+  opts_chunk:
+    collapse: true
+    fig.align: center
+    # Saved as Output/Figures/<chunk-label>-1.png (and .pdf), where the manuscript looks for them
+    fig.path: "../Output/Figures/"
+    dev: ["png", "pdf"]
+
+format:
+  html:
+    toc: true
+    code-fold: true
+    embed-resources: true
+---
+
+Main-text and supplementary figures for `Sasaki_Pespeni_LCWG.qmd`. This document only plots: the models and summaries come from `Output/Reports/report.qmd` (saved to `Output/Output_data/ms_objects.rds` in its last section) and from the processed data and cluster export read by `Scripts/load_data.R`. Render the report first whenever an analysis changes (`00_controller.R` steps 7 and 8).
+
+```{r}
+#| label: setup
+#| include: false
+library(here)
+library(ggpubr)
+library(lme4)
+library(tidyverse)
+source(here("Scripts", "themes.R"))
+source(here("Scripts", "palettes.R"))
+source(here("Scripts", "load_data.R"))
+ms_file <- here("Output", "Output_data", "ms_objects.rds")
+if (!file.exists(ms_file)) stop("Render Output/Reports/report.qmd first: it writes ", ms_file)
+list2env(readRDS(ms_file), envir = globalenv())
+cat("Objects from report.qmd, saved", format(file.mtime(ms_file), "%Y-%m-%d %H:%M"), "\n")
+```
+
+```{r}
+#| label: ms-fig-helpers
+#| include: false
+# rectangular phylogram as ggplot layers
+tree_df <- function(tr) {
+  tr <- ape::ladderize(tr)
+  n <- ape::Ntip(tr)
+  x <- ape::node.depth.edgelength(tr)
+  y <- rep(NA_real_, n + tr$Nnode)
+  tips <- tr$edge[tr$edge[, 2] <= n, 2]
+  y[tips] <- rev(seq_along(tips))
+  kids <- split(tr$edge[, 2], tr$edge[, 1])
+  y_of <- function(nd) { if (!is.na(y[nd])) return(y[nd]); v <- mean(sapply(kids[[as.character(nd)]], y_of)); y[nd] <<- v; v }
+  invisible(y_of(n + 1))
+  edges <- tibble(p = tr$edge[, 1], c = tr$edge[, 2]) %>% mutate(x0 = x[p], x1 = x[c], y = y[c])
+  verts <- map_dfr(names(kids), function(nd) { yy <- y[kids[[nd]]]; tibble(x = x[as.integer(nd)], y0 = min(yy), y1 = max(yy)) })
+  nodes <- tibble(node = (n + 1):(n + tr$Nnode), x = x[node], y = y[node],
+                  label = if (is.null(tr$node.label)) "" else as.character(tr$node.label))
+  list(edges = edges, verts = verts, nodes = nodes,
+       tips = tibble(label = tr$tip.label, x = x[1:n], y = y[1:n]), depth = max(x))
+}
+gg_tree <- function(tr, title, cols) {
+  d <- tree_df(tr)
+  ggplot() +
+    geom_segment(data = d$edges, aes(x = x0, xend = x1, y = y, yend = y), linewidth = 0.8) +
+    geom_segment(data = d$verts, aes(x = x, xend = x, y = y0, yend = y1), linewidth = 0.8) +
+    geom_text(data = filter(d$nodes, label != "", label != "NA"), aes(x = x, y = y, label = label),
+              hjust = 1.15, vjust = -0.4, size = 2.8) +
+    geom_text(data = d$tips, aes(x = x + d$depth * 0.03, y = y, label = label, colour = label,
+                                 fontface = if_else(grepl("^A\\.", label), "italic", "bold")),
+              hjust = 0, size = 3.6) +
+    scale_colour_manual(values = cols, guide = "none") +
+    scale_x_continuous(expand = expansion(mult = c(0.02, 0.45))) +
+    labs(title = title) +
+    theme_void(base_size = 11) +
+    theme(plot.title = element_text(size = 11, hjust = 0.5))
+}
+```
+
+```{r}
+#| label: ms-fig1
+#| fig-width: 10
+#| fig-height: 7.5
+# Figure 1: sites, collection temperatures, CTmax by season
+coords <- site_data %>% filter(site_code %in% site_order) %>% distinct(site, site_code, long, lat)
+m1_map <- map_data("world") %>%
+  filter(region %in% c("USA", "Canada")) %>%
+  ggplot() +
+  geom_polygon(aes(x = long, y = lat, group = group), fill = "grey85", colour = "grey70", linewidth = 0.2) +
+  geom_point(data = coords, aes(x = long, y = lat, colour = site), size = 3) +
+  ggrepel::geom_text_repel(data = coords, aes(x = long, y = lat, label = site_code), size = 3.2,
+                           min.segment.length = 0, box.padding = 0.3, seed = 1) +
+  coord_map(xlim = c(-86, -60), ylim = c(25, 49)) +
+  scale_colour_manual(values = site_cols, guide = "none") +
+  labs(x = NULL, y = NULL) +
+  theme_matt(base_size = 11)
+m1_temp <- site_temps %>%
+  mutate(site = factor(site, levels = names(site_cols))) %>%
+  ggplot(aes(x = as.Date(doy - 1, origin = "2023-01-01"), y = collection_temp, colour = site)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2.5) +
+  scale_colour_manual(values = site_cols, name = NULL) +
+  scale_x_date(date_labels = "%b", date_breaks = "1 month") +
+  labs(x = NULL, y = "Collection temperature (°C)") +
+  theme_matt(base_size = 11)
+m1_ctmax <- join_data %>%
+  mutate(season = factor(season, levels = season_order), site = factor(site, levels = names(site_cols))) %>%
+  ggplot(aes(x = season, y = ctmax, colour = site, group = site)) +
+  geom_point(position = position_jitterdodge(jitter.width = 0.12, dodge.width = 0.7, seed = 1),
+             alpha = 0.35, size = 1.2) +
+  stat_summary(fun = mean, geom = "line", position = position_dodge(width = 0.7), linewidth = 0.9) +
+  stat_summary(fun.data = mean_se, geom = "pointrange", position = position_dodge(width = 0.7), size = 0.35) +
+  scale_colour_manual(values = site_cols, name = NULL) +
+  labs(x = "Season", y = "CTmax (°C)") +
+  theme_matt(base_size = 11)
+ggarrange(m1_map, ggarrange(m1_temp, m1_ctmax, ncol = 1, labels = c("B", "C"), common.legend = TRUE, legend = "right"),
+          nrow = 1, widths = c(0.8, 1.2), labels = c("A", ""))
+```
+
+```{r}
+#| label: ms-fig2
+#| fig-width: 11
+#| fig-height: 10
+# Figure 2: genome-wide structure (PCA), clade composition, and the CTmax shift from lineage turnover
+# Supplementary: genome-wide PCA of all individuals, and PCAs within each clade
+m3_all <- ggplot(pca_all, aes(x = PC1, y = PC2, colour = clade, shape = clade)) +
+  geom_point(size = 2, alpha = 0.8) +
+  scale_colour_manual(values = clade_cols[tonsa_clades], name = "Clade") +
+  scale_shape_manual(values = clade_shapes[tonsa_clades], name = "Clade") +
+  labs(x = sprintf("PC1 (%.1f%%)", ve[1]), y = sprintf("PC2 (%.1f%%)", ve[2])) +
+  theme_matt(base_size = 11) +
+  theme(legend.position = "bottom")
+wpc <- wpca %>%
+  mutate(clade = factor(str_extract(panel, "^[A-Z]+"), levels = tonsa_clades),
+         lab = sprintf("%s: PC1 %s, PC2 %s", clade, str_extract(panel, "(?<=PC1 )[0-9.]+%"),
+                       str_extract(panel, "(?<=PC2 )[0-9.]+%")))
+wpc_lab <- wpc %>% group_by(lab, clade, site) %>% summarise(PC1 = median(PC1), PC2 = median(PC2), n = n(), .groups = "drop") %>%
+  filter(n >= 3)
+m3_within <- ggplot(wpc, aes(x = PC1, y = PC2, colour = clade)) +
+  geom_point(size = 1.4, alpha = 0.6) +
+  ggrepel::geom_label_repel(data = wpc_lab, aes(label = site), colour = "grey15", size = 2.8, label.size = 0,
+                            label.padding = unit(0.08, "lines"), fill = alpha("white", 0.75),
+                            min.segment.length = 0, box.padding = 0.15, seed = 1) +
+  facet_wrap(~ lab, scales = "free", nrow = 2) +
+  scale_colour_manual(values = clade_cols[tonsa_clades], guide = "none") +
+  labs(x = "PC1", y = "PC2") +
+  theme_matt_facets(base_size = 10) +
+  theme(axis.text = element_blank(), axis.ticks = element_blank())
+clade_comp <- seq_data %>%
+  filter(clade %in% tonsa_clades, !sample_id %in% c("MR_peak_2_04", "MR_peak_2_05")) %>%
+  mutate(clade = factor(clade, levels = tonsa_clades), season = factor(season, levels = season_order),
+         site_code = factor(site_code, levels = site_order))
+m2_comp <- ggplot(clade_comp, aes(x = season, fill = clade)) +
+  geom_bar(position = "fill", width = 0.8) +
+  facet_wrap(~ site_code, nrow = 1) +
+  scale_fill_manual(values = clade_cols[tonsa_clades], name = "Clade") +
+  scale_x_discrete(drop = FALSE) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(x = NULL, y = "Share of individuals") +
+  theme_matt_facets(base_size = 11) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "bottom")
+# turnover: expected CTmax from composition vs collection temperature, both relative to the site mean
+turn_dev <- ce_obs %>% group_by(site_code) %>% filter(n() > 1) %>%
+  mutate(d_ct = exp_ctmax - weighted.mean(exp_ctmax, n), d_t = temp - weighted.mean(temp, n)) %>% ungroup()
+m2_turn <- ggplot(turn_dev, aes(x = d_t, y = d_ct)) +
+  geom_hline(yintercept = 0, colour = "grey80") + geom_vline(xintercept = 0, colour = "grey80") +
+  geom_abline(slope = slope_obs, intercept = 0, linewidth = 1) +
+  geom_abline(slope = acc_slope, intercept = 0, linetype = "dashed", colour = "grey50") +
+  geom_point(aes(size = n), colour = "grey20", alpha = 0.8) +
+  ggrepel::geom_text_repel(data = ~ filter(.x, abs(d_ct) > 0.35), aes(label = paste(site_code, season)),
+                           size = 2.6, colour = "grey30", seed = 1, min.segment.length = 0.2) +
+  scale_size_continuous(range = c(1.2, 3), guide = "none") +
+  annotate("text", x = Inf, y = -Inf, hjust = 1.05, vjust = -0.4, size = 3,
+           label = sprintf("turnover %.2f °C/°C (solid)\nacclimation %.2f °C/°C (dashed)", slope_obs, acc_slope)) +
+  labs(x = "Temperature − site mean (°C)", y = "Expected CTmax from\ncomposition − site mean (°C)") +
+  theme_matt(base_size = 11)
+m3_all <- m3_all + theme(legend.position = "none")
+ggarrange(ggarrange(m3_all, m3_within, nrow = 1, widths = c(0.8, 1.2), labels = c("A", "B")),
+          ggarrange(m2_comp, m2_turn, nrow = 1, widths = c(1.75, 1), labels = c("C", "D")),
+          ncol = 1, heights = c(1, 0.95))
+```
+
+```{r}
+#| label: ms-fig3
+#| fig-width: 10
+#| fig-height: 8
+# Figure 3: phenotype - CTmax differs more per degree between sites (space) than through the season
+ci_tab <- function(m, terms) {
+  b <- lme4::fixef(m); se <- sqrt(diag(as.matrix(vcov(m))))
+  tibble(term = terms, est = b[terms], lo = b[terms] - 1.96 * se[terms], hi = b[terms] + 1.96 * se[terms])
+}
+diff_dat <- wb_diff %>% filter(split == "Season-mean split") %>%
+  mutate(group = factor(group, levels = rev(c("All clades", tonsa_clades))), all = group == "All clades")
+m3_slopes <- ggplot(diff_dat, aes(x = diff, y = group, colour = group, shape = all)) +
+  geom_vline(xintercept = 0, colour = "grey50", linetype = "dashed") +
+  geom_pointrange(aes(xmin = lo, xmax = hi), size = 0.6, linewidth = 0.9) +
+  scale_colour_manual(values = c(clade_cols[tonsa_clades], `All clades` = "black"), guide = "none") +
+  scale_shape_manual(values = c(`FALSE` = 16, `TRUE` = 18), guide = "none") +
+  labs(x = "Spatial slope − seasonal slope (°C CTmax per °C)", y = NULL) +
+  theme_matt(base_size = 11)
+m4_ctmax <- ggplot(filter(vp_tab, share > 0), aes(x = model, y = share, fill = component)) +
+  geom_col(width = 0.6, colour = "white") +
+  coord_flip() +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = vp_cols, name = NULL) +
+  guides(fill = guide_legend(nrow = 3)) +
+  labs(x = NULL, y = "Share of CTmax variance") +
+  theme_matt(base_size = 11) +
+  theme(legend.position = "bottom")
+ggarrange(m3_slopes, m4_ctmax, ncol = 1, heights = c(0.8, 1), labels = c("A", "B"))
+```
+
+```{r}
+#| label: ms-fig4
+#| fig-width: 11
+#| fig-height: 4.8
+# Figure 4: genome - variation lies between sites, not seasons; seasonal change does not echo spatial temperature associations
+# F spans divergent populations (Florida vs Chesapeake), so its between-site variance is ~10x the
+# other clades': one panel per clade, each on its own scale
+m4_freq_n <- ggplot(filter(vp_freq, !is.na(value)) %>% mutate(group = factor(group, levels = tonsa_clades)),
+                    aes(x = component, y = value, shape = component, colour = component)) +
+  geom_hline(yintercept = 0, colour = "grey60") +
+  geom_pointrange(aes(ymin = lo, ymax = hi), size = 0.5) +
+  facet_wrap(~ group, nrow = 1, scales = "free_y") +
+  scale_x_discrete(labels = NULL, breaks = NULL) +
+  scale_colour_manual(values = c(`Between sites` = "black", `Between seasons (within site)` = "grey55"), name = NULL) +
+  scale_shape_manual(values = c(16, 17), name = NULL) +
+  labs(x = NULL, y = expression("Variance / " * bar(p) * "(1 - " * bar(p) * ")")) +
+  guides(colour = guide_legend(nrow = 2), shape = guide_legend(nrow = 2)) +
+  theme_matt_facets(base_size = 11) +
+  theme(legend.position = "bottom")
+# concordance sensitivity: injected seasonal response (fraction of the spatial slope, top 1% SNPs) vs sign agreement
+conc_null <- conc %>% filter(snp_set == "all chr.", null == "seasonal", snps_used == "unlinked") %>%
+  mutate(clade = as.character(clade)) %>% filter(clade %in% c("X", "F")) %>%
+  group_by(clade) %>% summarise(lo = min(conc_top1[!observed]), hi = max(conc_top1[!observed]),
+                                obs = conc_top1[observed][1], .groups = "drop")
+conc_inj <- map_dfr(c("X", "F"), ~ read_tsv(cx("results", "18_power", paste0(.x, ".concordance.tsv")),
+                                           col_types = cols(clade = "c", .default = col_guess()))) %>%
+  filter(frac == 0.01) %>% select(clade, lambda, conc_top1, seasonal_logit_change) %>%
+  bind_rows(transmute(conc_null, clade, lambda = 0, conc_top1 = obs, seasonal_logit_change = 0)) %>%
+  arrange(clade, lambda)
+conc_plot_dat <- conc_inj %>% mutate(clade = factor(clade, levels = c("X", "F")))
+conc_null <- conc_null %>% mutate(clade = factor(clade, levels = c("X", "F")))
+m4_conc <- ggplot(conc_plot_dat, aes(x = lambda, y = conc_top1, colour = clade)) +
+  geom_rect(data = conc_null, aes(xmin = 0, xmax = 1, ymin = lo, ymax = hi), inherit.aes = FALSE,
+            fill = "grey85", alpha = 0.6) +
+  geom_hline(yintercept = 0.5, colour = "grey50", linetype = "dashed") +
+  geom_line(data = ~ filter(.x, lambda > 0), linewidth = 0.9) +
+  geom_point(data = ~ filter(.x, lambda > 0), size = 2) +
+  geom_point(data = ~ filter(.x, lambda == 0), size = 4, shape = 18) +
+  ggrepel::geom_text_repel(data = ~ filter(.x, lambda %in% c(0.05, 0.1)),
+                           aes(label = sprintf("%.0f pp", 100 * (plogis(seasonal_logit_change) - 0.5))),
+                           size = 2.8, show.legend = FALSE, seed = 1, nudge_x = 0.05) +
+  facet_wrap(~ clade, nrow = 1) +
+  scale_colour_manual(values = clade_cols[c("X", "F")], guide = "none") +
+  scale_x_sqrt(breaks = c(0, 0.1, 0.25, 0.5, 1), labels = c("0", "0.1", "0.25", "0.5", "1")) +
+  coord_cartesian(ylim = c(0.4, 1)) +
+  labs(x = "Seasonal response of temperature-associated SNPs\n(fraction of their spatial effect)",
+       y = "Sign agreement, top 1% SNPs") +
+  theme_matt_facets(base_size = 11)
+ggarrange(m4_freq_n + theme(legend.position = "top", legend.direction = "vertical", legend.title = element_blank()),
+          m4_conc, nrow = 1, widths = c(0.85, 1.15), labels = c("A", "B"))
+```
+
+```{r}
+#| label: ms-figS-drift
+#| fig-width: 8
+#| fig-height: 4.5
+# Supplementary: seasonal allele-frequency change against the drift expectation
+m4_drift <- temporal %>%
+  mutate(uncal = Fc - sampling_2n, clade = factor(as.character(clade), levels = tonsa_clades)) %>%
+  ggplot(aes(x = gens, colour = clade)) +
+  geom_hline(yintercept = 0, colour = "grey50") +
+  geom_point(aes(y = uncal), shape = 1, size = 2.3, alpha = 0.7) +
+  geom_pointrange(aes(y = excess, ymin = excess - 1.96 * se, ymax = excess + 1.96 * se), size = 0.45) +
+  scale_colour_manual(values = clade_cols[tonsa_clades], name = "Clade", drop = TRUE) +
+  labs(x = "Generations between samples", y = expression(F[c] - "sampling noise"),
+       caption = "Open: assuming 2 chromosomes per individual; filled: calibrated, 95% CI.") +
+  theme_matt(base_size = 11) +
+  theme(legend.position = "bottom")
+m4_drift
+```
+
+```{r}
+#| label: ms-fig5
+#| fig-width: 11
+#| fig-height: 5
+# Figure 5: clade differences in CTmax and acclimation, from ctmax ~ clade * temperature (+ site, replicate, tube)
+t_off <- mean(filtered_data$collection_temp - filtered_data$temp_cent)
+ci_cols <- function(d) c(intersect(c("lower.CL", "asymp.LCL"), names(d))[1], intersect(c("upper.CL", "asymp.UCL"), names(d))[1])
+clade_rng <- filtered_data %>% filter(clade %in% tonsa_clades) %>%
+  group_by(clade) %>% summarise(lo = min(temp_cent), hi = max(temp_cent), .groups = "drop")
+pred5 <- pmap_dfr(clade_rng, function(clade, lo, hi) {
+  as_tibble(summary(emmeans::emmeans(ctmax.model, ~ clade | temp_cent,
+                                     at = list(clade = clade, temp_cent = seq(lo, hi, length.out = 30)))))
+}) %>% mutate(clade = factor(as.character(clade), levels = tonsa_clades), temp = temp_cent + t_off)
+cc <- ci_cols(pred5)
+pt5 <- filtered_data %>% filter(clade %in% tonsa_clades) %>% mutate(clade = factor(clade, levels = tonsa_clades))
+m5a <- ggplot() +
+  geom_point(data = pt5, aes(x = collection_temp, y = ctmax, colour = clade), alpha = 0.3, size = 1.3,
+             position = position_jitter(width = 0.25, height = 0, seed = 1)) +
+  geom_ribbon(data = pred5, aes(x = temp, ymin = .data[[cc[1]]], ymax = .data[[cc[2]]], fill = clade), alpha = 0.25) +
+  geom_line(data = pred5, aes(x = temp, y = emmean, colour = clade), linewidth = 1.3) +
+  scale_colour_manual(values = clade_cols[tonsa_clades], name = "Clade") +
+  scale_fill_manual(values = clade_cols[tonsa_clades], name = "Clade") +
+  labs(x = "Collection temperature (°C)", y = "CTmax (°C)") +
+  theme_matt(base_size = 11) +
+  theme(legend.position = "bottom")
+mm <- as_tibble(summary(emmeans::emmeans(ctmax.model, ~ clade), infer = TRUE))
+tr <- as_tibble(summary(emmeans::emtrends(ctmax.model, ~ clade, var = "temp_cent"), infer = TRUE))
+m5b <- bind_rows(
+  transmute(mm, clade, est = emmean, lo = .data[[ci_cols(mm)[1]]], hi = .data[[ci_cols(mm)[2]]],
+            panel = sprintf("CTmax at %.0f °C (°C)", t_off)),
+  transmute(tr, clade, est = temp_cent.trend, lo = .data[[ci_cols(tr)[1]]], hi = .data[[ci_cols(tr)[2]]],
+            panel = "Acclimation slope (°C per °C)")) %>%
+  mutate(clade = factor(as.character(clade), levels = tonsa_clades), panel = factor(panel, levels = unique(panel))) %>%
+  ggplot(aes(x = clade, y = est, ymin = lo, ymax = hi, colour = clade)) +
+  geom_pointrange(size = 0.6, linewidth = 1) +
+  facet_wrap(~ panel, scales = "free_y", ncol = 1, strip.position = "left") +
+  scale_colour_manual(values = clade_cols[tonsa_clades], guide = "none") +
+  labs(x = "Clade", y = NULL) +
+  theme_matt_facets(base_size = 11) +
+  theme(strip.placement = "outside", strip.background = element_blank())
+ggarrange(m5a, m5b, nrow = 1, widths = c(1.4, 1), labels = c("A", "B"))
+```
+
+```{r}
+#| label: ms-figS-trees
+#| fig-width: 11
+#| fig-height: 5.5
+# Supplementary: lineage trees, mitochondrial (COI ML) and nuclear (NJ on net distances)
+tip_cols <- c(lin_col, `A. hudsonica` = "grey40", `A. lilljeborgi` = "grey40")
+m2_coi <- gg_tree(coi_red, "Mitochondrial (COI, maximum likelihood)", tip_cols)
+m2_nuc <- gg_tree(nuc_tr, "Nuclear (genome-wide, neighbour-joining)", tip_cols)
+ggarrange(m2_coi, m2_nuc, nrow = 1, labels = c("A", "B"))
+```
+
+```{r}
+#| label: ms-fig6
+#| fig-width: 10
+#| fig-height: 5.5
+# Figure 6: warming tolerance with lineages + acclimation (distribution), and the warmest day under each scenario
+if (have_mur) {
+  hist6 <- wt_days %>%
+    filter(scenario == "Clades + acclimation") %>%
+    mutate(bin = floor(wt)) %>%
+    group_by(region, warming, bin) %>% summarise(w = sum(w), .groups = "drop") %>%
+    group_by(region) %>% mutate(h = 0.9 * w / max(w)) %>% ungroup() %>%
+    mutate(y0 = as.integer(region) - 1)
+  m6_hist <- ggplot(hist6) +
+    geom_hline(aes(yintercept = y0), data = distinct(hist6, region, y0), colour = "grey80") +
+    geom_vline(xintercept = 0, colour = "grey30") +
+    geom_rect(aes(xmin = bin, xmax = bin + 1, ymin = y0, ymax = y0 + h, fill = region, alpha = warming)) +
+    scale_fill_manual(values = region_cols[region_order], guide = "none") +
+    scale_alpha_manual(values = c(`+4 °C` = 0.35, Current = 0.9), name = NULL) +
+    scale_y_continuous(breaks = seq_along(region_order) - 1 + 0.35, labels = region_order, expand = expansion(add = c(0.1, 0.2))) +
+    labs(x = "Daily warming tolerance, July–November (°C)", y = NULL) +
+    theme_matt(base_size = 11) +
+    theme(legend.position = "bottom", axis.ticks.y = element_blank())
+  m6_hot <- wt_res %>%
+    filter(scenario %in% scen_levels, metric != "Aug–Sep mean") %>%
+    mutate(scenario = factor(scenario, levels = scen_levels),
+           warming = factor(if_else(warming == 0, "Current", "+4 °C"), levels = c("Current", "+4 °C"))) %>%
+    ggplot(aes(x = region, y = est, ymin = lo, ymax = hi, colour = scenario, shape = scenario)) +
+    geom_hline(yintercept = 0, colour = "grey30") +
+    geom_pointrange(position = position_dodge(width = 0.6), size = 0.4) +
+    facet_wrap(~ warming, ncol = 1) +
+    scale_colour_manual(values = c(`Fixed CTmax` = "grey65", `Clade means` = "grey35", `Clades + acclimation` = "black"),
+                        name = NULL) +
+    scale_shape_manual(values = c(`Fixed CTmax` = 15, `Clade means` = 17, `Clades + acclimation` = 16), name = NULL) +
+    labs(x = NULL, y = "Warming tolerance on the warmest day (°C)") +
+    theme_matt_facets(base_size = 11) +
+    theme(legend.position = "bottom", axis.text.x = element_text(angle = 35, hjust = 1))
+  ggarrange(m6_hist, m6_hot, nrow = 1, widths = c(1, 1), labels = c("A", "B"))
+}
+```
