@@ -1,4 +1,4 @@
-# Site environment for Stage 3: MUR SST + checks against monitoring stations ----------
+# Site environment: MUR SST + checks against monitoring stations ------------------------
 # Three parts, each can be switched off below:
 #   Part 1 (get_mur)      daily MUR SST around each site, 2014-2023
 #   Part 2 (get_stations) public monitoring stations near the sites, compared with MUR
@@ -16,9 +16,6 @@
 # Both parts cache every download in Raw_data/outside_sources/, so reruns only fetch
 # what is missing. Needs an internet connection.
 # Requires: here, tidyverse, rerddap (Part 1), dataRetrieval (Part 2)
-#
-# (Separate from 01_site_temps.R, which builds the 2023 sampling-season temperature
-# profiles used for the phenotype analyses and generation counts.)
 
 library(here)
 library(tidyverse)

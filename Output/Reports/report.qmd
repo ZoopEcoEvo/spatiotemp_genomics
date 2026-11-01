@@ -23,10 +23,6 @@ format:
     code-fold: true
     code-tools: true      # adds a menu to show or download the source
     embed-resources: true # one self-contained .html file, no _files folder
-  gfm:
-    echo: false
-    toc: true
-    toc-depth: 3
 ---
 
 ```{r}
@@ -171,7 +167,7 @@ site_temps %>%
 
 ### Long-term site temperatures (MUR SST)
 
-Daily sea-surface temperature for 2014–2023 was taken from the MUR SST analysis (GHRSST Level 4, ~1 km) for each site, averaging the water pixels within 5 km of the site (`Scripts/01_site_environment.R`). Where MUR has no water near a site (Ganey's Wharf, Ritchie Wharf), the water within 5 km of the nearest water pixel (14–19 km away) was used. MUR agreed closely with nearby monitoring stations wherever it resolves the site's own water (mean bias −0.4 to +0.4 °C at Noank, New London, Gooses Reef, Port Manatee, Portland and the Manatee River gauge). At Ganey's Wharf, Chesapeake Bay Program station ET5.1 (at the wharf) is 2–4 °C warmer than MUR in spring and 1–1.7 °C colder in autumn, as expected for a shallow upper estuary, so Ganey's Wharf uses MUR corrected by the station's smoothed monthly bias. Ritchie Wharf has no station within 50 km and is flagged. Temperatures measured at collection (shallow wharf water, often at midday) run 2–6 °C warmer than MUR in summer at the northern sites; MUR describes the water mass the plankton live in and is used for site climatology and the genomic analyses, while the measured temperatures are used for acclimation in the CTmax models.
+Daily sea-surface temperature for 2014–2023 was taken from the MUR SST analysis (GHRSST Level 4, \~1 km) for each site, averaging the water pixels within 5 km of the site (`Scripts/01_site_environment.R`). Where MUR has no water near a site (Ganey's Wharf, Ritchie Wharf), the water within 5 km of the nearest water pixel (14–19 km away) was used. MUR agreed closely with nearby monitoring stations wherever it resolves the site's own water (mean bias −0.4 to +0.4 °C at Noank, New London, Gooses Reef, Port Manatee, Portland and the Manatee River gauge). At Ganey's Wharf, Chesapeake Bay Program station ET5.1 (at the wharf) is 2–4 °C warmer than MUR in spring and 1–1.7 °C colder in autumn, as expected for a shallow upper estuary, so Ganey's Wharf uses MUR corrected by the station's smoothed monthly bias. Ritchie Wharf has no station within 50 km and is flagged. Temperatures measured at collection (shallow wharf water, often at midday) run 2–6 °C warmer than MUR in summer at the northern sites; MUR describes the water mass the plankton live in and is used for site climatology and the genomic analyses, while the measured temperatures are used for acclimation in the CTmax models.
 
 ```{r}
 #| label: site-temperature-cycle
@@ -258,7 +254,6 @@ if (file.exists(clim_file)) {
     knitr::kable(digits = 1, caption = "Site climatology from MUR SST, 2014–2023 (°C unless stated).")
 }
 ```
-
 
 ### Paired low- and high-salinity sites
 
@@ -1348,7 +1343,6 @@ par(op)
 
 The two genomes give the same tree. Unrooted, both split the clades into {S, IV} and {X, F}, with X sister to F (support 98 in COI, 100 in the nuclear tree), and both order the F lineages the same way: F-MR first, then F-FH, then F-N with F-NE. They differ only in where the root falls, and the nuclear root is a midpoint placement, not an estimate. Mito-nuclear concordance at every level means the lineages are not mitochondrial types introgressed onto a shared nuclear background: they are separate, non-interbreeding (or rarely interbreeding) genetic units. Nuclear distances from the PCAngsd covariance summarise genome-wide divergence rather than coming from a substitution model, so branch lengths in the two panels are not comparable.
 
-
 ```{r}
 #| label: clade-props
 #| fig-width: 6
@@ -1431,7 +1425,6 @@ turn_site %>%
   knitr::kable(caption = sprintf("Lineage composition by season at each site. Combined test across sites: χ² = %.0f, permutation p %s.",
                                  obs_chi, format.pval(turn_p, digits = 2, eps = 1e-4)))
 ```
-
 
 ### Genetic differentiation within clades
 
@@ -1639,8 +1632,7 @@ if (nrow(div_pop) == 0) {
 }
 ```
 
-Diversity is compared within clades only: reference bias changes which sites are usable in each clade. The spectra are folded (no outgroup), and low-coverage data shift the absolute values of Tajima's D, so differences between populations of the same clade are more informative than whether D is above or below zero. Confidence intervals come from a block bootstrap over 1 Mb blocks; populations of 8 individuals (F MD late, S MR late) are the least precise.
-### Linkage disequilibrium
+Diversity is compared within clades only: reference bias changes which sites are usable in each clade. The spectra are folded (no outgroup), and low-coverage data shift the absolute values of Tajima's D, so differences between populations of the same clade are more informative than whether D is above or below zero. Confidence intervals come from a block bootstrap over 1 Mb blocks; populations of 8 individuals (F MD late, S MR late) are the least precise. \### Linkage disequilibrium
 
 LD was estimated with ngsLD within each clade on every fifth SNP (MAF ≥ 0.05), for a random 2% of SNP pairs up to 100 kb apart, and averaged in distance bins. Dashed lines show the r² expected between unlinked SNPs from sample size alone (≈ 1/n). LD decays to near that level within a few kb in X, S and IV, as expected for very large long-term population sizes. The higher plateau in F reflects allele-frequency differences between the F sub-lineages pooled in the clade, not physical linkage.
 
@@ -1855,7 +1847,6 @@ if (length(lp_files) > 0) {
 }
 ```
 
-
 #### Follow-up of the candidate regions
 
 Each candidate region (and a control region on chromosome 1 with no local-PCA signal) was analysed on its own: a PCA of the region (PCAngsd), each individual's heterozygosity inside the region relative to its genome-wide heterozygosity, and LD over distances up to 2 Mb. An inversion shows as groups on the regional PC1 with heterozygotes raised in heterozygosity (ratio above the bulk) and homozygotes for the rarer arrangement lowered; suppressed recombination raises long-range LD when both arrangements are common.
@@ -2025,7 +2016,7 @@ prev_plot(micro_prev(all_groups))
 
 Allele frequencies per population at the unlinked SNP set (one SNP per 10 kb; Section 3.2, LD) were compared between seasons within each site. Temporal differentiation is Nei & Tajima's F<sub>c</sub> ([Nei & Tajima 1981](https://doi.org/10.1093/genetics/98.3.625)) over SNPs with ≥ 5 individuals with data in both samples and a mean minor-allele frequency of 0.05–0.95. Under the temporal method, F<sub>c</sub> ≈ t/(2N<sub>e</sub>) + sampling noise of both samples, so N<sub>e</sub> follows once the sampling noise is subtracted ([Waples 1989](https://doi.org/10.1093/genetics/121.2.379); [Jorde & Ryman 2007](https://doi.org/10.1534/genetics.107.075481)).
 
-**Calibrating sampling noise.** With < 1× coverage, frequencies are sampled twice, once through the individuals and once through the reads, so an individual contributes less than two chromosomes of information ([Jónás et al. 2016](https://doi.org/10.1534/genetics.116.191197)). Pool-seq studies handle this with an "effective number of chromosomes" ([Feder et al. 2012](https://doi.org/10.1371/journal.pone.0048588); [Bergland et al. 2014](https://doi.org/10.1371/journal.pgen.1004775); [Machado et al. 2021](https://doi.org/10.7554/eLife.67577)). Here it was measured directly: each population was split at random into two halves (two replicates), allele frequencies were estimated for each half, and F<sub>c</sub> between the halves (pure sampling noise) was compared with the 1/(2n) expectation. The ratio, c, is the effective number of chromosomes per individual divided by two, and the sampling term for any sample becomes 1/(2cn). This split-half calibration is an empirical resampling check rather than a named published method.
+**Calibrating sampling noise.** With \< 1× coverage, frequencies are sampled twice, once through the individuals and once through the reads, so an individual contributes less than two chromosomes of information ([Jónás et al. 2016](https://doi.org/10.1534/genetics.116.191197)). Pool-seq studies handle this with an "effective number of chromosomes" ([Feder et al. 2012](https://doi.org/10.1371/journal.pone.0048588); [Bergland et al. 2014](https://doi.org/10.1371/journal.pgen.1004775); [Machado et al. 2021](https://doi.org/10.7554/eLife.67577)). Here it was measured directly: each population was split at random into two halves (two replicates), allele frequencies were estimated for each half, and F<sub>c</sub> between the halves (pure sampling noise) was compared with the 1/(2n) expectation. The ratio, c, is the effective number of chromosomes per individual divided by two, and the sampling term for any sample becomes 1/(2cn). This split-half calibration is an empirical resampling check rather than a named published method.
 
 ```{r}
 #| label: split-half
@@ -2175,7 +2166,6 @@ if (exists("temporal") && file.exists(div_file)) {
 }
 ```
 
-
 ```{r}
 #| label: seasonal-parallel
 if (exists("temporal")) {
@@ -2200,9 +2190,9 @@ if (exists("temporal")) {
 }
 ```
 
-Calibration removes almost all of the apparent excess: with two chromosomes per individual assumed, every pair showed an excess of ≈ 0.05 regardless of the number of generations (open circles); with the calibrated sampling term the excess is 0.000–0.011 (filled points). Most pairs give N<sub>e</sub> in the high hundreds to a few thousand, with lower 95% bounds of roughly 400–2,000, and several upper bounds are infinite (no drift detectable within the season). These estimates describe drift over a few to ~20 generations within one season, not long-term N<sub>e</sub>, and they are at or above the lab estimate of ~400. ME early→peak is the exception (N<sub>e</sub> ≈ 225, CI ≈ 185–285): ME early is the smallest X sample (10 individuals), so a modest error in its c would inflate the excess, and the value should be checked before it is interpreted biologically. In clade X, early→peak changes at different sites remain uncorrelated genome-wide (r ≈ 0).
+Calibration removes almost all of the apparent excess: with two chromosomes per individual assumed, every pair showed an excess of ≈ 0.05 regardless of the number of generations (open circles); with the calibrated sampling term the excess is 0.000–0.011 (filled points). Most pairs give N<sub>e</sub> in the high hundreds to a few thousand, with lower 95% bounds of roughly 400–2,000, and several upper bounds are infinite (no drift detectable within the season). These estimates describe drift over a few to \~20 generations within one season, not long-term N<sub>e</sub>, and they are at or above the lab estimate of \~400. ME early→peak is the exception (N<sub>e</sub> ≈ 225, CI ≈ 185–285): ME early is the smallest X sample (10 individuals), so a modest error in its c would inflate the excess, and the value should be checked before it is interpreted biologically. In clade X, early→peak changes at different sites remain uncorrelated genome-wide (r ≈ 0).
 
-**Per-SNP seasonal test.** For each SNP, the minor-allele count was modelled with a binomial GLM, count ~ site + x, with each population weighted by its effective number of chromosomes (2cn), as in the *Drosophila* seasonal studies ([Bergland et al. 2014](https://doi.org/10.1371/journal.pgen.1004775); [Machado et al. 2021](https://doi.org/10.7554/eLife.67577)). Two versions of x were fitted: (1) **time**, the collection day of year scaled from 0 (first sampling event at a site) to 1 (last), which rewards change in the same direction through the season at every site; and (2) **temperature**, the mean MUR SST over the generation before each collection (Ganey's Wharf corrected against station ET5.1), which rewards change that tracks temperature, so that a warming and a cooling step move frequencies in opposite directions. Temperature matters because the season is not a monotonic temperature ramp: water before the early and peak collections was similar (or cooler at peak in the north), and the late collections followed a strong cooling. The null distribution comes from permuting x among each site's sampling events, enumerating every distinct ordering (time: X 11 and F 23 permutations, as reversing all sites only flips the sign; temperature: X 23 and F 47). The genome-wide test asks whether more SNPs reach a given p value with the real values than with the permuted ones. Results are shown with and without chromosome 6, which carries the likely inversion in clade X (Section 3.2). Clade S has a single seasonal site (MD) with two samples, so it has no permutation null and is not shown.
+**Per-SNP seasonal test.** For each SNP, the minor-allele count was modelled with a binomial GLM, count \~ site + x, with each population weighted by its effective number of chromosomes (2cn), as in the *Drosophila* seasonal studies ([Bergland et al. 2014](https://doi.org/10.1371/journal.pgen.1004775); [Machado et al. 2021](https://doi.org/10.7554/eLife.67577)). Two versions of x were fitted: (1) **time**, the collection day of year scaled from 0 (first sampling event at a site) to 1 (last), which rewards change in the same direction through the season at every site; and (2) **temperature**, the mean MUR SST over the generation before each collection (Ganey's Wharf corrected against station ET5.1), which rewards change that tracks temperature, so that a warming and a cooling step move frequencies in opposite directions. Temperature matters because the season is not a monotonic temperature ramp: water before the early and peak collections was similar (or cooler at peak in the north), and the late collections followed a strong cooling. The null distribution comes from permuting x among each site's sampling events, enumerating every distinct ordering (time: X 11 and F 23 permutations, as reversing all sites only flips the sign; temperature: X 23 and F 47). The genome-wide test asks whether more SNPs reach a given p value with the real values than with the permuted ones. Results are shown with and without chromosome 6, which carries the likely inversion in clade X (Section 3.2). Clade S has a single seasonal site (MD) with two samples, so it has no permutation null and is not shown.
 
 ```{r}
 #| label: seasonal-glm
@@ -2257,9 +2247,7 @@ if (length(glm_files) > 0) {
 }
 ```
 
-There is no genome-wide excess of seasonal SNPs in either clade, with either model. With the real seasons, X and F have about as many low-p SNPs as the permuted orderings, at every threshold, on both the unlinked and the full SNP sets. Modelling temperature instead of time does not change this: the closest to a signal is clade X on all SNPs (rank 5–6 of 24 at p < 0.01 and p < 0.001, i.e. p ≈ 0.2–0.25), which is not significant and does not hold on the unlinked set. Removing chromosome 6 changes nothing, so the X inversion is not driving or masking a seasonal signal. The genomic-control λ is close to 1 (X ≈ 1.1, F ≈ 1.0) for the observed and permuted values alike, so the calibrated binomial weights describe the sampling variance well. Together with the uncorrelated early→peak changes across X sites, this means that any seasonal selection in these populations acts on too few loci, or is too weak, to show up genome-wide with 3–4 seasonal sites per clade, whether it is modelled as a seasonal trend or as a response to temperature. Individual SNPs with the smallest p values are listed in `results/13_seasonal/*.top.tsv` and `results/13_seasonal/temp/*.top.tsv` but are not more numerous than expected by chance, so none can be called a seasonal candidate on its own. The permutation null is coarse (time: 12 and 24 orderings; temperature: 24 and 48), which limits the smallest attainable rank-based p value to 1/12–1/48.
-
-
+There is no genome-wide excess of seasonal SNPs in either clade, with either model. With the real seasons, X and F have about as many low-p SNPs as the permuted orderings, at every threshold, on both the unlinked and the full SNP sets. Modelling temperature instead of time does not change this: the closest to a signal is clade X on all SNPs (rank 5–6 of 24 at p \< 0.01 and p \< 0.001, i.e. p ≈ 0.2–0.25), which is not significant and does not hold on the unlinked set. Removing chromosome 6 changes nothing, so the X inversion is not driving or masking a seasonal signal. The genomic-control λ is close to 1 (X ≈ 1.1, F ≈ 1.0) for the observed and permuted values alike, so the calibrated binomial weights describe the sampling variance well. Together with the uncorrelated early→peak changes across X sites, this means that any seasonal selection in these populations acts on too few loci, or is too weak, to show up genome-wide with 3–4 seasonal sites per clade, whether it is modelled as a seasonal trend or as a response to temperature. Individual SNPs with the smallest p values are listed in `results/13_seasonal/*.top.tsv` and `results/13_seasonal/temp/*.top.tsv` but are not more numerous than expected by chance, so none can be called a seasonal candidate on its own. The permutation null is coarse (time: 12 and 24 orderings; temperature: 24 and 48), which limits the smallest attainable rank-based p value to 1/12–1/48.
 
 ### Spatial vs. seasonal genetic variation
 
@@ -2361,7 +2349,6 @@ vf <- function(g, comp, what = "value") filter(vp_freq, group == g, component ==
 
 Allele frequencies differ far more between sites than between seasons at the same site. In clade X, the between-site variance (`r sprintf("%.3f", vf("X", "Between sites"))`) is about `r round(vf("X", "Between sites") / vf("X", "Between seasons (within site)"))` times the seasonal variance (`r sprintf("%.4f", vf("X", "Between seasons (within site)"))`); in F-N (MD vs. GW) the ratio is about `r round(vf("F-N", "Between sites") / vf("F-N", "Between seasons (within site)"))`. The seasonal component is small but above zero in X and F-N, consistent with the temporal F<sub>c</sub> excess above (drift over a season with N<sub>e</sub> in the high hundreds to thousands); in S, with one seasonal site, it is indistinguishable from zero. Across the F lineages the between-site component (`r sprintf("%.2f", vf("F (all lineages)", "Between sites"))`) is an order of magnitude larger, because it measures divergence between lineages rather than among populations of one lineage. Seasonal change in allele frequencies is therefore a small fraction of the spatial differentiation it would have to reproduce for seasonal evolution to mirror spatial adaptation, which fits the absence of concordance below.
 
-
 ### Does space substitute for time? Concordance of temperature responses
 
 If the alleles that are more common at warmer sites are favoured by warm conditions, they should also rise after warm periods and fall after cool ones within sites. For every SNP, two temperature slopes were estimated with the same binomial GLM and calibrated weights as above: a **spatial** slope (frequency against each site's long-term MUR SST, with a site's seasonal samples pooled) and a **seasonal** slope (the temperature model above: frequency against site + temperature before collection). Their agreement across the genome was measured as the correlation of the two z-scores, and, among the 1% and 5% of SNPs with the strongest spatial slopes, as the fraction whose seasonal slope has the same sign (0.5 = no agreement). The null keeps the spatial slopes and permutes temperatures among each site's sampling events (as in the seasonal test); a second, smaller null permutes site temperatures among sites. This is the genomic counterpart of the within- vs between-site comparison for CTmax (Section 4) and follows the seasonal–clinal comparison of [Machado et al. (2021)](https://doi.org/10.7554/eLife.67577).
@@ -2432,7 +2419,7 @@ if (length(conc_files) > 0) {
 
 How much seasonal selection could these tests have detected? Selection was injected into the observed allele frequencies (unlinked SNPs) and each test rerun exactly as above (cluster target `power`; `results/18_power/`), so drift, sampling noise and the sampling design are those of the real data.
 
-- **Seasonal GLM and temporal Fc:** a random fraction of SNPs (0.1–10%) had their logit frequency shifted by δ between each site's first and last sample, in the same direction at every site. δ is shown below as the change in allele frequency for an allele starting at 50%, and as selection per generation using the generations between each clade's first and last samples. A replicate counts as detected when the observed number of SNPs with p < 10⁻³ exceeds every within-site permutation (the smallest attainable p is 1/12 for X and 1/24 for F), or, for Fc, when the added excess exceeds the observed excess plus 1.96 SE (inverse-variance pooled over each site's first → last pair).
+- **Seasonal GLM and temporal Fc:** a random fraction of SNPs (0.1–10%) had their logit frequency shifted by δ between each site's first and last sample, in the same direction at every site. δ is shown below as the change in allele frequency for an allele starting at 50%, and as selection per generation using the generations between each clade's first and last samples. A replicate counts as detected when the observed number of SNPs with p \< 10⁻³ exceeds every within-site permutation (the smallest attainable p is 1/12 for X and 1/24 for F), or, for Fc, when the added excess exceeds the observed excess plus 1.96 SE (inverse-variance pooled over each site's first → last pair).
 - **Concordance:** the most temperature-associated SNPs across sites (top 1–100% by spatial z) were given a seasonal response equal to a fraction λ of their spatial slope; detection = ranking above every seasonal permutation.
 
 With strong injected responses (λ ≥ 0.5) the sign-agreement statistic saturates at 1 in the permutations too, so those cells can show as undetected in F; the relevant region is the weak-response end, where both clades detect responses of a tenth (X) or a twentieth (F) of the spatial slope.
@@ -2511,11 +2498,9 @@ if (have_pw) {
 }
 ```
 
-
 In clade X the spatial and seasonal responses point weakly in the same direction: across all SNPs the two slopes are slightly positively correlated (r ≈ 0.04), and among the 1% of SNPs with the strongest spatial slopes about 55% change in the same direction through the season. But the real temperatures rank only 5th–6th of 24 orderings (p ≈ 0.2), 8th–12th on the unlinked set, and the smaller spatial null (6 orderings) cannot go below p ≈ 0.17; removing chromosome 6 changes nothing. So there is no detectable genome-wide concordance between spatial and seasonal temperature responses. Two limits shape this answer. First, the spatial temperature contrast within X is short (7.1–9.9 °C long-term mean across ME, TK and RW), and the spatial slope is mostly ME against the two Gulf of St. Lawrence sites, so it also carries their geographic separation. Second, the null rests on only 24 orderings. A modest true concordance, of the size seen here, could go undetected. Clade F shows the opposite tendency (its observed concordance is the lowest of 48 orderings for the top-1% statistic), but because its spatial contrast is a contrast between lineages (Florida lineages vs F-N) it is not interpreted as a temperature response. Clade S has no usable seasonal null.
 
 In contrast to CTmax, whose between-site slope matches the within-site (acclimation) slope (Section 4), allele frequencies give no evidence that the response to temperature across sites predicts the response through the season. The genomic side of the space-for-time question therefore remains unresolved rather than negative: the data are consistent with no shared response and with a weak one.
-
 
 ## 4. Clade-specific physiological patterns
 
@@ -2618,7 +2603,6 @@ car::Anova(ctmax.model, type = "III")
 #   theme(legend.position = "none",
 #         axis.title.y = element_blank())
 ```
-
 
 ### Acclimation vs. site differences (within- and between-site temperature)
 
@@ -2856,7 +2840,6 @@ ggarrange(p_within, p_between, ncol = 1, common.legend = TRUE, legend = "right")
 
 CTmax rises by `r sprintf("%.2f", wb_overall$slope[1])` °C for every 1 °C of within-site temperature change (95% CI `r sprintf("%.2f–%.2f", wb_overall$lo[1], wb_overall$hi[1])`), with lineage-specific acclimation slopes of `r sprintf("%.2f", min(wb_clade$slope[wb_clade$component == "Within site"]))` to `r sprintf("%.2f", max(wb_clade$slope[wb_clade$component == "Within site"]))`. The between-site slope is `r sprintf("%.2f", wb_overall$slope[2])` (CI `r sprintf("%.2f to %.2f", wb_overall$lo[2], wb_overall$hi[2])`; site temperature: `r wb_source`), and the difference between the two is `r sprintf("%.2f", wb_overall$slope[3])` (CI `r sprintf("%.2f to %.2f", wb_overall$lo[3], wb_overall$hi[3])`). If that interval includes zero, CTmax differences between sites within a lineage are consistent with acclimation to each site's temperature, with no detectable local adaptation beyond it; with only 1–5 sites per lineage, the test can rule out only large differences between the slopes. Panel B shows the site-level pattern behind the between-site slope: each point is a site's CTmax at its own mean collection conditions.
 
-
 The Stage 1 clade calls (Section 3.1) were merged with the CTmax and body size data set to examine clade-specific patterns of divergence. By plotting CTmax and size against the collection temperature we can see that these clades appear to be physiologically differentiated. Clades F and S tend to have higher CTmax, even when collected at the same temperatures as Clades X and IV. Size is more variable, with varying degrees of temperature sensitivity across the clades. Overall, however, Clade F tends to be smaller than Clades S and X. Clade IV tended to be the largest.
 
 ```{r}
@@ -3054,7 +3037,6 @@ join_data %>%
 
 ```
 
-
 ### Partitioning CTmax variation
 
 How much of the variation in CTmax among individuals is due to lineage, to the site an animal comes from, to the conditions at collection (acclimation), to the assay, and to individuals? The variance was partitioned with a mixed model with random effects for lineage, site, collection (site × sampling event), assay run and tube position, plus, in the second model, fixed effects for the within- and between-site temperature components from the previous section (body size is not included). The variance explained by each fixed effect is the variance of its fitted contribution ([Nakagawa & Schielzeth 2013](https://doi.org/10.1111/j.2041-210x.2012.00261.x)). Comparing the two models shows how much of the site and collection components the temperature terms absorb: collection-level variance taken up by within-site temperature is acclimation, and site-level variance taken up by long-term site temperature is the between-site temperature effect. Intervals are from 200 parametric bootstrap replicates.
@@ -3128,9 +3110,6 @@ vc <- function(comp, mod = "With seasonal and spatial temperature") round(100 * 
 
 Without temperature terms, the largest components are collection (`r vc("Collection (other)", "Without temperature")`%), clade (`r vc("Clade", "Without temperature")`%) and site (`r vc("Site (other)", "Without temperature")`%), with `r vc("Individual", "Without temperature")`% among individuals within a collection. The temperature terms follow the season-mean split of Fig. 3A: seasonal temperature (the season's mean collection temperature across sites) explains `r vc("Seasonal temperature")`% of all CTmax variance, and spatial temperature (a collection's deviation from that season mean) `r vc("Spatial temperature")`%; together they absorb most of the collection component (which drops to `r vc("Collection (other)")`%), leaving `r vc("Site (other)")`% to other site differences. Clade accounts for `r vc("Clade")`%. The intervals are wide because clade and site have few levels (4 clades, 8 sites).
 
-
-
-
 ### Lineage differences under shared conditions (natural common garden)
 
 Lineage accounts for about a quarter of CTmax variance (above), but lineages occupy different sites, so their differences could partly reflect the conditions they were collected in. Several collections, however, contain two or more lineages sampled at the same time and place: those animals experienced the same water before the assay, so differences between them cannot be acclimation. Lineage differences were therefore re-estimated using only collections with ≥ 2 lineages of ≥ 3 individuals each, with collection as a fixed effect, so each lineage contrast is a within-collection comparison. These estimates are compared with the lineage effects from all collections (the within/between model above, which adjusts for temperature but compares lineages across different collections). Differences that persist within collections are heritable (genetic, or developmental/maternal), not plastic responses to recent conditions.
@@ -3192,10 +3171,7 @@ cg_tab %>%
   knitr::kable(caption = "CTmax differences (°C, 95% CI) between lineages that co-occur in at least one collection: estimated only within shared collections, and from all collections in the within/between model.")
 ```
 
-
-
 The two largest lineage differences hold up when lineages are compared side by side. IV is about 2.5–2.9 °C less tolerant than X and S in the same collections (three and one shared collections), as large as or larger than the difference estimated across all collections. F-N is about 0.8 °C more tolerant than S across the three Chesapeake collections where both occur (MD early and late, GW late), close to its overall estimate. These differences cannot be acclimation. The S–X difference is the exception: about 1 °C across all collections, but only 0.4 °C (CI spanning zero) in the two Connecticut collections where they co-occur, so part of it may reflect where each lineage was collected rather than the lineages themselves. The F-MR and F-NE contrasts each rest on a single collection and are uninformative. Caveats: co-occurring lineages may differ in body size, development or recent history (for example, advection from elsewhere), so "heritable" here means not explained by shared recent conditions, not necessarily genetic.
-
 
 #### Does lineage turnover change seasonal thermal tolerance?
 
@@ -3240,10 +3216,9 @@ ce_obs %>%
 
 Composition alone shifts expected CTmax by `r sprintf("%.2f", slope_obs)` °C per °C of collection temperature within sites (permutation p `r if (slope_p < 1e-3) "< 0.001" else paste("=", signif(slope_p, 2))`), compared with an acclimation slope of `r sprintf("%.2f", acc_slope)` °C per °C within lineages: turnover adds about `r round(100 * slope_obs / acc_slope)`% to the seasonal change that acclimation produces. `r if (slope_obs > 0) "Collections are dominated by more tolerant lineages when the water is warm and by less tolerant lineages (above all IV) when it is cool, so turnover reinforces acclimation rather than opposing it." else "Turnover does not move tolerance in the direction of temperature."` This is a seasonal change in thermal tolerance with a heritable basis that happens through the sorting of lineages, not evolution within them. Caveat: composition comes from the individuals sequenced per collection (about 20), so proportions are coarse, and collections were sampled in one year.
 
-
 ### Genetic basis of CTmax within collections
 
-Is CTmax variation among individuals collected together associated with particular genetic variants? Within each lineage with ≥ 30 phenotyped and sequenced individuals (collections with ≥ 8 individuals of the lineage: X 104, F-N 78, S 54, F-FH 38, IV 36), CTmax was regressed on genotype dosage (the expected number of minor alleles, from ANGSD genotype posteriors) at every SNP, with collection and log mean sequencing depth as covariates. Collection absorbs acclimation and population differences, so individuals are compared only with others collected at the same time and place; depth is included because at < 1× coverage deeper individuals show more minor alleles, which would otherwise bias every SNP's effect if depth tracks CTmax (it does, weakly: +0.26 °C per log unit of depth within collections, all lineages pooled). Individuals without reads at a SNP were given their collection's mean dosage. Body size was not included. Genome-wide calibration comes from 100 replicates with CTmax shuffled among individuals of the same collection, which keep each collection's CTmax distribution and all genotype structure but break any genotype–phenotype link.
+Is CTmax variation among individuals collected together associated with particular genetic variants? Within each lineage with ≥ 30 phenotyped and sequenced individuals (collections with ≥ 8 individuals of the lineage: X 104, F-N 78, S 54, F-FH 38, IV 36), CTmax was regressed on genotype dosage (the expected number of minor alleles, from ANGSD genotype posteriors) at every SNP, with collection and log mean sequencing depth as covariates. Collection absorbs acclimation and population differences, so individuals are compared only with others collected at the same time and place; depth is included because at \< 1× coverage deeper individuals show more minor alleles, which would otherwise bias every SNP's effect if depth tracks CTmax (it does, weakly: +0.26 °C per log unit of depth within collections, all lineages pooled). Individuals without reads at a SNP were given their collection's mean dosage. Body size was not included. Genome-wide calibration comes from 100 replicates with CTmax shuffled among individuals of the same collection, which keep each collection's CTmax distribution and all genotype structure but break any genotype–phenotype link.
 
 ```{r}
 #| label: gwas-qq
@@ -3390,14 +3365,11 @@ if (length(gw_pw_files) == 0) {
 
 Power was simulated on each lineage's own data (cluster target `gwas_power`): for 2,000 SNPs sampled across the genome, true genotypes were drawn from each individual's genotype posterior, a causal effect was added to CTmax shuffled within collections, and the scan's test was repeated against the genome-wide 5% threshold from its own permutations. `r if (length(gw_pw_files)) { g <- gw_pw %>% filter(str_detect(maf_bin, "^\\(0\\.3")); sprintf("Genotype accuracy was low (r² between expected dosage and true genotype %.2f–%.2f), and the scan reached 50%% power only for loci of about 2 °C per allele in F-N and 3 °C in X (explaining most of the within-collection CTmax variance); in S, F-FH and IV it never did. The scan rules out only loci of very large effect and does not constrain a polygenic basis of within-lineage variation; it is reported for completeness.", min(gw_pw$r2), max(gw_pw$r2)) } else ""`
 
+No lineage shows more association signal than the shuffles: the observed counts of small p values sit inside, and in X below, the shuffle distribution at every threshold, with or without chromosome 6. The one marginal exception is IV, where moderately small p values (p \< 0.001) are more common than in 94 of 100 shuffles but the tail is not; with five lineages tested and the smallest sample (36 individuals, 2 collections), this is consistent with chance. The smallest individual p values (down to \~10⁻⁷–10⁻⁸) are typical of the shuffles too, and the top SNPs share a profile – low frequency, reads in only part of the individuals, large estimated effects – expected from chance at weakly informative sites, so none is reported as a candidate.
 
-No lineage shows more association signal than the shuffles: the observed counts of small p values sit inside, and in X below, the shuffle distribution at every threshold, with or without chromosome 6. The one marginal exception is IV, where moderately small p values (p < 0.001) are more common than in 94 of 100 shuffles but the tail is not; with five lineages tested and the smallest sample (36 individuals, 2 collections), this is consistent with chance. The smallest individual p values (down to ~10⁻⁷–10⁻⁸) are typical of the shuffles too, and the top SNPs share a profile – low frequency, reads in only part of the individuals, large estimated effects – expected from chance at weakly informative sites, so none is reported as a candidate.
-
-Two patterns that appeared in a first version of the scan (without the depth covariate, and with missing individuals given the overall rather than the collection mean) do not survive comparison with the shuffles. First, CTmax effects do not line up with the spatial or seasonal temperature slopes in X or S: the observed correlations (|r| ≤ 0.011) are well inside the shuffle distributions, whose spread (SD 0.01–0.05) is much larger than a chromosome jackknife suggests, because one shuffle shifts the effects of all SNPs together. Second, the excess of negative effects at rare SNPs (minor allele lowering CTmax) is reproduced by the shuffles (63–86% negative in X, S and F-FH, as observed), so it is a property of dosage regression at low-frequency sites, not evidence for deleterious rare variants; only F-N is slightly above its shuffles (0.69 vs. 0.58, rank 4 of 101), which with five lineages tested is not significant.
+Two patterns that appeared in a first version of the scan (without the depth covariate, and with missing individuals given the overall rather than the collection mean) do not survive comparison with the shuffles. First, CTmax effects do not line up with the spatial or seasonal temperature slopes in X or S: the observed correlations (\|r\| ≤ 0.011) are well inside the shuffle distributions, whose spread (SD 0.01–0.05) is much larger than a chromosome jackknife suggests, because one shuffle shifts the effects of all SNPs together. Second, the excess of negative effects at rare SNPs (minor allele lowering CTmax) is reproduced by the shuffles (63–86% negative in X, S and F-FH, as observed), so it is a property of dosage regression at low-frequency sites, not evidence for deleterious rare variants; only F-N is slightly above its shuffles (0.69 vs. 0.58, rank 4 of 101), which with five lineages tested is not significant.
 
 CTmax among individuals collected together therefore shows no detectable association with individual variants, no polygenic excess, and no link between the alleles that track temperature in space or season and those that affect CTmax. With 36–104 individuals per lineage this rules out only loci of large effect; it is consistent with the variance partition above, in which CTmax variation is dominated by lineage, acclimation and site.
-
-
 
 ### Candidate genes: mitochondrial amino-acid differences
 
@@ -3476,10 +3448,9 @@ These are candidates, not results. Every substitution on the branch leading to I
 
 The nuclear part of the candidate analysis (heat-shock proteins, nuclear OXPHOS subunits, lipid desaturases and elongases) needs the RefSeq annotation of the reference genome (GCF_053477335.1), which is not yet in the project.
 
-
 ### Candidate genes from experimental evolution
 
-Fifteen transcripts that responded to selection in an experimental-evolution study of *A. tonsa* [REF] were placed on the reference genome with megablast (cluster target `candidates`, rules `expevol_blast` and `expevol_map`): each transcript's best locus (74–100% of the transcript aligned, 93–99% identity) and the RefSeq genes it overlaps. Three transcripts span two neighbouring genes, giving 18 genes, among them a mitochondrial HSP90 (Trap1), an HSP90 co-chaperone (AHSA1), complex I and III subunits or assembly factors (ND-49, UQCC2), vitellogenin and its receptor, and growth-signalling, transcription and ribosome-biogenesis genes. Three of the 15 transcripts map to chromosome 6 (NC_137265.1), which carries the structural polymorphism in northern X.
+Fifteen transcripts that responded to selection in an experimental-evolution study of *A. tonsa* \[REF\] were placed on the reference genome with megablast (cluster target `candidates`, rules `expevol_blast` and `expevol_map`): each transcript's best locus (74–100% of the transcript aligned, 93–99% identity) and the RefSeq genes it overlaps. Three transcripts span two neighbouring genes, giving 18 genes, among them a mitochondrial HSP90 (Trap1), an HSP90 co-chaperone (AHSA1), complex I and III subunits or assembly factors (ND-49, UQCC2), vitellogenin and its receptor, and growth-signalling, transcription and ribosome-biogenesis genes. Three of the 15 transcripts map to chromosome 6 (NC_137265.1), which carries the structural polymorphism in northern X.
 
 Two tests asked whether these genes behave differently from the rest of the genome in the field. (1) SNPs within the genes (± 2 kb) were compared with SNPs in random sets of the same number of other genes (1,000 sets) for the spatial temperature association, seasonal change (time in season and temperature), sign agreement of seasonal and spatial slopes, and the within-lineage CTmax association (all SNPs, not only unlinked ones). (2) Clade-specific amino-acid substitutions in the genes were compared with the genome background (the gene-set test above, codons called in at least three clades).
 
@@ -3526,7 +3497,7 @@ if (file.exists(ev_aa_f)) {
 }
 ```
 
-Neither test found anything. At the SNP level the candidate genes were indistinguishable from other genes for every statistic and group (p = 0.17–0.84): genes that responded to selection in the laboratory show no excess spatial, seasonal or CTmax-associated variation in the field. At the protein level, 12 of the 18 genes had enough coverage, and no clade had an excess of amino-acid substitutions in them (p = 0.13–0.96). The core thermal candidates (Trap1, AHSA1, ND-49, UQCC2, vitellogenin) could not be compared: at < 1x coverage against a single reference, too few of their codons were called in three clades (S and IV, the clades most divergent from the reference, are under-called in coding sequence). Heat-shock genes as a class were strongly conserved: N/(N+S) was 0.05–0.11 on every branch against 0.18–0.21 genome-wide (p = 0.002–0.008 in F, S and IV; 0.10 in X).
+Neither test found anything. At the SNP level the candidate genes were indistinguishable from other genes for every statistic and group (p = 0.17–0.84): genes that responded to selection in the laboratory show no excess spatial, seasonal or CTmax-associated variation in the field. At the protein level, 12 of the 18 genes had enough coverage, and no clade had an excess of amino-acid substitutions in them (p = 0.13–0.96). The core thermal candidates (Trap1, AHSA1, ND-49, UQCC2, vitellogenin) could not be compared: at \< 1x coverage against a single reference, too few of their codons were called in three clades (S and IV, the clades most divergent from the reference, are under-called in coding sequence). Heat-shock genes as a class were strongly conserved: N/(N+S) was 0.05–0.11 on every branch against 0.18–0.21 genome-wide (p = 0.002–0.008 in F, S and IV; 0.10 in X).
 
 ### Clade-specific protein divergence and gene function
 
@@ -3535,7 +3506,7 @@ Which kinds of genes have diverged most between the clades at the protein level?
 - **Amino-acid divergence:** nonsynonymous substitutions per codon compared, summed over all four branches (how much the term's proteins differ among clades).
 - **Branch-specific nonsynonymous fraction:** N / (N + S) on one clade's branch, compared with that clade's own genome-wide value. An excess means more protein change than expected from the clade's overall divergence (positive selection or relaxed constraint); a deficit means stronger conservation.
 
-For a term of k genes, the pooled ratio (sum of N over sum of codons, or of N + S) was compared with the ratio over all genes annotated in the same ontology (unannotated genes, often lineage-specific or poorly predicted, have about twice the nonsynonymous fraction of annotated genes and are excluded from the background) using the sampling variance of a ratio estimator for random sets of k genes (finite-population corrected); p values are two-sided, with Benjamini–Hochberg FDR within each statistic, clade and ontology. Terms with q < 0.1 were checked against 2,000 random gene sets of the same size. Coverage differs among clades (S and IV are under-called in coding sequence, which maps less well to the single reference), so each clade is compared only with its own background. Caveats: substitution counts per gene are small, GO terms overlap heavily, and an excess N/(N + S) can reflect relaxed constraint as well as positive selection.
+For a term of k genes, the pooled ratio (sum of N over sum of codons, or of N + S) was compared with the ratio over all genes annotated in the same ontology (unannotated genes, often lineage-specific or poorly predicted, have about twice the nonsynonymous fraction of annotated genes and are excluded from the background) using the sampling variance of a ratio estimator for random sets of k genes (finite-population corrected); p values are two-sided, with Benjamini–Hochberg FDR within each statistic, clade and ontology. Terms with q \< 0.1 were checked against 2,000 random gene sets of the same size. Coverage differs among clades (S and IV are under-called in coding sequence, which maps less well to the single reference), so each clade is compared only with its own background. Caveats: substitution counts per gene are small, GO terms overlap heavily, and an excess N/(N + S) can reflect relaxed constraint as well as positive selection.
 
 ```{r}
 #| label: fn-enrichment
@@ -3673,8 +3644,7 @@ if (have_fn) {
 }
 ```
 
-Protein divergence among clades followed functional class, and almost identically on every branch. Ribosome biogenesis, rRNA processing, the nucleolus and mitochondrial gene expression carried more nonsynonymous change than other annotated genes on all four branches (q < 0.03), while neuronal, developmental, cytoskeletal and vesicle-trafficking genes were conserved (100–190 terms per clade). This is the familiar ranking of protein evolutionary rates by function, not clade-specific adaptation. Genes annotated to the response to heat or temperature, protein folding, heat-shock protein binding, oxidative phosphorylation and the respiratory chain showed no excess on any branch (N/(N+S) at or below background). The only clearly clade-specific signal was in S, with an excess in nuclear-encoded mitochondrial ribosomal proteins and mitochondrial protein complexes (mitochondrial large ribosomal subunit 0.43 vs 0.14, q = 0.001), a pattern expected from mitonuclear coevolution and of interest because mitonuclear compatibility affects thermal performance in other copepods [REF: *Tigriopus*]. Weaker clade-specific terms (immune regulation in X; DNA repair and apoptosis in IV; q = 0.005–0.04) are not interpreted. At the gene level, branch-specific acceleration was no more common than chance (3 genes at q < 0.1, all uncharacterized). Unannotated genes, which have about twice the nonsynonymous fraction of annotated genes (0.28–0.32 vs 0.16–0.19), were excluded from the background so that annotated terms are compared with annotated genes. Clade differences in CTmax are heritable (natural common gardens) but cannot be traced to accelerated protein change in thermal-function genes with these data, which points to regulatory or highly polygenic differences.
-
+Protein divergence among clades followed functional class, and almost identically on every branch. Ribosome biogenesis, rRNA processing, the nucleolus and mitochondrial gene expression carried more nonsynonymous change than other annotated genes on all four branches (q \< 0.03), while neuronal, developmental, cytoskeletal and vesicle-trafficking genes were conserved (100–190 terms per clade). This is the familiar ranking of protein evolutionary rates by function, not clade-specific adaptation. Genes annotated to the response to heat or temperature, protein folding, heat-shock protein binding, oxidative phosphorylation and the respiratory chain showed no excess on any branch (N/(N+S) at or below background). The only clearly clade-specific signal was in S, with an excess in nuclear-encoded mitochondrial ribosomal proteins and mitochondrial protein complexes (mitochondrial large ribosomal subunit 0.43 vs 0.14, q = 0.001), a pattern expected from mitonuclear coevolution and of interest because mitonuclear compatibility affects thermal performance in other copepods \[REF: *Tigriopus*\]. Weaker clade-specific terms (immune regulation in X; DNA repair and apoptosis in IV; q = 0.005–0.04) are not interpreted. At the gene level, branch-specific acceleration was no more common than chance (3 genes at q \< 0.1, all uncharacterized). Unannotated genes, which have about twice the nonsynonymous fraction of annotated genes (0.28–0.32 vs 0.16–0.19), were excluded from the background so that annotated terms are compared with annotated genes. Clade differences in CTmax are heritable (natural common gardens) but cannot be traced to accelerated protein change in thermal-function genes with these data, which points to regulatory or highly polygenic differences.
 
 ### Trait variability within clades
 
@@ -3748,7 +3718,7 @@ Changes in trait variance may be indicative of phenotypic selection. If selectio
 
 ### CTmax variance through the season
 
-If seasonal selection on thermal tolerance were strong, it should remove the least tolerant individuals and narrow CTmax variation within lineages over the season. Within each lineage at each site sampled in two or more seasons (collections with ≥ 5 individuals of the lineage), spread was measured as each individual's absolute deviation from its collection median (Brown–Forsythe), modelled as |deviation| ~ season + (1 | lineage:site), with early season as the reference.
+If seasonal selection on thermal tolerance were strong, it should remove the least tolerant individuals and narrow CTmax variation within lineages over the season. Within each lineage at each site sampled in two or more seasons (collections with ≥ 5 individuals of the lineage), spread was measured as each individual's absolute deviation from its collection median (Brown–Forsythe), modelled as \|deviation\| \~ season + (1 \| lineage:site), with early season as the reference.
 
 ```{r}
 #| label: ctmax-variance-season
@@ -3788,7 +3758,6 @@ knitr::kable(vs_tab, digits = 3, col.names = c("Contrast", "Change in mean |devi
 ```
 
 `r sprintf("CTmax spread did not narrow through the season: relative to early-season collections, the mean absolute deviation changed by %+.2f °C at the peak and %+.2f °C in the late season (95%% CIs %.2f to %.2f and %.2f to %.2f). This phenotypic check agrees with the genomic one: there is no sign of strong seasonal selection on thermal tolerance within lineages. It is a weak test, however: spread also reflects assay noise and the mix of acclimation histories within a collection, and immigration can replenish variation.", vs_tab$estimate[1], vs_tab$estimate[2], vs_tab$lo[1], vs_tab$hi[1], vs_tab$lo[2], vs_tab$hi[2])`
-
 
 ### Parasites, epibionts and thermal limits
 
@@ -3857,7 +3826,7 @@ inf_tab %>%
 Warming tolerance (CTmax minus habitat temperature) is the usual summary of vulnerability, and it is usually computed from a single CTmax per species. The results above show that "*A. tonsa*" CTmax varies at two levels that a single value ignores: heritable differences between lineages (common garden), and acclimation within lineages, which is the same across sites and seasons (within/between model). Lineage make-up also changes through the season. Three scenarios show how much each level changes where the species looks vulnerable.
 
 - **Fixed CTmax:** one value for everyone, the mean of all peak-season individuals.
-- **Clade means:** each clade's peak-season mean CTmax (its mean over all collections when it has < 5 peak-season individuals), weighted by the clade make-up of the site's peak collection.
+- **Clade means:** each clade's peak-season mean CTmax (its mean over all collections when it has \< 5 peak-season individuals), weighted by the clade make-up of the site's peak collection.
 - **Clades + acclimation:** CTmax predicted for each clade on each day from the within/between model (population-level, no site random effect): lineage + within-site temperature (the day's temperature minus the site's mean collection temperature) + between-site temperature (the site's long-term MUR mean). The day's temperature is clamped to the range of collection temperatures at which that lineage was sampled, so acclimation is not extrapolated beyond the data. Same peak-season make-up.
 
 Habitat temperature is the bias-corrected daily MUR SST, 2014–2023 (Section 1), plus 0 or 4 °C for a uniform-warming scenario. Sites are pooled into six regions (Florida: MR, FH; Chesapeake: MD, GW; Connecticut; Maine; Shediac: TK; Miramichi: RW), each site weighted equally; composition and acclimation terms are applied site by site before pooling. Two summaries per region, over August–September (the warmest months, peak abundance, and the period the peak collections represent): the mean warming tolerance of the peak-season population, and the warming tolerance on the warmest August–September day of each year (averaged over years) for the least tolerant lineage making up ≥ 10% of the peak collection. Intervals are 95% ranges from 1,000 bootstrap resamples of individuals (fixed and lineage means) or 1,000 draws of the model's fixed effects (lineages + acclimation). Individuals' CTmax was measured against collection-day water temperature, while predictions use MUR SST, which in summer runs cooler than the in-situ collection temperatures at the northern sites (Section 1); the acclimation scenario therefore uses MUR temperatures on a model fitted to in-situ ones.

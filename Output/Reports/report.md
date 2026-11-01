@@ -47,6 +47,8 @@
     collections](#genetic-basis-of-ctmax-within-collections)
   - [Candidate genes: mitochondrial amino-acid
     differences](#candidate-genes-mitochondrial-amino-acid-differences)
+  - [Candidate genes from experimental
+    evolution](#candidate-genes-from-experimental-evolution)
   - [Clade-specific protein divergence and gene
     function](#clade-specific-protein-divergence-and-gene-function)
   - [Trait variability within clades](#trait-variability-within-clades)
@@ -55,7 +57,8 @@
   - [Parasites, epibionts and thermal
     limits](#parasites-epibionts-and-thermal-limits)
 - [5. Partitioning vulnerability](#5-partitioning-vulnerability)
-- [6. Manuscript figures](#6-manuscript-figures)
+- [6. Objects for the manuscript
+  figures](#6-objects-for-the-manuscript-figures)
 
 ## Main Message
 
@@ -141,7 +144,7 @@ contrasted with cooler, more variable environment).
 
 Daily sea-surface temperature for 2014–2023 was taken from the MUR SST
 analysis (GHRSST Level 4, ~1 km) for each site, averaging the water
-pixels within 5 km of the site (`Scripts/05_site_environment.R`). Where
+pixels within 5 km of the site (`Scripts/01_site_environment.R`). Where
 MUR has no water near a site (Ganey’s Wharf, Ritchie Wharf), the water
 within 5 km of the nearest water pixel (14–19 km away) was used. MUR
 agreed closely with nearby monitoring stations wherever it resolves the
@@ -1493,7 +1496,7 @@ inside an ORF on the opposite strand are flagged; one member of each
 such pair is probably not a gene. The F contig (16.1 kb) covers most of
 the mitogenome, so the four F lineages can be compared across 11 ORFs;
 the X and IV contigs (about 5 kb) cover only COX1, CYTB and one further
-ORF, so clades are compared there (`Scripts/07_mito_aa.R`).
+ORF, so clades are compared there (`Scripts/06_mito_aa.R`).
 
 | ORF | Strand | Position (bp) | Codons | Nested antisense | Fixed nt differences | Nonsynonymous | Synonymous |
 |:---|:---|:---|---:|:---|---:|---:|---:|
@@ -1601,6 +1604,107 @@ The nuclear part of the candidate analysis (heat-shock proteins, nuclear
 OXPHOS subunits, lipid desaturases and elongases) needs the RefSeq
 annotation of the reference genome (GCF_053477335.1), which is not yet
 in the project.
+
+### Candidate genes from experimental evolution
+
+Fifteen transcripts that responded to selection in an
+experimental-evolution study of *A. tonsa* \[REF\] were placed on the
+reference genome with megablast (cluster target `candidates`, rules
+`expevol_blast` and `expevol_map`): each transcript’s best locus
+(74–100% of the transcript aligned, 93–99% identity) and the RefSeq
+genes it overlaps. Three transcripts span two neighbouring genes, giving
+18 genes, among them a mitochondrial HSP90 (Trap1), an HSP90
+co-chaperone (AHSA1), complex I and III subunits or assembly factors
+(ND-49, UQCC2), vitellogenin and its receptor, and growth-signalling,
+transcription and ribosome-biogenesis genes. Three of the 15 transcripts
+map to chromosome 6 (NC_137265.1), which carries the structural
+polymorphism in northern X.
+
+Two tests asked whether these genes behave differently from the rest of
+the genome in the field. (1) SNPs within the genes (± 2 kb) were
+compared with SNPs in random sets of the same number of other genes
+(1,000 sets) for the spatial temperature association, seasonal change
+(time in season and temperature), sign agreement of seasonal and spatial
+slopes, and the within-lineage CTmax association (all SNPs, not only
+unlinked ones). (2) Clade-specific amino-acid substitutions in the genes
+were compared with the genome background (the gene-set test above,
+codons called in at least three clades).
+
+| Transcript | Chromosome | Aligned share | Identity (%) | Gene(s) |
+|:---|:---|---:|---:|:---|
+| TRINITY_DN119996_c0_g1 | NC_137262.1 | 0.872 | 97.22 | LOC145313523 (ubiquinol-cytochrome-c reductase complex assembly factor 2) |
+| TRINITY_DN141181_c1_g5 | NC_137269.1 | 0.802 | 99.13 | TfIIFalpha (transcription factor IIFalpha isoform X1) |
+| TRINITY_DN141476_c0_g3 | NC_137272.1 | 0.987 | 98.26 | ND-49 (NADH dehydrogenase (ubiquinone) 49 kDa subunit isoform X4) |
+| TRINITY_DN144102_c0_g16 | NC_137260.1 | 0.946 | 98.76 | LOC145330791 (ribosome biogenesis protein BOP1 homolog); Ack-like (activated Cdc42 kinase-like) |
+| TRINITY_DN146090_c0_g4 | NC_137273.1 | 0.900 | 98.39 | S6kII (ribosomal protein S6 kinase II) |
+| TRINITY_DN147294_c5_g2 | NC_137265.1 | 0.745 | 93.19 | LOC145322399 (activator of 90 kDa heat shock protein ATPase homolog 1 isoform X1) |
+| TRINITY_DN147803_c0_g1 | NC_137273.1 | 0.952 | 98.16 | LOC145305377 (uncharacterized protein LOC145305377) |
+| TRINITY_DN148665_c4_g2 | NC_137271.1 | 0.821 | 97.19 | LOC145334047 (uncharacterized protein LOC145334047); LOC145334046 (ribosome biogenesis protein BMS1 homolog) |
+| TRINITY_DN149301_c0_g7 | NC_137265.1 | 1.000 | 98.10 | Trap1 (TNF receptor associated protein 1 isoform X1) |
+| TRINITY_DN149639_c2_g19 | NC_137274.1 | 0.837 | 95.67 | MBD-R2 (PHD finger protein MBD-R2 isoform X2) |
+| TRINITY_DN149855_c0_g15 | NC_137270.1 | 0.963 | 97.97 | LOC145332331 (vitellogenin-like isoform X1) |
+| TRINITY_DN150080_c2_g2 | NC_137273.1 | 0.916 | 97.98 | yl (putative vitellogenin receptor yl) |
+| TRINITY_DN151024_c6_g2 | NC_137273.1 | 0.803 | 95.20 | LOC145305862 (uncharacterized protein LOC145305862) |
+| TRINITY_DN151056_c4_g4 | NC_137263.1 | 0.912 | 96.19 | LOC145315635 (polyamine-transporting ATPase 13A3-like isoform X2) |
+| TRINITY_DN151143_c1_g7 | NC_137265.1 | 0.994 | 95.29 | DCTN4-p62 (dynactin subunit 4); Taf2 (TATA-box binding protein associated factor 2) |
+
+Placement of the experimental-evolution candidate transcripts on the
+reference genome.
+
+| Test | Group | Genes | SNPs | Statistic | Candidates | Other genes | p |
+|:---|:---|---:|---:|:---|---:|---:|---:|
+| Seasonal change (time) | F | 18 | 657 | mean z^2 | 0.964 | 0.946 | 0.39 |
+| Seasonal change (time) | S | 16 | 400 | mean z^2 | 0.559 | 0.595 | 0.63 |
+| Seasonal change (time) | X | 18 | 2371 | mean z^2 | 1.000 | 0.994 | 0.41 |
+| Seasonal change (temperature) | F | 18 | 657 | mean z^2 | 0.933 | 0.930 | 0.47 |
+| Seasonal change (temperature) | S | 16 | 400 | mean z^2 | 0.559 | 0.595 | 0.65 |
+| Seasonal change (temperature) | X | 18 | 2371 | mean z^2 | 1.035 | 0.988 | 0.17 |
+| Spatial temperature association | F | 18 | 657 | mean z^2 | 7.590 | 7.633 | 0.48 |
+| Seasonal-spatial sign agreement | F | 18 | 657 | share same sign | 0.480 | 0.473 | 0.41 |
+| Spatial temperature association | S | 16 | 368 | mean z^2 | 1.217 | 1.149 | 0.28 |
+| Seasonal-spatial sign agreement | S | 16 | 368 | share same sign | 0.489 | 0.498 | 0.59 |
+| Spatial temperature association | X | 18 | 2371 | mean z^2 | 1.604 | 1.806 | 0.84 |
+| Seasonal-spatial sign agreement | X | 18 | 2371 | share same sign | 0.515 | 0.510 | 0.39 |
+| CTmax association (within lineage) | F-FH | 17 | 303 | mean z^2 | 0.992 | 1.035 | 0.58 |
+| CTmax association (within lineage) | F-N | 17 | 516 | mean z^2 | 0.868 | 0.991 | 0.83 |
+| CTmax association (within lineage) | IV | 12 | 91 | mean z^2 | 1.298 | 1.231 | 0.38 |
+| CTmax association (within lineage) | S | 16 | 345 | mean z^2 | 1.131 | 1.028 | 0.19 |
+| CTmax association (within lineage) | X | 18 | 2623 | mean z^2 | 1.036 | 0.991 | 0.18 |
+
+SNP-level signals in the experimental-evolution candidate genes against
+random sets of other genes (one-sided p, larger in the candidates).
+
+| Set                               | Genes | Clade |   N |   S | N/(N+S) | Background |     p |
+|:----------------------------------|------:|:------|----:|----:|--------:|-----------:|------:|
+| Heat-shock genes (by name)        |    41 | F     |   5 | 106 |   0.045 |      0.198 | 0.002 |
+| Heat-shock genes (by name)        |    41 | S     |   7 |  99 |   0.066 |      0.185 | 0.008 |
+| Heat-shock genes (by name)        |    41 | X     |   9 |  70 |   0.114 |      0.190 | 0.096 |
+| Heat-shock genes (by name)        |    41 | IV    |  18 | 147 |   0.109 |      0.215 | 0.004 |
+| Nuclear OXPHOS subunits (by name) |    13 | F     |   8 |  15 |   0.348 |      0.198 | 0.100 |
+| Nuclear OXPHOS subunits (by name) |    13 | S     |   7 |  15 |   0.318 |      0.185 | 0.120 |
+| Nuclear OXPHOS subunits (by name) |    13 | X     |   5 |  17 |   0.227 |      0.190 | 0.670 |
+| Nuclear OXPHOS subunits (by name) |    13 | IV    |   6 |  20 |   0.231 |      0.215 | 0.810 |
+| Experimental-evolution genes      |    12 | F     |  16 |  39 |   0.291 |      0.198 | 0.300 |
+| Experimental-evolution genes      |    12 | S     |  12 |  31 |   0.279 |      0.185 | 0.340 |
+| Experimental-evolution genes      |    12 | X     |   3 |  47 |   0.060 |      0.190 | 0.130 |
+| Experimental-evolution genes      |    12 | IV    |  17 |  61 |   0.218 |      0.215 | 0.960 |
+
+Clade-specific amino-acid substitutions in candidate gene sets against
+random background gene sets (two-sided permutation p).
+
+Neither test found anything. At the SNP level the candidate genes were
+indistinguishable from other genes for every statistic and group (p =
+0.17–0.84): genes that responded to selection in the laboratory show no
+excess spatial, seasonal or CTmax-associated variation in the field. At
+the protein level, 12 of the 18 genes had enough coverage, and no clade
+had an excess of amino-acid substitutions in them (p = 0.13–0.96). The
+core thermal candidates (Trap1, AHSA1, ND-49, UQCC2, vitellogenin) could
+not be compared: at \< 1x coverage against a single reference, too few
+of their codons were called in three clades (S and IV, the clades most
+divergent from the reference, are under-called in coding sequence).
+Heat-shock genes as a class were strongly conserved: N/(N+S) was
+0.05–0.11 on every branch against 0.18–0.21 genome-wide (p = 0.002–0.008
+in F, S and IV; 0.10 in X).
 
 ### Clade-specific protein divergence and gene function
 
@@ -2901,6 +3005,33 @@ branch than on the same gene’s other three branches (one-sided Fisher
 test, genes with at least 3 nonsynonymous substitutions on the branch; q
 \< 0.1).
 
+Protein divergence among clades followed functional class, and almost
+identically on every branch. Ribosome biogenesis, rRNA processing, the
+nucleolus and mitochondrial gene expression carried more nonsynonymous
+change than other annotated genes on all four branches (q \< 0.03),
+while neuronal, developmental, cytoskeletal and vesicle-trafficking
+genes were conserved (100–190 terms per clade). This is the familiar
+ranking of protein evolutionary rates by function, not clade-specific
+adaptation. Genes annotated to the response to heat or temperature,
+protein folding, heat-shock protein binding, oxidative phosphorylation
+and the respiratory chain showed no excess on any branch (N/(N+S) at or
+below background). The only clearly clade-specific signal was in S, with
+an excess in nuclear-encoded mitochondrial ribosomal proteins and
+mitochondrial protein complexes (mitochondrial large ribosomal subunit
+0.43 vs 0.14, q = 0.001), a pattern expected from mitonuclear
+coevolution and of interest because mitonuclear compatibility affects
+thermal performance in other copepods \[REF: *Tigriopus*\]. Weaker
+clade-specific terms (immune regulation in X; DNA repair and apoptosis
+in IV; q = 0.005–0.04) are not interpreted. At the gene level,
+branch-specific acceleration was no more common than chance (3 genes at
+q \< 0.1, all uncharacterized). Unannotated genes, which have about
+twice the nonsynonymous fraction of annotated genes (0.28–0.32 vs
+0.16–0.19), were excluded from the background so that annotated terms
+are compared with annotated genes. Clade differences in CTmax are
+heritable (natural common gardens) but cannot be traced to accelerated
+protein change in thermal-function genes with these data, which points
+to regulatory or highly polygenic differences.
+
 ### Trait variability within clades
 
 Shown below is the trait variation (ranges) for each site. Ranges are
@@ -3081,23 +3212,12 @@ These are illustrations, not forecasts: they assume composition and the
 acclimation response stay as observed, warming is uniform through the
 season, and CTmax is the relevant limit.
 
-## 6. Manuscript figures
+## 6. Objects for the manuscript figures
 
-Main-text figures for the merged manuscript, assembled from the analyses
-above (saved as `Output/Figures/ms-fig<N>-1.png` / `.pdf`).
+The manuscript figures are built in `Manuscript/ms_figures.qmd`, which
+renders in seconds because it only plots. It reads the model results and
+summaries saved here, so after changing an analysis, render this report
+first and then `ms_figures.qmd` (`00_controller.R` steps 7 and 8); to
+change only how a figure looks, render `ms_figures.qmd` alone.
 
-<img src="../Figures/ms-fig1-1.png" data-fig-align="center" />
-
-<img src="../Figures/ms-fig2-1.png" data-fig-align="center" />
-
-<img src="../Figures/ms-fig3-1.png" data-fig-align="center" />
-
-<img src="../Figures/ms-fig4-1.png" data-fig-align="center" />
-
-<img src="../Figures/ms-figS-drift-1.png" data-fig-align="center" />
-
-<img src="../Figures/ms-fig5-1.png" data-fig-align="center" />
-
-<img src="../Figures/ms-figS-trees-1.png" data-fig-align="center" />
-
-<img src="../Figures/ms-fig6-1.png" data-fig-align="center" />
+    ## Saved 23 objects to Output/Output_data/ms_objects.rds (1.3 Mb)
