@@ -23,30 +23,30 @@ est,lo,hi,metric,region,scenario,warming
 13.620565062967337,13.151027621794242,14.086652440052578,"Warmest day, least tolerant common clade",Miramichi,Clade means,0
 15.218338344322323,14.773705004936927,15.662654024621556,Aug–Sep mean,Shediac,Clade means,0
 13.029695062967338,12.560157621794243,13.49578244005258,"Warmest day, least tolerant common clade",Shediac,Clade means,0
-10.088130995208532,9.332496747068307,10.821433818013489,Aug–Sep mean,Chesapeake,Clades + acclimation,0
-7.6853093429557635,6.888394221636351,8.433134023471514,"Warmest day, least tolerant common clade",Chesapeake,Clades + acclimation,0
-13.360328178241772,12.090379494064733,14.473863569421104,Aug–Sep mean,Connecticut,Clades + acclimation,0
-11.104154930412445,9.858924510551079,12.185630472112583,"Warmest day, least tolerant common clade",Connecticut,Clades + acclimation,0
-7.526873439948291,6.288518230455167,8.604791599140924,Aug–Sep mean,Florida,Clades + acclimation,0
-6.135491305970618,4.8753285488424805,7.209916985528865,"Warmest day, least tolerant common clade",Florida,Clades + acclimation,0
-16.91633698697729,16.1179279460676,17.67812429397905,Aug–Sep mean,Maine,Clades + acclimation,0
-14.900446698088238,14.097295048966421,15.633838206105622,"Warmest day, least tolerant common clade",Maine,Clades + acclimation,0
-16.212154831306606,15.279038010291107,17.014373281015978,Aug–Sep mean,Miramichi,Clades + acclimation,0
-14.131517269855188,13.203636147150803,14.93149005798857,"Warmest day, least tolerant common clade",Miramichi,Clades + acclimation,0
-15.416732646514673,14.397407124187268,16.244225634671537,Aug–Sep mean,Shediac,Clades + acclimation,0
-13.572396575553217,12.57718393812052,14.409576227504596,"Warmest day, least tolerant common clade",Shediac,Clades + acclimation,0
-10.181880734936009,9.428839812546085,10.914795365957925,Aug–Sep mean,Chesapeake,Clades + acclimation (annual make-up),0
-7.364962075032219,6.541437662972555,8.151594327566897,"Warmest day, least tolerant common clade",Chesapeake,Clades + acclimation (annual make-up),0
-12.585823789120573,11.361603881931364,13.664522774331012,Aug–Sep mean,Connecticut,Clades + acclimation (annual make-up),0
-9.13809330857703,7.900194671301393,10.27246696535242,"Warmest day, least tolerant common clade",Connecticut,Clades + acclimation (annual make-up),0
-7.452442319655674,6.2090022923260495,8.525426561299321,Aug–Sep mean,Florida,Clades + acclimation (annual make-up),0
-5.694736286142064,4.452745838008943,6.782448304349804,"Warmest day, least tolerant common clade",Florida,Clades + acclimation (annual make-up),0
-16.670480863045253,15.888264185387138,17.40806936550872,Aug–Sep mean,Maine,Clades + acclimation (annual make-up),0
-12.934385076252823,12.115418731940727,13.66100464991887,"Warmest day, least tolerant common clade",Maine,Clades + acclimation (annual make-up),0
-16.135902965470223,15.209229643943033,16.933228032121626,Aug–Sep mean,Miramichi,Clades + acclimation (annual make-up),0
-14.131517269855188,13.203636147150803,14.93149005798857,"Warmest day, least tolerant common clade",Miramichi,Clades + acclimation (annual make-up),0
-14.646404408719512,13.659997856948484,15.482862588265453,Aug–Sep mean,Shediac,Clades + acclimation (annual make-up),0
-11.606334953717802,10.612786225678116,12.47229666495438,"Warmest day, least tolerant common clade",Shediac,Clades + acclimation (annual make-up),0
+10.160721132101164,9.472915634935568,10.873089775171612,Aug–Sep mean,Chesapeake,Clades + acclimation,0
+7.861126466476639,7.092367721696471,8.607810047752745,"Warmest day, least tolerant common clade",Chesapeake,Clades + acclimation,0
+13.627580539965969,12.911520454283712,14.327510502396333,Aug–Sep mean,Connecticut,Clades + acclimation,0
+11.423348979949107,10.67670715293265,12.136458400630925,"Warmest day, least tolerant common clade",Connecticut,Clades + acclimation,0
+7.6001803693135255,6.66741175724589,8.517172023074881,Aug–Sep mean,Florida,Clades + acclimation,0
+6.266094988607687,5.291761743202603,7.215512705912752,"Warmest day, least tolerant common clade",Florida,Clades + acclimation,0
+16.411093608569512,15.472249686760652,17.319848552883528,Aug–Sep mean,Maine,Clades + acclimation,0
+14.424785624740103,13.510407557354826,15.274635923878867,"Warmest day, least tolerant common clade",Maine,Clades + acclimation,0
+15.89084215737384,14.996493496109856,16.765059930311683,Aug–Sep mean,Miramichi,Clades + acclimation,0
+13.890087549327511,13.039678785455706,14.70261084239947,"Warmest day, least tolerant common clade",Miramichi,Clades + acclimation,0
+15.214240715747733,14.361744301257165,16.026369451102358,Aug–Sep mean,Shediac,Clades + acclimation,0
+13.442425582204233,12.613560406059847,14.225274897366816,"Warmest day, least tolerant common clade",Shediac,Clades + acclimation,0
+10.25257413853743,9.564567005398567,10.954092392314644,Aug–Sep mean,Chesapeake,Clades + acclimation (annual make-up),0
+7.497085531669546,6.737370087030471,8.292539810348684,"Warmest day, least tolerant common clade",Chesapeake,Clades + acclimation (annual make-up),0
+12.827344298657808,12.123741871928683,13.49905529671128,Aug–Sep mean,Connecticut,Clades + acclimation (annual make-up),0
+9.385536252247423,8.58777300578703,10.113187911234247,"Warmest day, least tolerant common clade",Connecticut,Clades + acclimation (annual make-up),0
+7.470167494630419,6.564677922076204,8.365166928461308,Aug–Sep mean,Florida,Clades + acclimation (annual make-up),0
+5.572437006953159,4.746154340504761,6.438182308452383,"Warmest day, least tolerant common clade",Florida,Clades + acclimation (annual make-up),0
+16.173749403979425,15.218320090955972,17.081684863365624,Aug–Sep mean,Maine,Clades + acclimation (annual make-up),0
+12.386972897038415,11.377574953936511,13.351820567302319,"Warmest day, least tolerant common clade",Maine,Clades + acclimation (annual make-up),0
+15.811807491834047,14.91210997116496,16.68780767657679,Aug–Sep mean,Miramichi,Clades + acclimation (annual make-up),0
+13.890087549327511,13.039678785455706,14.70261084239947,"Warmest day, least tolerant common clade",Miramichi,Clades + acclimation (annual make-up),0
+14.415799471560526,13.545651113703082,15.263798900221808,Aug–Sep mean,Shediac,Clades + acclimation (annual make-up),0
+11.404612854502549,10.45796829673727,12.273652568192668,"Warmest day, least tolerant common clade",Shediac,Clades + acclimation (annual make-up),0
 5.373753795687483,5.030061959192912,5.731207335494535,Aug–Sep mean,Chesapeake,Fixed CTmax,4
 2.5540771195679532,2.2103852830733826,2.911530659375005,"Warmest day, least tolerant common clade",Chesapeake,Fixed CTmax,4
 10.536953872526897,10.193262036032328,10.89440741233395,Aug–Sep mean,Connecticut,Fixed CTmax,4
@@ -71,27 +71,27 @@ est,lo,hi,metric,region,scenario,warming
 9.620565062967337,9.151027621794242,10.086652440052578,"Warmest day, least tolerant common clade",Miramichi,Clade means,4
 11.218338344322323,10.773705004936929,11.662654024621556,Aug–Sep mean,Shediac,Clade means,4
 9.029695062967338,8.560157621794243,9.49578244005258,"Warmest day, least tolerant common clade",Shediac,Clade means,4
-6.617922137572444,5.810699829865775,7.382694834027741,Aug–Sep mean,Chesapeake,Clades + acclimation,4
-4.076909817634508,3.227271970837614,4.864057712877771,"Warmest day, least tolerant common clade",Chesapeake,Clades + acclimation,4
-9.94812978120002,8.64468601786489,11.075240362292227,Aug–Sep mean,Connecticut,Clades + acclimation,4
-7.497658144492878,6.258560187122663,8.619113128302985,"Warmest day, least tolerant common clade",Connecticut,Clades + acclimation,4
-4.1181575070811896,2.8231319168344973,5.222726734440809,Aug–Sep mean,Florida,Clades + acclimation,4
-2.7071721862185676,1.4174795320134075,3.8568920864960767,"Warmest day, least tolerant common clade",Florida,Clades + acclimation,4
-13.509272909661373,12.7131972723869,14.233128114122962,Aug–Sep mean,Maine,Clades + acclimation,4
-11.493382620772323,10.675450926463279,12.231224869466956,"Warmest day, least tolerant common clade",Maine,Clades + acclimation,4
-12.805090753990697,11.882042491901025,13.592643299957144,Aug–Sep mean,Miramichi,Clades + acclimation,4
-10.72445319253928,9.806736549527095,11.553252222512912,"Warmest day, least tolerant common clade",Miramichi,Clades + acclimation,4
-12.009668569198757,11.035262576341154,12.848770673270051,Aug–Sep mean,Shediac,Clades + acclimation,4
-10.165332498237301,9.177394517026233,11.028679278275707,"Warmest day, least tolerant common clade",Shediac,Clades + acclimation,4
-6.728358398169554,5.93087309731367,7.477430212891826,Aug–Sep mean,Chesapeake,Clades + acclimation (annual make-up),4
-3.514794832237566,2.6748314888762423,4.333280226036154,"Warmest day, least tolerant common clade",Chesapeake,Clades + acclimation (annual make-up),4
-9.16569470178801,7.909935301077812,10.3019617736594,Aug–Sep mean,Connecticut,Clades + acclimation (annual make-up),4
-5.531596522657463,4.287637383687261,6.728114204599481,"Warmest day, least tolerant common clade",Connecticut,Clades + acclimation (annual make-up),4
-3.9855051373542496,2.6989716380043314,5.084570627141558,Aug–Sep mean,Florida,Clades + acclimation (annual make-up),4
-1.981324452672382,0.7126191528154295,3.092239962918033,"Warmest day, least tolerant common clade",Florida,Clades + acclimation (annual make-up),4
-13.263414914371392,12.484877185929005,13.973549424524837,Aug–Sep mean,Maine,Clades + acclimation (annual make-up),4
-9.527320998936908,8.668347871113173,10.279396348711684,"Warmest day, least tolerant common clade",Maine,Clades + acclimation (annual make-up),4
-12.728838888154314,11.800646694019077,13.508680246213654,Aug–Sep mean,Miramichi,Clades + acclimation (annual make-up),4
-10.72445319253928,9.806736549527095,11.553252222512912,"Warmest day, least tolerant common clade",Miramichi,Clades + acclimation (annual make-up),4
-11.239340331403596,10.258173519283698,12.077626446246267,Aug–Sep mean,Shediac,Clades + acclimation (annual make-up),4
-8.199270876401886,7.165834442202199,9.117453071048585,"Warmest day, least tolerant common clade",Shediac,Clades + acclimation (annual make-up),4
+6.553620639130136,5.82027481508574,7.262958942294522,Aug–Sep mean,Chesapeake,Clades + acclimation,4
+4.129176750898939,3.3604955245190093,4.878372116225956,"Warmest day, least tolerant common clade",Chesapeake,Clades + acclimation,4
+10.02048004699494,9.247365711411492,10.762577536401352,Aug–Sep mean,Connecticut,Clades + acclimation,4
+7.678861913051772,6.947834835576995,8.395467937796683,"Warmest day, least tolerant common clade",Connecticut,Clades + acclimation,4
+3.9930798763424953,3.0829645946524096,4.912920606909498,Aug–Sep mean,Florida,Clades + acclimation,4
+2.57735340453279,1.5905649736101761,3.5386399549659555,"Warmest day, least tolerant common clade",Florida,Clades + acclimation,4
+12.803993115598486,11.797553214795313,13.735579411383512,Aug–Sep mean,Maine,Clades + acclimation,4
+10.672822149578373,9.730751716419498,11.569270720403253,"Warmest day, least tolerant common clade",Maine,Clades + acclimation,4
+12.28374166440281,11.31696236547908,13.18353262939308,Aug–Sep mean,Miramichi,Clades + acclimation,4
+10.158891197872698,9.274925150556768,11.013173969213838,"Warmest day, least tolerant common clade",Miramichi,Clades + acclimation,4
+11.607140222776707,10.701388017955463,12.466247715456385,Aug–Sep mean,Shediac,Clades + acclimation,4
+9.7067336714579,8.861554238922078,10.541353069311011,"Warmest day, least tolerant common clade",Shediac,Clades + acclimation,4
+6.645473645566401,5.9211277302319,7.340614095060224,Aug–Sep mean,Chesapeake,Clades + acclimation (annual make-up),4
+3.7651358160918456,2.9744636673180986,4.555704997922538,"Warmest day, least tolerant common clade",Chesapeake,Clades + acclimation (annual make-up),4
+9.22024380568678,8.475235714084002,9.929232867053859,Aug–Sep mean,Connecticut,Clades + acclimation (annual make-up),4
+5.641049185350088,4.814024145956571,6.400234770397366,"Warmest day, least tolerant common clade",Connecticut,Clades + acclimation (annual make-up),4
+3.8630670016593887,2.9862086295234893,4.758022760952718,Aug–Sep mean,Florida,Clades + acclimation (annual make-up),4
+1.8836954228782616,1.0397749659574969,2.7304796719108944,"Warmest day, least tolerant common clade",Florida,Clades + acclimation (annual make-up),4
+12.566648911008397,11.590889031933466,13.510910170353133,Aug–Sep mean,Maine,Clades + acclimation (annual make-up),4
+8.635009421876685,7.574603669278514,9.624284710125359,"Warmest day, least tolerant common clade",Maine,Clades + acclimation (annual make-up),4
+12.204706998863019,11.236182125536526,13.10977820630778,Aug–Sep mean,Miramichi,Clades + acclimation (annual make-up),4
+10.158891197872698,9.274925150556768,11.013173969213838,"Warmest day, least tolerant common clade",Miramichi,Clades + acclimation (annual make-up),4
+10.808698978589497,9.904999073613157,11.702729446759658,Aug–Sep mean,Shediac,Clades + acclimation (annual make-up),4
+7.668920943756216,6.710104275061408,8.56292786258681,"Warmest day, least tolerant common clade",Shediac,Clades + acclimation (annual make-up),4
