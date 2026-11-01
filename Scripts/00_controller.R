@@ -25,7 +25,7 @@ process_gwas_inputs      <- FALSE # 05: sample table -> Output_data/ctmax_gwas_p
 process_mito_aa          <- FALSE # 06: mitogenome consensus + sample table -> Output_data/mito_aa/*.csv
 render_report            <- T # Output/Reports/report.qmd -> analyses, report figures, Output_data/ms_objects.rds
 render_ms_figures        <- T # Manuscript/ms_figures.qmd -> manuscript figures (plots only; seconds)
-render_genome_manuscript <- T # Manuscript/Sasaki_Pespeni_LCWG.qmd -> Output/Drafts/
+render_manuscript <- T # Manuscript/Sasaki_Pespeni_LCWG.qmd -> Output/Drafts/
 
 # Which cluster export to use (a folder name in Raw_data/cluster_exports/).
 # NULL = the most recent one. Pin a folder name to freeze a manuscript's inputs.
@@ -92,7 +92,7 @@ render_draft <- function(qmd, prefix) {
   file.remove(drafts)
 }
 
-if (render_genome_manuscript) {
+if (render_manuscript) {
   render_draft("Sasaki_Pespeni_LCWG.qmd", "dev_lcwg_draft_")
 }
 

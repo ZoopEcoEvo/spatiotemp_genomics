@@ -121,8 +121,8 @@ ggarrange(m1_map, ggarrange(m1_temp, m1_ctmax, ncol = 1, labels = c("B", "C"), c
 ```{r}
 #| label: ms-fig2
 #| fig-width: 11
-#| fig-height: 10
-# Figure 2: genome-wide structure (PCA), clade composition, and the CTmax shift from lineage turnover
+#| fig-height: 9
+# Figure 2: genome-wide structure (PCA) and clade composition
 # Supplementary: genome-wide PCA of all individuals, and PCAs within each clade
 m3_all <- ggplot(pca_all, aes(x = PC1, y = PC2, colour = clade, shape = clade)) +
   geom_point(size = 2, alpha = 0.8) +
@@ -160,32 +160,17 @@ m2_comp <- ggplot(clade_comp, aes(x = season, fill = clade)) +
   labs(x = NULL, y = "Share of individuals") +
   theme_matt_facets(base_size = 11) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "bottom")
-# turnover: expected CTmax from composition vs collection temperature, both relative to the site mean
-turn_dev <- ce_obs %>% group_by(site_code) %>% filter(n() > 1) %>%
-  mutate(d_ct = exp_ctmax - weighted.mean(exp_ctmax, n), d_t = temp - weighted.mean(temp, n)) %>% ungroup()
-m2_turn <- ggplot(turn_dev, aes(x = d_t, y = d_ct)) +
-  geom_hline(yintercept = 0, colour = "grey80") + geom_vline(xintercept = 0, colour = "grey80") +
-  geom_abline(slope = slope_obs, intercept = 0, linewidth = 1) +
-  geom_abline(slope = acc_slope, intercept = 0, linetype = "dashed", colour = "grey50") +
-  geom_point(aes(size = n), colour = "grey20", alpha = 0.8) +
-  ggrepel::geom_text_repel(data = ~ filter(.x, abs(d_ct) > 0.35), aes(label = paste(site_code, season)),
-                           size = 2.6, colour = "grey30", seed = 1, min.segment.length = 0.2) +
-  scale_size_continuous(range = c(1.2, 3), guide = "none") +
-  annotate("text", x = Inf, y = -Inf, hjust = 1.05, vjust = -0.4, size = 3,
-           label = sprintf("turnover %.2f °C/°C (solid)\nacclimation %.2f °C/°C (dashed)", slope_obs, acc_slope)) +
-  labs(x = "Temperature − site mean (°C)", y = "Expected CTmax from\ncomposition − site mean (°C)") +
-  theme_matt(base_size = 11)
 m3_all <- m3_all + theme(legend.position = "none")
 ggarrange(ggarrange(m3_all, m3_within, nrow = 1, widths = c(0.8, 1.2), labels = c("A", "B")),
-          ggarrange(m2_comp, m2_turn, nrow = 1, widths = c(1.75, 1), labels = c("C", "D")),
-          ncol = 1, heights = c(1, 0.95))
+          m2_comp, ncol = 1, heights = c(1, 0.85), labels = c("", "C"))
 ```
 
 ```{r}
 #| label: ms-fig3
 #| fig-width: 10
 #| fig-height: 8
-# Figure 3: phenotype - CTmax differs more per degree between sites (space) than through the season
+# Figure 3: phenotype - CTmax differs more per degree between sites (space) than through the season,
+# within clades (plasticity) and through clade composition (turnover)
 ci_tab <- function(m, terms) {
   b <- lme4::fixef(m); se <- sqrt(diag(as.matrix(vcov(m))))
   tibble(term = terms, est = b[terms], lo = b[terms] - 1.96 * se[terms], hi = b[terms] + 1.96 * se[terms])
@@ -197,7 +182,7 @@ m3_slopes <- ggplot(diff_dat, aes(x = diff, y = group, colour = group, shape = a
   geom_pointrange(aes(xmin = lo, xmax = hi), size = 0.6, linewidth = 0.9) +
   scale_colour_manual(values = c(clade_cols[tonsa_clades], `All clades` = "black"), guide = "none") +
   scale_shape_manual(values = c(`FALSE` = 16, `TRUE` = 18), guide = "none") +
-  labs(x = "Spatial slope − seasonal slope (°C CTmax per °C)", y = NULL) +
+  labs(x = "Spatial − seasonal slope\n(°C CTmax per °C)", y = NULL) +
   theme_matt(base_size = 11)
 m4_ctmax <- ggplot(filter(vp_tab, share > 0), aes(x = model, y = share, fill = component)) +
   geom_col(width = 0.6, colour = "white") +
@@ -208,7 +193,17 @@ m4_ctmax <- ggplot(filter(vp_tab, share > 0), aes(x = model, y = share, fill = c
   labs(x = NULL, y = "Share of CTmax variance") +
   theme_matt(base_size = 11) +
   theme(legend.position = "bottom")
-ggarrange(m3_slopes, m4_ctmax, ncol = 1, heights = c(0.8, 1), labels = c("A", "B"))
+m3_turn <- ggplot(turn_tab, aes(x = est, y = component, colour = axis, shape = axis)) +
+  geom_vline(xintercept = 0, colour = "grey50", linetype = "dashed") +
+  geom_pointrange(aes(xmin = lo, xmax = hi), position = position_dodge(width = 0.5), size = 0.5, linewidth = 0.9) +
+  scale_colour_manual(values = c(Seasonal = "grey55", Spatial = "black"), name = NULL) +
+  scale_shape_manual(values = c(Seasonal = 17, Spatial = 16), name = NULL) +
+  scale_y_discrete(labels = function(x) str_wrap(x, 14)) +
+  labs(x = "Slope\n(°C CTmax per °C)", y = NULL) +
+  theme_matt(base_size = 11) +
+  theme(legend.position = "bottom")
+ggarrange(ggarrange(m3_slopes, m3_turn, nrow = 1, widths = c(1, 1), labels = c("A", "B")),
+          m4_ctmax, ncol = 1, heights = c(0.9, 1), labels = c("", "C"))
 ```
 
 ```{r}

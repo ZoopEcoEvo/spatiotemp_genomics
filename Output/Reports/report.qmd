@@ -3173,48 +3173,91 @@ cg_tab %>%
 
 The two largest lineage differences hold up when lineages are compared side by side. IV is about 2.5–2.9 °C less tolerant than X and S in the same collections (three and one shared collections), as large as or larger than the difference estimated across all collections. F-N is about 0.8 °C more tolerant than S across the three Chesapeake collections where both occur (MD early and late, GW late), close to its overall estimate. These differences cannot be acclimation. The S–X difference is the exception: about 1 °C across all collections, but only 0.4 °C (CI spanning zero) in the two Connecticut collections where they co-occur, so part of it may reflect where each lineage was collected rather than the lineages themselves. The F-MR and F-NE contrasts each rest on a single collection and are uninformative. Caveats: co-occurring lineages may differ in body size, development or recent history (for example, advection from elsewhere), so "heritable" here means not explained by shared recent conditions, not necessarily genetic.
 
-#### Does lineage turnover change seasonal thermal tolerance?
+#### Does clade turnover change thermal tolerance across space and season?
 
-If lineages differ heritably in CTmax and their make-up changes through the season, turnover alone shifts the CTmax a collection would have, independent of acclimation. For each collection, the expected CTmax from composition alone is the composition-weighted mean of the lineage effects (temperature-adjusted lineage means from the within/between model). Its within-site slope against collection temperature (site as a fixed effect, weighted by individuals) is compared with the within-site acclimation slope. The null shuffles lineage labels among individuals across the seasons of each site (10⁴ permutations), keeping each site's lineages but removing their timing.
+If clades differ heritably in CTmax and their make-up changes with temperature, composition alone shifts the CTmax a collection would have, independent of acclimation. For each collection, the expected CTmax from composition alone is the mean of its individuals' clade effects (temperature-adjusted clade means from the season-mean model, `wb_sm_add`). It is regressed, weighted by individuals, on the same two temperature components as CTmax itself: the season's mean collection temperature across sites (seasonal) and the collection's deviation from it (spatial). These composition slopes sit beside the within-clade (plasticity) slopes of the season-mean model; their sum is the slope of the whole community's CTmax. Uncertainty in the composition slopes comes from 2,000 bootstraps that resample individuals within collections and draw the clade effects from their estimated sampling distribution. Two nulls, 10⁴ permutations each: for the seasonal slope, clade labels are shuffled among individuals across the seasons of each site (each site keeps its clades, their timing is removed); for the spatial slope, among individuals across the sites of each season (each season keeps its clades, their sites are removed). The within-site slope against collection temperature (site as a fixed effect), used in earlier drafts, is kept as a check.
 
 ```{r}
 #| label: turnover-ctmax
 #| fig-width: 7
-#| fig-height: 5
-lin_eff <- as_tibble(summary(emmeans::emmeans(wb_add, ~ lineage))) %>%
+#| fig-height: 3.5
+lin_em <- emmeans::emmeans(wb_sm_add, ~ lineage)
+lin_eff <- as_tibble(summary(lin_em)) %>%
   transmute(lineage = as.character(lineage), mu = emmean)
+lin_V <- vcov(lin_em)
 comp_t <- comp %>% filter(as.character(lineage) %in% lin_eff$lineage) %>%
-  mutate(mu = lin_eff$mu[match(as.character(lineage), lin_eff$lineage)])
-coll_exp <- function(d) d %>% group_by(site_code, season) %>%
-  summarise(exp_ctmax = mean(mu), temp = mean(collection_temp, na.rm = TRUE), n = n(), .groups = "drop")
-turn_slope <- function(ce) {
-  ce <- ce %>% group_by(site_code) %>% filter(n() > 1) %>% ungroup()
-  unname(coef(lm(exp_ctmax ~ site_code + temp, data = ce, weights = n))["temp"])
+  mutate(mu = lin_eff$mu[match(as.character(lineage), lin_eff$lineage)],
+         season_mean = wb_season_means$season_mean[match(as.character(season), as.character(wb_season_means$season))]) %>%
+  filter(!is.na(season_mean), !is.na(collection_temp))
+turn_g <- interaction(comp_t$site_code, comp_t$season, drop = TRUE, lex.order = TRUE)
+ce_obs <- comp_t %>% mutate(g = turn_g) %>% group_by(g) %>%
+  summarise(site_code = first(site_code), season = first(season), exp_ctmax = mean(mu),
+            temp = mean(collection_temp), season_mean = first(season_mean), n = n(), .groups = "drop") %>%
+  mutate(t_time = season_mean, t_space = temp - season_mean)
+stopifnot(identical(as.character(ce_obs$g), levels(turn_g)))
+turn_X <- cbind(1, ce_obs$t_time, ce_obs$t_space)
+turn_fit <- function(mu) {
+  y <- as.vector(rowsum(mu, turn_g, reorder = TRUE)) / ce_obs$n
+  setNames(lm.wfit(turn_X, y, ce_obs$n)$coefficients[2:3], c("seasonal", "spatial"))
 }
-ce_obs <- coll_exp(comp_t)
-slope_obs <- turn_slope(ce_obs)
+turn_obs <- turn_fit(comp_t$mu)
 set.seed(2)
-by_site_t <- split(comp_t, comp_t$site_code, drop = TRUE)
-slope_null <- replicate(1e4, {
-  d <- map_dfr(by_site_t, function(x) { x$mu <- sample(x$mu); x })
-  turn_slope(coll_exp(d))
-})
-slope_p <- (sum(abs(slope_null) >= abs(slope_obs)) + 1) / (length(slope_null) + 1)
-acc_slope <- unname(lme4::fixef(wb_add)["t_within"])
+idx_coll <- split(seq_len(nrow(comp_t)), turn_g)
+# bootstrap: individuals resampled within collections, and clade effects drawn from their
+# sampling distribution (emmeans covariance)
+comp_lin <- match(as.character(comp_t$lineage), lin_eff$lineage)
+turn_boot <- t(replicate(2000, {
+  eff <- MASS::mvrnorm(1, lin_eff$mu, lin_V)
+  i <- unlist(lapply(idx_coll, function(k) k[sample.int(length(k), replace = TRUE)]))
+  mu <- eff[comp_lin]; mu[unlist(idx_coll)] <- mu[i]
+  turn_fit(mu)
+}))
+turn_perm <- function(by) {
+  idx <- split(seq_len(nrow(comp_t)), by, drop = TRUE)
+  t(replicate(1e4, {
+    mu <- comp_t$mu
+    for (k in idx) mu[k] <- mu[k[sample.int(length(k))]]
+    turn_fit(mu)
+  }))
+}
+perm_time <- turn_perm(comp_t$site_code)[, "seasonal"]
+perm_space <- turn_perm(comp_t$season)[, "spatial"]
+pp <- function(null, obs) (sum(abs(null) >= abs(obs)) + 1) / (length(null) + 1)
+turn_p <- c(seasonal = pp(perm_time, turn_obs[["seasonal"]]), spatial = pp(perm_space, turn_obs[["spatial"]]))
+# within-site check (earlier drafts): site as a fixed effect, raw collection temperature
+slope_obs <- unname(coef(lm(exp_ctmax ~ site_code + temp, data = ce_obs, weights = n))["temp"])
 
-ce_obs %>%
-  group_by(site_code) %>% filter(n() > 1) %>% ungroup() %>%
-  mutate(site_code = factor(site_code, levels = site_order)) %>%
-  ggplot(aes(x = temp, y = exp_ctmax, colour = site_code, group = site_code)) +
-  geom_line(linewidth = 0.8) +
-  geom_point(aes(size = n)) +
-  scale_colour_manual(values = pop_cols[site_order], name = "Site") +
-  scale_size_continuous(range = c(1.5, 4), name = "Individuals") +
-  labs(x = "Collection temperature (°C)", y = "Expected CTmax from lineage composition (°C)") +
-  theme_matt(base_size = 13)
+pl <- filter(wb_diff, split == "Season-mean split", group == "All clades")
+turn_se <- apply(turn_boot, 2, sd)
+turn_diff_se <- sd(turn_boot[, "spatial"] - turn_boot[, "seasonal"])
+turn_tab <- tibble(
+  component = rep(c("Within clades (plasticity)", "Clade composition", "Community total"), each = 2),
+  axis = rep(c("Seasonal", "Spatial"), 3),
+  est = c(pl$seasonal, pl$spatial, turn_obs[["seasonal"]], turn_obs[["spatial"]],
+          pl$seasonal + turn_obs[["seasonal"]], pl$spatial + turn_obs[["spatial"]]),
+  se = c(pl$seasonal_se, pl$spatial_se, turn_se[["seasonal"]], turn_se[["spatial"]],
+         sqrt(pl$seasonal_se^2 + turn_se[["seasonal"]]^2), sqrt(pl$spatial_se^2 + turn_se[["spatial"]]^2)),
+  p = c(NA, NA, turn_p[["seasonal"]], turn_p[["spatial"]], NA, NA)) %>%
+  mutate(lo = est - 1.96 * se, hi = est + 1.96 * se,
+         component = factor(component, levels = rev(c("Within clades (plasticity)", "Clade composition", "Community total"))),
+         axis = factor(axis, levels = c("Seasonal", "Spatial")))
+turn_diff <- tibble(
+  component = c("Clade composition", "Community total"),
+  diff = c(turn_obs[["spatial"]] - turn_obs[["seasonal"]], pl$diff + turn_obs[["spatial"]] - turn_obs[["seasonal"]]),
+  se = c(turn_diff_se, sqrt(pl$diff_se^2 + turn_diff_se^2))) %>%
+  mutate(lo = diff - 1.96 * se, hi = diff + 1.96 * se)
+write_csv(turn_tab, here("Output", "Output_data", "turnover_slopes.csv"))
+
+ggplot(turn_tab, aes(x = est, y = component, colour = axis, shape = axis)) +
+  geom_vline(xintercept = 0, colour = "grey50", linetype = "dashed") +
+  geom_pointrange(aes(xmin = lo, xmax = hi), position = position_dodge(width = 0.5), size = 0.5) +
+  scale_colour_manual(values = c(Seasonal = "grey55", Spatial = "black"), name = NULL) +
+  scale_shape_manual(values = c(Seasonal = 17, Spatial = 16), name = NULL) +
+  labs(x = "°C CTmax per °C", y = NULL) +
+  theme_matt(base_size = 12) + theme(legend.position = "bottom")
 ```
 
-Composition alone shifts expected CTmax by `r sprintf("%.2f", slope_obs)` °C per °C of collection temperature within sites (permutation p `r if (slope_p < 1e-3) "< 0.001" else paste("=", signif(slope_p, 2))`), compared with an acclimation slope of `r sprintf("%.2f", acc_slope)` °C per °C within lineages: turnover adds about `r round(100 * slope_obs / acc_slope)`% to the seasonal change that acclimation produces. `r if (slope_obs > 0) "Collections are dominated by more tolerant lineages when the water is warm and by less tolerant lineages (above all IV) when it is cool, so turnover reinforces acclimation rather than opposing it." else "Turnover does not move tolerance in the direction of temperature."` This is a seasonal change in thermal tolerance with a heritable basis that happens through the sorting of lineages, not evolution within them. Caveat: composition comes from the individuals sequenced per collection (about 20), so proportions are coarse, and collections were sampled in one year.
+Composition alone shifts expected CTmax by `r sprintf("%.2f", turn_obs[["seasonal"]])` °C per °C of seasonal temperature (permutation p `r if (turn_p[["seasonal"]] < 1e-3) "< 0.001" else paste("=", signif(turn_p[["seasonal"]], 2))`) and `r sprintf("%.2f", turn_obs[["spatial"]])` °C per °C of spatial temperature (p `r if (turn_p[["spatial"]] < 1e-3) "< 0.001" else paste("=", signif(turn_p[["spatial"]], 2))`), against within-clade slopes of `r sprintf("%.2f", pl$seasonal)` and `r sprintf("%.2f", pl$spatial)`. Turnover adds about `r round(100 * turn_obs[["seasonal"]] / pl$seasonal)`% to the seasonal and `r round(100 * turn_obs[["spatial"]] / pl$spatial)`% to the spatial response, so the whole community's CTmax changes by `r sprintf("%.2f", pl$seasonal + turn_obs[["seasonal"]])` °C per °C through the season and `r sprintf("%.2f", pl$spatial + turn_obs[["spatial"]])` across sites (difference `r sprintf("%.2f (%.2f, %.2f)", turn_diff$diff[2], turn_diff$lo[2], turn_diff$hi[2])`). Composition favours tolerant clades in warm water in both directions, more strongly across sites than through the season (difference `r sprintf("%.2f (%.2f, %.2f)", turn_diff$diff[1], turn_diff$lo[1], turn_diff$hi[1])`): the same asymmetry as plasticity within clades. The seasonal shift comes mostly from IV dominating the cold late collections at CT, TK and ME. The within-site check gives `r sprintf("%.2f", slope_obs)` °C per °C. This is a change in thermal tolerance with a heritable basis that happens through the sorting of clades, not evolution within them. Caveats: composition comes from the individuals sequenced per collection (about 20), so proportions are coarse; the seasonal axis has only three values (one per season); collections were sampled in one year.
 
 ### Genetic basis of CTmax within collections
 
@@ -4060,7 +4103,7 @@ The manuscript figures are built in `Manuscript/ms_figures.qmd`, which renders i
 
 ```{r}
 #| label: ms-objects
-ms_objects <- c("acc_slope", "slope_obs", "ce_obs", "coi_red", "nuc_tr", "lin_col", "conc", "ctmax.model",
+ms_objects <- c("turn_tab", "turn_diff", "coi_red", "nuc_tr", "lin_col", "conc", "ctmax.model",
                 "filtered_data", "pca_all", "ve", "wpca", "region_cols", "region_order", "scen_levels",
                 "temporal", "vp_cols", "vp_freq", "vp_tab", "wb_diff", "wt_days", "wt_res", "have_mur")
 missing <- setdiff(ms_objects, ls())

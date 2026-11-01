@@ -1,6 +1,6 @@
 # Comparing seasonal and latitudinal patterns in thermal adaptation
 
-2026-10-31
+2026-11-01
 
 - [Main Message](#main-message)
 - [1. Collections and environment](#1-collections-and-environment)
@@ -1345,32 +1345,47 @@ lineages may differ in body size, development or recent history (for
 example, advection from elsewhere), so “heritable” here means not
 explained by shared recent conditions, not necessarily genetic.
 
-#### Does lineage turnover change seasonal thermal tolerance?
+#### Does clade turnover change thermal tolerance across space and season?
 
-If lineages differ heritably in CTmax and their make-up changes through
-the season, turnover alone shifts the CTmax a collection would have,
+If clades differ heritably in CTmax and their make-up changes with
+temperature, composition alone shifts the CTmax a collection would have,
 independent of acclimation. For each collection, the expected CTmax from
-composition alone is the composition-weighted mean of the lineage
-effects (temperature-adjusted lineage means from the within/between
-model). Its within-site slope against collection temperature (site as a
-fixed effect, weighted by individuals) is compared with the within-site
-acclimation slope. The null shuffles lineage labels among individuals
-across the seasons of each site (10⁴ permutations), keeping each site’s
-lineages but removing their timing.
+composition alone is the mean of its individuals’ clade effects
+(temperature-adjusted clade means from the season-mean model,
+`wb_sm_add`). It is regressed, weighted by individuals, on the same two
+temperature components as CTmax itself: the season’s mean collection
+temperature across sites (seasonal) and the collection’s deviation from
+it (spatial). These composition slopes sit beside the within-clade
+(plasticity) slopes of the season-mean model; their sum is the slope of
+the whole community’s CTmax. Uncertainty in the composition slopes comes
+from 2,000 bootstraps that resample individuals within collections and
+draw the clade effects from their estimated sampling distribution. Two
+nulls, 10⁴ permutations each: for the seasonal slope, clade labels are
+shuffled among individuals across the seasons of each site (each site
+keeps its clades, their timing is removed); for the spatial slope, among
+individuals across the sites of each season (each season keeps its
+clades, their sites are removed). The within-site slope against
+collection temperature (site as a fixed effect), used in earlier drafts,
+is kept as a check.
 
 <img src="../Figures/turnover-ctmax-1.png" data-fig-align="center" />
 
-Composition alone shifts expected CTmax by 0.04 °C per °C of collection
-temperature within sites (permutation p \< 0.001), compared with an
-acclimation slope of 0.15 °C per °C within lineages: turnover adds about
-26% to the seasonal change that acclimation produces. Collections are
-dominated by more tolerant lineages when the water is warm and by less
-tolerant lineages (above all IV) when it is cool, so turnover reinforces
-acclimation rather than opposing it. This is a seasonal change in
-thermal tolerance with a heritable basis that happens through the
-sorting of lineages, not evolution within them. Caveat: composition
-comes from the individuals sequenced per collection (about 20), so
-proportions are coarse, and collections were sampled in one year.
+Composition alone shifts expected CTmax by 0.05 °C per °C of seasonal
+temperature (permutation p \< 0.001) and 0.12 °C per °C of spatial
+temperature (p \< 0.001), against within-clade slopes of 0.13 and 0.25.
+Turnover adds about 37% to the seasonal and 48% to the spatial response,
+so the whole community’s CTmax changes by 0.18 °C per °C through the
+season and 0.37 across sites (difference 0.19 (0.06, 0.32)). Composition
+favours tolerant clades in warm water in both directions, more strongly
+across sites than through the season (difference 0.07 (0.03, 0.11)): the
+same asymmetry as plasticity within clades. The seasonal shift comes
+mostly from IV dominating the cold late collections at CT, TK and ME.
+The within-site check gives 0.04 °C per °C. This is a change in thermal
+tolerance with a heritable basis that happens through the sorting of
+clades, not evolution within them. Caveats: composition comes from the
+individuals sequenced per collection (about 20), so proportions are
+coarse; the seasonal axis has only three values (one per season);
+collections were sampled in one year.
 
 ### Genetic basis of CTmax within collections
 
@@ -3220,4 +3235,4 @@ summaries saved here, so after changing an analysis, render this report
 first and then `ms_figures.qmd` (`00_controller.R` steps 7 and 8); to
 change only how a figure looks, render `ms_figures.qmd` alone.
 
-    ## Saved 23 objects to Output/Output_data/ms_objects.rds (1.3 Mb)
+    ## Saved 22 objects to Output/Output_data/ms_objects.rds (1.3 Mb)
