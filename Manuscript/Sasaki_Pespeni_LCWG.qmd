@@ -168,8 +168,13 @@ Low-coverage whole-genome libraries were prepared with Twist Bioscience 96-plex 
 
 *Acartia tonsa* comprises several deeply divergent cryptic clades, distinguished by mitochondrial COI sequence [@figueroa2020]. Mitogenome contigs were assembled for each clade (MEGAHIT and NOVOPlasty [REF]) from individuals whose COI matched published clade haplotypes, and added to the nuclear reference so that mitochondrial reads map to their own clade’s contig rather than to nuclear copies (NUMTs). Each individual was assigned to the clade whose contig received at least 90% of its reads in the COI region (at least 20 reads); two libraries below this majority, which contained DNA from two individuals of different clades, were left unassigned. Clade calls agreed with genome-wide structure (PCAngsd and NGSadmix [REF]) in every retained individual: own-clade ancestry was ≥ 0.96 in all 400 assigned individuals (@fig-supp-clade-structure B). Genome-wide structure further split clade F into four geographically separated lineages (F-N, F-NE, F-FH and F-MR; @fig-supp-clade-structure A). Relationships among lineages were estimated from the COI maximum-likelihood tree (IQ-TREE [REF]) and from genome-wide distances: neighbour-joining on net distances between lineages from the PCAngsd covariance, with negative branch lengths set to zero (@fig-supp-trees). Previous genetic and physiological work treats F as a single clade [REF], and we do the same: clade is the analysis unit throughout, and the F lineages are considered in the Discussion as a direction for future work. The exception is the CTmax association scan, which was run within lineages so that population structure within F did not confound genotype–CTmax associations.
 
+## Pooled mitogenomes and mitochondrial proteins
+
+To compare mitochondrial proteins across clades, we assembled one mitogenome per clade, and per lineage within F, from pooled reads. Each of six pools (X from RW, S from MD, IV from TK, and the F lineages F-N from GW, F-FH from FH and F-MR from MR) combined the mitochondrial read pairs of the 12 individuals from that site with the most mitochondrial reads (at least 97% of COI-region reads on their own clade's contig). We excluded 16 individuals carrying trematodes (@sec-micro), because the parasites' mitogenome otherwise assembled alongside the copepod's. Read pairs were taken from each individual's alignments: pairs with a read on a clade mitogenome contig or in a NUMT-masked region, plus pairs with both mates unmapped. Each pool was assembled with MEGAHIT, GetOrganelle and NOVOPlasty [REF]. Mitochondrial contigs were those matching the clade contigs (BLASTN [REF]) at mitochondrial read depth, plus contigs joined to them by read pairs. Candidate assemblies were compared on length, circularity, read support across the circular junction and evenness of depth, and the best was polished by mapping the pool's reads back to it (BWA-MEM and samtools consensus [REF]). Where the best candidate was linear, other mitochondrial contigs it did not contain were added as separate pieces. Genes still missing were then sought in the full assembly with the annotated genes of the closed S mitogenome as queries, accepting only contigs at mitochondrial depth (at least ten times the median depth of nuclear contigs). Genes were annotated with MITOS2 [REF] (invertebrate mitochondrial code, RefSeq 89 Metazoa). For each pool and gene, we kept the copy covering most of the S gene (BLASTN), and discarded pieces that supplied no kept gene (nuclear copies and stray assembly paths). Proteins were translated with the invertebrate mitochondrial code and aligned to the S protein (global alignment, BLOSUM62). Clades were compared at positions where all of a clade's pools had the same residue, so positions variable among the F lineages were excluded from comparisons involving F.
+
 ## Population genetics within clades
-- Diversity, Tajima's D, FST, LD decay, relatedness and inbreeding (ANGSD, ngsRelate, ngsLD); local PCA. [report §3]
+- Genotype likelihoods for the site frequency spectra used the GATK model (-GL 2), which estimates θW and Tajima’s D with less bias than the samtools model at < 4× coverage (Lou et al. 2021)
+- Diversity, Tajima's D, FST, LD decay, relatedness and inbreeding (ANGSD, ngsRelate, ngsLD); local PCA. [report §3]. LD decay was used only in relative terms, to space unlinked SNPs.
 
 ## Seasonal allele-frequency change
 - Split-half calibration of low-coverage sampling noise (c $\approx$ 0.58–0.70); calibrated temporal Fc and Ne. [report §3, "Seasonal allele-frequency change"]
@@ -189,7 +194,9 @@ Seasonal changes in clade composition were tested at each site with Fisher's exa
 
 ## Genetic basis of CTmax
 
-Within each lineage (clades X, S and IV, and the F lineages F-N and F-FH) with at least 30 phenotyped and sequenced individuals (collections with at least 8 individuals of the lineage), CTmax was regressed on genotype dosage (the expected number of minor alleles from ANGSD genotype posteriors [REF]) at every SNP, with collection and log mean sequencing depth as covariates, so individuals were compared only with others collected at the same time and place. A genome-wide null came from 100 replicates with CTmax shuffled among individuals of the same collection. Power was estimated by simulation on each lineage's own data: for 2,000 SNPs sampled across the genome, true genotypes were drawn from each individual's genotype posterior, a causal effect of 0.25–3 °C per allele was added to within-collection-shuffled CTmax, and the scan's test was repeated against a genome-wide 5% threshold (the 5th percentile of the smallest p across SNPs in each permutation). Between clades, mitochondrial protein-coding sequences were compared among clade consensus sequences [report §4, "Candidate genes"].
+Within each lineage (clades X, S and IV, and the F lineages F-N and F-FH) with at least 30 phenotyped and sequenced individuals (collections with at least 8 individuals of the lineage), CTmax was regressed on genotype dosage (the expected number of minor alleles from ANGSD genotype posteriors [REF]) at every SNP, with collection and log mean sequencing depth as covariates, so individuals were compared only with others collected at the same time and place. Genotypes were not imputed, because no high-coverage reference panel exists for A. tonsa (Watowich et al. 2023); the association scan used expected dosages from genotype posteriors.
+
+A genome-wide null came from 100 replicates with CTmax shuffled among individuals of the same collection. Power was estimated by simulation on each lineage's own data: for 2,000 SNPs sampled across the genome, true genotypes were drawn from each individual's genotype posterior, a causal effect of 0.25–3 °C per allele was added to within-collection-shuffled CTmax, and the scan's test was repeated against a genome-wide 5% threshold (the 5th percentile of the smallest p across SNPs in each permutation). Between clades, mitochondrial protein-coding sequences were compared among clade consensus sequences [report §4, "Candidate genes"].
 
 For nuclear genes, a consensus sequence was called for each clade from all of its individuals' reads (ANGSD -doFasta 2 [REF], at least three reads, within the final site list and the clade's depth bounds). For the longest protein of every RefSeq gene, codons called in at least three of the four clades were compared, and a nucleotide difference carried by one clade while the other called clades shared the base was assigned to that clade's branch as nonsynonymous (N) or synonymous (S). Requiring all four clades would have excluded many genes, because reads from S and IV, the clades most divergent from the reference, map less often in coding sequence. Genes were annotated with GO terms and KEGG pathways by eggNOG-mapper v2.1.12 (DIAMOND, more-sensitive mode; eggNOG 5.0 [REF]), with GO terms propagated to their ancestors. For each GO term and KEGG pathway with at least 10 genes and 20 substitutions, we tested (i) amino-acid divergence (N per codon compared, summed over branches) and (ii) N/(N + S) on each clade's branch, against genes annotated in the same ontology, using the sampling variance of a ratio estimator for random gene sets of the same size; p values were adjusted by Benjamini–Hochberg within each test, and significant terms were checked against 2,000 random gene sets. Branch-specific acceleration of single genes was tested by comparing N/(N + S) on one branch with the same gene's other branches (one-sided Fisher test).
 
@@ -293,7 +300,7 @@ knitr::include_graphics(here("Output", "Figures", "ms-fig5-1.png"))
 ## 6. Genetic basis of thermal tolerance
 
 - Within lineages (exploratory): no SNP was associated with CTmax beyond what within-collection permutations produced (@fig-supp-gwas A), but the scan could detect only loci of roughly 2–3 °C per allele in the two largest groups (X, F-N; 50% power at minor-allele frequency 0.3–0.5) and essentially none in S, F-FH and IV (@fig-supp-gwas B). A 3 °C locus would explain 60–96% of within-collection CTmax variance, and genotype accuracy at < 1× coverage was r^2^ = 0.39–0.44. The scan therefore does not constrain the polygenic basis of within-clade variation. Detecting a locus explaining 5% of within-collection variance would need several thousand individuals per group at this coverage. [in hand]
-- Between clades, mitochondrial: COX1 nearly invariant; 29 substitutions unique to IV, the least tolerant clade (7 COX1, 14 CYTB, 8 in a third ORF) (@tbl-supp-mito-pairs, @tbl-supp-mito-iv). [in hand; X and IV contigs cover only ~a third of the mitogenome]
+- Between clades, mitochondrial: the pooled mitogenomes recovered all 13 protein-coding genes in every clade and F lineage (S closed, 18.6 kb; atp6 partial in X and IV, cox3 in F-FH; @tbl-supp-mito-genes). Across the 13 proteins, clades differed at [min]–[max] of [n] aligned amino-acid positions (@tbl-supp-mito-pairs), and [N] substitutions were unique to IV, the least tolerant clade ([genes with most]; @tbl-supp-mito-iv). [numbers from mito_aa]
 - Candidate genes from experimental evolution: 15 transcripts that responded to selection in the laboratory [REF] map to 18 genes, including a mitochondrial HSP90 (Trap1), an HSP90 co-chaperone (AHSA1), complex I and III genes and vitellogenin. In the field these genes showed no excess spatial, seasonal or CTmax-associated SNP variation (17 tests, p = 0.17–0.84; @tbl-supp-expevol), and no clade had an excess of amino-acid substitutions in the 12 with enough coverage (@tbl-supp-candidate-aa). The core thermal candidates had too few codons called across clades to compare. [in hand]
 - Genome-wide, protein divergence among clades followed functional class in the same way on every branch: fast in ribosome biogenesis and mitochondrial translation, slow in neuronal and developmental genes (@tbl-supp-function). Genes annotated to heat response, protein folding and oxidative phosphorylation showed no excess of amino-acid change in any clade, and heat-shock genes were strongly conserved (N/(N + S) 0.05–0.11 vs 0.18–0.21 genome-wide). The only clade-specific signal was an excess in nuclear-encoded mitochondrial ribosomal proteins in S (q = 0.001), as expected from mitonuclear coevolution [REF: *Tigriopus*]. Branch-specific acceleration of single genes was no more common than chance. Heritable clade differences in CTmax therefore cannot be traced to protein change in thermal-function genes with these data, pointing to regulatory or polygenic differences. [in hand]
 - Summary of the scales of variation: @tbl-scales.
@@ -345,7 +352,7 @@ read_csv(here("Output", "Output_data", "wt_range_changes.csv"), show_col_types =
 - **Implications for lab studies:** experiments that treat "*A. tonsa*" as one unit can mix clades that differ by up to ~2.5 °C in CTmax.
 - **Space-for-time predictions and ecological acclimation:** relate the composition result to community-level 'ecological acclimation' through species turnover (Stemkovski et al. [REF]); here the turnover happens among cryptic clades within a single nominal species.
 - **Future directions: structure within clade F.** F comprises four geographically separated lineages with concordant mitochondrial and nuclear trees (@fig-supp-trees), and the Florida lineages had the highest CTmax in the dataset. Whether these are locally adapted populations or incipient cryptic species, and whether they differ in thermal physiology under common-garden conditions, is an open question; here they were analysed together, as in previous work.
-- **Caveats:** the seasonal tests detect only strong selection (roughly 10–20 percentage-point seasonal changes), and few sites and seasons cap the permutation p values (0.083 for X); the spatial–seasonal slope difference rests on three phenological seasons and is marginal overall (p = 0.054), though consistent across clades; the within-clade genetic basis of CTmax was beyond reach at this sample size and coverage (the association scan is reported for completeness, with its power); CTmax as one measure of tolerance; collection-day temperature vs MUR; partial mitogenomes for X and IV; clade consensus sequences at < 1x coverage against a single reference under-call S and IV in coding sequence, which limits the protein comparisons.
+- **Caveats:** the seasonal tests detect only strong selection (roughly 10–20 percentage-point seasonal changes), and few sites and seasons cap the permutation p values (0.083 for X); the spatial–seasonal slope difference rests on three phenological seasons and is marginal overall (p = 0.054), though consistent across clades; the within-clade genetic basis of CTmax was beyond reach at this sample size and coverage (the association scan is reported for completeness, with its power); CTmax as one measure of tolerance; collection-day temperature vs MUR; the mitochondrial comparison uses one pooled consensus per clade or lineage, so it reflects fixed or majority differences rather than variation within clades; clade consensus sequences at < 1x coverage against a single reference under-call S and IV in coding sequence, which limits the protein comparisons.
 
 
 <!-- References are printed here, before the supplementary material.
@@ -494,25 +501,57 @@ if (file.exists(inf_f)) {
 ```
 
 ```{r}
+#| label: tbl-supp-mito-genes
+#| tbl-cap: "Mitochondrial genes recovered from the pooled mitogenomes: nucleotide identity (%) of each pool's gene to the closed S mitogenome. Partial genes show the share of the S gene's length recovered (*); – not recovered. rRNA fragments shorter than half the S gene count as partial."
+gc_f <- here("Output", "Output_data", "mito_aa", "gene_copies.tsv")
+if (file.exists(gc_f)) {
+  pool_lab <- c(FN_GW = "F-N", FFH_FH = "F-FH", FMR_MR = "F-MR", S_MD = "S", X_RW = "X", IV_TK = "IV")
+  gene_ord <- c("atp6", "atp8", "cob", "cox1", "cox2", "cox3", "nad1", "nad2", "nad3", "nad4", "nad4l",
+                "nad5", "nad6", "rrnS", "rrnL")
+  read_tsv(gc_f, show_col_types = FALSE) %>%
+    mutate(pool = factor(pool_lab[pool], levels = pool_lab),
+           gene = factor(gene, levels = gene_ord),
+           cell = case_when(status == "missing" ~ "–",
+                            status == "partial" ~ sprintf("%.0f%%*", 100 * length_ratio),
+                            TRUE ~ sprintf("%.1f", identity))) %>%
+    select(gene, pool, cell) %>%
+    arrange(gene, pool) %>%
+    pivot_wider(names_from = pool, values_from = cell) %>%
+    rename(Gene = gene) %>%
+    knitr::kable()
+}
+```
+
+```{r}
 #| label: tbl-supp-mito-pairs
-#| tbl-cap: "Amino-acid differences between clade consensus proteins (differences / aligned positions) in the three mitochondrial genes covered by all four clade contigs."
+#| tbl-cap: "Amino-acid differences between clades in the 13 mitochondrial proteins (differences / aligned positions). Positions are compared where all pools of each clade share a residue; positions variable among the three F lineages are excluded from comparisons with F."
 mp_f <- here("Output", "Output_data", "mito_aa", "clade_aa_pairs.csv")
 if (file.exists(mp_f)) {
+  gene_ord <- c("atp6", "atp8", "cob", "cox1", "cox2", "cox3", "nad1", "nad2", "nad3", "nad4", "nad4l",
+                "nad5", "nad6", "all")
   read_csv(mp_f, show_col_types = FALSE) %>%
-    mutate(value = sprintf("%d / %d", differences, aligned_aa), pair = str_replace(pair, "-", " – ")) %>%
-    select(gene, pair, value) %>% pivot_wider(names_from = gene, values_from = value) %>%
-    rename(`Clade pair` = pair, `ORF (LQDA)` = ORF_LQDA) %>%
+    mutate(value = sprintf("%d / %d", differences, aligned_aa),
+           pair = str_replace(pair, "-", " – "),
+           gene = factor(gene, levels = gene_ord, labels = c(gene_ord[-14], "All 13"))) %>%
+    select(gene, pair, value) %>%
+    arrange(gene) %>%
+    pivot_wider(names_from = pair, values_from = value) %>%
+    rename(Protein = gene) %>%
     knitr::kable()
 }
 ```
 
 ```{r}
 #| label: tbl-supp-mito-iv
-#| tbl-cap: "Mitochondrial amino-acid substitutions unique to IV, the least tolerant clade (IV differs; F, S and X share the state). Positions are in the F protein."
+#| tbl-cap: "Mitochondrial amino-acid substitutions unique to IV, the least tolerant clade (IV differs from a residue shared by all F, S and X pools). Substitutions are written as shared residue, position in the S protein, IV residue."
 mi_f <- here("Output", "Output_data", "mito_aa", "IV_specific_aa.csv")
 if (file.exists(mi_f)) {
   read_csv(mi_f, show_col_types = FALSE) %>%
-    rename(Gene = gene, Position = pos_F, `F, S, X` = F_S_X, `Context (F)` = context_F) %>%
+    filter(!is.na(gene)) %>%
+    arrange(gene, pos_S) %>%
+    group_by(Protein = gene) %>%
+    summarise(Substitutions = n(),
+              `Changes (shared → IV)` = paste0(F_S_X, pos_S, IV, collapse = ", "), .groups = "drop") %>%
     knitr::kable()
 }
 ```
@@ -626,4 +665,10 @@ knitr::include_graphics(here("Output", "Figures", "ms-figS-clade-structure-1.png
 #| fig-cap: "Relationships among clades and the lineages within F. (A) Mitochondrial (COI, maximum likelihood, rooted on *A. hudsonica*) and (B) nuclear (genome-wide net distances, neighbour-joining, midpoint-rooted) trees; numbers are bootstrap support. Both trees separate {S, IV} from {X, F}, place X as sister to F, and order the four F lineages identically (F-MR, F-FH, then F-N with F-NE)."
 #| out-width: "100%"
 knitr::include_graphics(here("Output", "Figures", "ms-figS-trees-1.png"))
+```
+
+```{r}
+#| label: fig-supp-mitogenome
+#| fig-cap: "Pooled mitogenomes of the four clades and the F lineages. (A) Assembled pieces of each pool (shaded boxes), trimmed to the stretch carrying genes, with the 13 protein-coding genes and two rRNAs (arrows point 5′ to 3′; faded and * = partial). Each box is one assembled contig, except the F-N main piece (dashed), a scaffold of contigs joined by read pairs. Only gene order within a contig box is supported by the assembly. Boxes are oriented and ordered to match the closed S mitogenome, shown opened at rrnL, and the order and spacing between boxes are not resolved. Within contigs, F-FH and F-MR place nad4l next to atp8 and atp6, and F-MR places cox3 and nad2 directly after cox2, where S, X and IV have the arrangement shown for S. (B) Amino-acid differences between clades in each protein (cells: number of differing positions; fill: percentage of aligned positions), and substitutions unique to IV (bars). Positions where the three F lineages differ are excluded from comparisons with F."
+knitr::include_graphics(here("Output", "Figures", "ms-figS-mitogenome-1.png"))
 ```

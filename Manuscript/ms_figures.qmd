@@ -17,7 +17,7 @@ knitr:
 format:
   html:
     toc: true
-    code-fold: true
+    code-fold: false
     embed-resources: true
 ---
 
@@ -78,10 +78,47 @@ gg_tree <- function(tr, title, cols) {
 }
 ```
 
+## Tables 
+
+```{r}
+#| label: tbl-sites
+#| tbl-cap: "Locations of the collection sites."
+site_data %>%
+  filter(site_code %in% unique(join_data$site_code)) %>%
+  arrange(lat) %>%
+  select("Site" = site, "Region" = region, "Lat" = lat, "Long" = long) %>%
+  knitr::kable(align = "c", digits = 2)
+```
+
+```{r}
+#| label: tbl-scales
+#| tbl-cap: "Summary of the scales of variation in thermal tolerance (draft)."
+tibble::tribble(
+  ~Scale, ~`CTmax varies?`, ~`Genomic signal?`, ~Interpretation,
+  "Clade", "Yes, up to ~2.5 °C at a common temperature", "Deep divergence", "Heritable; range shifts and seasonal turnover",
+  "Site within clade", "Yes, more than seasonal acclimation predicts", "Strong differentiation among sites", "Plasticity plus a persistent site-level component",
+  "Season within site", "Yes, through acclimation and clade turnover", "Drift only; no seasonal echo of spatial associations", "No detectable seasonal evolution",
+  "Individual", "Yes", "Not resolvable at this sample size and coverage", "Genetic basis unknown"
+) %>% knitr::kable()
+```
+
+
+```{r}
+#| label: tbl-wt-range
+#| tbl-cap: "Spread of warming tolerance among regions under current conditions, and its change relative to a fixed CTmax. The last scenario uses annual instead of peak-season clade make-up."
+read_csv(here("Output", "Output_data", "wt_range_changes.csv"), show_col_types = FALSE) %>%
+  mutate(`Change vs fixed (%)` = if_else(Scenario == "Fixed CTmax", "–", sprintf("%+.0f", `Change vs fixed (%)`))) %>%
+  knitr::kable(digits = 1, col.names = c("Scenario", "Metric", "Range among regions (°C)", "Change vs fixed (%)"))
+```
+
+## Main Figures
+
 ```{r}
 #| label: ms-fig1
 #| fig-width: 10
 #| fig-height: 7.5
+#| fig-cap: "Collection sites and thermal limits. (A) Collection sites. (B) Water temperature at each collection. (C) CTmax of individuals (small points) and collection means ± SE (large points, connected within sites) by season. Colours: sites, south (red) to north (blue)."
+
 # Figure 1: sites, collection temperatures, CTmax by season
 coords <- site_data %>% 
   filter(site_code %in% site_order) %>% 
@@ -174,6 +211,8 @@ ggarrange(m1_map, ggarrange(m1_temp, m1_ctmax, ncol = 1, labels = c("B", "C"),
 #| label: ms-fig2
 #| fig-width: 11
 #| fig-height: 9
+#| fig-cap: "Genomic structure and clade composition. (A) PCA of all individuals (PCAngsd), coloured by clade. (B) PCAs within each clade; labels mark the median position of each site's individuals (sites with at least three individuals). (C) Clade composition of each collection by site and season."
+
 # Figure 2: genome-wide structure (PCA) and clade composition
 # Supplementary: genome-wide PCA of all individuals, and PCAs within each clade
 
@@ -233,8 +272,66 @@ ggarrange(ggarrange(m3_all, m3_within, nrow = 1, widths = c(0.8, 1.2), labels = 
 
 ```{r}
 #| label: ms-fig3
+#| fig-width: 11
+#| fig-height: 5
+#| fig-cap: "Clade differences in thermal tolerance. (A) CTmax against collection temperature (points: individuals; lines and bands: fitted values and 95% CI from the mixed model with clade × temperature, over each clade's sampled range). (B) Marginal mean CTmax at the mean collection temperature (22 °C; top) and acclimation slope (bottom) for each clade, with 95% CI."
+
+
+# Figure 5: clade differences in CTmax and acclimation, from ctmax ~ clade * temperature (+ site, replicate, tube)
+t_off <- mean(filtered_data$collection_temp - filtered_data$temp_cent)
+
+ci_cols <- function(d) c(intersect(c("lower.CL", "asymp.LCL"), names(d))[1], intersect(c("upper.CL", "asymp.UCL"), names(d))[1])
+
+clade_rng <- filtered_data %>% filter(clade %in% tonsa_clades) %>%
+  group_by(clade) %>% summarise(lo = min(temp_cent), hi = max(temp_cent), .groups = "drop")
+
+pred5 <- pmap_dfr(clade_rng, function(clade, lo, hi) {
+  as_tibble(summary(emmeans::emmeans(ctmax.model, ~ clade | temp_cent,
+                                     at = list(clade = clade, temp_cent = seq(lo, hi, length.out = 30)))))
+}) %>% mutate(clade = factor(as.character(clade), levels = tonsa_clades), temp = temp_cent + t_off)
+
+cc <- ci_cols(pred5)
+
+pt5 <- filtered_data %>% filter(clade %in% tonsa_clades) %>% mutate(clade = factor(clade, levels = tonsa_clades))
+
+m5a <- ggplot() +
+  geom_point(data = pt5, aes(x = collection_temp, y = ctmax, colour = clade), alpha = 0.3, size = 1.3,
+             position = position_jitter(width = 0.25, height = 0, seed = 1)) +
+  geom_ribbon(data = pred5, aes(x = temp, ymin = .data[[cc[1]]], ymax = .data[[cc[2]]], fill = clade), alpha = 0.25) +
+  geom_line(data = pred5, aes(x = temp, y = emmean, colour = clade), linewidth = 1.3) +
+  scale_colour_manual(values = clade_cols[tonsa_clades], name = "Clade") +
+  scale_fill_manual(values = clade_cols[tonsa_clades], name = "Clade") +
+  labs(x = "Collection temperature (°C)", y = "CTmax (°C)") +
+  theme_matt(base_size = 11) +
+  theme(legend.position = "none")
+
+mm <- as_tibble(summary(emmeans::emmeans(ctmax.model, ~ clade), infer = TRUE))
+
+tr <- as_tibble(summary(emmeans::emtrends(ctmax.model, ~ clade, var = "temp_cent"), infer = TRUE))
+
+m5b <- bind_rows(
+  transmute(mm, clade, est = emmean, lo = .data[[ci_cols(mm)[1]]], hi = .data[[ci_cols(mm)[2]]],
+            panel = sprintf("CTmax at %.0f °C (°C)", t_off)),
+  transmute(tr, clade, est = temp_cent.trend, lo = .data[[ci_cols(tr)[1]]], hi = .data[[ci_cols(tr)[2]]],
+            panel = "Acclimation slope (°C per °C)")) %>%
+  mutate(clade = factor(as.character(clade), levels = tonsa_clades), panel = factor(panel, levels = unique(panel))) %>%
+  ggplot(aes(x = clade, y = est, ymin = lo, ymax = hi, colour = clade)) +
+  geom_pointrange(size = 0.6, linewidth = 1) +
+  facet_wrap(~ panel, scales = "free_y", ncol = 1, strip.position = "left") +
+  scale_colour_manual(values = clade_cols[tonsa_clades], guide = "none") +
+  labs(x = "Clade", y = NULL) +
+  theme_matt_facets(base_size = 11) +
+  theme(strip.placement = "outside", strip.background = element_blank())
+
+ggarrange(m5a, m5b, nrow = 1, widths = c(1.2, 1), labels = c("A", "B"))
+```
+
+```{r}
+#| label: ms-fig4
 #| fig-width: 10
 #| fig-height: 8
+#| fig-cap: "Thermal tolerance responds more strongly to spatial than to seasonal temperature, within clades and through clade composition. (A) Difference between the spatial and seasonal CTmax slopes (°C CTmax per °C; 95% CI), for all clades together and for each clade. Collection temperature was split into the season's mean across sites (seasonal) and each collection's deviation from that mean (spatial). (B) Seasonal (grey) and spatial (black) CTmax slopes within clades (plasticity), from clade composition alone (turnover), and their sum for the community as a whole (95% CI). (C) Share of CTmax variance explained by clade, spatial and seasonal temperature, other site and collection differences, the assay and individuals, without and with the temperature terms."
+
 # Figure 3: phenotype - CTmax differs more per degree between sites (space) than through the season,
 # within clades (plasticity) and through clade composition (turnover)
 ci_tab <- function(m, terms) {
@@ -292,9 +389,11 @@ ggarrange(ggarrange(m3_slopes, m3_turn, nrow = 1, widths = c(1, 1.3), labels = c
 ```
 
 ```{r}
-#| label: ms-fig4
+#| label: ms-fig5
 #| fig-width: 11
 #| fig-height: 4.8
+#| fig-cap: "Genomic variation is spatial, and seasonal allele-frequency change does not echo spatial temperature associations. (A) Allele-frequency variance between sites and between seasons within sites, scaled by $\\bar{p}(1-\\bar{p})$, after removing sampling noise (unlinked SNPs; 95% CI from a chromosome jackknife); each clade on its own scale; IV had no site with enough individuals sampled in two seasons. (B) Seasonal temperature z-score of each SNP, signed by the direction of its spatial temperature association (positive: the allele favoured at warmer sites also rose after warmer periods), for the 1% of SNPs with the strongest spatial association (colour) and all other SNPs (grey), in X and F (unlinked SNPs); values beyond ±4.5 are pooled in the end bins. The z-score is the seasonal temperature slope divided by its standard error, from a binomial GLM with site as a covariate; without a seasonal response it is approximately standard normal. Colour: the 1% of SNPs with the strongest spatial association; grey: all other SNPs. The power of this test is shown in @ms-figS-power C."
+
 # Figure 4: genome - variation lies between sites, not seasons; seasonal change does not echo spatial temperature associations
 # F spans divergent populations (Florida vs Chesapeake), so its between-site variance is ~10x the
 # other clades': one panel per clade, each on its own scale
@@ -366,62 +465,11 @@ ggarrange(m4_freq_n, m4_conc,
 ```
 
 ```{r}
-#| label: ms-fig5
-#| fig-width: 11
-#| fig-height: 5
-# Figure 5: clade differences in CTmax and acclimation, from ctmax ~ clade * temperature (+ site, replicate, tube)
-t_off <- mean(filtered_data$collection_temp - filtered_data$temp_cent)
-
-ci_cols <- function(d) c(intersect(c("lower.CL", "asymp.LCL"), names(d))[1], intersect(c("upper.CL", "asymp.UCL"), names(d))[1])
-
-clade_rng <- filtered_data %>% filter(clade %in% tonsa_clades) %>%
-  group_by(clade) %>% summarise(lo = min(temp_cent), hi = max(temp_cent), .groups = "drop")
-
-pred5 <- pmap_dfr(clade_rng, function(clade, lo, hi) {
-  as_tibble(summary(emmeans::emmeans(ctmax.model, ~ clade | temp_cent,
-                                     at = list(clade = clade, temp_cent = seq(lo, hi, length.out = 30)))))
-}) %>% mutate(clade = factor(as.character(clade), levels = tonsa_clades), temp = temp_cent + t_off)
-
-cc <- ci_cols(pred5)
-
-pt5 <- filtered_data %>% filter(clade %in% tonsa_clades) %>% mutate(clade = factor(clade, levels = tonsa_clades))
-
-m5a <- ggplot() +
-  geom_point(data = pt5, aes(x = collection_temp, y = ctmax, colour = clade), alpha = 0.3, size = 1.3,
-             position = position_jitter(width = 0.25, height = 0, seed = 1)) +
-  geom_ribbon(data = pred5, aes(x = temp, ymin = .data[[cc[1]]], ymax = .data[[cc[2]]], fill = clade), alpha = 0.25) +
-  geom_line(data = pred5, aes(x = temp, y = emmean, colour = clade), linewidth = 1.3) +
-  scale_colour_manual(values = clade_cols[tonsa_clades], name = "Clade") +
-  scale_fill_manual(values = clade_cols[tonsa_clades], name = "Clade") +
-  labs(x = "Collection temperature (°C)", y = "CTmax (°C)") +
-  theme_matt(base_size = 11) +
-  theme(legend.position = "none")
-
-mm <- as_tibble(summary(emmeans::emmeans(ctmax.model, ~ clade), infer = TRUE))
-
-tr <- as_tibble(summary(emmeans::emtrends(ctmax.model, ~ clade, var = "temp_cent"), infer = TRUE))
-
-m5b <- bind_rows(
-  transmute(mm, clade, est = emmean, lo = .data[[ci_cols(mm)[1]]], hi = .data[[ci_cols(mm)[2]]],
-            panel = sprintf("CTmax at %.0f °C (°C)", t_off)),
-  transmute(tr, clade, est = temp_cent.trend, lo = .data[[ci_cols(tr)[1]]], hi = .data[[ci_cols(tr)[2]]],
-            panel = "Acclimation slope (°C per °C)")) %>%
-  mutate(clade = factor(as.character(clade), levels = tonsa_clades), panel = factor(panel, levels = unique(panel))) %>%
-  ggplot(aes(x = clade, y = est, ymin = lo, ymax = hi, colour = clade)) +
-  geom_pointrange(size = 0.6, linewidth = 1) +
-  facet_wrap(~ panel, scales = "free_y", ncol = 1, strip.position = "left") +
-  scale_colour_manual(values = clade_cols[tonsa_clades], guide = "none") +
-  labs(x = "Clade", y = NULL) +
-  theme_matt_facets(base_size = 11) +
-  theme(strip.placement = "outside", strip.background = element_blank())
-
-ggarrange(m5a, m5b, nrow = 1, widths = c(1.2, 1), labels = c("A", "B"))
-```
-
-```{r}
 #| label: ms-fig6
 #| fig-width: 10
 #| fig-height: 5.5
+#| fig-cap: "Warming tolerance (CTmax − habitat temperature). (A) Distribution of daily warming tolerance in each region over the sampled season (July–November, MUR SST 2014–2023) with clade-specific CTmax and acclimation; days weighted by the clade make-up of the matching collection. Dark: current conditions; pale: +4 °C uniform warming. (B) Warming tolerance on the warmest August–September day (mean over years) for the least tolerant clade making up at least 10% of the peak collection, under a single fixed CTmax, clade means, and clades with acclimation; 95% intervals."
+
 # Figure 6: warming tolerance with lineages + acclimation (distribution), and the warmest day under each scenario
 if (have_mur) {
   
@@ -465,11 +513,194 @@ if (have_mur) {
 
 ## Supplemental 
 
+### Tables 
+
+
+```{r}
+#| label: tbl-supp-turnover
+#| tbl-cap: "Seasonal change in clade composition at each site: Fisher's exact test of clade × season (simulated p, 10⁴ replicates). Sites with a single clade or a single season cannot be tested. Combined test across sites (sum of per-site χ² statistics against 10⁴ permutations of season labels within sites): p < 10⁻⁴."
+to_f <- here("Output", "Output_data", "turnover_sites.csv")
+if (file.exists(to_f)) {
+  read_csv(to_f, show_col_types = FALSE) %>%
+    transmute(Site = site_code, Seasons = seasons, Clades = clades, Individuals = individuals,
+              p = if_else(is.na(p), "–", format.pval(p, digits = 2, eps = 1e-4))) %>%
+    knitr::kable()
+}
+```
+
+
+```{r}
+#| label: tbl-supp-slopes
+#| tbl-cap: "Seasonal and spatial CTmax slopes (°C per °C, ± SE) and their difference under two decompositions of collection temperature. Season-mean split (main text): seasonal = the season's mean collection temperature across sites; spatial = a collection's deviation from it. Site-mean split: spatial = the site's mean collection temperature; seasonal = a collection's deviation from it. All models include clade and random intercepts for site, collection, assay replicate and tube."
+read_csv(here("Output", "Output_data", "ctmax_slope_differences.csv"), show_col_types = FALSE) %>%
+  transmute(Decomposition = split, Group = group,
+            `Seasonal slope` = sprintf("%.2f ± %.2f", seasonal, seasonal_se),
+            `Spatial slope` = sprintf("%.2f ± %.2f", spatial, spatial_se),
+            `Spatial − seasonal (95% CI)` = sprintf("%.2f (%.2f, %.2f)", diff, lo, hi),
+            p = signif(p, 2)) %>%
+  knitr::kable()
+```
+
+
+```{r}
+#| label: tbl-supp-ne
+#| tbl-cap: "Long-term effective size from nucleotide diversity (π = 4Neµ; µ = 10⁻⁸ to 10⁻⁹ per site per generation) against the temporal (within-season) Ne estimated from calibrated F~c~."
+ne_f <- here("Output", "Output_data", "ne_comparison.csv")
+if (file.exists(ne_f)) {
+  read_csv(ne_f, show_col_types = FALSE) %>%
+    transmute(Group = group, `π (median)` = signif(pi, 2),
+              `Long-term Ne` = sprintf("%s – %s", format(signif(ne_long_1e8, 2), big.mark = ",", trim = TRUE),
+                                       format(signif(ne_long_1e9, 2), big.mark = ",", trim = TRUE)),
+              `Temporal Ne, median (range)` = sprintf("%s (%s – %s)", format(round(ne_temporal), big.mark = ",", trim = TRUE),
+                                                      format(round(ne_min), big.mark = ",", trim = TRUE), format(round(ne_max), big.mark = ",", trim = TRUE)),
+              `Ratio (µ = 10⁻⁸)` = sprintf("%.0f×", ratio_low)) %>%
+    knitr::kable()
+}
+```
+
+
+```{r}
+#| label: tbl-supp-infection
+#| tbl-cap: "Effect of carrying a parasite or epibiont on CTmax and body size within collections (trait ~ status + clade + (1 | collection))."
+inf_f <- here("Output", "Output_data", "infection_traits.csv")
+if (file.exists(inf_f)) {
+  read_csv(inf_f, show_col_types = FALSE) %>%
+    mutate(covariate = recode(covariate, parasite_any = "Parasite", epibiont_any = "Epibiont"),
+           trait = recode(trait, ctmax = "CTmax (°C)", size = "Prosome length (mm)")) %>%
+    knitr::kable(digits = 3, col.names = c("Carrier of", "Trait", "Collections", "Carriers", "Effect", "SE"))
+}
+```
+
+
+```{r}
+#| label: tbl-supp-mito-genes
+#| eval: false
+#| tbl-cap: "Mitochondrial genes recovered from the pooled mitogenomes: nucleotide identity (%) of each pool's gene to the closed S mitogenome. Partial genes show the share of the S gene's length recovered (*); – not recovered. rRNA fragments shorter than half the S gene count as partial."
+gc_f <- here("Output", "Output_data", "mito_aa", "gene_copies.tsv")
+if (file.exists(gc_f)) {
+  pool_lab <- c(FN_GW = "F-N", FFH_FH = "F-FH", FMR_MR = "F-MR", S_MD = "S", X_RW = "X", IV_TK = "IV")
+  gene_ord <- c("atp6", "atp8", "cob", "cox1", "cox2", "cox3", "nad1", "nad2", "nad3", "nad4", "nad4l",
+                "nad5", "nad6", "rrnS", "rrnL")
+  read_tsv(gc_f, show_col_types = FALSE) %>%
+    mutate(pool = factor(pool_lab[pool], levels = pool_lab),
+           gene = factor(gene, levels = gene_ord),
+           cell = case_when(status == "missing" ~ "–",
+                            status == "partial" ~ sprintf("%.0f%%*", 100 * length_ratio),
+                            TRUE ~ sprintf("%.1f", identity))) %>%
+    select(gene, pool, cell) %>%
+    arrange(gene, pool) %>%
+    pivot_wider(names_from = pool, values_from = cell) %>%
+    rename(Gene = gene) %>%
+    knitr::kable()
+}
+```
+
+```{r}
+#| label: tbl-supp-mito-pairs
+#| eval: false
+#| tbl-cap: "Amino-acid differences between clades in the 13 mitochondrial proteins (differences / aligned positions). Positions are compared where all pools of each clade share a residue; positions variable among the three F lineages are excluded from comparisons with F."
+mp_f <- here("Output", "Output_data", "mito_aa", "clade_aa_pairs.csv")
+if (file.exists(mp_f)) {
+  gene_ord <- c("atp6", "atp8", "cob", "cox1", "cox2", "cox3", "nad1", "nad2", "nad3", "nad4", "nad4l",
+                "nad5", "nad6", "all")
+  read_csv(mp_f, show_col_types = FALSE) %>%
+    mutate(value = sprintf("%d / %d", differences, aligned_aa),
+           pair = str_replace(pair, "-", " – "),
+           gene = factor(gene, levels = gene_ord, labels = c(gene_ord[-14], "All 13"))) %>%
+    select(gene, pair, value) %>%
+    arrange(gene) %>%
+    pivot_wider(names_from = pair, values_from = value) %>%
+    rename(Protein = gene) %>%
+    knitr::kable()
+}
+```
+
+```{r}
+#| label: tbl-supp-mito-iv
+#| eval: false
+#| tbl-cap: "Mitochondrial amino-acid substitutions unique to IV, the least tolerant clade (IV differs from a residue shared by all F, S and X pools). Substitutions are written as shared residue, position in the S protein, IV residue."
+mi_f <- here("Output", "Output_data", "mito_aa", "IV_specific_aa.csv")
+if (file.exists(mi_f)) {
+  read_csv(mi_f, show_col_types = FALSE) %>%
+    filter(!is.na(gene)) %>%
+    arrange(gene, pos_S) %>%
+    group_by(Protein = gene) %>%
+    summarise(Substitutions = n(),
+              `Changes (shared → IV)` = paste0(F_S_X, pos_S, IV, collapse = ", "), .groups = "drop") %>%
+    knitr::kable()
+}
+```
+
+```{r}
+#| label: tbl-supp-expevol
+#| tbl-cap: "SNP-level signals in genes that responded to selection in experimental evolution [REF] against random sets of the same number of other genes (one-sided p for a larger value in the candidates). Statistics are the mean squared z (or t) over SNPs in the genes, or the share of SNPs whose seasonal and spatial slopes have the same sign."
+ev_f <- cx("results", "17_candidates", "expevol_snps.tsv")
+if (file.exists(ev_f)) {
+  read_tsv(ev_f, show_col_types = FALSE) %>%
+    transmute(Test = recode(test, seasonal_time = "Seasonal change (time)", seasonal_temp = "Seasonal change (temperature)",
+                            spatial = "Spatial temperature association", concordance = "Seasonal–spatial sign agreement",
+                            gwas = "CTmax association"),
+              Group = str_remove(group, "^conc_"), Genes = candidate_genes, SNPs = candidate_snps,
+              Candidates = round(observed, 3), `Other genes` = round(background, 3), p = round(p_greater, 2)) %>%
+    knitr::kable()
+}
+```
+
+```{r}
+#| label: tbl-supp-candidate-aa
+#| tbl-cap: "Clade-specific amino-acid substitutions (N, nonsynonymous; S, synonymous) in the experimental-evolution genes and in heat-shock and nuclear OXPHOS genes (selected by product name), against random background gene sets of the same size (two-sided permutation p). Genes with at least 50 codons called in at least three clades."
+aa_f <- cx("results", "17_candidates", "sets.tsv")
+if (file.exists(aa_f)) {
+  read_tsv(aa_f, show_col_types = FALSE) %>%
+    filter(set %in% c("expevol", "heat_shock", "oxphos_nuclear")) %>%
+    transmute(Set = recode(set, expevol = "Experimental evolution", heat_shock = "Heat shock", oxphos_nuclear = "Nuclear OXPHOS"),
+              Genes = genes, Clade = clade, N = nonsyn, S = syn, `N/(N+S)` = round(nonsyn_frac, 2),
+              Background = round(background_frac, 2), p = signif(p_two_sided, 2)) %>%
+    knitr::kable()
+}
+```
+
+```{r}
+#| label: tbl-supp-function
+#| tbl-cap: "Nonsynonymous fraction N/(N + S) on each clade's branch for selected GO terms and KEGG pathways, with q values in parentheses, against genes annotated in the same ontology (bottom row). The full results are in the report (function_enrichment.csv)."
+fe_f <- here("Output", "Output_data", "function_enrichment.csv")
+if (file.exists(fe_f)) {
+  fe <- read_csv(fe_f, show_col_types = FALSE) %>% filter(statistic == "N/(N+S) on branch")
+  pick <- tribble(~name, ~ontology, ~group,
+    "ribosome biogenesis", "GO:BP", "Fast on all branches",
+    "nucleolus", "GO:CC", "Fast on all branches",
+    "mitochondrial gene expression", "GO:BP", "Fast on all branches",
+    "neuron projection", "GO:CC", "Conserved on all branches",
+    "cellular anatomical entity morphogenesis", "GO:BP", "Conserved on all branches",
+    "response to heat", "GO:BP", "Thermal function",
+    "protein folding", "GO:BP", "Thermal function",
+    "heat shock protein binding", "GO:MF", "Thermal function",
+    "Oxidative phosphorylation", "KEGG", "Thermal function",
+    "respiratory chain complex", "GO:CC", "Thermal function",
+    "mitochondrial large ribosomal subunit", "GO:CC", "Clade-specific (S)",
+    "mitochondrial protein-containing complex", "GO:CC", "Clade-specific (S)")
+  tab <- pick %>% left_join(fe, by = c("name", "ontology")) %>%
+    mutate(cell = sprintf("%.2f (%s)", observed, ifelse(q < 0.001, "<0.001", sprintf("%.2g", q))),
+           clade = factor(clade, levels = c("X", "F", "S", "IV"))) %>%
+    select(Group = group, Term = name, Source = ontology, clade, cell) %>%
+    pivot_wider(names_from = clade, values_from = cell)
+  bg <- fe %>% filter(ontology == "GO:BP") %>% distinct(clade, background) %>%
+    mutate(clade = factor(clade, levels = c("X", "F", "S", "IV"))) %>% arrange(clade)
+  bind_rows(tab, tibble(Group = "", Term = "Background (annotated genes, GO:BP)", Source = "",
+                        !!!setNames(as.list(sprintf("%.2f", bg$background)), as.character(bg$clade)))) %>%
+    knitr::kable()
+}
+```
+
+### Figures
 
 ```{r}
 #| label: ms-figS-drift
 #| fig-width: 12
 #| fig-height: 4
+#| fig-cap: "Seasonal allele-frequency change and temporal effective population size. (A) Temporal N~e~ for each pair of seasonal samples from the same site (95% CI from a delete-one-chromosome jackknife; arrows: upper bound unbounded because the change is not distinguishable from sampling noise; open point: change not above sampling noise), by clade, with the F lineage in brackets. Grey bands: long-term N~e~ of the same clade or lineage from nucleotide diversity (π = 4N~e~µ, for µ = 10⁻⁸ to 10⁻⁹ per site per generation). (B) Allele-frequency change between the same pairs of samples (F~c~ minus sampling noise calibrated from split halves; 95% CI) against the number of generations between them. Dashed lines: change expected from drift alone for N~e~ = 100, 500, 2,000 and 10,000 (t / 2N~e~). Unlinked SNPs. (C) Split-half calibration: each population was split at random into two halves (two replicates), and F~c~ between the halves, which reflects sampling alone, was compared with the 1/(2n) expected for known genotypes. The ratio c is the effective number of chromosomes per individual divided by two; one point per population; dashed line, c = 1. The calibrated sampling noise used in (A) and (B) is 1/(2cn) per sample."
+
+
 # Supplementary: seasonal allele-frequency change and temporal Ne
 # (A) Ne per seasonal pair (log scale; 95% CI from the chromosome jackknife; arrow = upper bound
 #     unbounded, open point = excess not above zero), grouped by clade / F lineage, against the
@@ -556,6 +787,9 @@ REVIEW
 #| label: ms-figS-power
 #| fig-width: 13
 #| fig-height: 9
+#| fig-cap: "Genome-wide seasonal test and its power. (A) Number of SNPs below p < 0.01 and p < 0.001 in the per-SNP seasonal GLM (count ~ site + x; x = time in season or temperature before collection) with the observed sampling order (diamonds), against every within-site reordering of the sampling events (grey); unlinked SNPs, X and F. (B) Power of the seasonal GLM (more SNPs at p < 0.001 than every reordering) and of temporal F~c~ (added excess above the observed excess + 1.96 SE) when selection was injected into the observed allele frequencies: a fraction of SNPs (rows) shifted in logit frequency between each site’s first and last sample, expressed as percentage points from 50% (columns); ten replicates per cell. (C) Detection of space-for-time concordance when the most temperature-associated SNPs (rows) respond to seasonal temperature at a fraction λ of their spatial slope (columns). Cells: the statistic that ranked above every reordering (conc: sign agreement in the top 1%; r: correlation of z-scores) and the implied seasonal change."
+
+
 # Supplementary: genome-wide seasonal test and its power
 # (A) per-SNP seasonal GLM: SNPs below p thresholds with the real sampling order (diamond) vs every
 #     within-site reordering of the sampling events (grey); unlinked SNPs, all chromosomes
@@ -607,6 +841,9 @@ ggarrange(ggarrange(mS_glm, mS_pw, nrow = 1, widths = c(0.55, 1), labels = c("A"
 #| label: ms-figS-trees
 #| fig-width: 11
 #| fig-height: 5.5
+#| fig-cap: "Relationships among clades and the lineages within F. (A) Mitochondrial (COI, maximum likelihood, rooted on *A. hudsonica*) and (B) nuclear (genome-wide net distances, neighbour-joining, midpoint-rooted) trees; numbers are bootstrap support. Both trees separate {S, IV} from {X, F}, place X as sister to F, and order the four F lineages identically (F-MR, F-FH, then F-N with F-NE)."
+
+
 # Supplementary: lineage trees, mitochondrial (COI ML) and nuclear (NJ on net distances)
 nuc_tr$edge.length <- pmax(nuc_tr$edge.length, 0)   # NJ negative branch length (F-NE) set to zero
 tip_cols <- c(lin_col, `A. hudsonica` = "grey40", `A. lilljeborgi` = "grey40")
@@ -616,9 +853,135 @@ ggarrange(m2_coi, m2_nuc, nrow = 1, labels = c("A", "B"))
 ```
 
 ```{r}
+#| label: ms-figS-mitogenome
+#| eval: false
+#| fig-width: 9
+#| fig-height: 9.5
+#| fig-cap: "Pooled mitogenomes of the four clades and the F lineages. (A) Assembled pieces of each pool (shaded boxes), trimmed to the stretch carrying genes, with the 13 protein-coding genes and two rRNAs (arrows point 5′ to 3′; faded and * = partial). Each box is one assembled contig, except the F-N main piece (dashed), a scaffold of contigs joined by read pairs. Only gene order within a contig box is supported by the assembly. Boxes are oriented and ordered to match the closed S mitogenome, shown opened at rrnL, and the order and spacing between boxes are not resolved. Within contigs, F-FH and F-MR place nad4l next to atp8 and atp6, and F-MR places cox3 and nad2 directly after cox2, where S, X and IV have the arrangement shown for S. (B) Amino-acid differences between clades in each protein (cells: number of differing positions; fill: percentage of aligned positions), and substitutions unique to IV (bars). Positions where the three F lineages differ are excluded from comparisons with F."
+
+
+# Supplementary: pooled mitogenomes
+# (A) gene map of each pool: assembled pieces (shaded boxes; trimmed to the gene-bearing stretch) with
+#     the 13 protein-coding genes and 2 rRNAs; pieces oriented and ordered to match the closed S
+#     mitogenome, arrows point 5' -> 3', faded genes are partial. Only order within a box is supported.
+# (B) amino-acid divergence per protein between clades (% of aligned positions that differ), and the
+#     number of substitutions unique to IV.
+mito_dir <- here("Output", "Output_data", "mito_aa")
+pool_lab <- c(S_MD = "S", FN_GW = "F-N", FFH_FH = "F-FH", FMR_MR = "F-MR", X_RW = "X", IV_TK = "IV")
+cplx_of <- function(g) case_when(str_detect(g, "^nad") ~ "Complex I (nad)", g == "cob" ~ "Complex III (cob)",
+                                 str_detect(g, "^cox") ~ "Complex IV (cox)", str_detect(g, "^atp") ~ "ATP synthase (atp)",
+                                 TRUE ~ "rRNA")
+cplx_cols <- c("Complex I (nad)" = "#D9A441", "Complex III (cob)" = "#7A9E7E", "Complex IV (cox)" = "#4F6D8C",
+               "ATP synthase (atp)" = "#9C6B98", "rRNA" = "grey70")
+gene_ord <- c("nad1", "nad2", "nad3", "nad4", "nad4l", "nad5", "nad6", "cob", "cox1", "cox2", "cox3", "atp6", "atp8")
+
+# ---- A: gene map ----
+scaffold_pieces <- c("FN_GW")
+gc <- read_tsv(file.path(mito_dir, "gene_copies.tsv"), show_col_types = FALSE) %>%
+  filter(status != "missing", length >= 0.25 * s_length)          # drop rRNA scraps (< 25% of the S gene)
+# S is circular: start it at rrnL, where the linear pieces of the other pools mostly begin
+s_len <- read_tsv(file.path(mito_dir, "pieces.tsv"), show_col_types = FALSE) %>%
+  filter(pool == "S_MD") %>% pull(bp_kept)
+s_zero <- gc %>% filter(pool == "S_MD", gene == "rrnL") %>% pull(start)
+gc <- gc %>%
+  mutate(start = if_else(pool == "S_MD", (start - s_zero) %% s_len + 1, start),
+         end = if_else(pool == "S_MD", start + length - 1, end))
+s_ref <- gc %>% filter(pool == "S_MD") %>% select(gene, s_start = start, s_strand = strand)
+pieces <- gc %>%
+  left_join(s_ref, by = "gene") %>%
+  group_by(pool, piece) %>%
+  summarise(lo = if (first(pool) == "S_MD") 1 else max(1, min(start) - 150),
+            hi = if (first(pool) == "S_MD") s_len else max(end) + 150,
+            flip = sum(length[strand != s_strand]) > sum(length[strand == s_strand]),
+            s_pos = min(s_start), .groups = "drop") %>%
+  arrange(pool, s_pos) %>%
+  group_by(pool) %>%
+  mutate(w = hi - lo, offset = lag(cumsum(w + 900), default = 0)) %>%
+  ungroup() %>%
+  mutate(row = as.integer(factor(pool, levels = rev(names(pool_lab)))),
+         # each piece is one assembled contig, except F-N's main piece: a read-pair scaffold of
+         # several contigs (config best_override), so gene order inside it is not contig-supported
+         kind = if_else(piece %in% scaffold_pieces, "Scaffold (contigs joined by read pairs)", "Contig"))
+genes_a <- gc %>%
+  inner_join(pieces, by = c("pool", "piece")) %>%
+  mutate(x0 = if_else(flip, hi - end, start - lo) + offset,
+         x1 = if_else(flip, hi - start, end - lo) + offset,
+         dir = if_else(xor(strand == "-", flip), -1, 1),
+         cplx = factor(cplx_of(gene), levels = names(cplx_cols)),
+         part = status == "partial",
+         label = if_else(part, paste0(gene, "*"), gene), id = paste(pool, gene))
+arrow_poly <- genes_a %>%
+  rowwise() %>%
+  reframe(id, cplx, part, {
+    h <- 0.2; L <- x1 - x0; hd <- min(150, 0.5 * L)
+    xs <- if (dir > 0) c(x0, x1 - hd, x1, x1 - hd, x0) else c(x1, x0 + hd, x0, x0 + hd, x1)
+    tibble(x = xs, y = row + c(-h, -h, 0, h, h))
+  })
+lab_a <- genes_a %>% mutate(x = (x0 + x1) / 2, y = row + if_else(dir > 0, 0.33, -0.33))
+mS_map <- ggplot() +
+  geom_rect(data = pieces, aes(xmin = offset - 120, xmax = offset + w + 120, ymin = row - 0.47, ymax = row + 0.47,
+                               linetype = kind),
+            fill = "grey93", colour = "grey60", linewidth = 0.3) +
+  geom_segment(data = pieces, aes(x = offset, xend = offset + w, y = row, yend = row),
+               colour = "grey55", linewidth = 0.5) +
+  geom_polygon(data = arrow_poly, aes(x, y, group = id, fill = cplx, alpha = part), colour = "grey25", linewidth = 0.2) +
+  ggrepel::geom_text_repel(data = filter(lab_a, dir > 0), aes(x, y, label = label), size = 2.3, colour = "grey20",
+                           direction = "x", vjust = 0, box.padding = 0.08, min.segment.length = Inf, seed = 1) +
+  ggrepel::geom_text_repel(data = filter(lab_a, dir < 0), aes(x, y, label = label), size = 2.3, colour = "grey20",
+                           direction = "x", vjust = 1, box.padding = 0.08, min.segment.length = Inf, seed = 1) +
+  scale_fill_manual(values = cplx_cols, name = NULL, drop = FALSE) +
+  scale_alpha_manual(values = c(`FALSE` = 1, `TRUE` = 0.35), guide = "none") +
+  scale_linetype_manual(values = c("Contig" = "solid", "Scaffold (contigs joined by read pairs)" = "22"), name = NULL) +
+  scale_y_continuous(breaks = seq_along(pool_lab), labels = rev(pool_lab), expand = expansion(add = 0.45)) +
+  scale_x_continuous(labels = function(x) paste(x / 1000), expand = expansion(mult = 0.01)) +
+  labs(x = "Position (kb; contigs in S order, gaps between boxes not to scale)", y = NULL) +
+  theme_matt(base_size = 11) +
+  theme(legend.position = "bottom", legend.box = "vertical", legend.spacing.y = unit(0, "pt"),
+        axis.line.y = element_blank(), axis.ticks.y = element_blank()) +
+  guides(fill = guide_legend(order = 1, nrow = 1), linetype = guide_legend(order = 2, override.aes = list(fill = "grey93")))
+
+# ---- B: protein divergence ----
+aa <- read_csv(file.path(mito_dir, "clade_aa_pairs.csv"), show_col_types = FALSE) %>%
+  filter(gene != "all") %>%
+  mutate(pct = 100 * differences / aligned_aa, gene = factor(gene, levels = rev(gene_ord)),
+         pair = factor(str_replace(pair, "-", "–"), levels = unique(str_replace(pair, "-", "–"))))
+iv <- read_csv(file.path(mito_dir, "IV_specific_aa.csv"), show_col_types = FALSE) %>%
+  filter(!is.na(gene)) %>% count(gene) %>%
+  right_join(tibble(gene = gene_ord), by = "gene") %>%
+  mutate(n = replace_na(n, 0L), gene = factor(gene, levels = rev(gene_ord)), cplx = cplx_of(as.character(gene)))
+# one panel: heatmap columns 1-6 (clade pairs), bars for IV-specific substitutions to the right
+pairs_lev <- levels(aa$pair)
+bar_x0 <- length(pairs_lev) + 0.8; bar_w <- 2.2
+iv <- iv %>% mutate(x1 = bar_x0 + bar_w * n / max(1, max(n)))
+mS_div <- ggplot(aa, aes(as.integer(pair), gene)) +
+  geom_tile(aes(fill = pct), colour = "white", linewidth = 0.6) +
+  geom_text(aes(label = differences, colour = pct > 0.6 * max(pct)), size = 2.6, show.legend = FALSE) +
+  geom_rect(data = iv, aes(xmin = bar_x0, xmax = x1, ymin = as.integer(gene) - 0.32, ymax = as.integer(gene) + 0.32),
+            fill = cplx_cols[iv$cplx], inherit.aes = FALSE) +
+  geom_text(data = iv, aes(x = x1 + 0.08, y = gene, label = n), hjust = 0, size = 2.6, colour = "grey20",
+            inherit.aes = FALSE) +
+  geom_vline(xintercept = bar_x0, colour = "grey40", linewidth = 0.3) +
+  scale_colour_manual(values = c(`FALSE` = "grey20", `TRUE` = "white")) +
+  scale_fill_gradient(low = "#F4F1EA", high = "#3E5C76", name = "% of aligned\npositions differing") +
+  scale_x_continuous(breaks = c(seq_along(pairs_lev), bar_x0 + bar_w / 2), labels = c(pairs_lev, "Unique to IV"),
+                     expand = expansion(add = c(0.1, 0.5))) +
+  labs(x = NULL, y = NULL) +
+  theme_matt(base_size = 11) +
+  theme(axis.line = element_blank(), axis.ticks = element_blank(), legend.position = "right")
+
+ggarrange(mS_map, mS_div, ncol = 1, heights = c(1.15, 1), labels = c("A", "B"))
+
+```
+
+
+
+```{r}
 #| label: ms-figS-concordance
 #| fig-width: 8
 #| fig-height: 3.5
+#| fig-cap: "Sign agreement between seasonal and spatial temperature associations among the 1% of SNPs with the strongest spatial association, in X and F. Dots: the null distribution, one per distinct within-site ordering of the sampling events (temperatures permuted among each site’s collections); black line: observed value; dashed line: 50%, the expectation without concordance. S (one alternative ordering) and IV (no site sampled in more than one season) cannot be tested. Text annotation provides the observed value and the number of orderings at least as far from 50%."
+
+
 # Supplementary: sign agreement of seasonal and spatial temperature associations among the top 1% spatial
 # SNPs - one dot per distinct within-site ordering of the sampling events (exact null); black line = observed;
 # dashed line = 50% (no concordance). X and F only (S has one alternative ordering, IV no repeated sampling)
@@ -650,6 +1013,9 @@ ggplot(filter(conc_perm, !observed), aes(x = agree, fill = clade)) +
 #| label: ms-figS-gwas
 #| fig-width: 6
 #| fig-height: 7
+#| fig-cap: "Within-lineage CTmax association scan. (A) Number of SNPs with p below each threshold in the per-SNP regression CTmax ~ collection + log(sequencing depth) + dosage: observed (black), mean of 100 replicates with CTmax shuffled within collections (grey), and the uniform expectation (dashed). (B) Power to detect a causal SNP at the genome-wide 5% threshold (from the shuffles), simulated on each lineage’s own data: true genotypes drawn from each individual’s genotype posterior and an effect of 0.25–3 °C per allele (minor-allele frequency 0.3–0.5) added to within-collection-shuffled CTmax; dashed line, 80% power. Lineages with ≥ 30 phenotyped and sequenced individuals (X 104, F-N 78, S 54, F-FH 38, IV 36)."
+
+
 # Supplementary: within-lineage CTmax association scan
 # (A) SNPs with p below each threshold: observed, mean of 100 within-collection CTmax shuffles, and the
 #     uniform expectation; (B) power at the genome-wide 5% threshold for simulated causal SNPs
@@ -684,6 +1050,10 @@ ggarrange(mS_qq, mS_gpw, ncol = 1, labels = c("A", "B"))
 #| label: ms-figS-seq-overview
 #| fig-width: 12
 #| fig-height: 9
+#| fig-cap: "Sequencing overview. (A) Read pairs per library by library-preparation plate (log scale), coloured by clade; grey, failed libraries (< 500,000 reads). Boxes summarise the successful libraries. (B) Percentage of reads mapped to the reference and (C) usable nuclear depth per 10 million reads, by clade: the reference genome is closest to clade X, so the other clades yield less usable depth per read. (D) GC content of reads against percentage mapped; libraries with high GC and low mapping carry DNA from other organisms."
+
+
+
 # Supplementary: sequencing overview - reads per library by plate, mapping and usable depth by clade
 # (reference bias), and GC content vs mapping (libraries with DNA from other organisms)
 status_cols <- c(clade_cols[tonsa_clades], "failed library" = "grey75")
@@ -728,6 +1098,9 @@ ggarrange(mS_reads, mS_map, mS_bias, mS_gc, ncol = 2,
 #| label: ms-figS-ramp
 #| fig-width: 6
 #| fig-height: 5
+#| fig-cap: "Heating rate during the CTmax assays. Mean rate of temperature increase for each assay run and minute since the heating element was switched on (hexagons: number of run × minute values). Dashed lines: 0.3 and 0.1 °C per minute; rates started near 0.3 °C per minute and slowed to about 0.1 °C per minute as the bath approached CTmax."
+
+
 # Supplementary: heating rate during the CTmax assays - mean ramp rate per assay run and minute,
 # binned (hexagons: number of run x minute values); reference lines at 0.3 and 0.1 deg C per minute
 ramp_runs <- ramp_record %>%
@@ -749,6 +1122,9 @@ ggplot(ramp_runs, aes(x = minute_interval, y = mean_ramp)) +
 #| label: ms-figS-clade-structure
 #| fig-width: 9
 #| fig-height: 9
+#| fig-cap: "Genome-wide structure of all individuals. (A) PC3 against PC4 of the PCAngsd covariance (PC1–PC2 in @fig-2 A), coloured by lineage: PC4 separates the F lineages. (B) NGSadmix ancestry proportions for K = 3–6 (best of three runs per K), individuals grouped by lineage and site; clusters are coloured by the clade they mostly represent, with clusters within F in shades of the F colour. Own-clade ancestry was ≥ 0.96 in 400 of 402 individuals; the two exceptions, libraries containing DNA of two clades, are omitted."
+
+
 # Supplementary: genome-wide structure beyond Fig. 2A - PC3 vs PC4 coloured by lineage (F splits into
 # four lineages), and NGSadmix ancestry at K = 3-6 (best of 3 runs; clusters coloured by the clade they
 # mostly represent, F clusters in shades of F)
@@ -782,6 +1158,9 @@ ggarrange(mS_pc34, mS_admix, ncol = 1,
 #| label: ms-figS-clade-habitat
 #| fig-width: 4.5
 #| fig-height: 4
+#| fig-cap: "Share of each clade in a collection against the collection temperature. Points: collections (site × season; individuals as in @fig-2 C), including collections where the clade was absent (0%); lines: loess smoother (span = 2) with 95% band. F is most common in warm collections, IV in cold ones and X at intermediate temperatures; S is rare in most collections."
+
+
 # Supplementary: share of each clade in a collection against collection temperature
 # (same individuals as Fig. 2C; loess smoother, span = 2, with 95% band)
 hab <- seq_data %>%
@@ -810,6 +1189,9 @@ ggplot(hab, aes(x = collection_temp, y = prop, colour = clade)) +
 #| label: ms-figS-common-garden
 #| fig-width: 8
 #| fig-height: 10
+#| fig-cap: "Natural common gardens. (A) CTmax of clades collected together at the same place and time (collections with at least two clades of at least three individuals each). Points are individuals; black, mean ± SE. (B) Pairwise clade differences in CTmax (95% CI) estimated within the shared collections (black; lm(CTmax ~ collection + clade)) and from all collections with temperature adjustment (grey); in parentheses, the number of shared collections. Differences that persist within shared collections cannot be explained by acclimation to different conditions."
+
+
 # Supplementary: natural common gardens - CTmax of clades collected together (A), and clade contrasts
 # within shared collections vs from all collections (B)
 mS_cg <- ggplot(cg_plot, aes(x = lineage, y = ctmax, colour = clade)) +
@@ -845,6 +1227,9 @@ REVIEW THIS - why are the slopes higher within season than across space here?
 #| label: ms-figS-temp-components
 #| fig-width: 10
 #| fig-height: 6
+#| fig-cap: "CTmax against the seasonal and spatial components of collection temperature, by clade: the data behind @fig-3 A. (A) Seasonal: the season's mean collection temperature across sites. (B) Spatial: each collection's temperature minus that season mean. Points: collections, mean ± SE of individual CTmax after removing the effect of the other component (partial residuals from the season-mean model); lines and labels: clade-specific slopes from the same model (CTmax ~ clade + clade:seasonal + clade:spatial, with random intercepts for site, collection, assay run and vial)."
+
+
 # Supplementary: data behind Fig. 3A - CTmax against the two components of collection temperature,
 # by clade. Points: collections (mean +- SE of CTmax with the other component's effect removed);
 # lines: clade-specific slopes from the season-mean model
@@ -869,6 +1254,9 @@ ggarrange(sm_plot("Seasonal", "Season's mean collection temperature across sites
 #| label: ms-figS-ctmax-variance
 #| fig-width: 10
 #| fig-height: 4.5
+#| fig-cap: "Spread of CTmax within clades through the season. (A) Standard deviation of CTmax in each collection, for each clade at each site sampled in two or more seasons (collections with at least five individuals of the clade); lines join the same clade and site, point size shows the number of individuals. (B) Change in the mean absolute deviation of CTmax from the collection median relative to the early season (Brown–Forsythe; mixed model with clade × site as a random intercept), with 95% CI. Strong selection removing intolerant individuals would narrow the spread (negative values)."
+
+
 # Supplementary: spread of CTmax within clades through the season. (A) SD of CTmax per collection for each
 # clade x site sampled in >= 2 seasons (collections with >= 5 individuals of the clade); (B) change in mean
 # absolute deviation from the collection median relative to early season (Brown-Forsythe; |dev| ~ season +
@@ -906,6 +1294,9 @@ ggarrange(mS_vsd, mS_vtab, nrow = 1, widths = c(1.4, 1),
 #| label: ms-figS-infection
 #| fig-width: 12
 #| fig-height: 10
+#| fig-cap: "Parasites and epibionts. (A) Share of individuals carrying each group in each collection (dot size; labels, positives/individuals sequenced; open circles, none detected; –, not sampled), from small-subunit rRNA reads that did not map to the *A. tonsa* reference (present at ≥ 5 read pairs and ≥ 2 per million library pairs). (B) CTmax and body size of carriers and non-carriers within the same collections (collections with at least two of each); points are individuals, bars are means. Effects within collections are given in @tbl-supp-infection."
+
+
 # Supplementary: parasites and epibionts. (A) share of individuals carrying each group, by site and season
 # (SSU screen of unmapped reads; >= 5 pairs and >= 2 per million); (B) CTmax and body size of carriers vs
 # non-carriers within the same collections (collections with >= 2 of each)
@@ -974,6 +1365,9 @@ ggarrange(mS_prev, mS_inf, ncol = 1, heights = c(0.8, 1), labels = c("A", "B"))
 #| label: ms-figS-diversity
 #| fig-width: 10
 #| fig-height: 9
+#| fig-cap: "Genetic diversity and relatedness within populations (clade × site × season). (A) Nucleotide diversity (θπ per site) and (B) Tajima's D, with 95% CI from a block bootstrap over 1 Mb blocks; spectra are folded, so values are compared within clades. (C) KING-robust kinship for every pair of individuals within each population (ngsRelate); dashed lines mark second-degree (0.125) and first-degree (0.25) relatives. No pair reached second-degree kinship. The cluster near −1.1 in MR peak consists of the pairs involving one F-FH individual collected among F-MR copepods."
+
+
 # Supplementary: diversity and relatedness within populations. (A) theta_pi per site and (B) Tajima's D
 # per population (95% CI, block bootstrap over 1 Mb blocks; folded spectra); (C) KING-robust kinship of
 # every pair of individuals within each population (ngsRelate); dashed lines: second- (0.125) and
@@ -1022,6 +1416,9 @@ ggarrange(mS_div("θπ per site"), mS_div("Tajima's D"), mS_king, ncol = 1, heig
 #| label: ms-figS-size
 #| fig-width: 6
 #| fig-height: 7
+#| fig-cap: "Body size (prosome length) of the individuals in the phenotype analysis set, by clade. Dashed lines: clade medians."
+
+
 # Supplementary: body size (prosome length) by clade, phenotype analysis set; dashed line = median
 size_dat <- join_data %>% filter(clade %in% tonsa_clades, !is.na(size)) %>%
   mutate(clade = factor(clade, levels = tonsa_clades))
@@ -1041,6 +1438,9 @@ ggplot(size_dat, aes(x = size, fill = clade)) +
 #| label: ms-figS-temp-split
 #| fig-width: 12.5
 #| fig-height: 5.8
+#| fig-cap: "Two ways of splitting collection temperature into seasonal and spatial components, shown for the 22 collections. In each, a collection's temperature equals a reference temperature (dashed line) plus its two components. (A) Season-mean split, used in the main analysis: the seasonal component is the season's mean collection temperature across the sites sampled in that season (black bars; arrows give its deviation from the mean of the three season means), and the spatial component is each collection's deviation from that season mean (coloured lines). (B) Site-mean split, used as a sensitivity analysis: the spatial component is each site's mean collection temperature (black bars; arrows give its deviation from the mean of the site means), and the seasonal component is each collection's deviation from its site's mean (coloured lines). MR and FH were not sampled early, so their site means average only the peak and late collections. Slopes under both splits are compared in @tbl-supp-slopes."
+
+
 # Supplementary: the two ways of splitting collection temperature into seasonal and spatial parts,
 # drawn from the 22 collection temperatures. Each collection's temperature = reference mean +
 # seasonal part + spatial part. (A) season-mean split (main analysis); (B) site-mean split (sensitivity).
