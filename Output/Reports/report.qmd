@@ -1371,7 +1371,7 @@ Lineage composition is compared among the collections at each site (sequenced in
 #| fig-width: 11
 #| fig-height: 5
 season_levels <- c("early", "peak", "late")
-# analysis unit = clade (the F lineages are analysed together); column kept as `lineage` for the code below
+# analysis unit = clade (the F lineages are analysed together); the column is called lineage for historical reasons
 unit_levels <- tonsa_clades
 unit_col <- clade_cols[tonsa_clades]
 comp <- seq_data %>%
@@ -1398,6 +1398,10 @@ obs_chi <- comp %>% group_by(site_code) %>% summarise(x = chi_stat(lineage, seas
 by_site <- split(comp, comp$site_code, drop = TRUE)
 perm_chi <- replicate(1e4, sum(map_dbl(by_site, ~ chi_stat(.x$lineage, sample(.x$season)))))
 turn_p <- (sum(perm_chi >= obs_chi) + 1) / (length(perm_chi) + 1)
+
+turn_comp_p <- turn_p   # combined permutation p for composition change; turn_p is reused later for the slopes
+write_csv(turn_site %>% rename(clades = lineages) %>% mutate(combined_p = turn_comp_p),
+          here("Output", "Output_data", "turnover_sites.csv"))
 
 ggplot(comp, aes(x = season, fill = lineage)) +
   geom_bar(position = "fill", width = 0.8) +
@@ -2678,8 +2682,48 @@ wb_sm_add <- lme4::lmer(ctmax ~ lineage + t_time + t_space +
                           (1 | site) + (1 | collection) + (1 | replicate) + (1 | tube), data = wb_data)
 wb_sm_int <- lme4::lmer(ctmax ~ lineage + lineage:t_time + lineage:t_space +
                           (1 | site) + (1 | collection) + (1 | replicate) + (1 | tube), data = wb_data)
+
 wb_wbint <- lme4::lmer(ctmax ~ lineage + lineage:t_within + lineage:t_between +
                          (1 | site) + (1 | collection) + (1 | replicate) + (1 | tube), data = wb_data)
+
+
+# data behind the season-mean slopes (supplementary figure): partial residuals - CTmax with the OTHER
+# temperature component removed (clade-specific slope), averaged per collection; fitted lines = clade
+# intercept + clade slope (random effects at zero)
+sm_b <- lme4::fixef(wb_sm_int)
+sm_coef <- tibble(lineage = levels(wb_data$lineage)) %>%
+  mutate(a = sm_b[["(Intercept)"]] + if_else(lineage == levels(wb_data$lineage)[1], 0,
+                                             sm_b[paste0("lineage", lineage)]),
+         b_time = sm_b[paste0("lineage", lineage, ":t_time")],
+         b_space = sm_b[paste0("lineage", lineage, ":t_space")])
+sm_pts <- wb_data %>%
+  left_join(sm_coef, by = c("lineage")) %>%
+  mutate(y_time = ctmax - b_space * t_space,      # seasonal panel: spatial part removed
+         y_space = ctmax - b_time * t_time) %>%    # spatial panel: seasonal part removed
+  group_by(lineage, site_code, season, collection, t_time, t_space, season_mean) %>%
+  summarise(n = n(), y_time_m = mean(y_time), y_time_se = sd(y_time) / sqrt(n),
+            y_space_m = mean(y_space), y_space_se = sd(y_space) / sqrt(n), .groups = "drop") %>%
+  pivot_longer(c(y_time_m, y_space_m), names_to = "panel", values_to = "y") %>%
+  mutate(se = if_else(panel == "y_time_m", y_time_se, y_space_se),
+         panel = if_else(panel == "y_time_m", "Seasonal", "Spatial"),
+         x = if_else(panel == "Seasonal", t_time + mean(wb_season_means$season_mean), t_space)) %>%
+  mutate(se = replace_na(se, 0),                # single-individual collections
+         lineage = factor(lineage, levels = levels(wb_data$lineage))) %>%
+  select(lineage, site_code, season, collection, n, panel, x, y, se)
+sm_lines <- sm_pts %>% group_by(lineage, panel) %>%
+  summarise(x0 = min(x), x1 = max(x), .groups = "drop") %>%
+  left_join(sm_coef, by = "lineage") %>%
+  mutate(xc0 = if_else(panel == "Seasonal", x0 - mean(wb_season_means$season_mean), x0),
+         xc1 = if_else(panel == "Seasonal", x1 - mean(wb_season_means$season_mean), x1),
+         b = if_else(panel == "Seasonal", b_time, b_space),
+         y0 = a + b * xc0, y1 = a + b * xc1) %>%
+  mutate(lineage = factor(lineage, levels = levels(wb_data$lineage))) %>%
+  select(lineage, panel, x0, x1, y0, y1, b)
+
+
+
+
+
 # spatial slope - seasonal slope, overall and per clade, under both splits
 slope_diff <- function(m, a, b, group) {
   bb <- lme4::fixef(m); V <- as.matrix(vcov(m))
@@ -3142,7 +3186,8 @@ cg_con <- as_tibble(summary(pairs(cg_emm, adjust = "none"), infer = TRUE)) %>%
   inner_join(cg_pairs, by = c("pair_sorted" = "pairs")) %>%
   select(pair = pair_sorted, collections, estimate, lo, hi, p.value)
 # the same contrasts from all collections (within/between model: lineage effects at equal temperature)
-all_emm <- emmeans::emmeans(wb_add, ~ lineage)
+all_emm <- emmeans::emmeans(wb_sm_add, ~ lineage)
+
 all_con <- as_tibble(summary(pairs(all_emm, adjust = "none"), infer = TRUE)) %>%
   mutate(pair = str_remove_all(str_replace_all(contrast, " - ", " – "), "[()]"),
          pair_sorted = map_chr(str_split(pair, " – "), ~ paste(sort(.x), collapse = " – ")),
@@ -3873,7 +3918,7 @@ Warming tolerance (CTmax minus habitat temperature) is the usual summary of vuln
 
 - **Fixed CTmax:** one value for everyone, the mean of all peak-season individuals.
 - **Clade means:** each clade's peak-season mean CTmax (its mean over all collections when it has \< 5 peak-season individuals), weighted by the clade make-up of the site's peak collection.
-- **Clades + acclimation:** CTmax predicted for each clade on each day from the within/between model (population-level, no site random effect): lineage + within-site temperature (the day's temperature minus the site's mean collection temperature) + between-site temperature (the site's long-term MUR mean). The day's temperature is clamped to the range of collection temperatures at which that lineage was sampled, so acclimation is not extrapolated beyond the data. Same peak-season make-up.
+- **Clades + acclimation:** CTmax predicted for each clade on each day from the season-mean model (population-level, no site random effect): clade + seasonal temperature (the day’s mean MUR temperature across the eight sites) + spatial temperature (the site’s deviation from that mean), each clamped to the range at which that clade was sampled. Uniform warming raises the seasonal component only. Same peak-season make-up.
 
 Habitat temperature is the bias-corrected daily MUR SST, 2014–2023 (Section 1), plus 0 or 4 °C for a uniform-warming scenario. Sites are pooled into six regions (Florida: MR, FH; Chesapeake: MD, GW; Connecticut; Maine; Shediac: TK; Miramichi: RW), each site weighted equally; composition and acclimation terms are applied site by site before pooling. Two summaries per region, over August–September (the warmest months, peak abundance, and the period the peak collections represent): the mean warming tolerance of the peak-season population, and the warming tolerance on the warmest August–September day of each year (averaged over years) for the least tolerant lineage making up ≥ 10% of the peak collection. Intervals are 95% ranges from 1,000 bootstrap resamples of individuals (fixed and lineage means) or 1,000 draws of the model's fixed effects (lineages + acclimation). Individuals' CTmax was measured against collection-day water temperature, while predictions use MUR SST, which in summer runs cooler than the in-situ collection temperatures at the northern sites (Section 1); the acclimation scenario therefore uses MUR temperatures on a model fitted to in-situ ones.
 
@@ -3887,8 +3932,6 @@ if (!have_mur) cat("MUR daily temperatures (Output_data/mur_sst_daily_corrected.
 ```
 
 ```{r}
-#| label: wt-scenarios-compute
-#| include: false
 if (have_mur) {
   B <- 1000
   set.seed(5)
@@ -3897,35 +3940,47 @@ if (have_mur) {
   wt_region <- c(MR = "Florida", FH = "Florida", MD = "Chesapeake", GW = "Chesapeake",
                  CT = "Connecticut", ME = "Maine", TK = "Shediac", RW = "Miramichi")
   wt_lin <- levels(wb_data$lineage)
-  peak_days <- read_csv(mur_file, show_col_types = FALSE) %>%
-    filter(site_code %in% site_order, month(date) %in% 8:9) %>%
-    transmute(site_code, year = year(date), temp = sst_c)
+  # daily temperatures split as in the season-mean model: seasonal = the day's mean MUR temperature
+  # across the eight sites (centred like t_time), spatial = the site's deviation from that mean.
+  # Uniform warming (dw) shifts the seasonal component only.
+  sm_centre <- mean(wb_season_means$season_mean)
+  mur_days <- read_csv(mur_file, show_col_types = FALSE) %>%
+    filter(site_code %in% site_order) %>%
+    transmute(site_code, date, temp = sst_c) %>%
+    group_by(date) %>% filter(n_distinct(site_code) == length(site_order)) %>%   # days with all sites
+    mutate(coast = mean(temp)) %>% ungroup() %>%
+    mutate(tt = coast - sm_centre, ts = temp - coast)
+  peak_days <- mur_days %>% filter(month(date) %in% 8:9) %>% mutate(year = year(date))
   comp_peak <- comp %>% filter(season == "peak") %>%
     count(site_code, lineage) %>% group_by(site_code) %>% mutate(p = n / sum(n)) %>% ungroup() %>%
     mutate(site_code = as.character(site_code), lineage = as.character(lineage))
   comp_annual <- comp %>%
     count(site_code, lineage) %>% group_by(site_code) %>% mutate(p = n / sum(n)) %>% ungroup() %>%
     mutate(site_code = as.character(site_code), lineage = as.character(lineage))
+  # range of each temperature component at which each lineage was sampled: predictions are clamped to it,
+  # so acclimation is not extrapolated beyond the data
   lin_trange <- wb_data %>% group_by(lineage = as.character(lineage)) %>%
-    summarise(tmin = min(collection_temp), tmax = max(collection_temp), .groups = "drop")
-  site_terms <- wb_events %>%
-    transmute(site_code, smc = site_mean_collection, tb = site_temp - mean(wb_events$site_temp))
-
-  # temperature aggregates per site x lineage: Aug-Sep mean, and warmest day per year (mean over years)
+    summarise(tt_min = min(t_time), tt_max = max(t_time), ts_min = min(t_space), ts_max = max(t_space),
+              .groups = "drop")
+  clamp <- function(x, lo, hi) pmin(pmax(x, lo), hi)
+  
+  # temperature aggregates per site x lineage: Aug-Sep mean, and warmest day per year (mean over years);
+  # clamped components averaged over the same days
   temp_agg <- function(dw, compo) {
-    d <- peak_days %>% mutate(temp = temp + dw)
+    d <- peak_days %>% mutate(temp = temp + dw, tt = tt + dw)
     hot <- d %>% group_by(site_code, year) %>% slice_max(temp, n = 1, with_ties = FALSE) %>% ungroup()
     compo %>%
       inner_join(lin_trange, by = "lineage") %>%
-      inner_join(site_terms, by = "site_code") %>%
       rowwise() %>%
       mutate(mT = mean(d$temp[d$site_code == site_code]),
-             mTc = mean(pmin(pmax(d$temp[d$site_code == site_code], tmin), tmax)),
+             mtt = mean(clamp(d$tt[d$site_code == site_code], tt_min, tt_max)),
+             mts = mean(clamp(d$ts[d$site_code == site_code], ts_min, ts_max)),
              hT = mean(hot$temp[hot$site_code == site_code]),
-             hTc = mean(pmin(pmax(hot$temp[hot$site_code == site_code], tmin), tmax))) %>%
+             htt = mean(clamp(hot$tt[hot$site_code == site_code], tt_min, tt_max)),
+             hts = mean(clamp(hot$ts[hot$site_code == site_code], ts_min, ts_max))) %>%
       ungroup()
   }
-
+  
   # CTmax draws per lineage: column 1 = point estimate, then B draws
   peak_ind <- wb_data %>% filter(season == "peak")
   boot_mean <- function(x) c(mean(x), replicate(B, mean(sample(x, replace = TRUE))))
@@ -3935,19 +3990,19 @@ if (have_mur) {
     if (length(x) < 5) x <- wb_data$ctmax[wb_data$lineage == l]
     boot_mean(x)
   })
-  fe <- lme4::fixef(wb_add)
-  beta <- rbind(fe, MASS::mvrnorm(B, fe, as.matrix(vcov(wb_add))))
+  fe <- lme4::fixef(wb_sm_add)
+  beta <- rbind(fe, MASS::mvrnorm(B, fe, as.matrix(vcov(wb_sm_add))))
   lin_int <- function(l) beta[, "(Intercept)"] + if (paste0("lineage", l) %in% colnames(beta)) beta[, paste0("lineage", l)] else 0
-
+  
   # warming tolerance draws for one site: mean (composition-weighted) and warmest-day (least tolerant common clade)
   site_wt <- function(a, scenario) {
     wt <- map(seq_len(nrow(a)), function(i) {
       r <- a[i, ]
       ct_m <- switch(scenario,
-        "Fixed CTmax" = ct_fixed, "Clade means" = ct_lin[[r$lineage]],
-        "Clades + acclimation" = lin_int(r$lineage) + beta[, "t_within"] * (r$mTc - r$smc) + beta[, "t_between"] * r$tb)
+                     "Fixed CTmax" = ct_fixed, "Clade means" = ct_lin[[r$lineage]],
+                     "Clades + acclimation" = lin_int(r$lineage) + beta[, "t_time"] * r$mtt + beta[, "t_space"] * r$mts)
       ct_h <- if (scenario == "Clades + acclimation")
-        lin_int(r$lineage) + beta[, "t_within"] * (r$hTc - r$smc) + beta[, "t_between"] * r$tb else ct_m
+        lin_int(r$lineage) + beta[, "t_time"] * r$htt + beta[, "t_space"] * r$hts else ct_m
       list(mean = ct_m - r$mT, hot = ct_h - r$hT)
     })
     common <- a$p >= 0.10
@@ -3955,7 +4010,7 @@ if (have_mur) {
          hot = do.call(pmin, map(wt[common], "hot")))
   }
   summ <- function(v) tibble(est = v[1], lo = quantile(v[-1], 0.025), hi = quantile(v[-1], 0.975))
-
+  
   wt_res <- map_dfr(c(0, 4), function(dw) {
     map_dfr(c(scen_levels, "Clades + acclimation (annual make-up)"), function(sc) {
       compo <- if (grepl("annual", sc)) comp_annual else comp_peak
@@ -3972,7 +4027,7 @@ if (have_mur) {
   }) %>%
     mutate(region = factor(region, levels = region_order))
   write_csv(wt_res, here("Output", "Output_data", "wt_scenarios.csv"))
-
+  
   # spread among regions, current conditions, with bootstrap intervals for the change vs fixed CTmax
   wt_range <- wt_res %>% filter(warming == 0) %>%
     group_by(scenario, metric) %>%
@@ -4020,9 +4075,9 @@ The figure below shows the full distribution of daily warming tolerance in each 
 #| fig-height: 10
 if (have_mur) {
   season_of <- function(m) case_when(m == 7 ~ "early", m %in% 8:9 ~ "peak", m %in% 10:11 ~ "late")
-  season_days <- read_csv(mur_file, show_col_types = FALSE) %>%
-    filter(site_code %in% site_order, month(date) %in% 7:11) %>%
-    transmute(site_code, date, season = season_of(month(date)), temp = sst_c)
+  season_days <- mur_days %>%
+    filter(month(date) %in% 7:11) %>%
+    mutate(season = season_of(month(date)))
   comp_season <- comp %>%
     count(site_code, season, lineage) %>%
     group_by(site_code, season) %>% mutate(p = n / sum(n)) %>% ungroup() %>%
@@ -4039,17 +4094,17 @@ if (have_mur) {
   day_comp <- season_days %>% distinct(site_code, season) %>%
     pmap_dfr(function(site_code, season) comp_for(site_code, season) %>% mutate(day_season = season, season = NULL) %>%
                rename(season = day_season))
-  bw_hat <- fe[["t_within"]]; bb_hat <- fe[["t_between"]]
+  bt_hat <- fe[["t_time"]]; bs_hat <- fe[["t_space"]]
   int_hat <- set_names(map_dbl(wt_lin, ~ lin_int(.x)[1]), wt_lin)
   wt_days <- season_days %>%
     inner_join(day_comp, by = c("site_code", "season"), relationship = "many-to-many") %>%
     inner_join(lin_trange, by = "lineage") %>%
-    inner_join(site_terms, by = "site_code") %>%
     crossing(warming = c(0, 4)) %>%
-    mutate(T = temp + warming, Tc = pmin(pmax(T, tmin), tmax),
+    mutate(T = temp + warming,
+           ttc = clamp(tt + warming, tt_min, tt_max), tsc = clamp(ts, ts_min, ts_max),
            `Fixed CTmax` = ct_fixed[1] - T,
            `Clade means` = map_dbl(lineage, ~ ct_lin[[.x]][1]) - T,
-           `Clades + acclimation` = int_hat[lineage] + bw_hat * (Tc - smc) + bb_hat * tb - T) %>%
+           `Clades + acclimation` = int_hat[lineage] + bt_hat * ttc + bs_hat * tsc - T) %>%
     pivot_longer(all_of(scen_levels), names_to = "scenario", values_to = "wt") %>%
     group_by(site_code, scenario, warming) %>% mutate(w = p / n_distinct(date)) %>% ungroup() %>%
     mutate(region = factor(wt_region[site_code], levels = region_order)) %>%
@@ -4107,8 +4162,12 @@ The manuscript figures are built in `Manuscript/ms_figures.qmd`, which renders i
 ```{r}
 #| label: ms-objects
 ms_objects <- c("turn_tab", "turn_diff", "coi_red", "nuc_tr", "lin_col", "conc", "ctmax.model",
-                "filtered_data", "pca_all", "ve", "wpca", "region_cols", "region_order", "scen_levels",
-                "temporal", "vp_cols", "vp_freq", "vp_tab", "wb_diff", "wt_days", "wt_res", "have_mur")
+                "filtered_data", "pca_all", "ve", "wpca", "region_cols", "region_order",
+                "scen_levels", "temporal", "vp_cols", "vp_freq", "vp_tab", "wb_diff", 
+                "wt_days", "wt_res", "have_mur", "c_pop", "glm_perm", "pw_long", 
+                "conc_pw", "gwas_qq", "gw_pw", "seq_plot", "admix", "fill_map", 
+                "cg_plot", "cg_tab", "sm_pts", "sm_lines")
+
 missing <- setdiff(ms_objects, ls())
 if (length(missing)) warning("Not created in this render: ", paste(missing, collapse = ", "))
 saveRDS(mget(intersect(ms_objects, ls())), here("Output", "Output_data", "ms_objects.rds"))

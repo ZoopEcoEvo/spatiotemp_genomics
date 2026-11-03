@@ -469,7 +469,7 @@ if (have_mur) {
 ```{r}
 #| label: ms-figS-drift
 #| fig-width: 12
-#| fig-height: 4.8
+#| fig-height: 4
 # Supplementary: seasonal allele-frequency change and temporal Ne
 # (A) Ne per seasonal pair (log scale; 95% CI from the chromosome jackknife; arrow = upper bound
 #     unbounded, open point = excess not above zero), grouped by clade / F lineage, against the
@@ -537,18 +537,20 @@ mS_fc <- ggplot(ne_dat, aes(x = gens, colour = clade)) +
 #     (mean of two random splits); dashed line = two full chromosomes per individual (genotypes known)
 mS_c <- ggplot(c_pop, aes(x = clade, y = c, colour = clade)) +
   geom_hline(yintercept = 1, linetype = "dashed", colour = "grey50") +
-  geom_point(size = 2.2, alpha = 0.8, position = position_jitter(width = 0.15, height = 0, seed = 1)) +
+  geom_point(size = 3, alpha = 0.8, position = position_jitter(width = 0.15, height = 0, seed = 1)) +
   scale_colour_manual(values = clade_cols[tonsa_clades], name = "Clade", drop = TRUE) +
   scale_x_discrete(drop = TRUE) +
   scale_y_continuous(limits = c(0, 1.05), breaks = seq(0, 1, 0.25)) +
-  labs(x = NULL, y = "Effective chromosomes per individual / 2 (c)") +
+  labs(x = "Clade", y = "Effective chromosomes per individual / 2 (c)") +
   theme_matt(base_size = 11) +
   theme(legend.position = "bottom")
 
-ggarrange(mS_ne, mS_fc, mS_c, nrow = 1, widths = c(1.15, 1, 0.5), labels = c("A", "B", "C"),
+ggarrange(mS_ne, mS_fc, mS_c, nrow = 1, widths = c(1.15, 1, 1), labels = c("A", "B", "C"),
           common.legend = TRUE, legend = "bottom")
 
 ```
+
+REVIEW
 
 ```{r}
 #| label: ms-figS-power
@@ -646,15 +648,15 @@ ggplot(filter(conc_perm, !observed), aes(x = agree, fill = clade)) +
 
 ```{r}
 #| label: ms-figS-gwas
-#| fig-width: 12
-#| fig-height: 7.5
+#| fig-width: 6
+#| fig-height: 7
 # Supplementary: within-lineage CTmax association scan
 # (A) SNPs with p below each threshold: observed, mean of 100 within-collection CTmax shuffles, and the
 #     uniform expectation; (B) power at the genome-wide 5% threshold for simulated causal SNPs
 #     (minor-allele frequency 0.3-0.5, as in tbl-supp-gwas-power)
 mS_qq <- ggplot(gwas_qq, aes(x = bin_lo, y = count, colour = series, linetype = series)) +
   geom_line(linewidth = 0.9) +
-  facet_wrap(~ lineage, nrow = 1, scales = "free_y") +
+  facet_wrap(~ lineage, nrow = 2, scales = "free_y") +
   scale_y_log10(labels = scales::label_comma()) +
   scale_colour_manual(values = c(Observed = "black", `Shuffled CTmax (mean of 100)` = "grey55",
                                  `Uniform expectation` = "grey75"), name = NULL) +
@@ -664,15 +666,18 @@ mS_qq <- ggplot(gwas_qq, aes(x = bin_lo, y = count, colour = series, linetype = 
   theme_matt_facets(base_size = 11) +
   theme(legend.position = "bottom")
 
-mS_gpw <- ggplot(filter(gw_pw, str_detect(maf_bin, "^\\(0\\.3")), aes(x = beta, y = power)) +
+mS_gpw <- ggplot(filter(gw_pw, str_detect(maf_bin, "^\\(0\\.3")), aes(x = beta, y = power, colour = lineage)) +
   geom_hline(yintercept = 0.8, colour = "grey60", linetype = "dashed") +
   geom_line(linewidth = 0.9) + geom_point(size = 1.6) +
-  facet_wrap(~ lineage, nrow = 1) +
   scale_y_continuous(limits = c(0, 1)) +
-  labs(x = "Effect of the causal allele on CTmax (°C per allele)", y = "Power (genome-wide 5%)") +
-  theme_matt_facets(base_size = 11)
+  scale_colour_manual(values = lin_col) + 
+  labs(x = "Effect of the causal allele on CTmax (°C per allele)", 
+       y = "Power (genome-wide 5%)") +
+  theme_matt_facets(base_size = 11) +
+  theme(legend.position = "bottom")
 
-ggarrange(mS_qq, mS_gpw, ncol = 1, labels = c("A", "B"), align = "v")
+ggarrange(mS_qq, mS_gpw, ncol = 1, labels = c("A", "B"))
+
 ```
 
 ```{r}
@@ -685,13 +690,16 @@ status_cols <- c(clade_cols[tonsa_clades], "failed library" = "grey75")
 seq_ok <- seq_plot %>% filter(!library_failed, clade %in% tonsa_clades) %>%
   mutate(clade = factor(clade, levels = tonsa_clades))
 
-mS_reads <- ggplot(seq_plot, aes(x = factor(plate), y = raw_reads / 1e6)) +
+mS_reads <- seq_plot |> 
+  filter(!is.na(clade)) |> 
+  ggplot(aes(x = clade, y = raw_reads)) +
   geom_boxplot(data = ~ filter(.x, !library_failed), outlier.shape = NA, colour = "grey50") +
   geom_jitter(aes(colour = status), width = 0.15, height = 0, size = 1.5, alpha = 0.8) +
   scale_colour_manual(values = status_cols, name = NULL) +
   scale_y_log10() +
-  labs(x = "Plate", y = "Reads (millions, log scale)") +
-  theme_matt(base_size = 11)
+  labs(x = "Plate", y = "Reads (millions)") +
+  theme_matt(base_size = 11) + 
+  theme(legend.position = "none")
 
 mS_map <- ggplot(seq_ok, aes(x = clade, y = pct_mapped, fill = clade)) +
   geom_boxplot(outlier.size = 1) +
@@ -712,7 +720,8 @@ mS_gc <- ggplot(seq_ok, aes(x = 100 * gc_after, y = pct_mapped, colour = clade, 
   labs(x = "GC content of reads (%)", y = "Reads mapped (%)") +
   theme_matt(base_size = 11)
 
-ggarrange(mS_reads, mS_map, mS_bias, mS_gc, ncol = 2, nrow = 2, labels = "AUTO")
+ggarrange(mS_reads, mS_map, mS_bias, mS_gc, ncol = 2, 
+          nrow = 2, labels = "AUTO", common.legend = T, legend = "bottom")
 ```
 
 ```{r}
@@ -729,15 +738,17 @@ ggplot(ramp_runs, aes(x = minute_interval, y = mean_ramp)) +
   geom_hline(yintercept = c(0.1, 0.3), colour = "grey50", linetype = "dashed") +
   geom_hex(bins = 30) +
   scale_fill_gradient(low = "grey85", high = "black", name = "Assay runs") +
-  coord_cartesian(ylim = c(0, 0.35)) +
+  ylim(0, 0.35) +
   labs(x = "Time into assay (min)", y = "Heating rate (°C per min)") +
-  theme_matt(base_size = 11)
+  theme_matt(base_size = 11) + 
+  theme(legend.position = "right")
+
 ```
 
 ```{r}
 #| label: ms-figS-clade-structure
-#| fig-width: 12
-#| fig-height: 8
+#| fig-width: 9
+#| fig-height: 9
 # Supplementary: genome-wide structure beyond Fig. 2A - PC3 vs PC4 coloured by lineage (F splits into
 # four lineages), and NGSadmix ancestry at K = 3-6 (best of 3 runs; clusters coloured by the clade they
 # mostly represent, F clusters in shades of F)
@@ -745,7 +756,7 @@ lin_levels <- c("X", "S", "IV", "F-N", "F-NE", "F-FH", "F-MR")
 mS_pc34 <- pca_all %>%
   mutate(lineage = factor(lineage, levels = lin_levels)) %>%
   ggplot(aes(x = PC3, y = PC4, colour = lineage, shape = clade)) +
-  geom_point(size = 2, alpha = 0.85) +
+  geom_point(size = 4, alpha = 0.9) +
   scale_colour_manual(values = lin_col[lin_levels], name = "Lineage") +
   scale_shape_manual(values = clade_shapes[tonsa_clades], name = "Clade") +
   labs(x = sprintf("PC3 (%.1f%%)", ve[3]), y = sprintf("PC4 (%.1f%%)", ve[4])) +
@@ -757,16 +768,20 @@ mS_admix <- ggplot(admix, aes(x = sample_id, y = q, fill = key)) +
   geom_col(width = 1) +
   scale_fill_manual(values = setNames(fill_map$col, fill_map$key), guide = "none") +
   labs(x = "Individuals, grouped by lineage (X, S, IV, F-N, F-NE, F-FH, F-MR) and site", y = "Ancestry") +
+  scale_y_continuous(breaks = c(0,0.5,1)) +
   theme_matt_facets(base_size = 11) +
   theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
 
-ggarrange(mS_pc34, mS_admix, ncol = 1, heights = c(0.9, 1.1), labels = c("A", "B"))
+ggarrange(mS_pc34, mS_admix, ncol = 1, 
+          heights = c(1.6, 1), 
+          common.legend = T, legend = "right", 
+          labels = c("A", "B"))
 ```
 
 ```{r}
 #| label: ms-figS-clade-habitat
-#| fig-width: 8
-#| fig-height: 7
+#| fig-width: 4.5
+#| fig-height: 4
 # Supplementary: share of each clade in a collection against collection temperature
 # (same individuals as Fig. 2C; loess smoother, span = 2, with 95% band)
 hab <- seq_data %>%
@@ -780,8 +795,9 @@ hab <- seq_data %>%
   complete(nesting(site_code, season, collection_temp), clade, fill = list(n = 0, prop = 0))
 
 ggplot(hab, aes(x = collection_temp, y = prop, colour = clade)) +
-  geom_point(size = 2.5, alpha = 0.5) +
-  geom_smooth(method = "loess", formula = y ~ x, span = 2, se = TRUE, linewidth = 1.5) +
+  geom_point(size = 3, alpha = 0.5) +
+  geom_smooth(method = "loess", formula = y ~ x, span = 2, 
+              se = TRUE, linewidth = 3) +
   facet_wrap(~ clade) +
   coord_cartesian(ylim = c(0, 1)) +
   scale_y_continuous(labels = scales::percent, breaks = c(0, 0.5, 1)) +
@@ -792,14 +808,14 @@ ggplot(hab, aes(x = collection_temp, y = prop, colour = clade)) +
 
 ```{r}
 #| label: ms-figS-common-garden
-#| fig-width: 12
-#| fig-height: 8
+#| fig-width: 8
+#| fig-height: 10
 # Supplementary: natural common gardens - CTmax of clades collected together (A), and clade contrasts
 # within shared collections vs from all collections (B)
 mS_cg <- ggplot(cg_plot, aes(x = lineage, y = ctmax, colour = clade)) +
   geom_jitter(width = 0.15, height = 0, alpha = 0.5, size = 1.6) +
   stat_summary(fun.data = mean_se, colour = "black", size = 0.4) +
-  facet_wrap(~ collection, nrow = 1, scales = "free_x") +
+  facet_wrap(~ collection, nrow = 2, scales = "free_x") +
   scale_colour_manual(values = clade_cols[tonsa_clades], guide = "none") +
   labs(x = NULL, y = "CTmax (°C)") +
   theme_matt_facets(base_size = 11) +
@@ -810,6 +826,7 @@ cg_long <- bind_rows(
   cg_tab %>% transmute(pair, collections, est = est_all, lo = lo_all, hi = hi_all, source = "All collections (temperature-adjusted)")) %>%
   mutate(pair = sprintf("%s (%d)", pair, collections),
          source = factor(source, levels = c("Within shared collections", "All collections (temperature-adjusted)")))
+
 mS_cgc <- ggplot(cg_long, aes(x = est, y = pair, colour = source, shape = source)) +
   geom_vline(xintercept = 0, colour = "grey50", linetype = "dashed") +
   geom_pointrange(aes(xmin = lo, xmax = hi), position = position_dodge(width = 0.5), size = 0.5) +
@@ -822,10 +839,12 @@ mS_cgc <- ggplot(cg_long, aes(x = est, y = pair, colour = source, shape = source
 ggarrange(mS_cg, mS_cgc, ncol = 1, heights = c(1, 0.9), labels = c("A", "B"))
 ```
 
+REVIEW THIS - why are the slopes higher within season than across space here?
+
 ```{r}
 #| label: ms-figS-temp-components
-#| fig-width: 12
-#| fig-height: 7.5
+#| fig-width: 10
+#| fig-height: 6
 # Supplementary: data behind Fig. 3A - CTmax against the two components of collection temperature,
 # by clade. Points: collections (mean +- SE of CTmax with the other component's effect removed);
 # lines: clade-specific slopes from the season-mean model
@@ -861,24 +880,25 @@ vs_tab <- read_csv(here("Output", "Output_data", "ctmax_variance_season.csv"), s
                            labels = c("Peak vs early", "Late vs early")))
 
 mS_vsd <- ggplot(vs_sd, aes(x = season, y = sd, group = unit, colour = lineage)) +
-  geom_line(alpha = 0.7) +
-  geom_point(aes(size = n)) +
-  geom_text(data = ~ group_by(.x, unit) %>% slice_max(as.integer(season), n = 1), aes(label = site_code),
-            hjust = -0.3, size = 3, show.legend = FALSE) +
+  geom_line(linewidth = 2) +
+  geom_point(size = 3.5) +
   scale_colour_manual(values = clade_cols[tonsa_clades], name = "Clade", drop = TRUE) +
   scale_size_continuous(range = c(1.5, 3.5), name = "Individuals") +
   scale_x_discrete(expand = expansion(add = c(0.3, 0.6))) +
   labs(x = NULL, y = "SD of CTmax within the collection (°C)") +
-  theme_matt(base_size = 11)
+  theme_matt(base_size = 11) + 
+  theme(legend.position = "bottom")
 
 mS_vtab <- ggplot(vs_tab, aes(x = estimate, y = contrast)) +
   geom_vline(xintercept = 0, colour = "grey50", linetype = "dashed") +
-  geom_pointrange(aes(xmin = lo, xmax = hi), size = 0.5) +
+  geom_pointrange(aes(xmin = lo, xmax = hi), size = 1.5, linewidth = 1) +
   scale_y_discrete(limits = rev) +
   labs(x = "Change in mean |deviation| from\nthe collection median (°C)", y = NULL) +
   theme_matt(base_size = 11)
 
-ggarrange(mS_vsd, mS_vtab, nrow = 1, widths = c(1.4, 1), labels = c("A", "B"))
+ggarrange(mS_vsd, mS_vtab, nrow = 1, widths = c(1.4, 1), 
+          labels = c("A", "B"))
+
 ```
 
 
@@ -916,7 +936,8 @@ mS_prev <- ggplot(micro_prev, aes(x = site_code, y = group)) +
                   name = "Individuals\npositive") +
   labs(x = "Site (south → north)", y = NULL) +
   theme_matt_facets(base_size = 11) +
-  theme(panel.grid.major.y = element_line(colour = "grey92"))
+  theme(panel.grid.major.y = element_line(colour = "grey92"), 
+        legend.position = "right")
 
 inf_groups <- c(paradinium = "Paradinium", trematode = "Trematodes",
                 apostome = "Apostome ciliates", peritrich = "Peritrich ciliates")
@@ -951,8 +972,8 @@ ggarrange(mS_prev, mS_inf, ncol = 1, heights = c(0.8, 1), labels = c("A", "B"))
 
 ```{r}
 #| label: ms-figS-diversity
-#| fig-width: 12
-#| fig-height: 10
+#| fig-width: 10
+#| fig-height: 9
 # Supplementary: diversity and relatedness within populations. (A) theta_pi per site and (B) Tajima's D
 # per population (95% CI, block bootstrap over 1 Mb blocks; folded spectra); (C) KING-robust kinship of
 # every pair of individuals within each population (ngsRelate); dashed lines: second- (0.125) and
@@ -960,16 +981,18 @@ ggarrange(mS_prev, mS_inf, ncol = 1, heights = c(0.8, 1), labels = c("A", "B"))
 div_pop <- read_csv(here("Output", "Output_data", "diversity_populations.csv"), show_col_types = FALSE) %>%
   mutate(clade = factor(clade, levels = tonsa_clades), site = factor(site, levels = site_order),
          season = factor(season, levels = season_order))
+
 div_long <- div_pop %>%
   transmute(clade, site, season,
             `θπ per site_est` = pi, `θπ per site_lo` = pi_lo95, `θπ per site_hi` = pi_hi95,
             `Tajima's D_est` = tajima_D, `Tajima's D_lo` = tajima_D_lo95, `Tajima's D_hi` = tajima_D_hi95) %>%
   pivot_longer(-c(clade, site, season), names_to = c("stat", ".value"), names_sep = "_(?=[^_]+$)") %>%
   mutate(stat = factor(stat, levels = c("θπ per site", "Tajima's D")))
+
 mS_div <- function(s) {
   ggplot(filter(div_long, stat == s), aes(x = site, y = est, ymin = lo, ymax = hi, shape = season, colour = clade)) +
     { if (s == "Tajima's D") geom_hline(yintercept = 0, colour = "grey70", linetype = "dashed") } +
-    geom_pointrange(position = position_dodge(width = 0.5), size = 0.5, fatten = 2.5) +
+    geom_pointrange(position = position_dodge(width = 0.5), size = 1.5) +
     facet_grid(~ clade, scales = "free_x", space = "free_x") +
     scale_colour_manual(values = clade_cols[tonsa_clades], guide = "none") +
     scale_shape_manual(values = c(early = 16, peak = 17, late = 15), name = "Season", drop = FALSE) +
@@ -980,11 +1003,13 @@ mS_div <- function(s) {
 rel <- read_csv(here("Output", "Output_data", "relatedness_pairs.csv"), show_col_types = FALSE) %>%
   mutate(clade = factor(clade, levels = tonsa_clades), site = factor(site, levels = site_order),
          season = factor(season, levels = season_order))
-mS_king <- ggplot(rel, aes(x = season, y = KING, colour = clade)) +
+
+mS_king <- ggplot(rel, aes(x = season, y = KING, colour = clade, shape = season)) +
   geom_hline(yintercept = c(0.125, 0.25), linetype = "dashed", colour = "grey60") +
   geom_jitter(width = 0.2, height = 0, size = 0.8, alpha = 0.5) +
   facet_grid(~ clade + site, scales = "free_x", space = "free_x") +
   scale_colour_manual(values = clade_cols[tonsa_clades], guide = "none") +
+  scale_shape_manual(values = c(early = 16, peak = 17, late = 15), name = "Season", drop = FALSE) +
   labs(x = NULL, y = "KING-robust kinship") +
   theme_matt_facets(base_size = 11) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), strip.text = element_text(size = 8))
@@ -993,7 +1018,6 @@ ggarrange(mS_div("θπ per site"), mS_div("Tajima's D"), mS_king, ncol = 1, heig
           labels = c("A", "B", "C"), common.legend = TRUE, legend = "bottom")
 ```
 
-```{r}
 ```{r}
 #| label: ms-figS-size
 #| fig-width: 6
@@ -1012,5 +1036,72 @@ ggplot(size_dat, aes(x = size, fill = clade)) +
   labs(x = "Prosome length (mm)", y = "Individuals") +
   theme_matt_facets(base_size = 11)
 ```
+
+```{r}
+#| label: ms-figS-temp-split
+#| fig-width: 12.5
+#| fig-height: 5.8
+# Supplementary: the two ways of splitting collection temperature into seasonal and spatial parts,
+# drawn from the 22 collection temperatures. Each collection's temperature = reference mean +
+# seasonal part + spatial part. (A) season-mean split (main analysis); (B) site-mean split (sensitivity).
+
+ts_coll <- filtered_data %>%
+  filter(clade %in% tonsa_clades) %>%
+  distinct(site_code, season, collection_temp) %>%
+  mutate(site_code = factor(site_code, levels = site_order), season = factor(season, levels = season_order))
+
+# (A) season-mean split
+ts_season <- ts_coll %>% group_by(season) %>%
+  summarise(ref = mean(collection_temp), n_sites = n(), .groups = "drop") %>%
+  mutate(x = as.integer(season))
+
+ts_g1 <- mean(ts_season$ref)
+
+ts_a <- ts_coll %>% left_join(ts_season %>% select(season, ref), by = "season") %>%
+  mutate(x = as.integer(season) + (as.integer(site_code) - 4.5) * 0.07)
+
+mS_split_a <- ggplot(ts_a) +
+  geom_hline(yintercept = ts_g1, linetype = "dashed", colour = "grey55") +
+  geom_text(data = ts_season, aes(x = x + 0.35, y = ref, label = sprintf("%+.1f", ref - ts_g1)), hjust = 0, size = 2.9, fontface = "bold") +
+    geom_segment(aes(x = x, xend = x, y = ref, yend = collection_temp, colour = site_code), linewidth = 0.8) +
+  geom_segment(data = ts_season, aes(x = x - 0.3, xend = x + 0.3, y = ref, yend = ref), linewidth = 1.1) +
+  geom_point(aes(x = x, y = collection_temp, colour = site_code), size = 2.6) +
+  geom_text(data = ts_season, aes(x = x, y = 7.5, label = sprintf("%d sites", n_sites)), size = 2.8, colour = "grey35") +
+  scale_colour_manual(values = pop_cols, name = "Site", drop = FALSE) +
+  scale_x_continuous(breaks = 1:3, labels = c("Early", "Peak", "Late"), limits = c(0.6, 3.75)) +
+  scale_y_continuous(limits = c(7, 37), breaks = seq(10, 35, 5)) +
+  labs(x = "Season", y = "Collection temperature (°C)",
+       title = "Season-mean split (main analysis)") +
+  guides(colour = guide_legend(nrow = 2)) +
+  theme_matt(11) + theme(plot.title = element_text(size = 11, face = "bold"), legend.position = "bottom")
+
+# (B) site-mean split
+ts_site <- ts_coll %>% group_by(site_code) %>%
+  summarise(ref = mean(collection_temp), n = n(), .groups = "drop") %>%
+  mutate(x = as.integer(site_code))
+
+ts_g2 <- mean(ts_site$ref)
+
+ts_b <- ts_coll %>% left_join(ts_site %>% select(site_code, ref), by = "site_code") %>%
+  mutate(x = as.integer(site_code) + (as.integer(season) - 2) * 0.18)
+
+mS_split_b <- ggplot(ts_b) +
+  geom_hline(yintercept = ts_g2, linetype = "dashed", colour = "grey55") +
+  geom_text(data = ts_site, aes(x = x + 0.36, y = if_else(ref >= ts_g2, ref + 1, ref - 1),
+                                label = sprintf("%+.1f", ref - ts_g2)), size = 2.7, fontface = "bold") +
+    geom_segment(aes(x = x, xend = x, y = ref, yend = collection_temp, colour = site_code), linewidth = 0.8) +
+  geom_segment(data = ts_site, aes(x = x - 0.3, xend = x + 0.3, y = ref, yend = ref), linewidth = 1.1) +
+  geom_point(aes(x = x, y = collection_temp, colour = site_code, shape = season), size = 2.6) +
+  geom_text(data = filter(ts_site, n < 3), aes(x = x, y = 7.5, label = "no early"), size = 2.8, colour = "grey35") +
+  scale_colour_manual(values = pop_cols, guide = "none") +
+  scale_shape_manual(values = c(early = 16, peak = 17, late = 15), labels = c("Early", "Peak", "Late"), name = "Season") +
+  scale_x_continuous(breaks = 1:8, labels = site_order, limits = c(0.6, 8.6)) +
+  scale_y_continuous(limits = c(7, 37), breaks = seq(10, 35, 5)) +
+  labs(x = "Site (south → north)", y = "Collection temperature (°C)",
+       title = "Site-mean split (sensitivity analysis)") +
+  theme_matt(11) + theme(plot.title = element_text(size = 11, face = "bold"), legend.position = "bottom")
+
+ggarrange(mS_split_a, mS_split_b, nrow = 1, widths = c(1, 1.35), labels = c("A", "B"), align = "h")
 ```
+
 
