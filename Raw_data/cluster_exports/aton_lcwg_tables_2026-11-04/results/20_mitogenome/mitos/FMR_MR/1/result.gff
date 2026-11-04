@@ -1,0 +1,37 @@
+##gff-version 3
+#!gff-spec-version 1.21
+FMR_MR_fill1	mitos	region	1	4628	.	+	.	ID=FMR_MR_fill1:1..4628;Is_circular=False;Name=FMR_MR_fill1;genome=mitochondrion;mol_type=genomic DNA
+FMR_MR_fill1	mitfi	ncRNA_gene	207	271	.	+	.	ID=gene_trnL2;Name=trnL2;gene_id=trnL2
+FMR_MR_fill1	mitfi	tRNA	207	271	.	+	.	ID=transcript_trnL2(taa);Name=trnL2(taa);Parent=gene_trnL2(taa);gene_id=trnL2(taa)
+FMR_MR_fill1	mitfi	exon	207	271	5.899999933056677e-11	+	.	Parent=transcript_trnL2;Name=trnL2
+FMR_MR_fill1	mitos	origin_of_replication	244	289	.	+	.	ID=gene_OH_3;Name=OH_3;gene_id=OH_3
+FMR_MR_fill1	mitos	origin_of_replication	521	737	.	+	.	ID=gene_OH_2;Name=OH_2;gene_id=OH_2
+FMR_MR_fill1	mitos	gene	828	1115	.	+	.	ID=gene_nad4l;Name=nad4l;gene_id=nad4l
+FMR_MR_fill1	mitos	exon	828	1115	14125.1	+	0	Parent=transcript_nad4l;Name=nad4l
+FMR_MR_fill1	mitos	origin_of_replication	1190	1414	.	-	.	ID=gene_OH_0;Name=OH_0;gene_id=OH_0
+FMR_MR_fill1	mitfi	ncRNA_gene	1408	1469	.	-	.	ID=gene_trnR;Name=trnR;gene_id=trnR
+FMR_MR_fill1	mitfi	tRNA	1408	1469	.	-	.	ID=transcript_trnR(tcg);Name=trnR(tcg);Parent=gene_trnR(tcg);gene_id=trnR(tcg)
+FMR_MR_fill1	mitfi	exon	1408	1469	3.099999901223782e-08	-	.	Parent=transcript_trnR;Name=trnR
+FMR_MR_fill1	mitos	gene	2054	2215	.	+	.	ID=gene_atp8;Name=atp8;gene_id=atp8
+FMR_MR_fill1	mitos	exon	2054	2215	18697.2	+	0	Parent=transcript_atp8;Name=atp8
+FMR_MR_fill1	mitos	gene	2218	2916	.	+	.	ID=gene_atp6;Name=atp6;gene_id=atp6
+FMR_MR_fill1	mitos	exon	2218	2916	146539739.2	+	0	Parent=transcript_atp6;Name=atp6
+FMR_MR_fill1	mitfi	ncRNA_gene	3106	3160	.	-	.	ID=gene_trnE;Name=trnE;gene_id=trnE
+FMR_MR_fill1	mitfi	tRNA	3106	3160	.	-	.	ID=transcript_trnE(ttc);Name=trnE(ttc);Parent=gene_trnE(ttc);gene_id=trnE(ttc)
+FMR_MR_fill1	mitfi	exon	3106	3160	0.08100000023841858	-	.	Parent=transcript_trnE;Name=trnE
+FMR_MR_fill1	mitos	origin_of_replication	3142	3545	.	-	.	ID=gene_OH_1;Name=OH_1;gene_id=OH_1
+FMR_MR_fill1	mitfi	ncRNA_gene	3795	3856	.	-	.	ID=gene_trnC;Name=trnC;gene_id=trnC
+FMR_MR_fill1	mitfi	tRNA	3795	3856	.	-	.	ID=transcript_trnC(gca);Name=trnC(gca);Parent=gene_trnC(gca);gene_id=trnC(gca)
+FMR_MR_fill1	mitfi	exon	3795	3856	2.200000043250938e-10	-	.	Parent=transcript_trnC;Name=trnC
+FMR_MR_fill1	mitfi	ncRNA_gene	3964	4028	.	+	.	ID=gene_trnT;Name=trnT;gene_id=trnT
+FMR_MR_fill1	mitfi	tRNA	3964	4028	.	+	.	ID=transcript_trnT(tgt);Name=trnT(tgt);Parent=gene_trnT(tgt);gene_id=trnT(tgt)
+FMR_MR_fill1	mitfi	exon	3964	4028	6.299999881775875e-07	+	.	Parent=transcript_trnT;Name=trnT
+FMR_MR_fill1	mitfi	ncRNA_gene	4045	4105	.	-	.	ID=gene_trnM;Name=trnM;gene_id=trnM
+FMR_MR_fill1	mitfi	tRNA	4045	4105	.	-	.	ID=transcript_trnM(cat);Name=trnM(cat);Parent=gene_trnM(cat);gene_id=trnM(cat)
+FMR_MR_fill1	mitfi	exon	4045	4105	0.07100000232458115	-	.	Parent=transcript_trnM;Name=trnM
+FMR_MR_fill1	mitfi	ncRNA_gene	4066	4136	.	-	.	ID=gene_trnL1;Name=trnL1;gene_id=trnL1
+FMR_MR_fill1	mitfi	tRNA	4066	4136	.	-	.	ID=transcript_trnL1(tag);Name=trnL1(tag);Parent=gene_trnL1(tag);gene_id=trnL1(tag)
+FMR_MR_fill1	mitfi	exon	4066	4136	0.05700000002980232	-	.	Parent=transcript_trnL1;Name=trnL1
+FMR_MR_fill1	mitfi	ncRNA_gene	4385	4448	.	+	.	ID=gene_trnF;Name=trnF;gene_id=trnF
+FMR_MR_fill1	mitfi	tRNA	4385	4448	.	+	.	ID=transcript_trnF(gaa);Name=trnF(gaa);Parent=gene_trnF(gaa);gene_id=trnF(gaa)
+FMR_MR_fill1	mitfi	exon	4385	4448	5.199999986160719e-09	+	.	Parent=transcript_trnF;Name=trnF

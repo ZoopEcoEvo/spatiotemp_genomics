@@ -1,0 +1,30 @@
+>Feature X_RW_extra1
+3	78	D-loop
+			note	control region
+183	117	D-loop
+			note	control region
+184	185	D-loop
+			note	control region
+			gene	rrnS
+188	238	rRNA
+			product	s-rRNA
+212	248	D-loop
+			note	control region
+257	215	D-loop
+			note	control region
+378	334	D-loop
+			note	control region
+427	470	D-loop
+			note	control region
+559	653	D-loop
+			note	control region
+658	654	D-loop
+			note	control region
+713	1477	gene
+			gene	nad2
+713	1477	CDS
+			product	NADH dehydrogenase subunit 2
+1666	1571	D-loop
+			note	control region
+2093	1846	D-loop
+			note	control region

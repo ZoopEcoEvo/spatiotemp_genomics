@@ -1,0 +1,2 @@
+population	n_ind	n_blocks	n_sites	theta_W	theta_W_lo95	theta_W_hi95	pi	pi_lo95	pi_hi95	tajima_D	tajima_D_lo95	tajima_D_hi95	tajima_D_boot_sd	check_block_D_maxdiff
+X__ME__peak	16	757	129584595	0.0122303	0.0121021	0.0123577	0.00938244	0.00928864	0.00947746	-0.904483	-0.912349	-0.896381	0.00412918	4.99486e-07

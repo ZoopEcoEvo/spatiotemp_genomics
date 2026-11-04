@@ -1,0 +1,4 @@
+pool	candidate	assembler	length	n_bases	circular	junction_reads	depth_mean	depth_median	depth_min	depth_p5	depth_cv	frac_low	repeat_excess_bp	end_depth_left	end_depth_right	F_span_frac	seed_identity	seed_cov_frac	agree_with	agree_id	agree_frac
+FN_GW	megahit_scaf1	megahit_scaffold	20908	0	no		5500.2	3639.5	3	228	1.158	0.1937	16565	6129.6	67.5	0.981	97.57	0.955	getorganelle_1	98.0	0.931
+FN_GW	getorganelle_1	getorganelle	21152	0	no		5582.9	3732.5	17	384	1.126	0.1487	16047	482.1	246.3	1.0	97.96	1.0	megahit_scaf1	98.53	0.922
+FN_GW	novoplasty_Contigs_1	novoplasty	14636	8	no		5072.3	3572.0	68	298	0.874	0.1298	9614	1601.9	525.5	0.571	96.25	0.571	getorganelle_1	96.5	0.686

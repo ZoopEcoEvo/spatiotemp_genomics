@@ -1,0 +1,25 @@
+>Feature FN_GW_extra3
+155	324	D-loop
+			note	control region
+336	325	D-loop
+			note	control region
+498	563	gene
+			gene	cox3
+498	563	CDS
+			product	cytochrome c oxidase subunit 3
+689	673	D-loop
+			note	control region
+690	820	D-loop
+			note	control region
+1451	1384	gene
+			gene	trnI(aat)
+1451	1384	tRNA
+			product	tRNA-ILE
+1755	1585	D-loop
+			note	control region
+1900	1840	gene
+			gene	trnA(tgc)
+1900	1840	tRNA
+			product	tRNA-ALA
+1904	1951	D-loop
+			note	control region

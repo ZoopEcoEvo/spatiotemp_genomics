@@ -1,0 +1,24 @@
+pool	candidate	assembler	length	n_bases	circular	junction_reads	depth_mean	depth_median	depth_min	depth_p5	depth_cv	frac_low	repeat_excess_bp	end_depth_left	end_depth_right	F_span_frac	seed_identity	seed_cov_frac	agree_with	agree_id	agree_frac	closed	best
+X_RW	megahit_scaf1	megahit_scaffold	13694	0	no		2647.4	1904.0	1	46	0.948	0.2236	9256	14.4	24.8	0.784	98.21	1.0	getorganelle_1	99.51	0.94	no	no
+X_RW	getorganelle_1	getorganelle	13116	0	no		2764.1	2007.5	35	127	0.905	0.1985	8398	65.5	137.4	0.784	98.44	0.983	megahit_scaf1	99.51	0.98	no	yes
+X_RW	novoplasty_Contigs_1	novoplasty	5972	4	no		3778.7	3767.0	0	140	0.771	0.1895	1617	1762.2	32.2	0.365	98.81	1.0	megahit_scaf1	98.38	1.0	no	no
+S_MD	megahit_scaf1	megahit_scaffold	18796	0	no		6639.8	4789.0	3	236	1.066	0.1923	12034	17.2	21.6	0.833	99.49	1.0	novoplasty_Option_1	98.72	1.0	no	no
+S_MD	getorganelle_1	getorganelle	14692	0	no		6236.0	4606.0	82	286	1.065	0.1611	8572	1488.9	1630.5	0.557	99.52	0.741	novoplasty_Option_1	99.56	0.999	no	no
+S_MD	novoplasty_Contigs_1	novoplasty	16145	5	no		6399.7	4629.5	16	244	1.123	0.1957	10230	732.4	1162.2	0.701	99.56	0.806	megahit_scaf1	98.6	1.0	no	no
+S_MD	novoplasty_Option_1	novoplasty	18634	24	yes	51	6704.9	4856.5	5	258	1.056	0.1868	11734			0.833	99.61	1.0	getorganelle_1	99.56	1.0	no	no
+S_MD	novoplasty_Option_2	novoplasty	18584	7	yes	51	6716.6	4876	16	262	1.054	0.1859	11656			0.833	99.58	1.0	getorganelle_1	99.53	1.0	no	yes
+IV_TK	megahit_scaf1	megahit_scaffold	371093	100	no		226.8	209	24	109	0.438	0.0007	48813	331.6	803.5	0	0	0	getorganelle_1	76.97	0.021	no	no
+IV_TK	megahit_scaf46	megahit_scaffold	56803	200	yes	54	75.6	66	1	20	1.004	0.0214	13988			0	0	0		0	0	no	no
+IV_TK	megahit_scaf118	megahit_scaffold	16529	0	yes	101	126.3	106	23	48	0.595	0.0	4838			0	0	0		0	0	yes	no
+IV_TK	megahit_scaf137	megahit_scaffold	12320	0	yes	181	198.7	172.0	33	79	0.569	0.0003	2732			0	0	0		0	0	yes	no
+IV_TK	getorganelle_1	getorganelle	166117	0	no		108.7	95	6	41	0.912	0.0047	38463	123.4	1801.2	0	0	0	megahit_scaf1	76.96	0.047	no	no
+IV_TK	novoplasty_Contigs_1	novoplasty	5193	0	no		3635.3	3628	3	516	0.589	0.0622	941	472.0	227.2	0.333	99.62	1.0		0	0	no	yes
+FN_GW	megahit_scaf1	megahit_scaffold	20908	0	no		5500.2	3639.5	3	228	1.158	0.1937	16565	6129.6	67.5	0.981	97.57	0.955	getorganelle_1	98.0	0.931	no	yes
+FN_GW	getorganelle_1	getorganelle	21152	0	no		5582.9	3732.5	17	384	1.126	0.1487	16047	482.1	246.3	1.0	97.96	1.0	megahit_scaf1	98.53	0.922	no	no
+FN_GW	novoplasty_Contigs_1	novoplasty	14636	8	no		5072.3	3572.0	68	298	0.874	0.1298	9614	1601.9	525.5	0.571	96.25	0.571	getorganelle_1	96.5	0.686	no	no
+FFH_FH	megahit_scaf1	megahit_scaffold	13987	0	no		6551.2	6014	30	767	0.699	0.1343	4530	1181.1	886.8	0.846	91.62	0.677	getorganelle_1	99.04	1.0	no	yes
+FFH_FH	getorganelle_1	getorganelle	14587	0	no		6308.4	5751	11	672	0.735	0.1658	5152	768.1	698.9	0.849	90.71	0.75	megahit_scaf1	99.04	0.963	no	no
+FFH_FH	novoplasty_Contigs_1	novoplasty	7076	10	no		6830.5	6554.0	0	56	0.787	0.2665	2425	693.8	73.7	0.411	89.74	0.322	getorganelle_1	99.55	0.941	no	no
+FMR_MR	megahit_scaf1	megahit_scaffold	13903	0	no		4809.8	4138	19	397	0.701	0.1282	5282	1776.7	379.9	0.849	89.81	0.747	getorganelle_1	97.82	1.0	no	no
+FMR_MR	getorganelle_1	getorganelle	18233	0	no		4135.3	3534	35	283	0.804	0.1716	7852	212.5	74.0	0.913	89.6	0.837	megahit_scaf1	97.81	0.763	no	yes
+FMR_MR	novoplasty_Contigs_1	novoplasty	12932	21	no		5139.9	4556	1	745	0.636	0.0729	4160	745.1	699.0	0.812	89.61	0.745	getorganelle_1	98.39	1.0	no	no

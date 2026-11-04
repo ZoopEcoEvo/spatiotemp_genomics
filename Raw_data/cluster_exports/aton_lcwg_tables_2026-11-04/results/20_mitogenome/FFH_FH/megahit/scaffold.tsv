@@ -1,0 +1,3 @@
+scaffold	length	n_bases	circular	n_contigs	gaps	contigs	joins
+scaf1	13987	0	no	1	0	k141_38122+	
+scaf2	6465	100	no	3	1	k141_897+,k141_151343-,k141_46881-	ov141,gap100

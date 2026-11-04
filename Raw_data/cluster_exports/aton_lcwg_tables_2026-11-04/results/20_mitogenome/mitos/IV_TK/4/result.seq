@@ -1,0 +1,31 @@
+>Feature IV_TK_extra4
+47	98	gene
+			gene	trnL2(caa)
+47	98	tRNA
+			product	tRNA-LEU2
+143	85	D-loop
+			note	control region
+95	190	D-loop
+			note	control region
+256	224	D-loop
+			note	control region
+886	389	gene
+			gene	nad6
+886	389	CDS
+			product	NADH dehydrogenase subunit 6
+949	886	gene
+			gene	trnV(tac)
+949	886	tRNA
+			product	tRNA-VAL
+926	987	gene
+			gene	trnS1(gct)
+926	987	tRNA
+			product	tRNA-SER1
+1070	1111	D-loop
+			note	control region
+1177	1184	D-loop
+			note	control region
+1246	1185	D-loop
+			note	control region
+1238	1266	rep_origin
+			note	origin of L-strand replication

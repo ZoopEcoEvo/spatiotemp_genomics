@@ -1,0 +1,17 @@
+>Feature IV_TK_fill1
+40	80	D-loop
+			note	control region
+115	189	gene
+			gene	trnF(aaa)
+115	189	tRNA
+			product	tRNA-PHE
+175	233	gene
+			gene	trnH(gtg)
+175	233	tRNA
+			product	tRNA-HIS
+239	279	D-loop
+			note	control region
+378	458	gene
+			gene	trnT(agt)
+378	458	tRNA
+			product	tRNA-THR

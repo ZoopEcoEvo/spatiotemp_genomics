@@ -1,0 +1,25 @@
+##gff-version 3
+#!gff-spec-version 1.21
+IV_TK_extra3	mitos	region	1	2223	.	+	.	ID=IV_TK_extra3:1..2223;Is_circular=False;Name=IV_TK_extra3;genome=mitochondrion;mol_type=genomic DNA
+IV_TK_extra3	mitos	origin_of_replication	170	225	.	-	.	ID=gene_OH_1;Name=OH_1;gene_id=OH_1
+IV_TK_extra3	mitos	exon	226	235	507.9	+	0	Parent=transcript_OH_2;Name=OH_2-b
+IV_TK_extra3	mitos	origin_of_replication	313	360	.	-	.	ID=gene_OH_3;Name=OH_3;gene_id=OH_3
+IV_TK_extra3	mitfi	ncRNA_gene	478	532	.	+	.	ID=gene_trnS2;Name=trnS2;gene_id=trnS2
+IV_TK_extra3	mitfi	tRNA	478	532	.	+	.	ID=transcript_trnS2(tga);Name=trnS2(tga);Parent=gene_trnS2(tga);gene_id=trnS2(tga)
+IV_TK_extra3	mitfi	exon	478	532	7.79999973019585e-05	+	.	Parent=transcript_trnS2;Name=trnS2
+IV_TK_extra3	mitos	gene	537	1787	.	-	.	ID=gene_nad4;Name=nad4;gene_id=nad4
+IV_TK_extra3	mitos	exon	537	1787	436355941.2	-	0	Parent=transcript_nad4;Name=nad4
+IV_TK_extra3	mitos	origin_of_replication	226	1792	.	+	.	ID=gene_OH_2;Name=OH_2;gene_id=OH_2
+IV_TK_extra3	mitfi	ncRNA_gene	1789	1845	.	-	.	ID=gene_trnS1;Name=trnS1;gene_id=trnS1
+IV_TK_extra3	mitfi	tRNA	1789	1845	.	-	.	ID=transcript_trnS1(tct);Name=trnS1(tct);Parent=gene_trnS1(tct);gene_id=trnS1(tct)
+IV_TK_extra3	mitfi	exon	1789	1845	3.099999958067201e-05	-	.	Parent=transcript_trnS1;Name=trnS1
+IV_TK_extra3	mitfi	ncRNA_gene	1861	1925	.	-	.	ID=gene_trnL1;Name=trnL1;gene_id=trnL1
+IV_TK_extra3	mitfi	tRNA	1861	1925	.	-	.	ID=transcript_trnL1(tag);Name=trnL1(tag);Parent=gene_trnL1(tag);gene_id=trnL1(tag)
+IV_TK_extra3	mitfi	exon	1861	1925	1.3999999737279722e-07	-	.	Parent=transcript_trnL1;Name=trnL1
+IV_TK_extra3	mitfi	ncRNA_gene	1935	1998	.	+	.	ID=gene_trnG;Name=trnG;gene_id=trnG
+IV_TK_extra3	mitfi	tRNA	1935	1998	.	+	.	ID=transcript_trnG(tcc);Name=trnG(tcc);Parent=gene_trnG(tcc);gene_id=trnG(tcc)
+IV_TK_extra3	mitfi	exon	1935	1998	5.100000066704524e-07	+	.	Parent=transcript_trnG;Name=trnG
+IV_TK_extra3	mitfi	ncRNA_gene	2000	2060	.	-	.	ID=gene_trnK;Name=trnK;gene_id=trnK
+IV_TK_extra3	mitfi	tRNA	2000	2060	.	-	.	ID=transcript_trnK(ttt);Name=trnK(ttt);Parent=gene_trnK(ttt);gene_id=trnK(ttt)
+IV_TK_extra3	mitfi	exon	2000	2060	4.799999828719592e-07	-	.	Parent=transcript_trnK;Name=trnK
+IV_TK_extra3	mitos	origin_of_replication	2126	2199	.	+	.	ID=gene_OH_0;Name=OH_0;gene_id=OH_0

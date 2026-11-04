@@ -1,0 +1,13 @@
+>Feature IV_TK_extra1
+20683	21408	gene
+			gene	mttb
+20683	21408	CDS
+			product	SecY-independent transporter protein
+40836	39271	gene
+			gene	cox1
+40836	39271	CDS
+			product	cytochrome c oxidase subunit 1
+41973	42056	gene
+			gene	trnL1(gag)
+41973	42056	tRNA
+			product	tRNA-LEU1

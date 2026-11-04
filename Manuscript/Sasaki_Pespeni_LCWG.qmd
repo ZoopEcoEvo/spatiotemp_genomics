@@ -525,7 +525,9 @@ if (file.exists(gc_f)) {
 ```{r}
 #| label: tbl-supp-mito-pairs
 #| tbl-cap: "Amino-acid differences between clades in the 13 mitochondrial proteins (differences / aligned positions). Positions are compared where all pools of each clade share a residue; positions variable among the three F lineages are excluded from comparisons with F."
-mp_f <- here("Output", "Output_data", "mito_aa", "clade_aa_pairs.csv")
+
+mp_f <- cx("results", "20_mitogenome", "aa", "clade_aa_pairs.csv")
+
 if (file.exists(mp_f)) {
   gene_ord <- c("atp6", "atp8", "cob", "cox1", "cox2", "cox3", "nad1", "nad2", "nad3", "nad4", "nad4l",
                 "nad5", "nad6", "all")
@@ -544,14 +546,16 @@ if (file.exists(mp_f)) {
 ```{r}
 #| label: tbl-supp-mito-iv
 #| tbl-cap: "Mitochondrial amino-acid substitutions unique to IV, the least tolerant clade (IV differs from a residue shared by all F, S and X pools). Substitutions are written as shared residue, position in the S protein, IV residue."
-mi_f <- here("Output", "Output_data", "mito_aa", "IV_specific_aa.csv")
+
+mi_f <- cx("results", "20_mitogenome", "aa", "IV_specific_aa.csv")
+
 if (file.exists(mi_f)) {
   read_csv(mi_f, show_col_types = FALSE) %>%
     filter(!is.na(gene)) %>%
     arrange(gene, pos_S) %>%
     group_by(Protein = gene) %>%
     summarise(Substitutions = n(),
-              `Changes (shared → IV)` = paste0(F_S_X, pos_S, IV, collapse = ", "), .groups = "drop") %>%
+              `Changes (shared to IV)` = paste0(F_S_X, pos_S, IV, collapse = ", "), .groups = "drop") %>%
     knitr::kable()
 }
 ```
@@ -669,6 +673,6 @@ knitr::include_graphics(here("Output", "Figures", "ms-figS-trees-1.png"))
 
 ```{r}
 #| label: fig-supp-mitogenome
-#| fig-cap: "Pooled mitogenomes of the four clades and the F lineages. (A) Assembled pieces of each pool (shaded boxes), trimmed to the stretch carrying genes, with the 13 protein-coding genes and two rRNAs (arrows point 5′ to 3′; faded and * = partial). Each box is one assembled contig, except the F-N main piece (dashed), a scaffold of contigs joined by read pairs. Only gene order within a contig box is supported by the assembly. Boxes are oriented and ordered to match the closed S mitogenome, shown opened at rrnL, and the order and spacing between boxes are not resolved. Within contigs, F-FH and F-MR place nad4l next to atp8 and atp6, and F-MR places cox3 and nad2 directly after cox2, where S, X and IV have the arrangement shown for S. (B) Amino-acid differences between clades in each protein (cells: number of differing positions; fill: percentage of aligned positions), and substitutions unique to IV (bars). Positions where the three F lineages differ are excluded from comparisons with F."
+#| fig-cap: "Pooled mitogenomes of the four clades and the F lineages. (A) Assembled pieces of each pool (shaded boxes), trimmed to the stretch carrying genes, with the 13 protein-coding genes and two rRNAs (arrows point 5' to 3'; faded and * = partial). Each box is one assembled contig, except the F-N main piece (dashed), a scaffold of contigs joined by read pairs. Only gene order within a contig box is supported by the assembly. Boxes are oriented and ordered to match the closed S mitogenome, shown opened at rrnL, and the order and spacing between boxes are not resolved. Within contigs, F-FH and F-MR place nad4l next to atp8 and atp6, and F-MR places cox3 and nad2 directly after cox2, where S, X and IV have the arrangement shown for S. (B) Amino-acid differences between clades in each protein (cells: number of differing positions; fill: percentage of aligned positions), and substitutions unique to IV (bars). Positions where the three F lineages differ are excluded from comparisons with F."
 knitr::include_graphics(here("Output", "Figures", "ms-figS-mitogenome-1.png"))
 ```

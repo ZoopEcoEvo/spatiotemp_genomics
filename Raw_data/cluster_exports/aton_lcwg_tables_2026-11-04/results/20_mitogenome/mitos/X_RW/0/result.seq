@@ -1,0 +1,118 @@
+>Feature X_RW
+340	397	D-loop
+			note	control region
+467	398	D-loop
+			note	control region
+			gene	rrnL
+461	1101	rRNA
+			product	l-rRNA
+1143	1080	gene
+			gene	trnN(gtt)
+1143	1080	tRNA
+			product	tRNA-ASN
+2803	1157	gene
+			gene	nad5
+2803	1157	CDS
+			product	NADH dehydrogenase subunit 5
+3189	2848	gene
+			gene	nad3
+3189	2848	CDS
+			product	NADH dehydrogenase subunit 3
+3264	3162	D-loop
+			note	control region
+3300	4208	gene
+			gene	nad1
+3300	4208	CDS
+			product	NADH dehydrogenase subunit 1
+4234	4301	gene
+			gene	trnQ(ttg)
+4234	4301	tRNA
+			product	tRNA-GLN
+4350	4490	D-loop
+			note	control region
+4609	4670	gene
+			gene	trnK(ttt)
+4609	4670	tRNA
+			product	tRNA-LYS
+4732	4675	gene
+			gene	trnG(tcc)
+4732	4675	tRNA
+			product	tRNA-GLY
+4717	4758	D-loop
+			note	control region
+4740	4804	gene
+			gene	trnL1(tag)
+4740	4804	tRNA
+			product	tRNA-LEU1
+4835	4759	D-loop
+			note	control region
+4821	4878	gene
+			gene	trnS1(tct)
+4821	4878	tRNA
+			product	tRNA-SER1
+4829	6136	gene
+			gene	nad4
+4829	6136	CDS
+			product	NADH dehydrogenase subunit 4
+6197	6143	gene
+			gene	trnS2(tga)
+6197	6143	tRNA
+			product	tRNA-SER2
+6776	6259	D-loop
+			note	control region
+7345	6842	gene
+			gene	nad6
+7345	6842	CDS
+			product	NADH dehydrogenase subunit 6
+7860	7796	gene
+			gene	trnV(tac)
+7860	7796	tRNA
+			product	tRNA-VAL
+8463	8229	D-loop
+			note	control region
+8701	8764	gene
+			gene	trnW(tca)
+8701	8764	tRNA
+			product	tRNA-TRP
+8791	10326	gene
+			gene	cox1
+8791	10326	CDS
+			product	cytochrome c oxidase subunit 1
+10408	10321	D-loop
+			note	control region
+10407	11549	gene
+			gene	cob
+10407	11549	CDS
+			product	cytochrome b
+11613	11549	gene
+			gene	trnE(ttc)
+11613	11549	tRNA
+			product	tRNA-GLU
+11696	11634	gene
+			gene	trnH(gtg)
+11696	11634	tRNA
+			product	tRNA-HIS
+11677	11748	D-loop
+			note	control region
+11741	11801	gene
+			gene	trnA(tgc)
+11741	11801	tRNA
+			product	tRNA-ALA
+11880	11810	D-loop
+			note	control region
+11932	11871	gene
+			gene	trnY(gta)
+11932	11871	tRNA
+			product	tRNA-TYR
+12006	11944	gene
+			gene	trnP(tgg)
+12006	11944	tRNA
+			product	tRNA-PRO
+12043	11978	D-loop
+			note	control region
+12733	12044	gene
+			gene	cox2
+12733	12044	CDS
+			product	cytochrome c oxidase subunit 2
+12835	13093	D-loop
+			note	control region

@@ -1,0 +1,4 @@
+contig	length	depth	role	blast_aligned	blast_identity	best_clade_contig
+k141_217014	17718	7806.1	core	34561	86.2	mtDNA_S
+k141_114642	1219	681.6	core	524	81.3	mtDNA_S
+k141_37651	1087	190.3	core	438	88.6	mtDNA_S

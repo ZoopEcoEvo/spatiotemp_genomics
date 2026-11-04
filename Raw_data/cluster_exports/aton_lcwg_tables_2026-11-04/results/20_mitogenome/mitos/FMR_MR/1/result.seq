@@ -1,0 +1,53 @@
+>Feature FMR_MR_fill1
+207	271	gene
+			gene	trnL2(taa)
+207	271	tRNA
+			product	tRNA-LEU2
+244	289	D-loop
+			note	control region
+521	737	D-loop
+			note	control region
+828	1115	gene
+			gene	nad4l
+828	1115	CDS
+			product	NADH dehydrogenase subunit 4L
+1414	1190	D-loop
+			note	control region
+1469	1408	gene
+			gene	trnR(tcg)
+1469	1408	tRNA
+			product	tRNA-ARG
+2054	2215	gene
+			gene	atp8
+2054	2215	CDS
+			product	ATP synthase F0 subunit 8
+2218	2916	gene
+			gene	atp6
+2218	2916	CDS
+			product	ATP synthase F0 subunit 6
+3160	3106	gene
+			gene	trnE(ttc)
+3160	3106	tRNA
+			product	tRNA-GLU
+3545	3142	D-loop
+			note	control region
+3856	3795	gene
+			gene	trnC(gca)
+3856	3795	tRNA
+			product	tRNA-CYS
+3964	4028	gene
+			gene	trnT(tgt)
+3964	4028	tRNA
+			product	tRNA-THR
+4105	4045	gene
+			gene	trnM(cat)
+4105	4045	tRNA
+			product	tRNA-MET
+4136	4066	gene
+			gene	trnL1(tag)
+4136	4066	tRNA
+			product	tRNA-LEU1
+4385	4448	gene
+			gene	trnF(gaa)
+4385	4448	tRNA
+			product	tRNA-PHE

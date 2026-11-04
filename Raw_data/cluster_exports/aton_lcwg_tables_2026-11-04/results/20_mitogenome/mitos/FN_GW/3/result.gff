@@ -1,0 +1,17 @@
+##gff-version 3
+#!gff-spec-version 1.21
+FN_GW_extra3	mitos	region	1	1951	.	+	.	ID=FN_GW_extra3:1..1951;Is_circular=False;Name=FN_GW_extra3;genome=mitochondrion;mol_type=genomic DNA
+FN_GW_extra3	mitos	origin_of_replication	155	324	.	+	.	ID=gene_OH_0;Name=OH_0;gene_id=OH_0
+FN_GW_extra3	mitos	origin_of_replication	325	336	.	-	.	ID=gene_OH_2;Name=OH_2;gene_id=OH_2
+FN_GW_extra3	mitos	gene	498	563	.	+	.	ID=gene_cox3;Name=cox3;gene_id=cox3
+FN_GW_extra3	mitos	exon	498	563	113663.4	+	0	Parent=transcript_cox3;Name=cox3
+FN_GW_extra3	mitos	exon	673	689	302.8	-	0	Parent=transcript_OH_4;Name=OH_4-b
+FN_GW_extra3	mitos	origin_of_replication	690	820	.	+	.	ID=gene_OH_3;Name=OH_3;gene_id=OH_3
+FN_GW_extra3	mitfi	ncRNA_gene	1384	1451	.	-	.	ID=gene_trnI;Name=trnI;gene_id=trnI
+FN_GW_extra3	mitfi	tRNA	1384	1451	.	-	.	ID=transcript_trnI(aat);Name=trnI(aat);Parent=gene_trnI(aat);gene_id=trnI(aat)
+FN_GW_extra3	mitfi	exon	1384	1451	0.06599999964237213	-	.	Parent=transcript_trnI;Name=trnI
+FN_GW_extra3	mitos	origin_of_replication	1585	1755	.	-	.	ID=gene_OH_1;Name=OH_1;gene_id=OH_1
+FN_GW_extra3	mitfi	ncRNA_gene	1840	1900	.	-	.	ID=gene_trnA;Name=trnA;gene_id=trnA
+FN_GW_extra3	mitfi	tRNA	1840	1900	.	-	.	ID=transcript_trnA(tgc);Name=trnA(tgc);Parent=gene_trnA(tgc);gene_id=trnA(tgc)
+FN_GW_extra3	mitfi	exon	1840	1900	1.2000000104706032e-08	-	.	Parent=transcript_trnA;Name=trnA
+FN_GW_extra3	mitos	origin_of_replication	673	1951	.	+	.	ID=gene_OH_4;Name=OH_4;gene_id=OH_4

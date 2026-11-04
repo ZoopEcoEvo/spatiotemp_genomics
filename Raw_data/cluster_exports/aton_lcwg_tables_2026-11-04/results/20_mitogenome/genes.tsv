@@ -1,0 +1,7 @@
+pool	circular	length	ambiguous	pcg_found	pcg_missing	rrna_found	rrna_missing	trna_found	pieces	gene_order
+X_RW	no	13115	1	13		2		20	5	rrnL -nad5 -nad3 nad1 nad4 -nad6 cox1 cob -cox2 | rrnS nad2 | atp8 atp6 | cox3 -nad4l
+S_MD	yes	18572	3	13		2		21	1	cob -cox2 rrnS -rrnS nad4l -cox3 nad2 atp8 atp6 rrnL -nad5 -nad3 nad1 nad4 -nad6 cox1
+IV_TK	no	5191	58	13		1	rrnS	22	6	cox1 cob -cox2 | -cox1 | -nad1 nad3 nad5 -rrnL -atp6 -atp8 -nad2 cox3 -nad4l | -nad4 | -nad6
+FN_GW	no	20910	48	13		2		21	4	cox2 -cob -nad2 cox2 -cob -cox1 nad6 -nad4 -nad1 nad3 nad5 -rrnL -atp6 -atp8 -nad4l rrnS | -nad2 rrnS cox3 | -cox2 rrnS | cox3
+FFH_FH	no	13976	1	13		2		20	3	cox2 -rrnS -cob -cox1 nad6 -nad4 -nad1 nad3 nad5 -rrnL | -nad2 cox3 | nad4l atp8 atp6
+FMR_MR	no	18233	7	13		1	rrnS	20	3	rrnL -nad5 -nad3 nad1 nad4 -nad6 cox1 cob -cox2 -cox3 nad2 | nad4l atp8 atp6

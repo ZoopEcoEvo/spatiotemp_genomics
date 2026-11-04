@@ -1,0 +1,27 @@
+>Feature FMR_MR_fill2
+44	21	D-loop
+			note	control region
+100	22	gene
+			gene	trnI(aat)
+100	22	tRNA
+			product	tRNA-ILE
+92	137	D-loop
+			note	control region
+184	103	D-loop
+			note	control region
+224	287	gene
+			gene	trnY(ata)
+224	287	tRNA
+			product	tRNA-TYR
+349	245	gene
+			gene	trnL2(taa)
+349	245	tRNA
+			product	tRNA-LEU2
+337	384	D-loop
+			note	control region
+438	363	gene
+			gene	trnS2(tga)
+438	363	tRNA
+			product	tRNA-SER2
+455	501	D-loop
+			note	control region

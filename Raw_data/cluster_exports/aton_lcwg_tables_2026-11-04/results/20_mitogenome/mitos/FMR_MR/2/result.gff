@@ -1,0 +1,20 @@
+##gff-version 3
+#!gff-spec-version 1.21
+FMR_MR_fill2	mitos	region	1	552	.	+	.	ID=FMR_MR_fill2:1..552;Is_circular=False;Name=FMR_MR_fill2;genome=mitochondrion;mol_type=genomic DNA
+FMR_MR_fill2	mitos	origin_of_replication	21	44	.	-	.	ID=gene_OH_1;Name=OH_1;gene_id=OH_1
+FMR_MR_fill2	mitfi	ncRNA_gene	22	100	.	-	.	ID=gene_trnI;Name=trnI;gene_id=trnI
+FMR_MR_fill2	mitfi	tRNA	22	100	.	-	.	ID=transcript_trnI(aat);Name=trnI(aat);Parent=gene_trnI(aat);gene_id=trnI(aat)
+FMR_MR_fill2	mitfi	exon	22	100	0.052000001072883606	-	.	Parent=transcript_trnI;Name=trnI
+FMR_MR_fill2	mitos	exon	92	137	994.1	+	0	Parent=transcript_OH_0;Name=OH_0-d
+FMR_MR_fill2	mitos	exon	103	184	2250.1	-	0	Parent=transcript_OH_0;Name=OH_0-c
+FMR_MR_fill2	mitfi	ncRNA_gene	224	287	.	+	.	ID=gene_trnY;Name=trnY;gene_id=trnY
+FMR_MR_fill2	mitfi	tRNA	224	287	.	+	.	ID=transcript_trnY(ata);Name=trnY(ata);Parent=gene_trnY(ata);gene_id=trnY(ata)
+FMR_MR_fill2	mitfi	exon	224	287	0.0031999999191612005	+	.	Parent=transcript_trnY;Name=trnY
+FMR_MR_fill2	mitfi	ncRNA_gene	245	349	.	-	.	ID=gene_trnL2;Name=trnL2;gene_id=trnL2
+FMR_MR_fill2	mitfi	tRNA	245	349	.	-	.	ID=transcript_trnL2(taa);Name=trnL2(taa);Parent=gene_trnL2(taa);gene_id=trnL2(taa)
+FMR_MR_fill2	mitfi	exon	245	349	0.01600000075995922	-	.	Parent=transcript_trnL2;Name=trnL2
+FMR_MR_fill2	mitos	origin_of_replication	92	501	.	+	.	ID=gene_OH_0;Name=OH_0;gene_id=OH_0
+FMR_MR_fill2	mitfi	ncRNA_gene	363	438	.	-	.	ID=gene_trnS2;Name=trnS2;gene_id=trnS2
+FMR_MR_fill2	mitfi	tRNA	363	438	.	-	.	ID=transcript_trnS2(tga);Name=trnS2(tga);Parent=gene_trnS2(tga);gene_id=trnS2(tga)
+FMR_MR_fill2	mitfi	exon	363	438	0.01899999938905239	-	.	Parent=transcript_trnS2;Name=trnS2
+FMR_MR_fill2	mitos	exon	455	501	409.5	+	0	Parent=transcript_OH_0;Name=OH_0-b

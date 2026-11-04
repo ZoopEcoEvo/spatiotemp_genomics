@@ -1,0 +1,9 @@
+FN_GW_extra3	rep_origin	OH	mitos	154	323	1	546495.0	.	-	-	.	0	.
+FN_GW_extra3	rep_origin	OH	mitos	324	335	-1	25375.4	.	-	-	.	2	.
+FN_GW_extra3	gene	cox3	mitos	497	562	1	113663.4	.	-	-	.	.	.
+FN_GW_extra3	rep_origin	OH	mitos	672	688	-1	302.8	.	-	-	1	4	.
+FN_GW_extra3	rep_origin	OH	mitos	689	819	1	4194.5	.	-	-	.	3	.
+FN_GW_extra3	tRNA	trnI	mitfi	1383	1450	-1	0.06599999964237213	17.0	AAT	28	.	.	(((((((..((((...)))).(((((.......))))).....((.((........))))))))))).
+FN_GW_extra3	rep_origin	OH	mitos	1584	1754	-1	266564.0	.	-	-	.	1	.
+FN_GW_extra3	tRNA	trnA	mitfi	1839	1899	-1	1.2000000104706032e-08	51.4	TGC	29	.	.	(((((((...(((....)))..(((((.......)))))....(((....)))))))))).
+FN_GW_extra3	rep_origin	OH	mitos	1903	1950	1	106.6	.	-	-	0	4	.

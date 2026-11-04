@@ -1,0 +1,43 @@
+>Feature X_RW_fill1
+218	106	D-loop
+			note	control region
+218	379	gene
+			gene	atp8
+218	379	CDS
+			product	ATP synthase F0 subunit 8
+466	577	D-loop
+			note	control region
+549	621	gene
+			gene	trnK(ttt)
+549	621	tRNA
+			product	tRNA-LYS
+637	593	D-loop
+			note	control region
+594	642	D-loop
+			note	control region
+732	1079	gene
+			gene	atp6
+732	1079	CDS
+			product	ATP synthase F0 subunit 6
+1184	1120	D-loop
+			note	control region
+1577	1631	D-loop
+			note	control region
+1652	1738	D-loop
+			note	control region
+1746	1694	D-loop
+			note	control region
+1972	1907	gene
+			gene	trnI(gat)
+1972	1907	tRNA
+			product	tRNA-ILE
+2333	2682	D-loop
+			note	control region
+3654	3590	gene
+			gene	trnD(gtc)
+3654	3590	tRNA
+			product	tRNA-ASP
+3935	3884	gene
+			gene	trnN(att)
+3935	3884	tRNA
+			product	tRNA-ASN

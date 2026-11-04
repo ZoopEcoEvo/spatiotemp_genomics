@@ -1,0 +1,55 @@
+>Feature FFH_FH_extra1
+133	85	D-loop
+			note	control region
+251	204	D-loop
+			note	control region
+361	324	D-loop
+			note	control region
+503	388	D-loop
+			note	control region
+546	573	D-loop
+			note	control region
+547	619	gene
+			gene	trnA(tgc)
+547	619	tRNA
+			product	tRNA-ALA
+726	670	gene
+			gene	trnS2(tga)
+726	670	tRNA
+			product	tRNA-SER2
+1105	1169	gene
+			gene	trnD(gtc)
+1105	1169	tRNA
+			product	tRNA-ASP
+1237	1299	gene
+			gene	trnM(cat)
+1237	1299	tRNA
+			product	tRNA-MET
+1655	1589	gene
+			gene	trnL1(aag)
+1655	1589	tRNA
+			product	tRNA-LEU1
+1666	1742	D-loop
+			note	control region
+1766	1743	D-loop
+			note	control region
+1938	2003	gene
+			gene	trnI(gat)
+1938	2003	tRNA
+			product	tRNA-ILE
+3243	2299	gene
+			gene	nad2
+3243	2299	CDS
+			product	NADH dehydrogenase subunit 2
+3311	3264	gene
+			gene	trnY(gta)
+3311	3264	tRNA
+			product	tRNA-TYR
+3308	3442	D-loop
+			note	control region
+3469	3443	D-loop
+			note	control region
+3499	3970	gene
+			gene	cox3
+3499	3970	CDS
+			product	cytochrome c oxidase subunit 3

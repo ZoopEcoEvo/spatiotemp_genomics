@@ -1,0 +1,2 @@
+pool	circular	length_before	ambiguous_before	length_after	ambiguous_after	extra_pieces	extra_bp	source
+FFH_FH	no	13987	0	13976	1	2	7105	megahit_scaf1

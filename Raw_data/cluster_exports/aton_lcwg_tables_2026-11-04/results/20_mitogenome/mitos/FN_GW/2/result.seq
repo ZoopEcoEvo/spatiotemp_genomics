@@ -1,0 +1,30 @@
+>Feature FN_GW_extra2
+575	111	gene
+			gene	cox2_0
+575	111	CDS
+			product	cytochrome c oxidase subunit 2
+585	685	D-loop
+			note	control region
+1454	773	gene
+			gene	cox2_1
+1454	773	CDS
+			product	cytochrome c oxidase subunit 2
+1426	1474	D-loop
+			note	control region
+1714	1885	D-loop
+			note	control region
+1887	1886	D-loop
+			note	control region
+2145	2190	D-loop
+			note	control region
+2519	2480	D-loop
+			note	control region
+2487	2525	D-loop
+			note	control region
+			gene	rrnS
+2590	2658	rRNA
+			product	s-rRNA
+2726	2769	D-loop
+			note	control region
+2973	3044	D-loop
+			note	control region

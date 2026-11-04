@@ -1,0 +1,7 @@
+pool	pieces_kept	bp_kept	pieces_dropped	bp_dropped	pcg_full	pcg_partial	pcg_missing	rrna
+X_RW	4	22617	X_RW_fill3	713	12	atp6		rrnS:partial,rrnL:full
+S_MD	1	18572	none	0	13			rrnS:full,rrnL:full
+IV_TK	4	21069	IV_TK_extra1,IV_TK_fill1	44095	12	atp6		rrnS:missing,rrnL:partial
+FN_GW	2	27189	FN_GW_extra2,FN_GW_extra3	5134	13			rrnS:full,rrnL:full
+FFH_FH	3	21081	none	0	12	cox3		rrnS:partial,rrnL:full
+FMR_MR	2	22861	FMR_MR_fill2	552	13			rrnS:missing,rrnL:full

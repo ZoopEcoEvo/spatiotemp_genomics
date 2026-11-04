@@ -1,0 +1,14 @@
+##gff-version 3
+#!gff-spec-version 1.21
+IV_TK_fill1	mitos	region	1	702	.	+	.	ID=IV_TK_fill1:1..702;Is_circular=False;Name=IV_TK_fill1;genome=mitochondrion;mol_type=genomic DNA
+IV_TK_fill1	mitos	origin_of_replication	40	80	.	+	.	ID=gene_OH_1;Name=OH_1;gene_id=OH_1
+IV_TK_fill1	mitfi	ncRNA_gene	115	189	.	+	.	ID=gene_trnF;Name=trnF;gene_id=trnF
+IV_TK_fill1	mitfi	tRNA	115	189	.	+	.	ID=transcript_trnF(aaa);Name=trnF(aaa);Parent=gene_trnF(aaa);gene_id=trnF(aaa)
+IV_TK_fill1	mitfi	exon	115	189	0.024000000208616257	+	.	Parent=transcript_trnF;Name=trnF
+IV_TK_fill1	mitfi	ncRNA_gene	175	233	.	+	.	ID=gene_trnH;Name=trnH;gene_id=trnH
+IV_TK_fill1	mitfi	tRNA	175	233	.	+	.	ID=transcript_trnH(gtg);Name=trnH(gtg);Parent=gene_trnH(gtg);gene_id=trnH(gtg)
+IV_TK_fill1	mitfi	exon	175	233	0.04899999871850014	+	.	Parent=transcript_trnH;Name=trnH
+IV_TK_fill1	mitos	origin_of_replication	239	279	.	+	.	ID=gene_OH_0;Name=OH_0;gene_id=OH_0
+IV_TK_fill1	mitfi	ncRNA_gene	378	458	.	+	.	ID=gene_trnT;Name=trnT;gene_id=trnT
+IV_TK_fill1	mitfi	tRNA	378	458	.	+	.	ID=transcript_trnT(agt);Name=trnT(agt);Parent=gene_trnT(agt);gene_id=trnT(agt)
+IV_TK_fill1	mitfi	exon	378	458	0.08299999684095383	+	.	Parent=transcript_trnT;Name=trnT

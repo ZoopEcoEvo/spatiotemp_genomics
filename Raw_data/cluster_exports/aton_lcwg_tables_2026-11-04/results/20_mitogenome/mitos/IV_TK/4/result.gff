@@ -1,0 +1,21 @@
+##gff-version 3
+#!gff-spec-version 1.21
+IV_TK_extra4	mitos	region	1	1284	.	+	.	ID=IV_TK_extra4:1..1284;Is_circular=False;Name=IV_TK_extra4;genome=mitochondrion;mol_type=genomic DNA
+IV_TK_extra4	mitfi	ncRNA_gene	47	98	.	+	.	ID=gene_trnL2;Name=trnL2;gene_id=trnL2
+IV_TK_extra4	mitfi	tRNA	47	98	.	+	.	ID=transcript_trnL2(caa);Name=trnL2(caa);Parent=gene_trnL2(caa);gene_id=trnL2(caa)
+IV_TK_extra4	mitfi	exon	47	98	0.026000000536441803	+	.	Parent=transcript_trnL2;Name=trnL2
+IV_TK_extra4	mitos	exon	85	143	341.3	-	0	Parent=transcript_OH_0;Name=OH_0-d
+IV_TK_extra4	mitos	exon	95	190	299.7	+	0	Parent=transcript_OH_1;Name=OH_1-b
+IV_TK_extra4	mitos	origin_of_replication	95	256	.	-	.	ID=gene_OH_1;Name=OH_1;gene_id=OH_1
+IV_TK_extra4	mitos	gene	389	886	.	-	.	ID=gene_nad6;Name=nad6;gene_id=nad6
+IV_TK_extra4	mitos	exon	389	886	1367434.4	-	0	Parent=transcript_nad6;Name=nad6
+IV_TK_extra4	mitfi	ncRNA_gene	886	949	.	-	.	ID=gene_trnV;Name=trnV;gene_id=trnV
+IV_TK_extra4	mitfi	tRNA	886	949	.	-	.	ID=transcript_trnV(tac);Name=trnV(tac);Parent=gene_trnV(tac);gene_id=trnV(tac)
+IV_TK_extra4	mitfi	exon	886	949	3.2999999177718564e-08	-	.	Parent=transcript_trnV;Name=trnV
+IV_TK_extra4	mitfi	ncRNA_gene	926	987	.	+	.	ID=gene_trnS1;Name=trnS1;gene_id=trnS1
+IV_TK_extra4	mitfi	tRNA	926	987	.	+	.	ID=transcript_trnS1(gct);Name=trnS1(gct);Parent=gene_trnS1(gct);gene_id=trnS1(gct)
+IV_TK_extra4	mitfi	exon	926	987	0.08799999952316284	+	.	Parent=transcript_trnS1;Name=trnS1
+IV_TK_extra4	mitos	origin_of_replication	85	1246	.	+	.	ID=gene_OH_0;Name=OH_0;gene_id=OH_0
+IV_TK_extra4	mitos	exon	1177	1184	209.8	+	0	Parent=transcript_OH_0;Name=OH_0-c
+IV_TK_extra4	mitos	exon	1185	1246	2218.1	-	0	Parent=transcript_OH_0;Name=OH_0-b
+IV_TK_extra4	mitfi	origin_of_replication	1238	1266	.	+	.	ID=gene_OL;Name=OL;gene_id=OL

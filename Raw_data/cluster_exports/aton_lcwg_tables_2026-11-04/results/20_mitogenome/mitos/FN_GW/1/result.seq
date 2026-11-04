@@ -1,0 +1,82 @@
+>Feature FN_GW_extra1
+115	180	gene
+			gene	trnL2(taa)
+115	180	tRNA
+			product	tRNA-LEU2
+272	330	D-loop
+			note	control region
+336	282	D-loop
+			note	control region
+418	482	gene
+			gene	trnD(gtc)
+418	482	tRNA
+			product	tRNA-ASP
+536	598	gene
+			gene	trnM(cat)
+536	598	tRNA
+			product	tRNA-MET
+1172	1235	gene
+			gene	trnV(tac)
+1172	1235	tRNA
+			product	tRNA-VAL
+1206	1271	gene
+			gene	trnI(gat)
+1206	1271	tRNA
+			product	tRNA-ILE
+1336	1517	D-loop
+			note	control region
+1791	1699	gene
+			gene	nad2_0-b
+1791	1699	CDS
+			product	NADH dehydrogenase subunit 2
+1931	1830	gene
+			gene	nad2_1
+1931	1830	CDS
+			product	NADH dehydrogenase subunit 2
+1942	1942	D-loop
+			note	control region
+1943	2012	D-loop
+			note	control region
+			gene	rrnS
+2053	2144	rRNA
+			product	s-rRNA
+2341	2171	gene
+			gene	nad2_0-a
+2341	2171	CDS
+			product	NADH dehydrogenase subunit 2
+2445	2589	D-loop
+			note	control region
+2605	3396	gene
+			gene	cox3
+2605	3396	CDS
+			product	cytochrome c oxidase subunit 3
+3543	3432	D-loop
+			note	control region
+3544	3620	D-loop
+			note	control region
+4005	3978	D-loop
+			note	control region
+4022	4049	D-loop
+			note	control region
+4346	4238	D-loop
+			note	control region
+4724	4722	D-loop
+			note	control region
+4725	4888	D-loop
+			note	control region
+5102	5058	D-loop
+			note	control region
+5061	5109	D-loop
+			note	control region
+5673	5668	D-loop
+			note	control region
+5674	5846	D-loop
+			note	control region
+6022	6147	gene
+			gene	cox2-a
+6022	6147	CDS
+			product	cytochrome c oxidase subunit 2
+6156	6278	gene
+			gene	cox2-b
+6156	6278	CDS
+			product	cytochrome c oxidase subunit 2

@@ -1,0 +1,25 @@
+>Feature FFH_FH_fill1
+163	177	D-loop
+			note	control region
+447	178	D-loop
+			note	control region
+555	842	gene
+			gene	nad4l
+555	842	CDS
+			product	NADH dehydrogenase subunit 4L
+1154	974	D-loop
+			note	control region
+1196	1135	gene
+			gene	trnR(tcg)
+1196	1135	tRNA
+			product	tRNA-ARG
+1802	1963	gene
+			gene	atp8
+1802	1963	CDS
+			product	ATP synthase F0 subunit 8
+1967	2665	gene
+			gene	atp6
+1967	2665	CDS
+			product	ATP synthase F0 subunit 6
+2864	2927	D-loop
+			note	control region

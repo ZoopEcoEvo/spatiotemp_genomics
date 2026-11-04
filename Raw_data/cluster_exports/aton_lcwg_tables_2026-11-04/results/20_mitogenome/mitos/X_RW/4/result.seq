@@ -1,0 +1,27 @@
+>Feature X_RW_fill3
+96	38	D-loop
+			note	control region
+149	221	gene
+			gene	trnS2(aga)
+149	221	tRNA
+			product	tRNA-SER2
+223	196	D-loop
+			note	control region
+272	356	D-loop
+			note	control region
+448	402	D-loop
+			note	control region
+521	420	gene
+			gene	trnM(tat)
+521	420	tRNA
+			product	tRNA-MET
+561	496	gene
+			gene	trnC(aca)
+561	496	tRNA
+			product	tRNA-CYS
+530	585	gene
+			gene	trnF(gaa)
+530	585	tRNA
+			product	tRNA-PHE
+671	609	D-loop
+			note	control region

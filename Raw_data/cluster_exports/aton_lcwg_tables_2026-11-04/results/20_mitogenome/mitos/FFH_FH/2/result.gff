@@ -1,0 +1,16 @@
+##gff-version 3
+#!gff-spec-version 1.21
+FFH_FH_fill1	mitos	region	1	3126	.	+	.	ID=FFH_FH_fill1:1..3126;Is_circular=False;Name=FFH_FH_fill1;genome=mitochondrion;mol_type=genomic DNA
+FFH_FH_fill1	mitos	origin_of_replication	163	177	.	+	.	ID=gene_OH_3;Name=OH_3;gene_id=OH_3
+FFH_FH_fill1	mitos	origin_of_replication	178	447	.	-	.	ID=gene_OH_2;Name=OH_2;gene_id=OH_2
+FFH_FH_fill1	mitos	gene	555	842	.	+	.	ID=gene_nad4l;Name=nad4l;gene_id=nad4l
+FFH_FH_fill1	mitos	exon	555	842	27625.8	+	0	Parent=transcript_nad4l;Name=nad4l
+FFH_FH_fill1	mitos	origin_of_replication	974	1154	.	-	.	ID=gene_OH_1;Name=OH_1;gene_id=OH_1
+FFH_FH_fill1	mitfi	ncRNA_gene	1135	1196	.	-	.	ID=gene_trnR;Name=trnR;gene_id=trnR
+FFH_FH_fill1	mitfi	tRNA	1135	1196	.	-	.	ID=transcript_trnR(tcg);Name=trnR(tcg);Parent=gene_trnR(tcg);gene_id=trnR(tcg)
+FFH_FH_fill1	mitfi	exon	1135	1196	3.099999901223782e-08	-	.	Parent=transcript_trnR;Name=trnR
+FFH_FH_fill1	mitos	gene	1802	1963	.	+	.	ID=gene_atp8;Name=atp8;gene_id=atp8
+FFH_FH_fill1	mitos	exon	1802	1963	19660.1	+	0	Parent=transcript_atp8;Name=atp8
+FFH_FH_fill1	mitos	gene	1967	2665	.	+	.	ID=gene_atp6;Name=atp6;gene_id=atp6
+FFH_FH_fill1	mitos	exon	1967	2665	147145085.3	+	0	Parent=transcript_atp6;Name=atp6
+FFH_FH_fill1	mitos	origin_of_replication	2864	2927	.	+	.	ID=gene_OH_0;Name=OH_0;gene_id=OH_0

@@ -1,0 +1,41 @@
+>Feature X_RW_fill2
+117	40	D-loop
+			note	control region
+202	242	D-loop
+			note	control region
+370	319	gene
+			gene	trnN(att)
+370	319	tRNA
+			product	tRNA-ASN
+661	596	gene
+			gene	trnC(gca)
+661	596	tRNA
+			product	tRNA-CYS
+730	780	gene
+			gene	trnY(ata)
+730	780	tRNA
+			product	tRNA-TYR
+916	1211	D-loop
+			note	control region
+1376	2167	gene
+			gene	cox3
+1376	2167	CDS
+			product	cytochrome c oxidase subunit 3
+2405	2291	D-loop
+			note	control region
+2758	2480	gene
+			gene	nad4l
+2758	2480	CDS
+			product	NADH dehydrogenase subunit 4L
+2774	2826	gene
+			gene	trnS1(gct)
+2774	2826	tRNA
+			product	tRNA-SER1
+2992	3109	D-loop
+			note	control region
+3117	3110	D-loop
+			note	control region
+3266	3202	gene
+			gene	trnL2(taa)
+3266	3202	tRNA
+			product	tRNA-LEU2

@@ -1,0 +1,28 @@
+##gff-version 3
+#!gff-spec-version 1.21
+X_RW_fill1	mitos	region	1	4034	.	+	.	ID=X_RW_fill1:1..4034;Is_circular=False;Name=X_RW_fill1;genome=mitochondrion;mol_type=genomic DNA
+X_RW_fill1	mitos	origin_of_replication	106	218	.	-	.	ID=gene_OH_1;Name=OH_1;gene_id=OH_1
+X_RW_fill1	mitos	gene	218	379	.	+	.	ID=gene_atp8;Name=atp8;gene_id=atp8
+X_RW_fill1	mitos	exon	218	379	17724.5	+	0	Parent=transcript_atp8;Name=atp8
+X_RW_fill1	mitos	exon	466	577	336.0	+	0	Parent=transcript_OH_2;Name=OH_2-d
+X_RW_fill1	mitfi	ncRNA_gene	549	621	.	+	.	ID=gene_trnK;Name=trnK;gene_id=trnK
+X_RW_fill1	mitfi	tRNA	549	621	.	+	.	ID=transcript_trnK(ttt);Name=trnK(ttt);Parent=gene_trnK(ttt);gene_id=trnK(ttt)
+X_RW_fill1	mitfi	exon	549	621	0.052000001072883606	+	.	Parent=transcript_trnK;Name=trnK
+X_RW_fill1	mitos	origin_of_replication	466	1746	.	-	.	ID=gene_OH_2;Name=OH_2;gene_id=OH_2
+X_RW_fill1	mitos	exon	594	642	200.7	+	0	Parent=transcript_OH_3;Name=OH_3-b
+X_RW_fill1	mitos	gene	732	1079	.	+	.	ID=gene_atp6;Name=atp6;gene_id=atp6
+X_RW_fill1	mitos	exon	732	1079	84834956.1	+	0	Parent=transcript_atp6;Name=atp6
+X_RW_fill1	mitos	exon	1120	1184	645083.3	-	0	Parent=transcript_OH_0;Name=OH_0-b
+X_RW_fill1	mitos	exon	1577	1631	474.1	+	0	Parent=transcript_OH_2;Name=OH_2-b
+X_RW_fill1	mitos	origin_of_replication	594	1738	.	+	.	ID=gene_OH_3;Name=OH_3;gene_id=OH_3
+X_RW_fill1	mitos	exon	1694	1746	133.7	-	0	Parent=transcript_OH_2;Name=OH_2-c
+X_RW_fill1	mitfi	ncRNA_gene	1907	1972	.	-	.	ID=gene_trnI;Name=trnI;gene_id=trnI
+X_RW_fill1	mitfi	tRNA	1907	1972	.	-	.	ID=transcript_trnI(gat);Name=trnI(gat);Parent=gene_trnI(gat);gene_id=trnI(gat)
+X_RW_fill1	mitfi	exon	1907	1972	1.100000021625469e-10	-	.	Parent=transcript_trnI;Name=trnI
+X_RW_fill1	mitos	origin_of_replication	1120	2682	.	+	.	ID=gene_OH_0;Name=OH_0;gene_id=OH_0
+X_RW_fill1	mitfi	ncRNA_gene	3590	3654	.	-	.	ID=gene_trnD;Name=trnD;gene_id=trnD
+X_RW_fill1	mitfi	tRNA	3590	3654	.	-	.	ID=transcript_trnD(gtc);Name=trnD(gtc);Parent=gene_trnD(gtc);gene_id=trnD(gtc)
+X_RW_fill1	mitfi	exon	3590	3654	1.2000000424450263e-05	-	.	Parent=transcript_trnD;Name=trnD
+X_RW_fill1	mitfi	ncRNA_gene	3884	3935	.	-	.	ID=gene_trnN;Name=trnN;gene_id=trnN
+X_RW_fill1	mitfi	tRNA	3884	3935	.	-	.	ID=transcript_trnN(att);Name=trnN(att);Parent=gene_trnN(att);gene_id=trnN(att)
+X_RW_fill1	mitfi	exon	3884	3935	7.500000265281415e-08	-	.	Parent=transcript_trnN;Name=trnN

@@ -1,0 +1,15 @@
+X_RW_fill1	rep_origin	OH	mitos	105	217	-1	17787.4	.	-	-	.	1	.
+X_RW_fill1	gene	atp8	mitos	217	378	1	17724.5	.	-	-	.	.	.
+X_RW_fill1	rep_origin	OH	mitos	465	576	1	336.0	.	-	-	3	2	.
+X_RW_fill1	tRNA	trnK	mitfi	548	620	1	0.052000001072883606	18.4	TTT	56	.	.	(((((((......(((((.......................)))))....(((.........)))))))))).
+X_RW_fill1	rep_origin	OH	mitos	592	636	-1	243.5	.	-	-	0	2	.
+X_RW_fill1	rep_origin	OH	mitos	593	641	1	200.7	.	-	-	1	3	.
+X_RW_fill1	gene	atp6	mitos	731	1078	1	84834956.1	.	-	-	.	.	.
+X_RW_fill1	rep_origin	OH	mitos	1119	1183	-1	645083.3	.	-	-	1	0	.
+X_RW_fill1	rep_origin	OH	mitos	1576	1630	1	474.1	.	-	-	1	2	.
+X_RW_fill1	rep_origin	OH	mitos	1651	1737	1	219.5	.	-	-	0	3	.
+X_RW_fill1	rep_origin	OH	mitos	1693	1745	-1	133.7	.	-	-	2	2	.
+X_RW_fill1	tRNA	trnI	mitfi	1906	1971	-1	1.100000021625469e-10	64.5	GAT	28	.	.	(((((((..(((.....))).(((((.......))))).....((((.......))))))))))).
+X_RW_fill1	rep_origin	OH	mitos	2332	2681	1	608554.6	.	-	-	0	0	.
+X_RW_fill1	tRNA	trnD	mitfi	3589	3653	-1	1.2000000424450263e-05	37.8	GTC	31	.	.	(((((((...(((......)))..(((((.......)))))....((((....))))))))))).
+X_RW_fill1	tRNA	trnN	mitfi	3883	3934	-1	7.500000265281415e-08	43.7	ATT	14	.	.	(((((((..(((.......))).(((((.......)))))....))))))).

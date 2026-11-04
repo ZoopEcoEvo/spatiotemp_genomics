@@ -1,0 +1,35 @@
+>Feature IV_TK_extra3
+225	170	D-loop
+			note	control region
+226	235	D-loop
+			note	control region
+360	313	D-loop
+			note	control region
+478	532	gene
+			gene	trnS2(tga)
+478	532	tRNA
+			product	tRNA-SER2
+1787	537	gene
+			gene	nad4
+1787	537	CDS
+			product	NADH dehydrogenase subunit 4
+1738	1792	D-loop
+			note	control region
+1845	1789	gene
+			gene	trnS1(tct)
+1845	1789	tRNA
+			product	tRNA-SER1
+1925	1861	gene
+			gene	trnL1(tag)
+1925	1861	tRNA
+			product	tRNA-LEU1
+1935	1998	gene
+			gene	trnG(tcc)
+1935	1998	tRNA
+			product	tRNA-GLY
+2060	2000	gene
+			gene	trnK(ttt)
+2060	2000	tRNA
+			product	tRNA-LYS
+2126	2199	D-loop
+			note	control region

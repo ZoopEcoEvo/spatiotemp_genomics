@@ -1,0 +1,42 @@
+##gff-version 3
+#!gff-spec-version 1.21
+IV_TK	mitos	region	1	5191	.	+	.	ID=IV_TK:1..5191;Is_circular=False;Name=IV_TK;genome=mitochondrion;mol_type=genomic DNA
+IV_TK	mitos	exon	48	129	532.4	+	0	Parent=transcript_OH_0;Name=OH_0-e
+IV_TK	mitos	exon	154	247	997.3	+	0	Parent=transcript_OH_0;Name=OH_0-b
+IV_TK	mitos	exon	248	285	213.3	-	0	Parent=transcript_OH_0;Name=OH_0-d
+IV_TK	mitfi	ncRNA_gene	478	541	.	+	.	ID=gene_trnW;Name=trnW;gene_id=trnW
+IV_TK	mitfi	tRNA	478	541	.	+	.	ID=transcript_trnW(tca);Name=trnW(tca);Parent=gene_trnW(tca);gene_id=trnW(tca)
+IV_TK	mitfi	exon	478	541	4.19999999223819e-08	+	.	Parent=transcript_trnW;Name=trnW
+IV_TK	mitos	gene	568	2109	.	+	.	ID=gene_cox1;Name=cox1;gene_id=cox1
+IV_TK	mitos	exon	568	2109	2434769074.3	+	0	Parent=transcript_cox1;Name=cox1
+IV_TK	mitos	gene	2233	3324	.	+	.	ID=gene_cob;Name=cob;gene_id=cob
+IV_TK	mitos	exon	2233	3324	1307369440.0	+	0	Parent=transcript_cob;Name=cob
+IV_TK	mitfi	ncRNA_gene	3374	3438	.	-	.	ID=gene_trnE;Name=trnE;gene_id=trnE
+IV_TK	mitfi	tRNA	3374	3438	.	-	.	ID=transcript_trnE(ttc);Name=trnE(ttc);Parent=gene_trnE(ttc);gene_id=trnE(ttc)
+IV_TK	mitfi	exon	3374	3438	1.2000000104706032e-08	-	.	Parent=transcript_trnE;Name=trnE
+IV_TK	mitfi	ncRNA_gene	3447	3509	.	-	.	ID=gene_trnH;Name=trnH;gene_id=trnH
+IV_TK	mitfi	tRNA	3447	3509	.	-	.	ID=transcript_trnH(gtg);Name=trnH(gtg);Parent=gene_trnH(gtg);gene_id=trnH(gtg)
+IV_TK	mitfi	exon	3447	3509	6.299999966152825e-10	-	.	Parent=transcript_trnH;Name=trnH
+IV_TK	mitfi	ncRNA_gene	3559	3619	.	+	.	ID=gene_trnA;Name=trnA;gene_id=trnA
+IV_TK	mitfi	tRNA	3559	3619	.	+	.	ID=transcript_trnA(tgc);Name=trnA(tgc);Parent=gene_trnA(tgc);gene_id=trnA(tgc)
+IV_TK	mitfi	exon	3559	3619	1.3999999737279722e-07	+	.	Parent=transcript_trnA;Name=trnA
+IV_TK	mitfi	ncRNA_gene	3751	3812	.	-	.	ID=gene_trnY;Name=trnY;gene_id=trnY
+IV_TK	mitfi	tRNA	3751	3812	.	-	.	ID=transcript_trnY(gta);Name=trnY(gta);Parent=gene_trnY(gta);gene_id=trnY(gta)
+IV_TK	mitfi	exon	3751	3812	2.6000000763470865e-12	-	.	Parent=transcript_trnY;Name=trnY
+IV_TK	mitfi	ncRNA_gene	3827	3886	.	-	.	ID=gene_trnP;Name=trnP;gene_id=trnP
+IV_TK	mitfi	tRNA	3827	3886	.	-	.	ID=transcript_trnP(tgg);Name=trnP(tgg);Parent=gene_trnP(tgg);gene_id=trnP(tgg)
+IV_TK	mitfi	exon	3827	3886	2.7000000457633178e-08	-	.	Parent=transcript_trnP;Name=trnP
+IV_TK	mitos	gene	3929	4618	.	-	.	ID=gene_cox2;Name=cox2;gene_id=cox2
+IV_TK	mitos	exon	3929	4618	389661447.3	-	0	Parent=transcript_cox2;Name=cox2
+IV_TK	mitfi	ncRNA_gene	4720	4783	.	-	.	ID=gene_trnM;Name=trnM;gene_id=trnM
+IV_TK	mitfi	tRNA	4720	4783	.	-	.	ID=transcript_trnM(cat);Name=trnM(cat);Parent=gene_trnM(cat);gene_id=trnM(cat)
+IV_TK	mitfi	exon	4720	4783	1.4999999464748726e-08	-	.	Parent=transcript_trnM;Name=trnM
+IV_TK	mitos	origin_of_replication	48	5132	.	-	.	ID=gene_OH_0;Name=OH_0;gene_id=OH_0
+IV_TK	mitfi	ncRNA_gene	4821	4889	.	-	.	ID=gene_trnI;Name=trnI;gene_id=trnI
+IV_TK	mitfi	tRNA	4821	4889	.	-	.	ID=transcript_trnI(gat);Name=trnI(gat);Parent=gene_trnI(gat);gene_id=trnI(gat)
+IV_TK	mitfi	exon	4821	4889	5.500000194863519e-12	-	.	Parent=transcript_trnI;Name=trnI
+IV_TK	mitfi	ncRNA_gene	4908	4972	.	-	.	ID=gene_trnD;Name=trnD;gene_id=trnD
+IV_TK	mitfi	tRNA	4908	4972	.	-	.	ID=transcript_trnD(gtc);Name=trnD(gtc);Parent=gene_trnD(gtc);gene_id=trnD(gtc)
+IV_TK	mitfi	exon	4908	4972	1.3000000080864993e-06	-	.	Parent=transcript_trnD;Name=trnD
+IV_TK	mitos	origin_of_replication	4943	5002	.	-	.	ID=gene_OH_1;Name=OH_1;gene_id=OH_1
+IV_TK	mitos	exon	5070	5132	755.4	+	0	Parent=transcript_OH_0;Name=OH_0-c

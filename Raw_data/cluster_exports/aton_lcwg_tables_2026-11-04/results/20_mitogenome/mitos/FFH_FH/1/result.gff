@@ -1,0 +1,37 @@
+##gff-version 3
+#!gff-spec-version 1.21
+FFH_FH_extra1	mitos	region	1	3979	.	+	.	ID=FFH_FH_extra1:1..3979;Is_circular=False;Name=FFH_FH_extra1;genome=mitochondrion;mol_type=genomic DNA
+FFH_FH_extra1	mitos	exon	85	133	123.6	-	0	Parent=transcript_OH_2;Name=OH_2-b
+FFH_FH_extra1	mitos	origin_of_replication	85	573	.	-	.	ID=gene_OH_2;Name=OH_2;gene_id=OH_2
+FFH_FH_extra1	mitos	exon	324	361	135.2	-	0	Parent=transcript_OH_2;Name=OH_2-e
+FFH_FH_extra1	mitos	exon	388	503	1235.4	-	0	Parent=transcript_OH_2;Name=OH_2-d
+FFH_FH_extra1	mitos	exon	546	573	70.6	+	0	Parent=transcript_OH_2;Name=OH_2-c
+FFH_FH_extra1	mitfi	ncRNA_gene	547	619	.	+	.	ID=gene_trnA;Name=trnA;gene_id=trnA
+FFH_FH_extra1	mitfi	tRNA	547	619	.	+	.	ID=transcript_trnA(tgc);Name=trnA(tgc);Parent=gene_trnA(tgc);gene_id=trnA(tgc)
+FFH_FH_extra1	mitfi	exon	547	619	0.07800000160932541	+	.	Parent=transcript_trnA;Name=trnA
+FFH_FH_extra1	mitfi	ncRNA_gene	670	726	.	-	.	ID=gene_trnS2;Name=trnS2;gene_id=trnS2
+FFH_FH_extra1	mitfi	tRNA	670	726	.	-	.	ID=transcript_trnS2(tga);Name=trnS2(tga);Parent=gene_trnS2(tga);gene_id=trnS2(tga)
+FFH_FH_extra1	mitfi	exon	670	726	0.027000000700354576	-	.	Parent=transcript_trnS2;Name=trnS2
+FFH_FH_extra1	mitfi	ncRNA_gene	1105	1169	.	+	.	ID=gene_trnD;Name=trnD;gene_id=trnD
+FFH_FH_extra1	mitfi	tRNA	1105	1169	.	+	.	ID=transcript_trnD(gtc);Name=trnD(gtc);Parent=gene_trnD(gtc);gene_id=trnD(gtc)
+FFH_FH_extra1	mitfi	exon	1105	1169	9.999999974752427e-07	+	.	Parent=transcript_trnD;Name=trnD
+FFH_FH_extra1	mitfi	ncRNA_gene	1237	1299	.	+	.	ID=gene_trnM;Name=trnM;gene_id=trnM
+FFH_FH_extra1	mitfi	tRNA	1237	1299	.	+	.	ID=transcript_trnM(cat);Name=trnM(cat);Parent=gene_trnM(cat);gene_id=trnM(cat)
+FFH_FH_extra1	mitfi	exon	1237	1299	3.899999878598237e-09	+	.	Parent=transcript_trnM;Name=trnM
+FFH_FH_extra1	mitfi	ncRNA_gene	1589	1655	.	-	.	ID=gene_trnL1;Name=trnL1;gene_id=trnL1
+FFH_FH_extra1	mitfi	tRNA	1589	1655	.	-	.	ID=transcript_trnL1(aag);Name=trnL1(aag);Parent=gene_trnL1(aag);gene_id=trnL1(aag)
+FFH_FH_extra1	mitfi	exon	1589	1655	0.0430000014603138	-	.	Parent=transcript_trnL1;Name=trnL1
+FFH_FH_extra1	mitos	exon	1666	1742	254960.3	+	0	Parent=transcript_OH_1;Name=OH_1-b
+FFH_FH_extra1	mitos	origin_of_replication	1666	1766	.	-	.	ID=gene_OH_1;Name=OH_1;gene_id=OH_1
+FFH_FH_extra1	mitfi	ncRNA_gene	1938	2003	.	+	.	ID=gene_trnI;Name=trnI;gene_id=trnI
+FFH_FH_extra1	mitfi	tRNA	1938	2003	.	+	.	ID=transcript_trnI(gat);Name=trnI(gat);Parent=gene_trnI(gat);gene_id=trnI(gat)
+FFH_FH_extra1	mitfi	exon	1938	2003	7.599999796159551e-11	+	.	Parent=transcript_trnI;Name=trnI
+FFH_FH_extra1	mitos	gene	2299	3243	.	-	.	ID=gene_nad2;Name=nad2;gene_id=nad2
+FFH_FH_extra1	mitos	exon	2299	3243	54050982.2	-	0	Parent=transcript_nad2;Name=nad2
+FFH_FH_extra1	mitfi	ncRNA_gene	3264	3311	.	-	.	ID=gene_trnY;Name=trnY;gene_id=trnY
+FFH_FH_extra1	mitfi	tRNA	3264	3311	.	-	.	ID=transcript_trnY(gta);Name=trnY(gta);Parent=gene_trnY(gta);gene_id=trnY(gta)
+FFH_FH_extra1	mitfi	exon	3264	3311	0.032999999821186066	-	.	Parent=transcript_trnY;Name=trnY
+FFH_FH_extra1	mitos	exon	3308	3442	349011.1	+	0	Parent=transcript_OH_0;Name=OH_0-b
+FFH_FH_extra1	mitos	origin_of_replication	3308	3469	.	-	.	ID=gene_OH_0;Name=OH_0;gene_id=OH_0
+FFH_FH_extra1	mitos	gene	3499	3970	.	+	.	ID=gene_cox3;Name=cox3;gene_id=cox3
+FFH_FH_extra1	mitos	exon	3499	3970	160786929.8	+	0	Parent=transcript_cox3;Name=cox3

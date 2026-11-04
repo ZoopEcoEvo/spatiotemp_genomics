@@ -1,0 +1,199 @@
+>Feature S_MD
+100	103	D-loop
+			note	control region
+329	1477	gene
+			gene	cob
+329	1477	CDS
+			product	cytochrome b
+1533	1470	gene
+			gene	trnE(ttc)
+1533	1470	tRNA
+			product	tRNA-GLU
+1604	1541	gene
+			gene	trnH(gtg)
+1604	1541	tRNA
+			product	tRNA-HIS
+1630	1692	gene
+			gene	trnA(tgc)
+1630	1692	tRNA
+			product	tRNA-ALA
+1689	1756	D-loop
+			note	control region
+1808	1747	gene
+			gene	trnY(gta)
+1808	1747	tRNA
+			product	tRNA-TYR
+1869	1809	gene
+			gene	trnP(tgg)
+1869	1809	tRNA
+			product	tRNA-PRO
+1959	1904	D-loop
+			note	control region
+2602	1913	gene
+			gene	cox2
+2602	1913	CDS
+			product	cytochrome c oxidase subunit 2
+2705	2642	gene
+			gene	trnM(cat)
+2705	2642	tRNA
+			product	tRNA-MET
+2815	2750	gene
+			gene	trnI(gat)
+2815	2750	tRNA
+			product	tRNA-ILE
+2886	2821	gene
+			gene	trnD(gtc)
+2886	2821	tRNA
+			product	tRNA-ASP
+2932	3011	D-loop
+			note	control region
+3018	3012	D-loop
+			note	control region
+			gene	rrnS_0
+3059	3702	rRNA
+			product	s-rRNA
+			gene	rrnS_1
+4010	3706	rRNA
+			product	s-rRNA
+4093	3986	D-loop
+			note	control region
+4094	4105	D-loop
+			note	control region
+4215	4310	D-loop
+			note	control region
+4319	4383	gene
+			gene	trnL2(taa)
+4319	4383	tRNA
+			product	tRNA-LEU2
+4547	4367	D-loop
+			note	control region
+4618	4905	gene
+			gene	nad4l
+4618	4905	CDS
+			product	NADH dehydrogenase subunit 4L
+4895	5013	D-loop
+			note	control region
+5802	5011	gene
+			gene	cox3
+5802	5011	CDS
+			product	cytochrome c oxidase subunit 3
+5973	5815	D-loop
+			note	control region
+6080	6979	gene
+			gene	nad2
+6080	6979	CDS
+			product	NADH dehydrogenase subunit 2
+7083	7013	D-loop
+			note	control region
+7482	7213	D-loop
+			note	control region
+7733	7665	gene
+			gene	trnR(tcg)
+7733	7665	tRNA
+			product	tRNA-ARG
+8116	8277	gene
+			gene	atp8
+8116	8277	CDS
+			product	ATP synthase F0 subunit 8
+8278	8976	gene
+			gene	atp6
+8278	8976	CDS
+			product	ATP synthase F0 subunit 6
+9157	9095	gene
+			gene	trnC(gca)
+9157	9095	tRNA
+			product	tRNA-CYS
+9133	9283	D-loop
+			note	control region
+9321	9484	D-loop
+			note	control region
+9530	9592	gene
+			gene	trnT(tgt)
+9530	9592	tRNA
+			product	tRNA-THR
+9757	9820	gene
+			gene	trnF(gaa)
+9757	9820	tRNA
+			product	tRNA-PHE
+			gene	rrnL_1
+9929	10026	rRNA
+			product	l-rRNA
+			gene	rrnL_0
+10236	10906	rRNA
+			product	l-rRNA
+10949	10884	gene
+			gene	trnN(gtt)
+10949	10884	tRNA
+			product	tRNA-ASN
+10948	10992	D-loop
+			note	control region
+12608	10950	gene
+			gene	nad5
+12608	10950	CDS
+			product	NADH dehydrogenase subunit 5
+12983	12630	gene
+			gene	nad3
+12983	12630	CDS
+			product	NADH dehydrogenase subunit 3
+12935	13015	D-loop
+			note	control region
+13106	13074	D-loop
+			note	control region
+13087	13995	gene
+			gene	nad1
+13087	13995	CDS
+			product	NADH dehydrogenase subunit 1
+13999	14066	gene
+			gene	trnQ(ttg)
+13999	14066	tRNA
+			product	tRNA-GLN
+14124	14044	D-loop
+			note	control region
+14128	14189	gene
+			gene	trnK(ttt)
+14128	14189	tRNA
+			product	tRNA-LYS
+14252	14195	gene
+			gene	trnG(tcc)
+14252	14195	tRNA
+			product	tRNA-GLY
+14265	14329	gene
+			gene	trnL1(tag)
+14265	14329	tRNA
+			product	tRNA-LEU1
+14339	15655	gene
+			gene	nad4
+14339	15655	CDS
+			product	NADH dehydrogenase subunit 4
+15677	15631	D-loop
+			note	control region
+15731	15674	gene
+			gene	trnS2(tga)
+15731	15674	tRNA
+			product	tRNA-SER2
+15740	15784	D-loop
+			note	control region
+16087	16059	D-loop
+			note	control region
+16545	16114	gene
+			gene	nad6
+16545	16114	CDS
+			product	NADH dehydrogenase subunit 6
+16672	16608	gene
+			gene	trnV(tac)
+16672	16608	tRNA
+			product	tRNA-VAL
+16790	16853	gene
+			gene	trnW(tca)
+16790	16853	tRNA
+			product	tRNA-TRP
+16852	16901	D-loop
+			note	control region
+16917	18452	gene
+			gene	cox1
+16917	18452	CDS
+			product	cytochrome c oxidase subunit 1
+18451	18544	D-loop
+			note	control region
+99	18519	D-loop
+			note	control region

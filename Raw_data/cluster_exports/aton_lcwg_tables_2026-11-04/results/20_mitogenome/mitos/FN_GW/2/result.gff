@@ -1,0 +1,19 @@
+##gff-version 3
+#!gff-spec-version 1.21
+FN_GW_extra2	mitos	region	1	3183	.	+	.	ID=FN_GW_extra2:1..3183;Is_circular=False;Name=FN_GW_extra2;genome=mitochondrion;mol_type=genomic DNA
+FN_GW_extra2	mitos	gene	111	575	.	-	.	ID=gene_cox2_0;Name=cox2_0;gene_id=cox2_0
+FN_GW_extra2	mitos	exon	111	575	135097817.5	-	0	Parent=transcript_cox2_0;Name=cox2_0
+FN_GW_extra2	mitos	origin_of_replication	585	2190	.	+	.	ID=gene_OH_1;Name=OH_1;gene_id=OH_1
+FN_GW_extra2	mitos	gene	773	1454	.	-	.	ID=gene_cox2_1;Name=cox2_1;gene_id=cox2_1
+FN_GW_extra2	mitos	exon	773	1454	54119356.8	-	0	Parent=transcript_cox2_1;Name=cox2_1
+FN_GW_extra2	mitos	exon	1426	1474	305.2	+	0	Parent=transcript_OH_1;Name=OH_1-b
+FN_GW_extra2	mitos	origin_of_replication	1714	2769	.	+	.	ID=gene_OH_0;Name=OH_0;gene_id=OH_0
+FN_GW_extra2	mitos	origin_of_replication	1886	2525	.	-	.	ID=gene_OH_3;Name=OH_3;gene_id=OH_3
+FN_GW_extra2	mitos	exon	2145	2190	168.2	+	0	Parent=transcript_OH_1;Name=OH_1-c
+FN_GW_extra2	mitos	exon	2480	2519	584.6	-	0	Parent=transcript_OH_3;Name=OH_3-c
+FN_GW_extra2	mitos	exon	2487	2525	899.9	+	0	Parent=transcript_OH_3;Name=OH_3-b
+FN_GW_extra2	mitfi	ncRNA_gene	2590	2658	.	+	.	ID=gene_rrnS;Name=rrnS;gene_id=rrnS
+FN_GW_extra2	mitfi	rRNA	2590	2658	.	+	.	ID=transcript_rrnS;Name=rrnS;Parent=gene_rrnS;gene_id=rrnS
+FN_GW_extra2	mitfi	exon	2590	2658	0.08699999749660492	+	.	Parent=transcript_rrnS;Name=rrnS
+FN_GW_extra2	mitos	exon	2726	2769	451429.5	+	0	Parent=transcript_OH_0;Name=OH_0-b
+FN_GW_extra2	mitos	origin_of_replication	2973	3044	.	+	.	ID=gene_OH_2;Name=OH_2;gene_id=OH_2

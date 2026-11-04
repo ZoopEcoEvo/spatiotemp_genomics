@@ -574,9 +574,9 @@ if (file.exists(inf_f)) {
 
 ```{r}
 #| label: tbl-supp-mito-genes
-#| eval: false
+#| eval: true
 #| tbl-cap: "Mitochondrial genes recovered from the pooled mitogenomes: nucleotide identity (%) of each pool's gene to the closed S mitogenome. Partial genes show the share of the S gene's length recovered (*); – not recovered. rRNA fragments shorter than half the S gene count as partial."
-gc_f <- here("Output", "Output_data", "mito_aa", "gene_copies.tsv")
+gc_f <- cx("results", "20_mitogenome", "final", "gene_copies.tsv")
 if (file.exists(gc_f)) {
   pool_lab <- c(FN_GW = "F-N", FFH_FH = "F-FH", FMR_MR = "F-MR", S_MD = "S", X_RW = "X", IV_TK = "IV")
   gene_ord <- c("atp6", "atp8", "cob", "cox1", "cox2", "cox3", "nad1", "nad2", "nad3", "nad4", "nad4l",
@@ -597,9 +597,11 @@ if (file.exists(gc_f)) {
 
 ```{r}
 #| label: tbl-supp-mito-pairs
-#| eval: false
+#| eval: true
 #| tbl-cap: "Amino-acid differences between clades in the 13 mitochondrial proteins (differences / aligned positions). Positions are compared where all pools of each clade share a residue; positions variable among the three F lineages are excluded from comparisons with F."
-mp_f <- here("Output", "Output_data", "mito_aa", "clade_aa_pairs.csv")
+
+mp_f <- cx("results", "20_mitogenome", "aa", "clade_aa_pairs.csv")
+
 if (file.exists(mp_f)) {
   gene_ord <- c("atp6", "atp8", "cob", "cox1", "cox2", "cox3", "nad1", "nad2", "nad3", "nad4", "nad4l",
                 "nad5", "nad6", "all")
@@ -617,9 +619,11 @@ if (file.exists(mp_f)) {
 
 ```{r}
 #| label: tbl-supp-mito-iv
-#| eval: false
+#| eval: true
 #| tbl-cap: "Mitochondrial amino-acid substitutions unique to IV, the least tolerant clade (IV differs from a residue shared by all F, S and X pools). Substitutions are written as shared residue, position in the S protein, IV residue."
-mi_f <- here("Output", "Output_data", "mito_aa", "IV_specific_aa.csv")
+
+mi_f <- cx("results", "20_mitogenome", "aa", "IV_specific_aa.csv")
+
 if (file.exists(mi_f)) {
   read_csv(mi_f, show_col_types = FALSE) %>%
     filter(!is.na(gene)) %>%
@@ -854,7 +858,7 @@ ggarrange(m2_coi, m2_nuc, nrow = 1, labels = c("A", "B"))
 
 ```{r}
 #| label: ms-figS-mitogenome
-#| eval: false
+#| eval: true
 #| fig-width: 9
 #| fig-height: 9.5
 #| fig-cap: "Pooled mitogenomes of the four clades and the F lineages. (A) Assembled pieces of each pool (shaded boxes), trimmed to the stretch carrying genes, with the 13 protein-coding genes and two rRNAs (arrows point 5′ to 3′; faded and * = partial). Each box is one assembled contig, except the F-N main piece (dashed), a scaffold of contigs joined by read pairs. Only gene order within a contig box is supported by the assembly. Boxes are oriented and ordered to match the closed S mitogenome, shown opened at rrnL, and the order and spacing between boxes are not resolved. Within contigs, F-FH and F-MR place nad4l next to atp8 and atp6, and F-MR places cox3 and nad2 directly after cox2, where S, X and IV have the arrangement shown for S. (B) Amino-acid differences between clades in each protein (cells: number of differing positions; fill: percentage of aligned positions), and substitutions unique to IV (bars). Positions where the three F lineages differ are excluded from comparisons with F."
@@ -866,8 +870,13 @@ ggarrange(m2_coi, m2_nuc, nrow = 1, labels = c("A", "B"))
 #     mitogenome, arrows point 5' -> 3', faded genes are partial. Only order within a box is supported.
 # (B) amino-acid divergence per protein between clades (% of aligned positions that differ), and the
 #     number of substitutions unique to IV.
-mito_dir <- here("Output", "Output_data", "mito_aa")
+
+mito_final <- cx("results", "20_mitogenome", "final")
+
+mito_aa <- cx("results", "20_mitogenome", "aa")
+
 pool_lab <- c(S_MD = "S", FN_GW = "F-N", FFH_FH = "F-FH", FMR_MR = "F-MR", X_RW = "X", IV_TK = "IV")
+
 cplx_of <- function(g) case_when(str_detect(g, "^nad") ~ "Complex I (nad)", g == "cob" ~ "Complex III (cob)",
                                  str_detect(g, "^cox") ~ "Complex IV (cox)", str_detect(g, "^atp") ~ "ATP synthase (atp)",
                                  TRUE ~ "rRNA")
@@ -877,10 +886,10 @@ gene_ord <- c("nad1", "nad2", "nad3", "nad4", "nad4l", "nad5", "nad6", "cob", "c
 
 # ---- A: gene map ----
 scaffold_pieces <- c("FN_GW")
-gc <- read_tsv(file.path(mito_dir, "gene_copies.tsv"), show_col_types = FALSE) %>%
+gc <- read_tsv(file.path(mito_final, "gene_copies.tsv"), show_col_types = FALSE) %>%
   filter(status != "missing", length >= 0.25 * s_length)          # drop rRNA scraps (< 25% of the S gene)
 # S is circular: start it at rrnL, where the linear pieces of the other pools mostly begin
-s_len <- read_tsv(file.path(mito_dir, "pieces.tsv"), show_col_types = FALSE) %>%
+s_len <- read_tsv(file.path(mito_final, "pieces.tsv"), show_col_types = FALSE) %>%
   filter(pool == "S_MD") %>% pull(bp_kept)
 s_zero <- gc %>% filter(pool == "S_MD", gene == "rrnL") %>% pull(start)
 gc <- gc %>%
@@ -941,11 +950,11 @@ mS_map <- ggplot() +
   guides(fill = guide_legend(order = 1, nrow = 1), linetype = guide_legend(order = 2, override.aes = list(fill = "grey93")))
 
 # ---- B: protein divergence ----
-aa <- read_csv(file.path(mito_dir, "clade_aa_pairs.csv"), show_col_types = FALSE) %>%
+aa <- read_csv(file.path(mito_aa, "clade_aa_pairs.csv"), show_col_types = FALSE) %>%
   filter(gene != "all") %>%
   mutate(pct = 100 * differences / aligned_aa, gene = factor(gene, levels = rev(gene_ord)),
          pair = factor(str_replace(pair, "-", "–"), levels = unique(str_replace(pair, "-", "–"))))
-iv <- read_csv(file.path(mito_dir, "IV_specific_aa.csv"), show_col_types = FALSE) %>%
+iv <- read_csv(file.path(mito_aa, "IV_specific_aa.csv"), show_col_types = FALSE) %>%
   filter(!is.na(gene)) %>% count(gene) %>%
   right_join(tibble(gene = gene_ord), by = "gene") %>%
   mutate(n = replace_na(n, 0L), gene = factor(gene, levels = rev(gene_ord)), cplx = cplx_of(as.character(gene)))

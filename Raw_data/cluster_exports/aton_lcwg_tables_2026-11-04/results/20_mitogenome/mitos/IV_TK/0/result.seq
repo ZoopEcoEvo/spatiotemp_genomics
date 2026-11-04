@@ -1,0 +1,61 @@
+>Feature IV_TK
+48	129	D-loop
+			note	control region
+154	247	D-loop
+			note	control region
+285	248	D-loop
+			note	control region
+478	541	gene
+			gene	trnW(tca)
+478	541	tRNA
+			product	tRNA-TRP
+568	2109	gene
+			gene	cox1
+568	2109	CDS
+			product	cytochrome c oxidase subunit 1
+2233	3324	gene
+			gene	cob
+2233	3324	CDS
+			product	cytochrome b
+3438	3374	gene
+			gene	trnE(ttc)
+3438	3374	tRNA
+			product	tRNA-GLU
+3509	3447	gene
+			gene	trnH(gtg)
+3509	3447	tRNA
+			product	tRNA-HIS
+3559	3619	gene
+			gene	trnA(tgc)
+3559	3619	tRNA
+			product	tRNA-ALA
+3812	3751	gene
+			gene	trnY(gta)
+3812	3751	tRNA
+			product	tRNA-TYR
+3886	3827	gene
+			gene	trnP(tgg)
+3886	3827	tRNA
+			product	tRNA-PRO
+4618	3929	gene
+			gene	cox2
+4618	3929	CDS
+			product	cytochrome c oxidase subunit 2
+4783	4720	gene
+			gene	trnM(cat)
+4783	4720	tRNA
+			product	tRNA-MET
+4784	4739	D-loop
+			note	control region
+4889	4821	gene
+			gene	trnI(gat)
+4889	4821	tRNA
+			product	tRNA-ILE
+4972	4908	gene
+			gene	trnD(gtc)
+4972	4908	tRNA
+			product	tRNA-ASP
+5002	4943	D-loop
+			note	control region
+5070	5132	D-loop
+			note	control region

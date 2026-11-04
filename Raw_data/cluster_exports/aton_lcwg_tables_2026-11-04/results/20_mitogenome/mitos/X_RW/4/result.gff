@@ -1,0 +1,20 @@
+##gff-version 3
+#!gff-spec-version 1.21
+X_RW_fill3	mitos	region	1	713	.	+	.	ID=X_RW_fill3:1..713;Is_circular=False;Name=X_RW_fill3;genome=mitochondrion;mol_type=genomic DNA
+X_RW_fill3	mitos	exon	38	96	159.2	-	0	Parent=transcript_OH_1;Name=OH_1-b
+X_RW_fill3	mitfi	ncRNA_gene	149	221	.	+	.	ID=gene_trnS2;Name=trnS2;gene_id=trnS2
+X_RW_fill3	mitfi	tRNA	149	221	.	+	.	ID=transcript_trnS2(aga);Name=trnS2(aga);Parent=gene_trnS2(aga);gene_id=trnS2(aga)
+X_RW_fill3	mitfi	exon	149	221	0.032999999821186066	+	.	Parent=transcript_trnS2;Name=trnS2
+X_RW_fill3	mitos	origin_of_replication	38	223	.	-	.	ID=gene_OH_1;Name=OH_1;gene_id=OH_1
+X_RW_fill3	mitos	origin_of_replication	272	671	.	+	.	ID=gene_OH_0;Name=OH_0;gene_id=OH_0
+X_RW_fill3	mitos	exon	402	448	615.2	-	0	Parent=transcript_OH_0;Name=OH_0-b
+X_RW_fill3	mitfi	ncRNA_gene	420	521	.	-	.	ID=gene_trnM;Name=trnM;gene_id=trnM
+X_RW_fill3	mitfi	tRNA	420	521	.	-	.	ID=transcript_trnM(tat);Name=trnM(tat);Parent=gene_trnM(tat);gene_id=trnM(tat)
+X_RW_fill3	mitfi	exon	420	521	0.07000000029802322	-	.	Parent=transcript_trnM;Name=trnM
+X_RW_fill3	mitfi	ncRNA_gene	496	561	.	-	.	ID=gene_trnC;Name=trnC;gene_id=trnC
+X_RW_fill3	mitfi	tRNA	496	561	.	-	.	ID=transcript_trnC(aca);Name=trnC(aca);Parent=gene_trnC(aca);gene_id=trnC(aca)
+X_RW_fill3	mitfi	exon	496	561	0.0430000014603138	-	.	Parent=transcript_trnC;Name=trnC
+X_RW_fill3	mitfi	ncRNA_gene	530	585	.	+	.	ID=gene_trnF;Name=trnF;gene_id=trnF
+X_RW_fill3	mitfi	tRNA	530	585	.	+	.	ID=transcript_trnF(gaa);Name=trnF(gaa);Parent=gene_trnF(gaa);gene_id=trnF(gaa)
+X_RW_fill3	mitfi	exon	530	585	0.02500000037252903	+	.	Parent=transcript_trnF;Name=trnF
+X_RW_fill3	mitos	exon	609	671	170.0	-	0	Parent=transcript_OH_0;Name=OH_0-c

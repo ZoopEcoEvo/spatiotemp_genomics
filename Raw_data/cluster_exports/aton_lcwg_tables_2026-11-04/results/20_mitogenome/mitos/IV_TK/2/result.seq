@@ -1,0 +1,130 @@
+>Feature IV_TK_extra2
+168	213	D-loop
+			note	control region
+219	169	D-loop
+			note	control region
+327	260	gene
+			gene	trnQ(ttg)
+327	260	tRNA
+			product	tRNA-GLN
+1314	376	gene
+			gene	nad1
+1314	376	CDS
+			product	NADH dehydrogenase subunit 1
+1343	1288	gene
+			gene	trnS2(tga)
+1343	1288	tRNA
+			product	tRNA-SER2
+1389	1742	gene
+			gene	nad3
+1389	1742	CDS
+			product	NADH dehydrogenase subunit 3
+1743	3431	gene
+			gene	nad5
+1743	3431	CDS
+			product	NADH dehydrogenase subunit 5
+3453	3519	gene
+			gene	trnN(gtt)
+3453	3519	tRNA
+			product	tRNA-ASN
+3540	3759	D-loop
+			note	control region
+3906	3834	gene
+			gene	trnW(tca)
+3906	3834	tRNA
+			product	tRNA-TRP
+3927	3867	D-loop
+			note	control region
+4112	4144	D-loop
+			note	control region
+4257	4145	D-loop
+			note	control region
+			gene	rrnL
+4454	4392	rRNA
+			product	l-rRNA
+4478	4435	D-loop
+			note	control region
+4436	4481	D-loop
+			note	control region
+4648	4585	gene
+			gene	trnF(gaa)
+4648	4585	tRNA
+			product	tRNA-PHE
+4765	4747	D-loop
+			note	control region
+4766	4850	D-loop
+			note	control region
+4895	4831	gene
+			gene	trnT(tgt)
+4895	4831	tRNA
+			product	tRNA-THR
+5102	5164	gene
+			gene	trnC(gca)
+5102	5164	tRNA
+			product	tRNA-CYS
+5244	5254	D-loop
+			note	control region
+5354	5255	D-loop
+			note	control region
+5835	5799	D-loop
+			note	control region
+5981	6031	D-loop
+			note	control region
+6131	6062	D-loop
+			note	control region
+6302	6261	D-loop
+			note	control region
+6802	6296	gene
+			gene	atp6
+6802	6296	CDS
+			product	ATP synthase F0 subunit 6
+7039	6990	D-loop
+			note	control region
+7154	6993	gene
+			gene	atp8
+7154	6993	CDS
+			product	ATP synthase F0 subunit 8
+7294	7252	D-loop
+			note	control region
+7320	7360	D-loop
+			note	control region
+7412	7367	D-loop
+			note	control region
+7662	7569	D-loop
+			note	control region
+7808	7772	D-loop
+			note	control region
+7850	7785	gene
+			gene	trnR(tcg)
+7850	7785	tRNA
+			product	tRNA-ARG
+7892	7832	D-loop
+			note	control region
+8318	8209	D-loop
+			note	control region
+8351	8382	D-loop
+			note	control region
+8624	8591	D-loop
+			note	control region
+8665	8645	D-loop
+			note	control region
+8666	8742	D-loop
+			note	control region
+8898	8793	D-loop
+			note	control region
+9292	9310	rep_origin
+			note	origin of L-strand replication
+10240	9296	gene
+			gene	nad2
+10240	9296	CDS
+			product	NADH dehydrogenase subunit 2
+10645	11436	gene
+			gene	cox3
+10645	11436	CDS
+			product	cytochrome c oxidase subunit 3
+11913	11614	gene
+			gene	nad4l
+11913	11614	CDS
+			product	NADH dehydrogenase subunit 4L
+12121	12155	D-loop
+			note	control region

@@ -1,0 +1,10 @@
+##gff-version 3
+#!gff-spec-version 1.21
+IV_TK_extra1	mitos	region	1	43393	.	+	.	ID=IV_TK_extra1:1..43393;Is_circular=False;Name=IV_TK_extra1;genome=mitochondrion;mol_type=genomic DNA
+IV_TK_extra1	mitos	gene	20683	21408	.	+	.	ID=gene_mttb;Name=mttb;gene_id=mttb
+IV_TK_extra1	mitos	exon	20683	21408	24171.7	+	0	Parent=transcript_mttb;Name=mttb
+IV_TK_extra1	mitos	gene	39271	40836	.	-	.	ID=gene_cox1;Name=cox1;gene_id=cox1
+IV_TK_extra1	mitos	exon	39271	40836	2015583921.4	-	0	Parent=transcript_cox1;Name=cox1
+IV_TK_extra1	mitfi	ncRNA_gene	41973	42056	.	+	.	ID=gene_trnL1;Name=trnL1;gene_id=trnL1
+IV_TK_extra1	mitfi	tRNA	41973	42056	.	+	.	ID=transcript_trnL1(gag);Name=trnL1(gag);Parent=gene_trnL1(gag);gene_id=trnL1(gag)
+IV_TK_extra1	mitfi	exon	41973	42056	4.200000148557592e-06	+	.	Parent=transcript_trnL1;Name=trnL1
