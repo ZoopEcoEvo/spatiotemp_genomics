@@ -1,0 +1,393 @@
+sample	pool	site	season	mean_depth	pcg_bases	pcg_called	genes_complete	partial_in_pool	included
+CT_early_1_03	IV_TK	CT	early	62.1	10761	0.999	13	atp6	yes
+CT_early_1_04	X_RW	CT	early	104.7	10425	0.988	11	atp6	yes
+CT_early_1_05	IV_TK	CT	early	119.7	10761	1.000	13	atp6	yes
+CT_early_1_07	X_RW	CT	early	92.9	10425	0.997	12	atp6	yes
+CT_early_1_08	X_RW	CT	early	223.9	10425	1.000	13	atp6	yes
+CT_early_1_10	X_RW	CT	early	53.2	10425	0.975	10	atp6	yes
+CT_early_2_01	X_RW	CT	early	90.3	10425	0.963	10	atp6	yes
+CT_early_2_02	X_RW	CT	early	69.1	10425	0.979	10	atp6	yes
+CT_early_2_05	S_MD	CT	early	135.5	10887	1.000	13		yes
+CT_early_2_06	X_RW	CT	early	30.3	10425	0.947	8	atp6	yes
+CT_early_2_07	S_MD	CT	early	169.1	10887	1.000	13		yes
+CT_early_2_08	S_MD	CT	early	130.1	10887	1.000	13		yes
+CT_late_1_01	IV_TK	CT	late	76.0	10761	1.000	13	atp6	yes
+CT_late_1_02	IV_TK	CT	late	66.4	10761	0.999	13	atp6	yes
+CT_late_1_03	IV_TK	CT	late	64.3	10761	1.000	13	atp6	yes
+CT_late_1_04	S_MD	CT	late	86.7	10887	1.000	13		yes
+CT_late_1_05	IV_TK	CT	late	35.6	10761	0.999	12	atp6	yes
+CT_late_1_06	IV_TK	CT	late	70.4	10761	1.000	13	atp6	yes
+CT_late_1_07	IV_TK	CT	late	54.7	10761	1.000	13	atp6	yes
+CT_late_1_08	IV_TK	CT	late	103.8	10761	1.000	13	atp6	yes
+CT_late_1_09	S_MD	CT	late	32.0	10887	0.954	7		yes
+CT_late_1_10	IV_TK	CT	late	46.1	10761	0.998	13	atp6	yes
+CT_late_2_01	IV_TK	CT	late	18.1	10761	0.926	7	atp6	yes
+CT_late_2_02	IV_TK	CT	late	69.4	10761	1.000	13	atp6	yes
+CT_late_2_03	IV_TK	CT	late	84.2	10761	1.000	13	atp6	yes
+CT_late_2_04	IV_TK	CT	late	36.7	10761	0.999	13	atp6	yes
+CT_late_2_05	IV_TK	CT	late	73.1	10761	1.000	13	atp6	yes
+CT_late_2_06	IV_TK	CT	late	80.8	10761	1.000	13	atp6	yes
+CT_late_2_07	S_MD	CT	late	45.4	10887	0.990	12		yes
+CT_late_2_08	IV_TK	CT	late	88.9	10761	1.000	13	atp6	yes
+CT_late_2_09	IV_TK	CT	late	28.6	10761	0.968	10	atp6	yes
+CT_late_2_10	IV_TK	CT	late	86.2	10761	1.000	13	atp6	yes
+CT_peak_1_01	S_MD	CT	peak	131.5	10887	1.000	13		yes
+CT_peak_1_02	S_MD	CT	peak	78.6	10887	1.000	13		yes
+CT_peak_1_03	S_MD	CT	peak	210.8	10887	1.000	13		yes
+CT_peak_1_05	S_MD	CT	peak	51.0	10887	0.993	12		yes
+CT_peak_1_06	S_MD	CT	peak	138.9	10887	0.998	13		yes
+CT_peak_1_07	S_MD	CT	peak	121.0	10887	0.997	12		yes
+CT_peak_1_08	X_RW	CT	peak	17.7	10425	0.835	4	atp6	yes
+CT_peak_1_09	S_MD	CT	peak	122.0	10887	0.995	12		yes
+CT_peak_1_10	S_MD	CT	peak	225.6	10887	1.000	13		yes
+CT_peak_2_01	S_MD	CT	peak	204.1	10887	1.000	13		yes
+CT_peak_2_02	S_MD	CT	peak	76.5	10887	0.996	13		yes
+CT_peak_2_03	S_MD	CT	peak	121.0	10887	0.999	13		yes
+CT_peak_2_04	S_MD	CT	peak	207.5	10887	1.000	13		yes
+CT_peak_2_05	S_MD	CT	peak	28.5	10887	0.946	9		yes
+CT_peak_2_06	S_MD	CT	peak	155.8	10887	1.000	13		yes
+CT_peak_2_07	S_MD	CT	peak	159.6	10887	0.998	13		yes
+CT_peak_2_08	X_RW	CT	peak	21.7	10425	0.857	3	atp6	yes
+CT_peak_2_09	X_RW	CT	peak	102.6	10425	0.997	12	atp6	yes
+CT_peak_2_10	X_RW	CT	peak	31.4	10425	0.944	8	atp6	yes
+FH_late_1_01	FFH_FH	FH	late	108.5	10658	0.997	13	cox3	yes
+FH_late_1_02	FFH_FH	FH	late	41.0	10658	0.958	9	cox3	yes
+FH_late_1_03	FFH_FH	FH	late	45.0	10658	0.947	9	cox3	yes
+FH_late_1_04	FFH_FH	FH	late	55.8	10658	0.976	10	cox3	yes
+FH_late_1_05	FFH_FH	FH	late	64.7	10658	0.989	10	cox3	yes
+FH_late_1_06	FFH_FH	FH	late	78.5	10658	0.994	11	cox3	yes
+FH_late_1_07	FFH_FH	FH	late	81.0	10658	0.997	13	cox3	yes
+FH_late_1_08	FFH_FH	FH	late	135.4	10658	0.991	13	cox3	yes
+FH_late_1_09	FFH_FH	FH	late	142.8	10658	1.000	13	cox3	yes
+FH_late_1_10	FFH_FH	FH	late	66.9	10658	0.996	12	cox3	yes
+FH_late_2_01	FFH_FH	FH	late	114.9	10658	1.000	13	cox3	yes
+FH_late_2_02	FFH_FH	FH	late	88.6	10658	0.996	12	cox3	yes
+FH_late_2_03	FFH_FH	FH	late	18.8	10658	0.882	7	cox3	yes
+FH_late_2_04	FFH_FH	FH	late	116.3	10658	1.000	13	cox3	yes
+FH_late_2_05	FFH_FH	FH	late	129.9	10658	1.000	13	cox3	yes
+FH_late_2_06	FFH_FH	FH	late	109.8	10658	0.996	12	cox3	yes
+FH_late_2_07	FFH_FH	FH	late	122.2	10658	0.995	12	cox3	yes
+FH_late_2_08	FFH_FH	FH	late	35.5	10658	0.949	9	cox3	yes
+FH_late_2_09	FFH_FH	FH	late	90.7	10658	0.993	12	cox3	yes
+FH_late_2_10	FFH_FH	FH	late	107.6	10658	0.997	13	cox3	yes
+FH_peak_1_01	FFH_FH	FH	peak	169.1	10658	1.000	13	cox3	yes
+FH_peak_1_02	FFH_FH	FH	peak	104.2	10658	1.000	13	cox3	yes
+FH_peak_1_03	FFH_FH	FH	peak	136.3	10658	0.999	13	cox3	yes
+FH_peak_1_04	FFH_FH	FH	peak	137.1	10658	1.000	13	cox3	yes
+FH_peak_1_05	FFH_FH	FH	peak	138.9	10658	0.991	13	cox3	yes
+FH_peak_1_06	FFH_FH	FH	peak	171.6	10658	1.000	13	cox3	yes
+FH_peak_1_07	FFH_FH	FH	peak	127.8	10658	0.991	13	cox3	yes
+FH_peak_1_08	FFH_FH	FH	peak	53.9	10658	0.989	12	cox3	yes
+FH_peak_1_09	FFH_FH	FH	peak	5.0	10658	0.444	0	cox3	no
+FH_peak_2_01	FFH_FH	FH	peak	47.3	10658	0.993	11	cox3	yes
+FH_peak_2_02	FFH_FH	FH	peak	172.3	10658	1.000	13	cox3	yes
+FH_peak_2_03	FFH_FH	FH	peak	85.2	10658	0.998	13	cox3	yes
+FH_peak_2_04	FFH_FH	FH	peak	161.0	10658	1.000	13	cox3	yes
+FH_peak_2_05	FFH_FH	FH	peak	77.8	10658	0.987	11	cox3	yes
+FH_peak_2_06	FFH_FH	FH	peak	86.3	10658	0.996	12	cox3	yes
+FH_peak_2_07	FFH_FH	FH	peak	129.5	10658	1.000	13	cox3	yes
+FH_peak_2_08	FFH_FH	FH	peak	161.8	10658	1.000	13	cox3	yes
+FH_peak_2_09	FFH_FH	FH	peak	197.5	10658	1.000	13	cox3	yes
+FH_peak_2_10	FFH_FH	FH	peak	108.5	10658	0.991	11	cox3	yes
+GW_early_1_01	FN_GW	GW	early	75.7	10936	0.997	12		yes
+GW_early_1_02	FN_GW	GW	early	36.6	10936	0.970	11		yes
+GW_early_1_03	FN_GW	GW	early	45.3	10936	0.966	10		yes
+GW_early_1_04	S_MD	GW	early	93.3	10887	0.999	13		yes
+GW_early_1_05	FN_GW	GW	early	92.9	10936	0.980	12		yes
+GW_early_1_06	FN_GW	GW	early	121.0	10936	0.999	13		yes
+GW_early_1_07	FN_GW	GW	early	107.9	10936	0.997	12		yes
+GW_early_1_08	FN_GW	GW	early	111.1	10936	0.999	13		yes
+GW_early_1_09	FN_GW	GW	early	92.5	10936	0.998	12		yes
+GW_early_1_10	FN_GW	GW	early	69.0	10936	0.987	12		yes
+GW_early_2_01	FN_GW	GW	early	59.5	10936	0.988	12		yes
+GW_early_2_02	FN_GW	GW	early	93.3	10936	0.992	12		yes
+GW_early_2_03	FN_GW	GW	early	119.6	10936	0.996	12		yes
+GW_early_2_04	FN_GW	GW	early	74.6	10936	0.990	12		yes
+GW_early_2_05	FN_GW	GW	early	50.8	10936	0.963	10		yes
+GW_early_2_06	FN_GW	GW	early	133.6	10936	1.000	13		yes
+GW_early_2_07	FN_GW	GW	early	133.6	10936	1.000	13		yes
+GW_early_2_08	FN_GW	GW	early	196.1	10936	1.000	13		yes
+GW_early_2_09	FN_GW	GW	early	140.5	10936	0.997	12		yes
+GW_early_2_10	FN_GW	GW	early	90.6	10936	0.992	12		yes
+GW_late_1_01	FN_GW	GW	late	45.2	10936	0.968	11		yes
+GW_late_1_02	S_MD	GW	late	16.6	10887	0.885	5		yes
+GW_late_1_03	FN_GW	GW	late	66.2	10936	0.996	12		yes
+GW_late_1_04	FN_GW	GW	late	112.0	10936	0.991	12		yes
+GW_late_1_05	FN_GW	GW	late	50.0	10936	0.978	11		yes
+GW_late_1_06	FN_GW	GW	late	97.4	10936	0.997	12		yes
+GW_late_1_07	FN_GW	GW	late	59.4	10936	0.977	12		yes
+GW_late_1_08	S_MD	GW	late	130.1	10887	1.000	13		yes
+GW_late_1_09	S_MD	GW	late	137.1	10887	0.998	13		yes
+GW_late_1_10	S_MD	GW	late	94.8	10887	0.997	12		yes
+GW_late_2_01	FN_GW	GW	late	83.9	10936	1.000	13		yes
+GW_late_2_02	S_MD	GW	late	120.0	10887	0.999	13		yes
+GW_late_2_03	FN_GW	GW	late	57.2	10936	0.977	12		yes
+GW_late_2_04	FN_GW	GW	late	141.0	10936	0.999	13		yes
+GW_late_2_05	FN_GW	GW	late	85.4	10936	0.978	12		yes
+GW_late_2_06	FN_GW	GW	late	109.7	10936	0.992	12		yes
+GW_late_2_07	FN_GW	GW	late	78.7	10936	0.977	12		yes
+GW_late_2_08	FN_GW	GW	late	73.4	10936	0.993	12		yes
+GW_late_2_09	S_MD	GW	late	62.7	10887	0.994	12		yes
+GW_late_2_10	FN_GW	GW	late	92.7	10936	0.999	13		yes
+GW_peak_1_01	FN_GW	GW	peak	67.6	10936	0.977	11		yes
+GW_peak_1_02	FN_GW	GW	peak	62.6	10936	0.996	12		yes
+GW_peak_1_03	FN_GW	GW	peak	84.1	10936	0.981	12		yes
+GW_peak_1_04	FN_GW	GW	peak	55.3	10936	0.986	11		yes
+GW_peak_1_05	FN_GW	GW	peak	118.3	10936	1.000	13		yes
+GW_peak_1_06	FN_GW	GW	peak	40.6	10936	0.977	12		yes
+GW_peak_1_07	FN_GW	GW	peak	27.2	10936	0.963	10		yes
+GW_peak_1_08	FN_GW	GW	peak	137.8	10936	1.000	13		yes
+GW_peak_1_09	FN_GW	GW	peak	72.0	10936	0.993	12		yes
+GW_peak_1_10	FN_GW	GW	peak	40.2	10936	0.975	11		yes
+GW_peak_2_01	FN_GW	GW	peak	46.9	10936	0.977	12		yes
+GW_peak_2_02	FN_GW	GW	peak	119.2	10936	1.000	13		yes
+GW_peak_2_03	FN_GW	GW	peak	42.1	10936	0.970	12		yes
+GW_peak_2_04	FN_GW	GW	peak	126.9	10936	0.995	12		yes
+GW_peak_2_05	FN_GW	GW	peak	123.3	10936	1.000	13		yes
+GW_peak_2_06	FN_GW	GW	peak	98.3	10936	0.990	12		yes
+GW_peak_2_07	FN_GW	GW	peak	126.9	10936	0.996	12		yes
+GW_peak_2_08	FN_GW	GW	peak	123.7	10936	0.993	12		yes
+GW_peak_2_09	FN_GW	GW	peak	130.5	10936	0.994	12		yes
+GW_peak_2_10	FN_GW	GW	peak	133.8	10936	0.991	12		yes
+MD_early_1_01	FN_GW	MD	early	70.3	10936	0.988	12		yes
+MD_early_1_02	S_MD	MD	early	69.1	10887	0.998	13		yes
+MD_early_1_03	S_MD	MD	early	50.0	10887	0.991	12		yes
+MD_early_1_04	FN_GW	MD	early	89.3	10936	0.978	11		yes
+MD_early_1_05	FN_GW	MD	early	112.1	10936	0.982	12		yes
+MD_early_1_06	FN_GW	MD	early	78.6	10936	0.979	12		yes
+MD_early_1_07	FN_GW	MD	early	63.6	10936	0.973	11		yes
+MD_early_1_08	FN_GW	MD	early	68.7	10936	0.979	12		yes
+MD_early_1_09	S_MD	MD	early	60.1	10887	0.990	11		yes
+MD_early_1_10	FN_GW	MD	early	27.8	10936	0.949	9		yes
+MD_early_2_01	FN_GW	MD	early	69.1	10936	0.977	12		yes
+MD_early_2_02	FN_GW	MD	early	34.1	10936	0.960	9		yes
+MD_early_2_03	FN_GW	MD	early	63.6	10936	0.977	12		yes
+MD_early_2_04	FN_GW	MD	early	57.9	10936	0.978	12		yes
+MD_early_2_05	FN_GW	MD	early	85.2	10936	0.994	12		yes
+MD_early_2_06	FN_GW	MD	early	92.4	10936	0.987	12		yes
+MD_early_2_07	FN_GW	MD	early	68.6	10936	0.975	11		yes
+MD_early_2_08	FN_GW	MD	early	61.9	10936	0.972	10		yes
+MD_early_2_09	FN_GW	MD	early	95.2	10936	0.983	12		yes
+MD_early_2_10	FN_GW	MD	early	135.8	10936	0.996	12		yes
+MD_late_1_01	S_MD	MD	late	156.9	10887	1.000	13		yes
+MD_late_1_02	S_MD	MD	late	112.2	10887	0.998	13		yes
+MD_late_1_03	FN_GW	MD	late	83.8	10936	0.984	11		yes
+MD_late_1_04	S_MD	MD	late	100.1	10887	1.000	13		yes
+MD_late_1_05	S_MD	MD	late	94.0	10887	1.000	13		yes
+MD_late_1_06	S_MD	MD	late	91.5	10887	0.999	13		yes
+MD_late_1_07	S_MD	MD	late	97.9	10887	0.997	12		yes
+MD_late_1_08	S_MD	MD	late	230.5	10887	0.993	12		yes
+MD_late_1_09	S_MD	MD	late	278.3	10887	1.000	13		yes
+MD_late_1_10	FN_GW	MD	late	64.5	10936	0.973	11		yes
+MD_late_2_01	S_MD	MD	late	174.4	10887	1.000	13		yes
+MD_late_2_02	FN_GW	MD	late	132.9	10936	0.994	12		yes
+MD_late_2_03	S_MD	MD	late	170.5	10887	0.998	13		yes
+MD_late_2_04	FN_GW	MD	late	75.7	10936	0.978	12		yes
+MD_late_2_05	S_MD	MD	late	215.9	10887	1.000	13		yes
+MD_late_2_06	FN_GW	MD	late	75.5	10936	0.985	12		yes
+MD_late_2_07	S_MD	MD	late	165.3	10887	1.000	13		yes
+MD_late_2_08	FN_GW	MD	late	52.2	10936	0.962	10		yes
+MD_late_2_09	FN_GW	MD	late	42.5	10936	0.968	10		yes
+MD_late_2_10	FN_GW	MD	late	107.5	10936	0.987	12		yes
+MD_peak_1_01	S_MD	MD	peak	68.8	10887	1.000	13		yes
+MD_peak_1_02	S_MD	MD	peak	39.7	10887	0.990	12		yes
+MD_peak_1_03	S_MD	MD	peak	71.5	10887	1.000	13		yes
+MD_peak_1_04	S_MD	MD	peak	139.4	10887	1.000	13		yes
+MD_peak_1_05	S_MD	MD	peak	47.0	10887	0.985	10		yes
+MD_peak_1_06	S_MD	MD	peak	60.0	10887	0.992	12		yes
+MD_peak_1_07	S_MD	MD	peak	84.0	10887	0.995	13		yes
+MD_peak_1_08	S_MD	MD	peak	119.2	10887	1.000	13		yes
+MD_peak_1_09	S_MD	MD	peak	117.2	10887	0.991	12		yes
+MD_peak_1_10	S_MD	MD	peak	204.8	10887	1.000	13		yes
+MD_peak_2_01	S_MD	MD	peak	51.9	10887	0.993	13		yes
+MD_peak_2_02	S_MD	MD	peak	90.1	10887	0.998	13		yes
+MD_peak_2_03	S_MD	MD	peak	212.1	10887	1.000	13		yes
+MD_peak_2_04	S_MD	MD	peak	105.3	10887	0.993	11		yes
+MD_peak_2_05	S_MD	MD	peak	220.1	10887	1.000	13		yes
+MD_peak_2_06	S_MD	MD	peak	214.9	10887	1.000	13		yes
+MD_peak_2_07	S_MD	MD	peak	150.2	10887	1.000	13		yes
+MD_peak_2_08	S_MD	MD	peak	57.1	10887	0.992	11		yes
+MD_peak_2_09	S_MD	MD	peak	181.2	10887	1.000	13		yes
+MD_peak_2_10	S_MD	MD	peak	100.0	10887	0.997	12		yes
+ME_early_1_01	X_RW	ME	early	9.3	10425	0.654	2	atp6	no
+ME_early_1_02	X_RW	ME	early	48.9	10425	0.961	8	atp6	yes
+ME_early_1_03	X_RW	ME	early	124.9	10425	0.998	12	atp6	yes
+ME_early_1_04	IV_TK	ME	early	124.4	10761	1.000	13	atp6	yes
+ME_early_1_05	X_RW	ME	early	90.1	10425	0.976	11	atp6	yes
+ME_early_1_06	X_RW	ME	early	71.4	10425	0.967	10	atp6	yes
+ME_early_1_07	X_RW	ME	early	61.3	10425	0.970	9	atp6	yes
+ME_early_1_08	IV_TK	ME	early	83.9	10761	1.000	13	atp6	yes
+ME_early_2_08	X_RW	ME	early	82.2	10425	0.995	12	atp6	yes
+ME_early_2_1	X_RW	ME	early	50.8	10425	0.965	10	atp6	yes
+ME_early_2_10	S_MD	ME	early	195.7	10887	1.000	13		yes
+ME_early_2_3	X_RW	ME	early	10.8	10425	0.756	4	atp6	no
+ME_early_2_5	X_RW	ME	early	32.1	10425	0.934	8	atp6	yes
+ME_late_1_01	IV_TK	ME	late	54.3	10761	1.000	13	atp6	yes
+ME_late_2_01	IV_TK	ME	late	114.8	10761	1.000	13	atp6	yes
+ME_late_2_02	X_RW	ME	late	28.1	10425	0.882	7	atp6	yes
+ME_late_2_03	IV_TK	ME	late	20.9	10761	0.908	8	atp6	yes
+ME_late_2_04	IV_TK	ME	late	128.2	10761	1.000	13	atp6	yes
+ME_late_2_05	X_RW	ME	late	74.5	10425	0.987	9	atp6	yes
+ME_late_2_06	IV_TK	ME	late	36.2	10761	0.981	11	atp6	yes
+ME_late_2_07	X_RW	ME	late	66.4	10425	0.980	10	atp6	yes
+ME_peak_1_01	X_RW	ME	peak	15.6	10425	0.830	3	atp6	yes
+ME_peak_1_02	X_RW	ME	peak	35.5	10425	0.909	6	atp6	yes
+ME_peak_1_03	X_RW	ME	peak	47.6	10425	0.937	8	atp6	yes
+ME_peak_1_05	X_RW	ME	peak	62.0	10425	0.970	10	atp6	yes
+ME_peak_1_06	X_RW	ME	peak	38.0	10425	0.949	9	atp6	yes
+ME_peak_1_07	X_RW	ME	peak	79.4	10425	0.977	10	atp6	yes
+ME_peak_1_08	X_RW	ME	peak	39.5	10425	0.971	10	atp6	yes
+ME_peak_1_09	IV_TK	ME	peak	91.1	10761	1.000	13	atp6	yes
+ME_peak_1_10	X_RW	ME	peak	53.2	10425	0.945	8	atp6	yes
+ME_peak_2_01	X_RW	ME	peak	109.6	10425	0.998	12	atp6	yes
+ME_peak_2_02	X_RW	ME	peak	89.1	10425	0.984	10	atp6	yes
+ME_peak_2_03	X_RW	ME	peak	50.4	10425	0.940	8	atp6	yes
+ME_peak_2_04	X_RW	ME	peak	134.9	10425	0.993	10	atp6	yes
+ME_peak_2_05	X_RW	ME	peak	59.1	10425	0.963	9	atp6	yes
+ME_peak_2_06	X_RW	ME	peak	108.5	10425	0.980	9	atp6	yes
+ME_peak_2_07	X_RW	ME	peak	77.8	10425	0.988	10	atp6	yes
+ME_peak_2_09	X_RW	ME	peak	23.1	10425	0.878	7	atp6	yes
+MR_late_1_01	FMR_MR	MR	late	90.6	10954	0.987	10		yes
+MR_late_1_02	S_MD	MR	late	149.1	10887	0.997	12		yes
+MR_late_1_03	S_MD	MR	late	71.2	10887	0.994	12		yes
+MR_late_1_04	S_MD	MR	late	118.0	10887	0.995	12		yes
+MR_late_1_05	FMR_MR	MR	late	123.4	10954	0.975	11		yes
+MR_late_1_06	FMR_MR	MR	late	111.9	10954	0.991	11		yes
+MR_late_1_07	S_MD	MR	late	146.2	10887	0.996	12		yes
+MR_late_1_08	FMR_MR	MR	late	94.3	10954	0.974	10		yes
+MR_late_1_09	S_MD	MR	late	164.3	10887	0.997	12		yes
+MR_late_1_10	FMR_MR	MR	late	88.9	10954	0.973	11		yes
+MR_late_2_01	S_MD	MR	late	166.9	10887	0.997	12		yes
+MR_late_2_02	S_MD	MR	late	169.6	10887	1.000	13		yes
+MR_late_2_03	S_MD	MR	late	163.6	10887	1.000	13		yes
+MR_late_2_04	FMR_MR	MR	late	110.9	10954	0.991	11		yes
+MR_late_2_05	FMR_MR	MR	late	100.3	10954	0.991	12		yes
+MR_late_2_06	FMR_MR	MR	late	139.5	10954	0.979	11		yes
+MR_late_2_07	FMR_MR	MR	late	122.2	10954	0.984	10		yes
+MR_late_2_08	FMR_MR	MR	late	86.0	10954	0.968	10		yes
+MR_late_2_09	FMR_MR	MR	late	50.6	10954	0.950	10		yes
+MR_late_2_10	FMR_MR	MR	late	61.2	10954	0.960	10		yes
+MR_peak_1_01	FMR_MR	MR	peak	56.6	10954	0.963	9		yes
+MR_peak_1_02	FMR_MR	MR	peak	77.9	10954	0.985	12		yes
+MR_peak_1_03	FMR_MR	MR	peak	74.9	10954	0.968	10		yes
+MR_peak_1_04	FMR_MR	MR	peak	26.3	10954	0.907	8		yes
+MR_peak_1_06	FMR_MR	MR	peak	141.3	10954	1.000	13		yes
+MR_peak_1_07	FMR_MR	MR	peak	51.4	10954	0.968	10		yes
+MR_peak_1_08	FMR_MR	MR	peak	45.7	10954	0.975	10		yes
+MR_peak_1_09	FFH_FH	MR	peak	82.6	10658	0.990	10	cox3	yes
+MR_peak_1_10	FMR_MR	MR	peak	64.4	10954	0.976	10		yes
+MR_peak_2_01	FMR_MR	MR	peak	56.7	10954	0.963	10		yes
+MR_peak_2_02	FMR_MR	MR	peak	33.1	10954	0.957	9		yes
+MR_peak_2_03	FMR_MR	MR	peak	74.4	10954	0.978	10		yes
+MR_peak_2_06	FMR_MR	MR	peak	55.7	10954	0.983	10		yes
+MR_peak_2_07	FMR_MR	MR	peak	50.8	10954	0.957	10		yes
+MR_peak_2_08	FMR_MR	MR	peak	82.4	10954	0.967	10		yes
+MR_peak_2_09	FMR_MR	MR	peak	71.9	10954	0.981	10		yes
+MR_peak_2_10	FMR_MR	MR	peak	155.6	10954	0.994	11		yes
+RW_early_1_01	X_RW	RW	early	59.3	10425	0.993	12	atp6	yes
+RW_early_1_02	X_RW	RW	early	23.8	10425	0.934	7	atp6	yes
+RW_early_1_03	X_RW	RW	early	29.3	10425	0.910	6	atp6	yes
+RW_early_1_04	X_RW	RW	early	51.7	10425	0.979	10	atp6	yes
+RW_early_1_05	X_RW	RW	early	38.1	10425	0.969	9	atp6	yes
+RW_early_1_06	X_RW	RW	early	28.6	10425	0.911	7	atp6	yes
+RW_early_1_07	X_RW	RW	early	32.1	10425	0.939	8	atp6	yes
+RW_early_1_08	X_RW	RW	early	58.2	10425	0.983	11	atp6	yes
+RW_early_1_09	X_RW	RW	early	34.5	10425	0.947	8	atp6	yes
+RW_early_1_10	X_RW	RW	early	21.1	10425	0.875	6	atp6	yes
+RW_early_2_02	X_RW	RW	early	48.4	10425	0.956	9	atp6	yes
+RW_early_2_04	X_RW	RW	early	34.2	10425	0.949	9	atp6	yes
+RW_early_2_06	X_RW	RW	early	15.8	10425	0.859	5	atp6	yes
+RW_early_2_07	X_RW	RW	early	32.4	10425	0.938	8	atp6	yes
+RW_early_2_08	X_RW	RW	early	51.8	10425	0.969	9	atp6	yes
+RW_early_2_10	X_RW	RW	early	52.7	10425	0.974	9	atp6	yes
+RW_late_1_01	X_RW	RW	late	29.2	10425	0.933	8	atp6	yes
+RW_late_1_02	X_RW	RW	late	30.1	10425	0.938	8	atp6	yes
+RW_late_1_03	IV_TK	RW	late	60.5	10761	1.000	13	atp6	yes
+RW_late_1_04	IV_TK	RW	late	77.7	10761	1.000	13	atp6	yes
+RW_late_1_05	X_RW	RW	late	44.6	10425	0.960	11	atp6	yes
+RW_late_1_06	IV_TK	RW	late	87.3	10761	1.000	13	atp6	yes
+RW_late_1_07	X_RW	RW	late	26.5	10425	0.863	6	atp6	yes
+RW_late_1_08	X_RW	RW	late	39.7	10425	0.941	9	atp6	yes
+RW_late_1_09	X_RW	RW	late	27.7	10425	0.933	8	atp6	yes
+RW_late_1_10	X_RW	RW	late	36.8	10425	0.930	7	atp6	yes
+RW_late_2_01	X_RW	RW	late	36.5	10425	0.946	9	atp6	yes
+RW_late_2_02	X_RW	RW	late	45.3	10425	0.956	9	atp6	yes
+RW_late_2_03	IV_TK	RW	late	162.9	10761	1.000	13	atp6	yes
+RW_late_2_04	X_RW	RW	late	47.7	10425	0.964	9	atp6	yes
+RW_late_2_05	X_RW	RW	late	79.2	10425	0.994	11	atp6	yes
+RW_late_2_06	X_RW	RW	late	41.7	10425	0.958	9	atp6	yes
+RW_late_2_07	X_RW	RW	late	73.7	10425	0.970	11	atp6	yes
+RW_late_2_09	X_RW	RW	late	33.8	10425	0.948	8	atp6	yes
+RW_late_2_10	X_RW	RW	late	67.5	10425	0.968	11	atp6	yes
+RW_peak_1_01	X_RW	RW	peak	19.6	10425	0.850	7	atp6	yes
+RW_peak_1_02	X_RW	RW	peak	15.6	10425	0.817	5	atp6	yes
+RW_peak_1_03	X_RW	RW	peak	12.4	10425	0.725	2	atp6	no
+RW_peak_1_04	X_RW	RW	peak	28.9	10425	0.909	8	atp6	yes
+RW_peak_1_05	X_RW	RW	peak	27.8	10425	0.914	6	atp6	yes
+RW_peak_1_06	X_RW	RW	peak	17.4	10425	0.835	5	atp6	yes
+RW_peak_1_07	X_RW	RW	peak	25.0	10425	0.927	8	atp6	yes
+RW_peak_1_08	X_RW	RW	peak	28.3	10425	0.961	10	atp6	yes
+RW_peak_1_09	X_RW	RW	peak	17.5	10425	0.832	5	atp6	yes
+RW_peak_1_10	X_RW	RW	peak	63.6	10425	0.960	9	atp6	yes
+RW_peak_2_01	X_RW	RW	peak	76.8	10425	0.985	11	atp6	yes
+RW_peak_2_02	X_RW	RW	peak	37.1	10425	0.928	8	atp6	yes
+RW_peak_2_03	X_RW	RW	peak	42.6	10425	0.943	8	atp6	yes
+RW_peak_2_04	X_RW	RW	peak	31.5	10425	0.908	8	atp6	yes
+RW_peak_2_05	X_RW	RW	peak	30.5	10425	0.924	8	atp6	yes
+RW_peak_2_06	X_RW	RW	peak	19.4	10425	0.799	4	atp6	no
+RW_peak_2_08	X_RW	RW	peak	45.9	10425	0.983	11	atp6	yes
+RW_peak_2_10	IV_TK	RW	peak	12.0	10761	0.774	4	atp6	no
+TK_early_1_01	X_RW	TK	early	38.7	10425	0.966	8	atp6	yes
+TK_early_1_02	IV_TK	TK	early	28.8	10761	0.995	12	atp6	yes
+TK_early_1_03	X_RW	TK	early	113.1	10425	0.997	12	atp6	yes
+TK_early_1_04	X_RW	TK	early	143.9	10425	0.997	12	atp6	yes
+TK_early_1_05	X_RW	TK	early	91.2	10425	0.994	11	atp6	yes
+TK_early_1_06	X_RW	TK	early	47.8	10425	0.983	11	atp6	yes
+TK_early_1_07	X_RW	TK	early	71.2	10425	0.985	10	atp6	yes
+TK_early_1_08	X_RW	TK	early	42.6	10425	0.967	9	atp6	yes
+TK_early_1_09	IV_TK	TK	early	22.5	10761	0.937	8	atp6	yes
+TK_early_2_01	X_RW	TK	early	16.7	10425	0.860	6	atp6	yes
+TK_early_2_03	X_RW	TK	early	17.9	10425	0.865	3	atp6	yes
+TK_early_2_05	X_RW	TK	early	28.0	10425	0.926	6	atp6	yes
+TK_early_2_07	IV_TK	TK	early	44.4	10761	0.998	13	atp6	yes
+TK_early_2_09	X_RW	TK	early	36.3	10425	0.958	8	atp6	yes
+TK_early_2_10	X_RW	TK	early	38.1	10425	0.935	7	atp6	yes
+TK_late_1_01	IV_TK	TK	late	36.3	10761	0.994	12	atp6	yes
+TK_late_1_02	IV_TK	TK	late	22.9	10761	0.959	9	atp6	yes
+TK_late_1_03	IV_TK	TK	late	30.6	10761	0.996	13	atp6	yes
+TK_late_1_04	IV_TK	TK	late	15.3	10761	0.882	5	atp6	yes
+TK_late_1_05	IV_TK	TK	late	26.6	10761	0.964	8	atp6	yes
+TK_late_1_06	IV_TK	TK	late	14.0	10761	0.833	6	atp6	yes
+TK_late_1_07	IV_TK	TK	late	14.9	10761	0.855	5	atp6	yes
+TK_late_1_08	IV_TK	TK	late	17.1	10761	0.902	6	atp6	yes
+TK_late_1_09	IV_TK	TK	late	52.6	10761	1.000	13	atp6	yes
+TK_late_1_10	IV_TK	TK	late	134.1	10761	1.000	13	atp6	yes
+TK_late_2_01	IV_TK	TK	late	41.5	10761	0.999	13	atp6	yes
+TK_late_2_02	IV_TK	TK	late	4.8	10761	0.380	0	atp6	no
+TK_late_2_03	IV_TK	TK	late	79.7	10761	1.000	13	atp6	yes
+TK_late_2_04	IV_TK	TK	late	66.1	10761	1.000	13	atp6	yes
+TK_late_2_05	IV_TK	TK	late	59.7	10761	1.000	13	atp6	yes
+TK_late_2_06	IV_TK	TK	late	119.5	10761	1.000	13	atp6	yes
+TK_late_2_07	IV_TK	TK	late	120.0	10761	1.000	13	atp6	yes
+TK_late_2_08	IV_TK	TK	late	32.1	10761	0.996	13	atp6	yes
+TK_late_2_09	IV_TK	TK	late	63.2	10761	1.000	13	atp6	yes
+TK_late_2_10	IV_TK	TK	late	67.2	10761	1.000	13	atp6	yes
+TK_peak_1_01	X_RW	TK	peak	36.4	10425	0.954	8	atp6	yes
+TK_peak_1_02	X_RW	TK	peak	24.9	10425	0.884	8	atp6	yes
+TK_peak_1_03	X_RW	TK	peak	28.6	10425	0.935	9	atp6	yes
+TK_peak_1_04	X_RW	TK	peak	48.8	10425	0.982	11	atp6	yes
+TK_peak_1_05	X_RW	TK	peak	29.1	10425	0.967	9	atp6	yes
+TK_peak_1_06	X_RW	TK	peak	45.4	10425	0.980	11	atp6	yes
+TK_peak_1_07	X_RW	TK	peak	25.4	10425	0.931	8	atp6	yes
+TK_peak_1_08	X_RW	TK	peak	55.0	10425	0.984	11	atp6	yes
+TK_peak_1_09	X_RW	TK	peak	100.3	10425	0.985	11	atp6	yes
+TK_peak_1_10	X_RW	TK	peak	58.2	10425	0.968	9	atp6	yes
+TK_peak_2_01	X_RW	TK	peak	54.0	10425	0.953	10	atp6	yes
+TK_peak_2_02	X_RW	TK	peak	42.9	10425	0.921	7	atp6	yes
+TK_peak_2_03	X_RW	TK	peak	55.4	10425	0.971	9	atp6	yes
+TK_peak_2_04	X_RW	TK	peak	61.7	10425	0.985	10	atp6	yes
+TK_peak_2_05	X_RW	TK	peak	47.1	10425	0.952	8	atp6	yes
+TK_peak_2_06	X_RW	TK	peak	54.0	10425	0.972	10	atp6	yes
+TK_peak_2_07	X_RW	TK	peak	44.1	10425	0.960	10	atp6	yes
+TK_peak_2_09	X_RW	TK	peak	25.8	10425	0.887	6	atp6	yes
+TK_peak_2_10	IV_TK	TK	peak	30.8	10761	0.985	11	atp6	yes

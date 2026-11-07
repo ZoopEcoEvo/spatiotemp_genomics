@@ -1,0 +1,10 @@
+lineage	test	strata	mean_fst	p
+X	seasons within sites	3	0.0384	0.0670
+X	sites within seasons	2	0.1151	0.0010
+S	seasons within sites	1	0.0424	0.1440
+S	sites within seasons	2	0.3665	0.0010
+IV	sites within seasons	1	0.2130	0.0010
+F-N	seasons within sites	2	0.0065	0.2880
+F-N	sites within seasons	2	0.0026	0.3980
+F-FH	seasons within sites	1	-0.0216	0.8080
+F-MR	seasons within sites	1	-0.0551	0.8450

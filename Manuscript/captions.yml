@@ -1,0 +1,281 @@
+# Figure and table captions for Sasaki_Pespeni_LCWG.qmd and ms_figures.qmd, keyed by the
+# manuscript's chunk labels. Both documents read this file: edit captions here only.
+
+tbl-sites: >-
+  Locations of the collection sites.
+
+fig-1: >-
+  Collection sites and thermal limits. (A) Collection sites. (B) Water temperature at each
+  collection. (C) CTmax of individuals (small points) and collection means ± SE (large points,
+  connected within sites) by season. Colours: sites, south (red) to north (blue).
+
+fig-2: >-
+  Genomic structure and clade composition. (A) PCA of all individuals (PCAngsd), coloured by
+  clade. (B) PCAs within each clade; labels mark the median position of each site's individuals
+  (sites with at least three individuals). (C) Clade composition of each collection by site and
+  season.
+
+fig-3: >-
+  Clade differences in thermal tolerance. (A) CTmax against collection temperature (points:
+  individuals; lines and bands: fitted values and 95% CI from the mixed model with clade ×
+  temperature, over each clade's sampled range). (B) Marginal mean CTmax at the mean collection
+  temperature (22 °C; top) and acclimation slope (bottom) for each clade, with 95% CI.
+
+fig-4: >-
+  Thermal tolerance responds more strongly to spatial than to seasonal temperature, within clades
+  and through clade composition. (A) Difference between the spatial and seasonal CTmax slopes (°C
+  CTmax per °C; 95% CI), for all clades together and for each clade. Collection temperature was
+  split into the season's mean across sites (seasonal) and each collection's deviation from that
+  mean (spatial). (B) Seasonal (grey) and spatial (black) CTmax slopes within clades (plasticity),
+  from clade composition alone (turnover), and their sum for the community as a whole (95% CI).
+  (C) Share of CTmax variance explained by clade, spatial and seasonal temperature, other site and
+  collection differences, the assay and individuals, without and with the temperature terms.
+
+fig-5: >-
+  Genomic variation is spatial, and seasonal allele-frequency change does not echo spatial
+  temperature associations. (A) Allele-frequency variance between sites and between seasons within
+  sites, scaled by $\bar{p}(1-\bar{p})$, after removing sampling noise (unlinked SNPs; 95% CI from
+  a chromosome jackknife); each clade on its own scale; IV had no site with enough individuals
+  sampled in two seasons. (B) Seasonal temperature z-score of each SNP, signed by the direction of
+  its spatial temperature association (positive: the allele favoured at warmer sites also rose
+  after warmer periods), for the 1% of SNPs with the strongest spatial association (colour) and
+  all other SNPs (grey), in X and F (unlinked SNPs); values beyond ±4.5 are pooled in the end
+  bins. The z-score is the seasonal temperature slope divided by its standard error, from a
+  binomial GLM with site as a covariate; without a seasonal response it is approximately standard
+  normal. The power of this test is shown in @fig-supp-power C.
+
+fig-6: >-
+  Warming tolerance (CTmax − habitat temperature). (A) Distribution of daily warming tolerance in
+  each region over the sampled season (July–November, MUR SST 2014–2023) with clade-specific CTmax
+  and acclimation; days weighted by the clade make-up of the matching collection. Dark: current
+  conditions; pale: +4 °C uniform warming. (B) Warming tolerance on the warmest August–September
+  day (mean over years) for the least tolerant clade making up at least 10% of the peak
+  collection, under a single fixed CTmax, clade means, and clades with acclimation; 95% intervals.
+
+tbl-scales: >-
+  Variation in thermal tolerance and in the genome at each scale of the study, and what it implies
+  for responses to warming. Values summarise Results 3–6.
+
+tbl-wt-range: >-
+  Spread of warming tolerance among regions under current conditions, and its change relative to a
+  fixed CTmax. The last scenario uses annual instead of peak-season clade make-up.
+
+tbl-supp-turnover: >-
+  Seasonal change in clade composition at each site: Fisher's exact test of clade × season
+  (simulated p, 10⁴ replicates). Sites with a single clade or a single season cannot be tested.
+  Combined test across sites (sum of per-site χ² statistics against 10⁴ permutations of season
+  labels within sites): p < 10⁻⁴.
+
+fig-supp-seq-overview: >-
+  Sequencing overview. (A) Read pairs per library by library-preparation plate (log scale),
+  coloured by clade; grey, failed libraries (< 500,000 reads). Boxes summarise the successful
+  libraries. (B) Percentage of reads mapped to the reference and (C) usable nuclear depth per 10
+  million reads, by clade: the reference genome is closest to clade X, so the other clades yield
+  less usable depth per read. (D) GC content of reads against percentage mapped; libraries with
+  high GC and low mapping carry DNA from other organisms.
+
+fig-supp-temp-components: >-
+  CTmax against the seasonal and spatial components of collection temperature, by clade: the data
+  behind @fig-4 A. (A) Seasonal: the season's mean collection temperature across sites. (B)
+  Spatial: each collection's temperature minus that season mean. Points: collections, mean ± SE of
+  individual CTmax after removing the effect of the other component (partial residuals from the
+  season-mean model); lines and labels: clade-specific slopes from the same model (CTmax ~ clade +
+  clade:seasonal + clade:spatial, with random intercepts for site, collection, assay run and
+  vial).
+
+tbl-supp-slopes: >-
+  Seasonal and spatial CTmax slopes (°C per °C, ± SE) and their difference under two
+  decompositions of collection temperature. Season-mean split (main text): seasonal = the season's
+  mean collection temperature across sites; spatial = a collection's deviation from it. Site-mean
+  split: spatial = the site's mean collection temperature; seasonal = a collection's deviation
+  from it. All models include clade and random intercepts for site, collection, assay replicate
+  and tube.
+
+fig-supp-temp-split: >-
+  Two ways of splitting collection temperature into seasonal and spatial components, shown for the
+  22 collections. In each, a collection's temperature equals a reference temperature (dashed line)
+  plus its two components. (A) Season-mean split, used in the main analysis: the seasonal
+  component is the season's mean collection temperature across the sites sampled in that season
+  (black bars; arrows give its deviation from the mean of the three season means), and the spatial
+  component is each collection's deviation from that season mean (coloured lines). (B) Site-mean
+  split, used as a sensitivity analysis: the spatial component is each site's mean collection
+  temperature (black bars; arrows give its deviation from the mean of the site means), and the
+  seasonal component is each collection's deviation from its site's mean (coloured lines). MR and
+  FH were not sampled early, so their site means average only the peak and late collections.
+  Slopes under both splits are compared in @tbl-supp-slopes.
+
+fig-supp-common-garden: >-
+  Natural common gardens. (A) CTmax of clades collected together at the same place and time
+  (collections with at least two clades of at least three individuals each). Points are
+  individuals; black, mean ± SE. (B) Pairwise clade differences in CTmax (95% CI) estimated within
+  the shared collections (black; lm(CTmax ~ collection + clade)) and from all collections with
+  temperature adjustment (grey); in parentheses, the number of shared collections. Differences
+  that persist within shared collections cannot be explained by acclimation to different
+  conditions.
+
+fig-supp-diversity: >-
+  Genetic diversity and relatedness within populations (clade × site × season). (A) Nucleotide
+  diversity (θπ per site) and (B) Tajima's D, with 95% CI from a block bootstrap over 1 Mb blocks;
+  spectra are folded, so values are compared within clades. (C) KING-robust kinship for every pair
+  of individuals within each population (ngsRelate); dashed lines mark second-degree (0.125) and
+  first-degree (0.25) relatives. No pair reached second-degree kinship. The cluster near −1.1 in
+  MR peak consists of the pairs involving one F-FH individual collected among F-MR copepods.
+
+fig-supp-drift: >-
+  Seasonal allele-frequency change and temporal effective population size. (A) Temporal N~e~ for
+  each pair of seasonal samples from the same site (95% CI from a delete-one-chromosome jackknife;
+  arrows: upper bound unbounded because the change is not distinguishable from sampling noise;
+  open point: change not above sampling noise), by clade, with the F lineage in brackets. Grey
+  bands: long-term N~e~ of the same clade or lineage from nucleotide diversity (π = 4N~e~µ, for µ
+  = 10⁻⁸ to 10⁻⁹ per site per generation). (B) Allele-frequency change between the same pairs of
+  samples (F~c~ minus sampling noise calibrated from split halves; 95% CI) against the number of
+  generations between them. Dashed lines: change expected from drift alone for N~e~ = 100, 500,
+  2,000 and 10,000 (t / 2N~e~). Unlinked SNPs. (C) Split-half calibration: each population was
+  split at random into two halves (two replicates), and F~c~ between the halves, which reflects
+  sampling alone, was compared with the 1/(2n) expected for known genotypes. The ratio c is the
+  effective number of chromosomes per individual divided by two; one point per population; dashed
+  line, c = 1. The calibrated sampling noise used in (A) and (B) is 1/(2cn) per sample.
+
+fig-supp-concordance: >-
+  Sign agreement between seasonal and spatial temperature associations among the 1% of SNPs with
+  the strongest spatial association, in X and F. Dots: the null distribution, one per distinct
+  within-site ordering of the sampling events (temperatures permuted among each site’s
+  collections); black line: observed value; dashed line: 50%, the expectation without concordance.
+  S (one alternative ordering) and IV (no site sampled in more than one season) cannot be tested.
+  Text annotation provides the observed value and the number of orderings at least as far from
+  50%.
+
+tbl-supp-ne: >-
+  Long-term effective size from nucleotide diversity (π = 4Neµ; µ = 10⁻⁸ to 10⁻⁹ per site per
+  generation) against the temporal (within-season) Ne estimated from calibrated F~c~.
+
+fig-supp-ctmax-variance: >-
+  Spread of CTmax within clades through the season. (A) Standard deviation of CTmax in each
+  collection, for each clade at each site sampled in two or more seasons (collections with at
+  least five individuals of the clade); lines join the same clade and site, point size shows the
+  number of individuals. (B) Change in the mean absolute deviation of CTmax from the collection
+  median relative to the early season (Brown–Forsythe; mixed model with clade × site as a random
+  intercept), with 95% CI. Strong selection removing intolerant individuals would narrow the
+  spread (negative values).
+
+fig-supp-infection: >-
+  Parasites and epibionts. (A) Share of individuals carrying each group in each collection (dot
+  size; labels, positives/individuals sequenced; open circles, none detected; –, not sampled),
+  from small-subunit rRNA reads that did not map to the *A. tonsa* reference (present at ≥ 5 read
+  pairs and ≥ 2 per million library pairs). (B) CTmax and body size of carriers and non-carriers
+  within the same collections (collections with at least two of each); points are individuals,
+  bars are means. Effects within collections are given in @tbl-supp-infection.
+
+tbl-supp-infection: >-
+  Effect of carrying a parasite or epibiont on CTmax and body size within collections (trait ~
+  status + clade + (1 | collection)).
+
+tbl-supp-mito-genes: >-
+  Mitochondrial genes recovered from the pooled mitogenomes: nucleotide identity (%) of each
+  pool's gene to the closed S mitogenome. Partial genes show the share of the S gene's length
+  recovered (*); – not recovered. rRNA fragments shorter than half the S gene count as partial.
+
+tbl-supp-mito-unique: >-
+  Clade-unique mitochondrial amino acids: percentage of aligned positions in each protein where
+  one clade differs from a residue shared by the other three (F requires all three F lineages to
+  agree). Positions are those aligned in all four clades.
+
+tbl-supp-mito-pnps: >-
+  Mitochondrial polymorphism within lineages: nonsynonymous (Pn) and synonymous (Ps) polymorphic
+  sites summed over the protein-coding genes, and pN/pS (per Nei–Gojobori site). Genes with fewer
+  than 80% of bases called in a lineage are left out.
+
+tbl-supp-mito-mk: >-
+  McDonald–Kreitman tests between clades over the protein-coding genes: polymorphic sites within
+  either clade (Pn, Ps) and fixed differences between them (Dn, Ds), neutrality index NI =
+  (Pn/Ps)/(Dn/Ds) and Fisher's exact test. NI below 1 indicates an excess of amino-acid
+  polymorphism relative to fixed amino-acid differences.
+
+tbl-supp-expevol: >-
+  SNP-level signals in genes that responded to selection in experimental evolution [REF] against
+  random sets of the same number of other genes (one-sided p for a larger value in the
+  candidates). Statistics are the mean squared z (or t) over SNPs in the genes, or the share of
+  SNPs whose seasonal and spatial slopes have the same sign.
+
+tbl-supp-candidate-aa: >-
+  Clade-specific amino-acid substitutions (N, nonsynonymous; S, synonymous) in the
+  experimental-evolution genes and in heat-shock and nuclear OXPHOS genes (selected by product
+  name), against random background gene sets of the same size (two-sided permutation p). Genes
+  with at least 50 codons called in at least three clades.
+
+tbl-supp-function: >-
+  Nonsynonymous fraction N/(N + S) on each clade's branch for selected GO terms and KEGG pathways,
+  with q values in parentheses, against genes annotated in the same ontology (bottom row). The
+  full results are in the report (function_enrichment.csv).
+
+fig-supp-power: >-
+  Genome-wide seasonal test and its power. (A) Number of SNPs below p < 0.01 and p < 0.001 in the
+  per-SNP seasonal GLM (count ~ site + x; x = time in season or temperature before collection)
+  with the observed sampling order (diamonds), against every within-site reordering of the
+  sampling events (grey); unlinked SNPs, X and F. (B) Power of the seasonal GLM (more SNPs at p <
+  0.001 than every reordering) and of temporal F~c~ (added excess above the observed excess + 1.96
+  SE) when selection was injected into the observed allele frequencies: a fraction of SNPs (rows)
+  shifted in logit frequency between each site’s first and last sample, expressed as percentage
+  points from 50% (columns); ten replicates per cell. (C) Detection of space-for-time concordance
+  when the most temperature-associated SNPs (rows) respond to seasonal temperature at a fraction λ
+  of their spatial slope (columns). Cells: the statistic that ranked above every reordering (conc:
+  sign agreement in the top 1%; r: correlation of z-scores) and the implied seasonal change.
+
+fig-supp-gwas: >-
+  Within-lineage CTmax association scan. (A) Number of SNPs with p below each threshold in the
+  per-SNP regression CTmax ~ collection + log(sequencing depth) + dosage: observed (black), mean
+  of 100 replicates with CTmax shuffled within collections (grey), and the uniform expectation
+  (dashed). (B) Power to detect a causal SNP at the genome-wide 5% threshold (from the shuffles),
+  simulated on each lineage’s own data: true genotypes drawn from each individual’s genotype
+  posterior and an effect of 0.25–3 °C per allele (minor-allele frequency 0.3–0.5) added to
+  within-collection-shuffled CTmax; dashed line, 80% power. Lineages with ≥ 30 phenotyped and
+  sequenced individuals (X 104, F-N 78, S 54, F-FH 38, IV 36).
+
+fig-supp-ramp: >-
+  Heating rate during the CTmax assays. Mean rate of temperature increase for each assay run and
+  minute since the heating element was switched on (hexagons: number of run × minute values).
+  Dashed lines: 0.3 and 0.1 °C per minute; rates started near 0.3 °C per minute and slowed to
+  about 0.1 °C per minute as the bath approached CTmax.
+
+fig-supp-size: >-
+  Body size (prosome length) of the individuals in the phenotype analysis set, by clade. Dashed
+  lines: clade medians. The two size classes in S reflect site: S from Connecticut (n = 21,
+  median 1.04 mm) were larger than S from the Chesapeake and Florida (n = 50, median 0.76 mm).
+
+fig-supp-clade-habitat: >-
+  Share of each clade in a collection against the collection temperature. Points: collections
+  (site × season; individuals as in @fig-2 C), including collections where the clade was absent
+  (0%); lines: loess smoother (span = 2) with 95% band. F is most common in warm collections, IV
+  in cold ones and X at intermediate temperatures; S is rare in most collections.
+
+fig-supp-clade-structure: >-
+  Genome-wide structure of all individuals. (A) PC3 against PC4 of the PCAngsd covariance (PC1–PC2
+  in @fig-2 A), coloured by lineage: PC4 separates the F lineages. (B) NGSadmix ancestry
+  proportions for K = 3–6 (best of three runs per K), individuals grouped by lineage and site;
+  clusters are coloured by the clade they mostly represent, with clusters within F in shades of
+  the F colour. Own-clade ancestry was ≥ 0.96 in 400 of 402 individuals; the two exceptions,
+  libraries containing DNA of two clades, are omitted.
+
+fig-supp-trees: >-
+  Relationships among clades and the lineages within F. (A) Mitochondrial (COI, maximum
+  likelihood, rooted on *A. hudsonica*) and (B) nuclear (genome-wide net distances,
+  neighbour-joining, midpoint-rooted) trees; numbers are bootstrap support. Both trees separate
+  {S, IV} from {X, F}, place X as sister to F, and order the four F lineages identically (F-MR,
+  F-FH, then F-N with F-NE).
+
+fig-supp-mitogenome: >-
+  Pooled mitogenomes of the four clades and the F lineages. (A) Assembled pieces of each pool
+  (shaded boxes), trimmed to the stretch carrying genes, with the 13 protein-coding genes and two
+  rRNAs (arrows point 5' to 3'; faded and * = partial). Each box is one assembled contig, except
+  the F-N main piece (dashed), a scaffold of contigs joined by read pairs. Only gene order within
+  a contig box is supported by the assembly. Boxes are oriented and ordered to match the closed S
+  mitogenome, shown opened at rrnL, and the order and spacing between boxes are not resolved. (B)
+  Amino-acid differences between clades in each protein (cells: number of differing positions;
+  fill: percentage of aligned positions), and substitutions unique to IV (bars). Positions where
+  the three F lineages differ are excluded from comparisons with F.
+
+fig-supp-mitohap: >-
+  Individual mitogenomes (385 individuals, 13 protein-coding genes). (A) Nucleotide diversity per
+  collection with at least five individuals, by lineage. (B) Mito against nuclear FST for the same
+  pairs of collections within lineages; dashed line, equal values. (C) Share of X individuals
+  carrying the mitogenome group that makes up all of RW late, by site and season.

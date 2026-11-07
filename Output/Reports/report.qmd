@@ -1399,6 +1399,10 @@ by_site <- split(comp, comp$site_code, drop = TRUE)
 perm_chi <- replicate(1e4, sum(map_dbl(by_site, ~ chi_stat(.x$lineage, sample(.x$season)))))
 turn_p <- (sum(perm_chi >= obs_chi) + 1) / (length(perm_chi) + 1)
 
+# kept for the null-expectations explainer (turn_p is reused later for the composition slopes)
+turn_null <- list(obs = obs_chi, perm = perm_chi, p = turn_p,
+                  sites = turn_site %>% transmute(site = as.character(site_code), seasons, lineages, individuals, p))
+
 turn_comp_p <- turn_p   # combined permutation p for composition change; turn_p is reused later for the slopes
 write_csv(turn_site %>% rename(clades = lineages) %>% mutate(combined_p = turn_comp_p),
           here("Output", "Output_data", "turnover_sites.csv"))
@@ -2815,12 +2819,16 @@ gd_perm <- map(set_names(unique(gd_sites$clade)), function(cl) {
   map(permn(seq_along(s)), ~ setNames(v[.x], s))
 })
 gd_grid <- expand.grid(map(gd_perm, seq_along))
+
+gd_nulls <- list()
+
 gd_test <- function(xvar, keep, label) {
   obs <- cor(gd_pairs$d_ct[keep], gd_pairs[[xvar]][keep], method = "spearman")
   null <- apply(gd_grid, 1, function(g) {
     d <- map_dbl(seq_len(nrow(gd_pairs)), function(i) {
       v <- gd_perm[[gd_pairs$clade[i]]][[g[[gd_pairs$clade[i]]]]]; abs(v[[gd_pairs$a[i]]] - v[[gd_pairs$b[i]]]) })
     cor(d[keep], gd_pairs[[xvar]][keep], method = "spearman") })
+  gd_nulls[[label]] <<- list(obs = obs, null = null, p = mean(null >= obs - 1e-12), pairs = sum(keep))
   tibble(Predictor = label, `Site pairs` = sum(keep), rho = round(obs, 2), `p (one-sided, ρ > 0)` = round(mean(null >= obs - 1e-12), 2),
          Permutations = length(null))
 }
@@ -2829,7 +2837,10 @@ gd_res <- bind_rows(
   gd_test("fst_lin", gd_pairs$clade != "F", "FST/(1 − FST), without F"),
   gd_test("d_T", rep(TRUE, nrow(gd_pairs)), "Difference in mean collection temperature"),
   gd_test("dist_km", rep(TRUE, nrow(gd_pairs)), "Distance (km)"))
+
 write_csv(gd_pairs, here("Output", "Output_data", "gendist_ctmax_pairs.csv"))
+gd_null <- list(tests = gd_nulls, pairs = gd_pairs %>% select(clade, a, b, fst_lin, d_ct, d_T, dist_km))
+
 knitr::kable(gd_res, caption = "Association between the difference in acclimation-adjusted CTmax of two sites (same clade) and their genetic differentiation, temperature difference or distance.")
 ```
 
@@ -4165,8 +4176,9 @@ ms_objects <- c("turn_tab", "turn_diff", "coi_red", "nuc_tr", "lin_col", "conc",
                 "filtered_data", "pca_all", "ve", "wpca", "region_cols", "region_order",
                 "scen_levels", "temporal", "vp_cols", "vp_freq", "vp_tab", "wb_diff", 
                 "wt_days", "wt_res", "have_mur", "c_pop", "glm_perm", "pw_long", 
-                "conc_pw", "gwas_qq", "gw_pw", "seq_plot", "admix", "fill_map", 
-                "cg_plot", "cg_tab", "sm_pts", "sm_lines")
+                "conc_pw", "gwas_qq", "gw_pw", "seq_plot",
+                "admix", "cg_plot", "cg_tab", "fill_map", "sm_pts", "sm_lines",
+                "turn_null", "gd_null")
 
 missing <- setdiff(ms_objects, ls())
 if (length(missing)) warning("Not created in this render: ", paste(missing, collapse = ", "))

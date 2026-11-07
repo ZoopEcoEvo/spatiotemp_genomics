@@ -1,0 +1,54 @@
+lineage	pop1	pop2	n1	n2	type	fst_mito	p	fst_nuc
+X	CT__early	ME__early	7	8	site	0.1347	0.0190	
+X	CT__early	ME__peak	7	16	both	0.1304	0.0060	
+X	CT__early	RW__early	7	16	site	0.1334	0.0170	
+X	CT__early	RW__late	7	15	both	0.4666	0.0010	
+X	CT__early	RW__peak	7	15	both	0.2497	0.0020	
+X	CT__early	TK__early	7	12	site	0.0700	0.0690	
+X	CT__early	TK__peak	7	18	both	0.0937	0.0260	
+X	ME__early	ME__peak	8	16	season	-0.0426	0.8470	0.026165
+X	ME__early	RW__early	8	16	site	0.1133	0.0370	0.053005
+X	ME__early	RW__late	8	15	both	0.5181	0.0010	0.063805
+X	ME__early	RW__peak	8	15	both	0.2193	0.0030	0.060585
+X	ME__early	TK__early	8	12	site	0.1067	0.0300	0.062663
+X	ME__early	TK__peak	8	18	both	0.1554	0.0050	0.057776
+X	ME__peak	RW__early	16	16	both	0.0980	0.0110	0.054249
+X	ME__peak	RW__late	16	15	both	0.4601	0.0010	0.064973
+X	ME__peak	RW__peak	16	15	site	0.1858	0.0010	0.062157
+X	ME__peak	TK__early	16	12	both	0.0846	0.0190	0.064055
+X	ME__peak	TK__peak	16	18	site	0.1391	0.0020	0.059801
+X	RW__early	RW__late	16	15	season	0.1893	0.0060	0.020039
+X	RW__early	RW__peak	16	15	season	0.0306	0.1840	0.019054
+X	RW__early	TK__early	16	12	site	-0.0326	0.6870	0.026296
+X	RW__early	TK__peak	16	18	both	0.0267	0.2060	0.021896
+X	RW__late	RW__peak	15	15	season	0.0602	0.0540	0.019731
+X	RW__late	TK__early	15	12	both	0.2910	0.0010	0.029467
+X	RW__late	TK__peak	15	18	both	0.3652	0.0010	0.024171
+X	RW__peak	TK__early	15	12	both	0.0987	0.0340	0.027514
+X	RW__peak	TK__peak	15	18	site	0.1854	0.0010	0.023024
+X	TK__early	TK__peak	12	18	season	-0.0455	0.9410	0.022449
+S	CT__peak	GW__late	15	6	both	0.0530	0.1880	
+S	CT__peak	MD__late	15	12	both	0.1465	0.0120	0.034390
+S	CT__peak	MD__peak	15	20	site	0.1167	0.0520	0.027992
+S	CT__peak	MR__late	15	8	both	0.6698	0.0010	0.043137
+S	GW__late	MD__late	6	12	site	0.0075	0.4560	
+S	GW__late	MD__peak	6	20	both	-0.0747	0.8480	
+S	GW__late	MR__late	6	8	site	0.6959	0.0010	
+S	MD__late	MD__peak	12	20	season	0.0424	0.1430	0.018313
+S	MD__late	MR__late	12	8	site	0.6459	0.0010	0.050490
+S	MD__peak	MR__late	20	8	both	0.7070	0.0010	0.044004
+IV	CT__late	ME__late	17	5	site	0.2751	0.0060	
+IV	CT__late	TK__late	17	19	site	0.1080	0.0050	0.042211
+IV	ME__late	TK__late	5	19	site	0.2558	0.0070	
+F-N	GW__early	GW__late	19	14	season	0.0013	0.5140	0.015685
+F-N	GW__early	GW__peak	19	20	season	-0.0037	0.5030	0.013099
+F-N	GW__early	MD__early	19	17	site	-0.0228	0.6270	0.023667
+F-N	GW__early	MD__late	19	8	both	0.0925	0.0050	0.035449
+F-N	GW__late	GW__peak	14	20	season	-0.0313	0.8810	0.014316
+F-N	GW__late	MD__early	14	17	both	-0.0285	0.7080	0.028401
+F-N	GW__late	MD__late	14	8	site	0.0281	0.1210	0.040816
+F-N	GW__peak	MD__early	20	17	both	-0.0216	0.6380	0.026507
+F-N	GW__peak	MD__late	20	8	both	0.0205	0.1580	0.038527
+F-N	MD__early	MD__late	17	8	season	0.0597	0.0390	0.024399
+F-FH	FH__late	FH__peak	20	18	season	-0.0216	0.7690	0.013795
+F-MR	MR__late	MR__peak	12	16	season	-0.0551	0.8600	0.020718

@@ -1,0 +1,14 @@
+contrast	gene	codon	S_MR	other_S	groups	RW_haplogroup	other_X
+S_MR	atp6	47	F	L	S_MR vs other_S		
+S_MR	atp6	56	M	I	S_MR vs other_S		
+S_MR	atp8	30	F	S	S_MR vs other_S		
+S_MR	cob	78	M	L	S_MR vs other_S		
+S_MR	cob	315	L	M	S_MR vs other_S		
+S_MR	nad2	26	F	I	S_MR vs other_S		
+S_MR	nad2	169	S	G	S_MR vs other_S		
+S_MR	nad2	242	L	M	S_MR vs other_S		
+S_MR	nad4	93	L	M	S_MR vs other_S		
+S_MR	nad5	416	M	L	S_MR vs other_S		
+X_RW_haplogroup	cox1	336			RW_haplogroup vs other_X	I	V
+X_RW_haplogroup	cox2	228			RW_haplogroup vs other_X	S	T
+X_RW_haplogroup	nad4	422			RW_haplogroup vs other_X	V	I
