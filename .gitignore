@@ -8,3 +8,8 @@ Background/
 Molecular/Quotes and Requests/VIGR_request_20240709.csv
 Raw_data/cluster_exports/*
 !Raw_data/cluster_exports/aton_lcwg_tables_2026-11-07/
+# Rendered outputs (rebuilt from the .qmd files; report.md is the committed version)
+Output/Reports/*.html
+Manuscript/*.html
+.quarto/
+*_files/
