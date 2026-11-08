@@ -11,7 +11,7 @@ Matthew Sasaki<sup>1</sup>, Melissa Pespeni<sup>2</sup>
 
 ## Two projects
 
-The genomic processing (read cleaning, mapping, site filtering, clade assignment, population genomics, seasonal and spatial tests, the association scan and functional annotation) runs on the Unity HPC cluster in a separate Snakemake project, `aton_lcwg`. This R project holds the phenotype data, environmental data, the statistical analyses of CTmax, all figures and the manuscript. It reads only small result tables exported from the cluster (see *Cluster exports* below) and never runs genomic tools itself.
+The genomic processing (read cleaning, mapping, site filtering, clade assignment, population genomics, seasonal and spatial tests, the association scan, functional annotation and mitogenome assembly) runs on the Unity HPC cluster in a separate Snakemake project, [`aton_lcwg`](https://github.com/ZoopEcoEvo/aton_lcwg) (on Unity: `/work/pi_matthew_sasaki_uml_edu/aton_lcwg`; private until submission). This R project holds the phenotype data, environmental data, the statistical analyses of CTmax, all figures and the manuscript. It reads only small result tables exported from the cluster (see *Cluster exports* below) and never runs genomic tools itself.
 
 ## Directory structure
 
@@ -71,7 +71,7 @@ The root directory contains this README, the license and the `.Rproj` file, and 
 
 ### Cluster exports
 
-On the cluster, `bash workflow/export_tables.sh` bundles the small result tables; the bundle is unpacked, unchanged, into `Raw_data/cluster_exports/<export>/`, so paths inside each export mirror the cluster project (`config/`, `metadata/`, `results/...`). Exports are never edited; a newer export is a new folder. `load_data.R` uses the most recent complete export (one with `results/00_qc/fastp_summary.tsv`), unless one is pinned in `00_controller.R` (`options(cluster_export = "<folder>")`).
+On the cluster, `bash workflow/export_tables.sh` bundles the small result tables; the bundle is unpacked, unchanged, into `Raw_data/cluster_exports/<export>/`, so paths inside each export mirror the cluster project (`config/`, `metadata/`, `results/...`). Exports are never edited; a newer export is a new folder. `load_data.R` uses the most recent complete export (one with `results/00_qc/fastp_summary.tsv`), unless one is pinned in `00_controller.R` (`options(cluster_export = "<folder>")`). The manuscript uses export `2026-11-07`. Record the `aton_lcwg` commit that produced each export (on Unity: `git rev-parse --short HEAD`), so every export can be traced to the code that made it.
 
 ### Processed data (`Output/Output_data/`)
 

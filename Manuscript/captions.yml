@@ -256,6 +256,16 @@ fig-supp-clade-structure: >-
   the F colour. Own-clade ancestry was ≥ 0.96 in 400 of 402 individuals; the two exceptions,
   libraries containing DNA of two clades, are omitted.
 
+fig-supp-chr6: >- 
+  A rare structural variant on chromosome 6 in clade X. (A) Local PCA along the genome: MDS1 of 2,000-SNP 
+  windows, with outlier windows (|robust z| > 4) in colour; nearly every window on chromosome 6 is an outlier. 
+  (B) Regional PCA against each individual's heterozygosity in the region relative to its genome-wide 
+  heterozygosity, for chromosome 6 and a control region on chromosome 1; points coloured by site. On chromosome 
+  6, ten TK, RW and ME individuals with raised heterozygosity (heterozygous carriers) and two TK individuals 
+  with reduced heterozygosity (homozygotes for the rare arrangement) separate on PC1; on the control, 
+  PC1 separates sites. (C) LD decay (mean r² corrected for genotype uncertainty) on chromosome 6 and the 
+  control region.
+
 fig-supp-trees: >-
   Relationships among clades and the lineages within F. (A) Mitochondrial (COI, maximum
   likelihood, rooted on *A. hudsonica*) and (B) nuclear (genome-wide net distances,

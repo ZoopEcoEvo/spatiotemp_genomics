@@ -1248,6 +1248,64 @@ ggarrange(mS_pc34, mS_admix, ncol = 1,
 ```
 
 ```{r}
+#| label: ms-figS-chr6
+#| fig-width: 11
+#| fig-height: 8.5
+#| fig-cap: !expr cap("fig-supp-chr6")
+
+# (A) local PCA along the genome in X: MDS1 per 2,000-SNP window; outliers (|robust z| > 4) in colour
+lp6 <- read_tsv(cx("results", "08_localpca", "X", "windows.tsv"), show_col_types = FALSE)
+fai6 <- cx("data", "reference", "genome", "reference.fa.fai")
+chroms6 <- if (file.exists(fai6)) intersect(read_tsv(fai6, col_names = FALSE, show_col_types = FALSE)$X1, unique(lp6$chrom)) else unique(lp6$chrom)
+lp6 <- lp6 %>%
+  mutate(chr = factor(match(chrom, chroms6)), mid_mb = (start + end) / 2e6,
+         z = (mds1 - median(mds1)) / mad(mds1), outlier = abs(z) > 4)
+p6a <- ggplot(lp6, aes(x = mid_mb, y = mds1, colour = outlier)) +
+  facet_grid(~ chr, scales = "free_x", space = "free_x", switch = "x") +
+  geom_point(size = 0.8) +
+  scale_colour_manual(values = c(`FALSE` = "grey70", `TRUE` = unname(clade_cols["X"])), guide = "none") +
+  scale_x_continuous(breaks = NULL) +
+  labs(x = "Chromosome (2,000-SNP windows)", y = "Local PCA, MDS1") +
+  theme_matt_facets(base_size = 11) +
+  theme(panel.spacing.x = unit(1, "pt"))
+
+# (B) chr6 regional PCA (PCAngsd) against heterozygosity in the region / genome-wide
+ids6 <- readLines(cx("results", "02_sites", "bamlists", "X.ids.txt"))
+reg6 <- map_dfr(c(chr6 = "X_chr6", control = "X_chr1_control"), function(r) {
+  e <- eigen(as.matrix(read.table(cx("results", "11_regions", r, "pcangsd.cov"))), symmetric = TRUE)
+  tibble(sample_id = ids6, PC1 = e$vectors[, 1], pc1_pct = 100 * e$values[1] / sum(e$values)) %>%
+    left_join(read_tsv(cx("results", "11_regions", r, "het.tsv"), show_col_types = FALSE), by = "sample_id") %>%
+    mutate(region = r, PC1 = PC1 * sign(sum(PC1^3)))                # carriers on the positive side
+}) %>%
+  left_join(select(seq_data, sample_id, site_code), by = "sample_id") %>%
+  mutate(site_code = factor(site_code, levels = site_order),
+         panel = factor(if_else(region == "X_chr6", sprintf("Chromosome 6 (PC1 %.1f%%)", pc1_pct),
+                                sprintf("Control, chromosome 1 (PC1 %.1f%%)", pc1_pct))),
+         panel = fct_relevel(panel, grep("^Chromosome 6", levels(panel), value = TRUE)))
+p6b <- ggplot(reg6, aes(x = PC1, y = het_ratio, fill = site_code)) +
+  facet_wrap(~ panel, scales = "free_x", nrow = 1) +
+  geom_point(shape = 21, size = 2.2, colour = "grey20", stroke = 0.2) +
+  scale_fill_manual(values = pop_cols[site_order], drop = TRUE) +
+  labs(x = "Regional PC1", y = "Heterozygosity in region /\ngenome-wide", fill = "Site") +
+  theme_matt_facets(base_size = 11)
+
+# (C) LD decay on chr6 against the chr1 control
+ld6 <- map_dfr(c("X_chr6", "X_chr1_control"), ~ read_tsv(cx("results", "11_regions", .x, "ld_bins.tsv"), show_col_types = FALSE) %>%
+                 mutate(region = recode(.x, X_chr6 = "chr 6", X_chr1_control = "chr 1 (control)"))) %>%
+  filter(n_pairs >= 50)
+p6c <- ggplot(ld6, aes(x = min_bp / 1000, y = mean_r2_ExpG, colour = region)) +
+  geom_line(linewidth = 0.8) + geom_point(size = 1.5) +
+  scale_x_log10() +
+  scale_colour_manual(values = c("chr 6" = unname(clade_cols["X"]), "chr 1 (control)" = "grey55")) +
+  labs(x = "Distance (kb, log scale)", y = expression(Mean~italic(r)^2), colour = NULL) +
+  theme_matt(base_size = 11) +
+  theme(legend.position = "top", legend.direction = "vertical", legend.justification = "right")
+
+ggarrange(p6a, ggarrange(p6b, p6c, widths = c(1.9, 1.1), labels = c("B", "C")), nrow = 2, heights = c(1, 1.15), labels = c("A", ""))
+```
+
+
+```{r}
 #| label: ms-figS-clade-habitat
 #| fig-width: 4.5
 #| fig-height: 4
