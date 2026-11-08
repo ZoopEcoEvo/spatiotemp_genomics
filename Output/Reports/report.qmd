@@ -2791,6 +2791,75 @@ wb_diff %>%
             `Spatial − seasonal (95% CI)` = sprintf("%.2f (%.2f, %.2f)", diff, lo, hi),
             p = signif(p, 2)) %>%
   knitr::kable(caption = "Seasonal and spatial CTmax slopes (°C per °C, ± SE) under two decompositions of collection temperature. Season-mean split: season = the season's mean collection temperature across sites; space = a collection's deviation from it. Site-mean split: space = the site's mean collection temperature; season = a collection's deviation from it. All models include clade, site, collection, replicate and tube.")
+
+```
+
+```{r}
+#| label: size-covariate
+# Does body size explain CTmax beyond clade and temperature? Prosome length is centred within
+# clade (clades differ in size, so centring on the overall mean would let size absorb clade
+# differences) and split into the individual's deviation from its clade x collection mean
+# (size_in) and that collection mean (size_coll; collections differ in size with temperature).
+size_dat <- wb_data %>%
+  filter(!is.na(size)) %>%
+  group_by(lineage, collection) %>% mutate(size_in = size - mean(size), size_coll = mean(size)) %>% ungroup() %>%
+  group_by(lineage) %>% mutate(size_coll = size_coll - mean(size)) %>% ungroup() %>%
+  mutate(size_wc = size_in + size_coll,
+         temp_cent = collection_temp - mean(filtered_data$collection_temp))
+fit_re <- ~ (1 | site) + (1 | collection) + (1 | replicate) + (1 | tube)
+f_ct  <- update(fit_re, ctmax ~ lineage * temp_cent + .)
+sz_ct0 <- lme4::lmer(f_ct, data = size_dat, REML = FALSE)
+sz_ct1 <- update(sz_ct0, . ~ . + size_wc)
+sz_ct2 <- update(sz_ct0, . ~ . + lineage * size_wc)
+sz_ct3 <- update(sz_ct0, . ~ . + size_in + size_coll)
+sz_p_in <- anova(update(sz_ct3, . ~ . - size_in), sz_ct3)$`Pr(>Chisq)`[2]
+sz_p_coll <- anova(update(sz_ct3, . ~ . - size_coll), sz_ct3)$`Pr(>Chisq)`[2]
+sz_v3 <- sqrt(diag(as.matrix(vcov(sz_ct3))))
+sz_sm0 <- lme4::lmer(update(fit_re, ctmax ~ lineage + t_time + t_space + .), data = size_dat, REML = FALSE)
+sz_sm1 <- update(sz_sm0, . ~ . + size_wc)
+
+sz_lrt <- anova(sz_ct0, sz_ct1, sz_ct2)
+# temperature-size relationship among collections (collections with >= 3 individuals of the clade)
+sz_coll <- size_dat %>% group_by(lineage, collection) %>%
+  summarise(size = mean(size), temp = mean(collection_temp), n = n(), .groups = "drop") %>% filter(n >= 3)
+sz_tsr <- sz_coll %>% group_by(clade = lineage) %>%
+  summarise(collections = n(), r = cor(size, temp), mm_per_C = coef(lm(size ~ temp))[[2]], .groups = "drop")
+sz_tsr_pooled <- sz_coll %>% group_by(lineage) %>% mutate(s = size - mean(size), t = temp - mean(temp)) %>%
+  ungroup() %>% summarise(r = cor(s, t)) %>% pull(r)
+sz_b <- lme4::fixef(sz_ct1)[["size_wc"]]; sz_se <- sqrt(diag(as.matrix(vcov(sz_ct1))))[["size_wc"]]
+# clade means at 22 °C and acclimation slopes, with and without size
+sz_emm <- function(m, lab) {
+  em <- emmeans::emmeans(m, ~ lineage, at = list(temp_cent = 22 - mean(filtered_data$collection_temp), size_wc = 0))
+  tr <- emmeans::emtrends(m, ~ lineage, var = "temp_cent", at = list(size_wc = 0))
+  left_join(as_tibble(em) %>% transmute(clade = lineage, ctmax22 = emmean),
+            as_tibble(tr) %>% transmute(clade = lineage, slope = temp_cent.trend), by = "clade") %>%
+    mutate(model = lab)
+}
+sz_cmp <- bind_rows(sz_emm(sz_ct0, "without size"), sz_emm(sz_ct1, "with size"))
+sz_sm <- bind_rows(
+  tibble(model = "without size", seasonal = lme4::fixef(sz_sm0)[["t_time"]], spatial = lme4::fixef(sz_sm0)[["t_space"]]),
+  tibble(model = "with size", seasonal = lme4::fixef(sz_sm1)[["t_time"]], spatial = lme4::fixef(sz_sm1)[["t_space"]]))
+size_check <- list(n = nrow(size_dat), b = sz_b, se = sz_se,
+                   p_main = sz_lrt$`Pr(>Chisq)`[2], p_int = sz_lrt$`Pr(>Chisq)`[3],
+                   b_in = lme4::fixef(sz_ct3)[["size_in"]], se_in = sz_v3[["size_in"]], p_in = sz_p_in,
+                   b_coll = lme4::fixef(sz_ct3)[["size_coll"]], se_coll = sz_v3[["size_coll"]], p_coll = sz_p_coll,
+                   sd_in = sd(size_dat$size_in),
+                   tsr = sz_tsr, tsr_pooled = sz_tsr_pooled,
+                   cmp = sz_cmp, sm = sz_sm,
+                   size_by_clade = size_dat %>% group_by(clade = lineage) %>%
+                     summarise(n = n(), median_mm = median(size), sd_mm = sd(size), .groups = "drop"))
+write_csv(sz_cmp, here("Output", "Output_data", "size_covariate_check.csv"))
+
+sz_cmp %>%
+  pivot_wider(names_from = model, values_from = c(ctmax22, slope)) %>%
+  transmute(Clade = clade,
+            `CTmax at 22 °C` = sprintf("%.2f → %.2f", `ctmax22_without size`, `ctmax22_with size`),
+            `Acclimation slope` = sprintf("%.3f → %.3f", `slope_without size`, `slope_with size`)) %>%
+  knitr::kable(caption = sprintf(
+    "Body size as a covariate (n = %d). Prosome length centred within clade: %.2f °C per mm (SE %.2f; likelihood-ratio p = %.2g); size × clade p = %.2g. Split: within collections %.2f °C per mm (SE %.2f, p = %.2g), between collections %.2f (SE %.2f, p = %.2g). Seasonal and spatial slopes without → with size: %.3f → %.3f and %.3f → %.3f °C per °C. Among collections, mean size and collection temperature correlate at r = %.2f (within clades, pooled).",
+    size_check$n, sz_b, sz_se, size_check$p_main, size_check$p_int,
+    size_check$b_in, size_check$se_in, size_check$p_in, size_check$b_coll, size_check$se_coll, size_check$p_coll,
+    sz_sm$seasonal[1], sz_sm$seasonal[2], sz_sm$spatial[1], sz_sm$spatial[2], sz_tsr_pooled))
 ```
 
 #### Does genetic differentiation predict site differences in CTmax?
