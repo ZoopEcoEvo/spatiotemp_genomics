@@ -24,7 +24,7 @@ process_micro            <- FALSE # 04: cluster SSU profile -> Output_data/micro
 process_gwas_inputs      <- FALSE # 05: sample table -> Output_data/ctmax_gwas_pheno.tsv (copy to cluster metadata/)
 process_mito_aa          <- FALSE # 06: mitogenome consensus + sample table -> Output_data/mito_aa/*.csv
 render_report            <- FALSE # 07: Output/Reports/report.qmd -> analyses, report figures, Output_data/ms_objects.rds
-render_ms_figures        <- T     # 08: Manuscript/ms_figures.qmd -> manuscript figures (plots only; seconds)
+render_ms_figures        <- F     # 08: Manuscript/ms_figures.qmd -> manuscript figures (plots only; seconds)
 render_manuscript        <- T     # 09: Manuscript/Sasaki_Pespeni_LCWG.qmd -> Output/Drafts/
 
 # Which cluster export to use (a folder name in Raw_data/cluster_exports/).
